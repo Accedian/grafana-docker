@@ -17,7 +17,7 @@ jobs:
     steps:
       - run:
           name: Building Docker Container
-          command: make circleci-docker
+          command: make docker
 
   release:
     docker:
@@ -51,7 +51,7 @@ jobs:
                git semver minor
                export DOCKER_VER=$(git semver get)
                git push origin master ${DOCKER_VER}
-               make circleci-push  
+               make push  
             fi
 
 workflows:
