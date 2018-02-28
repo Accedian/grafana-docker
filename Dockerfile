@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM debian:stretch
 
 ARG DOWNLOAD_URL="https://s3-us-west-2.amazonaws.com/grafana-releases/master/grafana_latest_amd64.deb"
 
@@ -18,5 +18,7 @@ VOLUME ["/var/lib/grafana", "/var/log/grafana", "/etc/grafana"]
 EXPOSE 3000
 
 COPY ./run.sh /run.sh
+COPY provisioning/ /etc/grafana/provisioning/
+COPY dashboards/ /var/lib/grafana/dashboards/
 
 ENTRYPOINT ["/run.sh"]

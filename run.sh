@@ -1,10 +1,13 @@
 #!/bin/bash -e
 
+export GF_USERS_DEFAULT_THEME=light
+
 : "${GF_PATHS_CONFIG:=/etc/grafana/grafana.ini}"
 : "${GF_PATHS_DATA:=/var/lib/grafana}"
 : "${GF_PATHS_LOGS:=/var/log/grafana}"
 : "${GF_PATHS_PLUGINS:=/var/lib/grafana/plugins}"
 : "${GF_PATHS_PROVISIONING:=/etc/grafana/provisioning}"
+: "${DS_PROMETHEUS:=http://localhost:9090}"
 
 chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_LOGS"
 
