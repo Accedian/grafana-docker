@@ -1,5 +1,5 @@
 DOCKER_REPO_NAME:= gcr.io/npav-172917/
-DOCKER_IMAGE_NAME := grafana	 
+DOCKER_IMAGE_NAME := grafana
 DOCKER_VER := $(if $(DOCKER_VER),$(DOCKER_VER),dev)
 
 all: docker
