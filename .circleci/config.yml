@@ -15,7 +15,6 @@ jobs:
     working_directory: /root/go/src/github.com/accedian/grafana-docker
 
     steps:
-      - build 
       - run:
           name: Building Docker Container
           command: make circleci-docker
