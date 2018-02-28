@@ -15,6 +15,7 @@ jobs:
     working_directory: /root/go/src/github.com/accedian/grafana-docker
 
     steps:
+      - checkout 
       - run:
           name: Building Docker Container
           command: make docker
@@ -28,7 +29,8 @@ jobs:
 
     working_directory: /root/go/src/github.com/accedian/grafana-docker
     steps:
-  
+      - checkout 
+      
       - setup_remote_docker
       
       - run:
