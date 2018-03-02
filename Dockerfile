@@ -18,7 +18,8 @@ VOLUME ["/var/lib/grafana", "/var/log/grafana", "/etc/grafana"]
 EXPOSE 3000
 
 COPY ./run.sh /run.sh
-COPY provisioning/ /etc/grafana/provisioning/
-COPY dashboards/ /var/lib/grafana/dashboards/
+COPY provisioning/ /tmp/provisioning/
+COPY dashboards/ /tmp/dashboards/
+
 
 ENTRYPOINT ["/run.sh"]

@@ -43,6 +43,12 @@ if [ ! -z "${GF_INSTALL_PLUGINS}" ]; then
   done
 fi
 
+rm -rf /etc/grafana/provisioning
+rm -rf /var/lib/grafana/dashboards
+
+cp -R /tmp/provisioning/ /etc/grafana/
+cp -R /tmp/dashboards/ /var/lib/grafana/
+
 exec gosu grafana /usr/sbin/grafana-server              \
   --homepath=/usr/share/grafana                         \
   --config="$GF_PATHS_CONFIG"                           \
