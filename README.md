@@ -3,6 +3,10 @@
 [![CircleCI](https://circleci.com/gh/Accedian/grafana-docker.svg?style=svg)](https://circleci.com/gh/Accedian/grafana-docker)
 
 This project builds a Docker image with the latest master build of Grafana.
+## Important Notes
+If you've modified any of the dashboards that come with packged in this repository, 
+make sure to save them as copies of the originals. If you don't do this, you will
+lose your changes when you redeploy.
 
 ## Running your Grafana container
 
