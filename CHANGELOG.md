@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.6.0 
+**Release Date:** Fri Mar  2 21:57:33 UTC 2018     
+## Previous Releases 
 ### 0.5.0 
 **Release Date:** Fri Mar  2 20:54:59 UTC 2018     
-## Previous Releases 
 * feature - adding go and gather dashboards.
 ### 0.4.0 
 **Release Date:** Fri Mar  2 20:37:01 UTC 2018     
