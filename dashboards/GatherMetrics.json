@@ -1,1199 +1,568 @@
 {
-    "annotations": {
-      "list": [
-        {
-          "$$hashKey": "object:86",
-          "builtIn": 1,
-          "datasource": "-- Grafana --",
-          "enable": true,
-          "hide": true,
-          "iconColor": "rgba(0, 211, 255, 1)",
-          "name": "Annotations & Alerts",
-          "type": "dashboard"
-        }
-      ]
-    },
-    "editable": true,
-    "gnetId": null,
-    "graphTooltip": 0,
-    "id": 3,
-    "iteration": 1520023150222,
-    "links": [],
-    "panels": [
+  "annotations": {
+    "list": [
       {
-        "aliasColors": {},
-        "bars": false,
-        "dashLength": 10,
-        "dashes": false,
-        "datasource": null,
-        "fill": 1,
-        "gridPos": {
-          "h": 9,
-          "w": 23,
-          "x": 0,
-          "y": 0
-        },
-        "id": 8,
-        "legend": {
-          "avg": false,
-          "current": false,
-          "max": false,
-          "min": false,
-          "show": true,
-          "total": false,
-          "values": false
-        },
-        "lines": true,
-        "linewidth": 1,
-        "links": [],
-        "nullPointMode": "null",
-        "percentage": false,
-        "pointradius": 5,
-        "points": false,
-        "renderer": "flot",
-        "seriesOverrides": [],
-        "spaceLength": 10,
-        "stack": false,
-        "steppedLine": false,
-        "targets": [
-          {
-            "expr": "gather_api_call_duration{code=~\"$code\",name=~\"$name\"}",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": "{{name}}:{{quantile}}",
-            "refId": "A"
-          }
-        ],
-        "thresholds": [],
-        "timeFrom": null,
-        "timeShift": null,
-        "title": "API Call Duration",
-        "tooltip": {
-          "shared": true,
-          "sort": 0,
-          "value_type": "individual"
-        },
-        "type": "graph",
-        "xaxis": {
-          "buckets": null,
-          "mode": "time",
-          "name": null,
-          "show": true,
-          "values": []
-        },
-        "yaxes": [
-          {
-            "format": "short",
-            "label": null,
-            "logBase": 1,
-            "max": null,
-            "min": null,
-            "show": true
-          },
-          {
-            "format": "short",
-            "label": null,
-            "logBase": 1,
-            "max": null,
-            "min": null,
-            "show": true
-          }
-        ]
-      },
-      {
-        "aliasColors": {},
-        "bars": false,
-        "dashLength": 10,
-        "dashes": false,
-        "datasource": null,
-        "fill": 1,
-        "gridPos": {
-          "h": 9,
-          "w": 16,
-          "x": 4,
-          "y": 9
-        },
-        "id": 10,
-        "legend": {
-          "alignAsTable": true,
-          "avg": true,
-          "current": true,
-          "max": true,
-          "min": false,
-          "rightSide": true,
-          "show": true,
-          "total": false,
-          "values": true
-        },
-        "lines": true,
-        "linewidth": 1,
-        "links": [],
-        "nullPointMode": "null",
-        "percentage": false,
-        "pointradius": 5,
-        "points": false,
-        "renderer": "flot",
-        "seriesOverrides": [],
-        "spaceLength": 10,
-        "stack": false,
-        "steppedLine": false,
-        "targets": [
-          {
-            "expr": "go_goroutines{job=\"gather\"}",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": " ",
-            "refId": "A"
-          }
-        ],
-        "thresholds": [],
-        "timeFrom": null,
-        "timeShift": null,
-        "title": "Go Routines",
-        "tooltip": {
-          "shared": true,
-          "sort": 0,
-          "value_type": "individual"
-        },
-        "type": "graph",
-        "xaxis": {
-          "buckets": null,
-          "mode": "time",
-          "name": null,
-          "show": true,
-          "values": []
-        },
-        "yaxes": [
-          {
-            "format": "short",
-            "label": null,
-            "logBase": 1,
-            "max": null,
-            "min": null,
-            "show": true
-          },
-          {
-            "format": "short",
-            "label": null,
-            "logBase": 1,
-            "max": null,
-            "min": null,
-            "show": true
-          }
-        ]
-      },
-      {
-        "aliasColors": {},
-        "bars": false,
-        "dashLength": 10,
-        "dashes": false,
-        "datasource": null,
-        "fill": 1,
-        "gridPos": {
-          "h": 9,
-          "w": 12,
-          "x": 0,
-          "y": 18
-        },
-        "id": 2,
-        "legend": {
-          "avg": false,
-          "current": false,
-          "max": false,
-          "min": false,
-          "show": true,
-          "total": false,
-          "values": false
-        },
-        "lines": true,
-        "linewidth": 1,
-        "links": [],
-        "nullPointMode": "null",
-        "percentage": false,
-        "pointradius": 5,
-        "points": false,
-        "renderer": "flot",
-        "seriesOverrides": [],
-        "spaceLength": 10,
-        "stack": false,
-        "steppedLine": false,
-        "targets": [
-          {
-            "expr": "gather_api_call_received_since_startup",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": "gather_api_call_received_since_startup",
-            "refId": "A"
-          },
-          {
-            "expr": "gather_api_call_completed_since_startup",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": "gather_api_call_completed_since_startup",
-            "refId": "B"
-          }
-        ],
-        "thresholds": [],
-        "timeFrom": null,
-        "timeShift": null,
-        "title": "Total API Requests",
-        "tooltip": {
-          "shared": true,
-          "sort": 0,
-          "value_type": "individual"
-        },
-        "type": "graph",
-        "xaxis": {
-          "buckets": null,
-          "mode": "time",
-          "name": null,
-          "show": true,
-          "values": []
-        },
-        "yaxes": [
-          {
-            "format": "short",
-            "label": null,
-            "logBase": 1,
-            "max": null,
-            "min": null,
-            "show": true
-          },
-          {
-            "format": "short",
-            "label": null,
-            "logBase": 1,
-            "max": null,
-            "min": null,
-            "show": true
-          }
-        ]
-      },
-      {
-        "aliasColors": {},
-        "bars": false,
-        "dashLength": 10,
-        "dashes": false,
-        "datasource": null,
-        "fill": 1,
-        "gridPos": {
-          "h": 9,
-          "w": 12,
-          "x": 12,
-          "y": 18
-        },
-        "id": 4,
-        "legend": {
-          "avg": false,
-          "current": false,
-          "max": false,
-          "min": false,
-          "show": true,
-          "total": false,
-          "values": false
-        },
-        "lines": true,
-        "linewidth": 1,
-        "links": [],
-        "nullPointMode": "null",
-        "percentage": false,
-        "pointradius": 5,
-        "points": false,
-        "renderer": "flot",
-        "seriesOverrides": [],
-        "spaceLength": 10,
-        "stack": false,
-        "steppedLine": false,
-        "targets": [
-          {
-            "expr": "gather_admin_service_api_recieved_since_startup",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": "admin_svc_rec",
-            "refId": "A"
-          },
-          {
-            "expr": "gather_admin_service_api_completed_since_startup",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": "admin_svc_fin",
-            "refId": "B"
-          },
-          {
-            "expr": "gather_tenant_service_api_call_received_since_startup",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": "tenant_svc_rec",
-            "refId": "C"
-          },
-          {
-            "expr": "gather_tenant_service_api_call_completed_since_startup",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": "tenant_svc_fin",
-            "refId": "D"
-          },
-          {
-            "expr": "gather_metric_service_api_call_received_since_startup",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": "metric_svc_rec",
-            "refId": "E"
-          },
-          {
-            "expr": "gather_metric_service_api_call_completed_since_startup",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": "metric_svc_fin",
-            "refId": "F"
-          }
-        ],
-        "thresholds": [],
-        "timeFrom": null,
-        "timeShift": null,
-        "title": "APIs by Service",
-        "tooltip": {
-          "shared": true,
-          "sort": 0,
-          "value_type": "individual"
-        },
-        "type": "graph",
-        "xaxis": {
-          "buckets": null,
-          "mode": "time",
-          "name": null,
-          "show": true,
-          "values": []
-        },
-        "yaxes": [
-          {
-            "format": "short",
-            "label": null,
-            "logBase": 1,
-            "max": null,
-            "min": null,
-            "show": true
-          },
-          {
-            "format": "short",
-            "label": null,
-            "logBase": 1,
-            "max": null,
-            "min": null,
-            "show": true
-          }
-        ]
-      },
-      {
-        "aliasColors": {},
-        "bars": false,
-        "dashLength": 10,
-        "dashes": false,
-        "datasource": null,
-        "fill": 1,
-        "gridPos": {
-          "h": 9,
-          "w": 12,
-          "x": 0,
-          "y": 27
-        },
-        "id": 6,
-        "legend": {
-          "avg": false,
-          "current": false,
-          "max": false,
-          "min": false,
-          "show": true,
-          "total": false,
-          "values": false
-        },
-        "lines": true,
-        "linewidth": 1,
-        "links": [],
-        "nullPointMode": "null",
-        "percentage": false,
-        "pointradius": 5,
-        "points": false,
-        "renderer": "flot",
-        "seriesOverrides": [],
-        "spaceLength": 10,
-        "stack": false,
-        "steppedLine": false,
-        "targets": [
-          {
-            "expr": "gather_pouch_changes_api_call_completed_since_startup",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": "changes_fin",
-            "refId": "A"
-          },
-          {
-            "expr": "gather_pouch_changes_api_call_received_since_startup",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": "changes_rec",
-            "refId": "B"
-          },
-          {
-            "expr": "gather_pouch_service_api_call_completed_since_startup",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": "all_other_fin",
-            "refId": "C"
-          },
-          {
-            "expr": "gather_pouch_service_api_call_received_since_startup",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": "all_other_rec",
-            "refId": "D"
-          }
-        ],
-        "thresholds": [],
-        "timeFrom": null,
-        "timeShift": null,
-        "title": "Pouch API Requests",
-        "tooltip": {
-          "shared": true,
-          "sort": 0,
-          "value_type": "individual"
-        },
-        "type": "graph",
-        "xaxis": {
-          "buckets": null,
-          "mode": "time",
-          "name": null,
-          "show": true,
-          "values": []
-        },
-        "yaxes": [
-          {
-            "format": "short",
-            "label": null,
-            "logBase": 1,
-            "max": null,
-            "min": null,
-            "show": true
-          },
-          {
-            "format": "short",
-            "label": null,
-            "logBase": 1,
-            "max": null,
-            "min": null,
-            "show": true
-          }
-        ]
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
       }
-    ],
-    "schemaVersion": 16,
-    "style": "dark",
-    "tags": [],
-    "templating": {
-      "list": [
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1520026016173,
+  "links": [],
+  "panels": [
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 23,
+        "x": 0,
+        "y": 0
+      },
+      "id": 8,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
         {
-          "allValue": null,
-          "current": {
-            "selected": true,
-            "text": "All",
-            "value": "$__all"
-          },
-          "datasource": "Promolama",
-          "hide": 0,
-          "includeAll": true,
-          "label": "Code",
-          "multi": true,
-          "name": "code",
-          "options": [
-            {
-              "selected": true,
-              "text": "All",
-              "value": "$__all"
-            },
-            {
-              "selected": false,
-              "text": "200",
-              "value": "200"
-            },
-            {
-              "selected": false,
-              "text": "201",
-              "value": "201"
-            },
-            {
-              "selected": false,
-              "text": "202",
-              "value": "202"
-            },
-            {
-              "selected": false,
-              "text": "301",
-              "value": "301"
-            },
-            {
-              "selected": false,
-              "text": "304",
-              "value": "304"
-            },
-            {
-              "selected": false,
-              "text": "400",
-              "value": "400"
-            },
-            {
-              "selected": false,
-              "text": "401",
-              "value": "401"
-            },
-            {
-              "selected": false,
-              "text": "403",
-              "value": "403"
-            },
-            {
-              "selected": false,
-              "text": "404",
-              "value": "404"
-            },
-            {
-              "selected": false,
-              "text": "405",
-              "value": "405"
-            },
-            {
-              "selected": false,
-              "text": "409",
-              "value": "409"
-            },
-            {
-              "selected": false,
-              "text": "412",
-              "value": "412"
-            },
-            {
-              "selected": false,
-              "text": "500",
-              "value": "500"
-            },
-            {
-              "selected": false,
-              "text": "503",
-              "value": "503"
-            }
-          ],
-          "query": "label_values(code)",
-          "refresh": 0,
-          "regex": "",
-          "sort": 0,
-          "tagValuesQuery": "",
-          "tags": [],
-          "tagsQuery": "",
-          "type": "query",
-          "useTags": false
+          "expr": "gather_api_call_duration{code=~\"$code\",name=~\"$name\"}",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "{{name}}:{{quantile}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "API Call Duration",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
         },
         {
-          "allValue": null,
-          "current": {
-            "selected": true,
-            "text": "All",
-            "value": "$__all"
-          },
-          "datasource": "Promolama",
-          "hide": 0,
-          "includeAll": true,
-          "label": "Name",
-          "multi": true,
-          "name": "name",
-          "options": [
-            {
-              "selected": true,
-              "text": "All",
-              "value": "$__all"
-            },
-            {
-              "selected": false,
-              "text": "",
-              "value": ""
-            },
-            {
-              "selected": false,
-              "text": "ActiveControllerCount",
-              "value": "ActiveControllerCount"
-            },
-            {
-              "selected": false,
-              "text": "BytesInPerSec",
-              "value": "BytesInPerSec"
-            },
-            {
-              "selected": false,
-              "text": "BytesOutPerSec",
-              "value": "BytesOutPerSec"
-            },
-            {
-              "selected": false,
-              "text": "BytesRejectedPerSec",
-              "value": "BytesRejectedPerSec"
-            },
-            {
-              "selected": false,
-              "text": "Code Cache",
-              "value": "Code Cache"
-            },
-            {
-              "selected": false,
-              "text": "CodeCacheManager",
-              "value": "CodeCacheManager"
-            },
-            {
-              "selected": false,
-              "text": "Compressed Class Space",
-              "value": "Compressed Class Space"
-            },
-            {
-              "selected": false,
-              "text": "FailedFetchRequestsPerSec",
-              "value": "FailedFetchRequestsPerSec"
-            },
-            {
-              "selected": false,
-              "text": "FailedProduceRequestsPerSec",
-              "value": "FailedProduceRequestsPerSec"
-            },
-            {
-              "selected": false,
-              "text": "G1 Eden Space",
-              "value": "G1 Eden Space"
-            },
-            {
-              "selected": false,
-              "text": "G1 Old Gen",
-              "value": "G1 Old Gen"
-            },
-            {
-              "selected": false,
-              "text": "G1 Old Generation",
-              "value": "G1 Old Generation"
-            },
-            {
-              "selected": false,
-              "text": "G1 Survivor Space",
-              "value": "G1 Survivor Space"
-            },
-            {
-              "selected": false,
-              "text": "G1 Young Generation",
-              "value": "G1 Young Generation"
-            },
-            {
-              "selected": false,
-              "text": "IdlePercent",
-              "value": "IdlePercent"
-            },
-            {
-              "selected": false,
-              "text": "IsrExpandsPerSec",
-              "value": "IsrExpandsPerSec"
-            },
-            {
-              "selected": false,
-              "text": "IsrShrinksPerSec",
-              "value": "IsrShrinksPerSec"
-            },
-            {
-              "selected": false,
-              "text": "LeaderCount",
-              "value": "LeaderCount"
-            },
-            {
-              "selected": false,
-              "text": "LeaderElectionRateAndTimeMs",
-              "value": "LeaderElectionRateAndTimeMs"
-            },
-            {
-              "selected": false,
-              "text": "LogEndOffset",
-              "value": "LogEndOffset"
-            },
-            {
-              "selected": false,
-              "text": "LogStartOffset",
-              "value": "LogStartOffset"
-            },
-            {
-              "selected": false,
-              "text": "MaxLag",
-              "value": "MaxLag"
-            },
-            {
-              "selected": false,
-              "text": "MessagesInPerSec",
-              "value": "MessagesInPerSec"
-            },
-            {
-              "selected": false,
-              "text": "Metaspace",
-              "value": "Metaspace"
-            },
-            {
-              "selected": false,
-              "text": "Metaspace Manager",
-              "value": "Metaspace Manager"
-            },
-            {
-              "selected": false,
-              "text": "NetworkProcessorAvgIdlePercent",
-              "value": "NetworkProcessorAvgIdlePercent"
-            },
-            {
-              "selected": false,
-              "text": "OfflinePartitionsCount",
-              "value": "OfflinePartitionsCount"
-            },
-            {
-              "selected": false,
-              "text": "PartitionCount",
-              "value": "PartitionCount"
-            },
-            {
-              "selected": false,
-              "text": "PreferredReplicaImbalanceCount",
-              "value": "PreferredReplicaImbalanceCount"
-            },
-            {
-              "selected": false,
-              "text": "RequestHandlerAvgIdlePercent",
-              "value": "RequestHandlerAvgIdlePercent"
-            },
-            {
-              "selected": false,
-              "text": "RequestsPerSec",
-              "value": "RequestsPerSec"
-            },
-            {
-              "selected": false,
-              "text": "TotalFetchRequestsPerSec",
-              "value": "TotalFetchRequestsPerSec"
-            },
-            {
-              "selected": false,
-              "text": "TotalProduceRequestsPerSec",
-              "value": "TotalProduceRequestsPerSec"
-            },
-            {
-              "selected": false,
-              "text": "UncleanLeaderElectionsPerSec",
-              "value": "UncleanLeaderElectionsPerSec"
-            },
-            {
-              "selected": false,
-              "text": "UnderReplicated",
-              "value": "UnderReplicated"
-            },
-            {
-              "selected": false,
-              "text": "UnderReplicatedPartitions",
-              "value": "UnderReplicatedPartitions"
-            },
-            {
-              "selected": false,
-              "text": "ZooKeeperAuthFailuresPerSec",
-              "value": "ZooKeeperAuthFailuresPerSec"
-            },
-            {
-              "selected": false,
-              "text": "ZooKeeperDisconnectsPerSec",
-              "value": "ZooKeeperDisconnectsPerSec"
-            },
-            {
-              "selected": false,
-              "text": "ZooKeeperExpiresPerSec",
-              "value": "ZooKeeperExpiresPerSec"
-            },
-            {
-              "selected": false,
-              "text": "ZooKeeperReadOnlyConnectsPerSec",
-              "value": "ZooKeeperReadOnlyConnectsPerSec"
-            },
-            {
-              "selected": false,
-              "text": "ZooKeeperSaslAuthenticationsPerSec",
-              "value": "ZooKeeperSaslAuthenticationsPerSec"
-            },
-            {
-              "selected": false,
-              "text": "ZooKeeperSyncConnectsPerSec",
-              "value": "ZooKeeperSyncConnectsPerSec"
-            },
-            {
-              "selected": false,
-              "text": "admin_views_add",
-              "value": "admin_views_add"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.049zygz5mpsdsgvpqagyylfx0",
-              "value": "aod_adh-fedex.1.049zygz5mpsdsgvpqagyylfx0"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.a1dg6rj0bg10f2xra5kh5eow1",
-              "value": "aod_adh-fedex.1.a1dg6rj0bg10f2xra5kh5eow1"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.iuxtfyj1sith0y4rtisijszbt",
-              "value": "aod_adh-fedex.1.iuxtfyj1sith0y4rtisijszbt"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.ixc4r35fj1yv84lbyj6dbhtwd",
-              "value": "aod_adh-fedex.1.ixc4r35fj1yv84lbyj6dbhtwd"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.j4qbhf3qo63fhqnalsohegy2x",
-              "value": "aod_adh-fedex.1.j4qbhf3qo63fhqnalsohegy2x"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.m8nrvfccibrzx7ef72wyfv364",
-              "value": "aod_adh-fedex.1.m8nrvfccibrzx7ef72wyfv364"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.mi2bjfmmxiv0r4958hmr5r1o4",
-              "value": "aod_adh-fedex.1.mi2bjfmmxiv0r4958hmr5r1o4"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.n9n9iqsloxcquwvvs5j94eaiv",
-              "value": "aod_adh-fedex.1.n9n9iqsloxcquwvvs5j94eaiv"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.nfvi689c7tv5kdztz5lnk290j",
-              "value": "aod_adh-fedex.1.nfvi689c7tv5kdztz5lnk290j"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.omz93q05p9bgqrhug8dzf3h1q",
-              "value": "aod_adh-fedex.1.omz93q05p9bgqrhug8dzf3h1q"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.pwpm6vgzrr0sboercqirkw54i",
-              "value": "aod_adh-fedex.1.pwpm6vgzrr0sboercqirkw54i"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.qhszilqj73ypeg7jq14nspy6b",
-              "value": "aod_adh-fedex.1.qhszilqj73ypeg7jq14nspy6b"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.quyxf961zdvqt1ocih5j8qulj",
-              "value": "aod_adh-fedex.1.quyxf961zdvqt1ocih5j8qulj"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.sanokdkzrcz509vnepnrwk893",
-              "value": "aod_adh-fedex.1.sanokdkzrcz509vnepnrwk893"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.te35zn70m5dztip1wda2hcud6",
-              "value": "aod_adh-fedex.1.te35zn70m5dztip1wda2hcud6"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.unofladk1qwd92llrw1vziixt",
-              "value": "aod_adh-fedex.1.unofladk1qwd92llrw1vziixt"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.uun4moogq1chbxsiuslg669n7",
-              "value": "aod_adh-fedex.1.uun4moogq1chbxsiuslg669n7"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.xtoupxdbhwsyqiqt2xyx5xzip",
-              "value": "aod_adh-fedex.1.xtoupxdbhwsyqiqt2xyx5xzip"
-            },
-            {
-              "selected": false,
-              "text": "aod_adh-fedex.1.zf7k5pr779wqz1q8rp2vhpw1y",
-              "value": "aod_adh-fedex.1.zf7k5pr779wqz1q8rp2vhpw1y"
-            },
-            {
-              "selected": false,
-              "text": "aod_broker.1.kyys7ru5e3kqgkrbovujfg18y",
-              "value": "aod_broker.1.kyys7ru5e3kqgkrbovujfg18y"
-            },
-            {
-              "selected": false,
-              "text": "aod_cadvisor.lmpyahnqvsiuggtgg3wzz93ir.ifm9i4e3ogi4h7xfylmxzuouk",
-              "value": "aod_cadvisor.lmpyahnqvsiuggtgg3wzz93ir.ifm9i4e3ogi4h7xfylmxzuouk"
-            },
-            {
-              "selected": false,
-              "text": "aod_coordinator.1.kdbklazclh4itfbkapuridy6e",
-              "value": "aod_coordinator.1.kdbklazclh4itfbkapuridy6e"
-            },
-            {
-              "selected": false,
-              "text": "aod_coordinator.1.xarnc816hqqcv1vb5x38ni0uh",
-              "value": "aod_coordinator.1.xarnc816hqqcv1vb5x38ni0uh"
-            },
-            {
-              "selected": false,
-              "text": "aod_couchdb.1.zkrutilf7yhsm02j3mk0mtvg9",
-              "value": "aod_couchdb.1.zkrutilf7yhsm02j3mk0mtvg9"
-            },
-            {
-              "selected": false,
-              "text": "aod_gather.1.4n424e3sjm7u48ezi2lj2ym3e",
-              "value": "aod_gather.1.4n424e3sjm7u48ezi2lj2ym3e"
-            },
-            {
-              "selected": false,
-              "text": "aod_gather.1.cjpdoj6ddmms8jsobw9g9m5hj",
-              "value": "aod_gather.1.cjpdoj6ddmms8jsobw9g9m5hj"
-            },
-            {
-              "selected": false,
-              "text": "aod_gather.1.q84jagn6368tentjpd89kksxp",
-              "value": "aod_gather.1.q84jagn6368tentjpd89kksxp"
-            },
-            {
-              "selected": false,
-              "text": "aod_grafana.1.slptw0zgj8ff85o2atyju2uzx",
-              "value": "aod_grafana.1.slptw0zgj8ff85o2atyju2uzx"
-            },
-            {
-              "selected": false,
-              "text": "aod_grafana.1.xwvj31nz45sn53vij1e699itq",
-              "value": "aod_grafana.1.xwvj31nz45sn53vij1e699itq"
-            },
-            {
-              "selected": false,
-              "text": "aod_interlock.1.q0wj31taopwukif6hnpbqiyqt",
-              "value": "aod_interlock.1.q0wj31taopwukif6hnpbqiyqt"
-            },
-            {
-              "selected": false,
-              "text": "aod_kafka-jmx-exporter.lmpyahnqvsiuggtgg3wzz93ir.w7t4d2k8td7tonclwkjpy1qxw",
-              "value": "aod_kafka-jmx-exporter.lmpyahnqvsiuggtgg3wzz93ir.w7t4d2k8td7tonclwkjpy1qxw"
-            },
-            {
-              "selected": false,
-              "text": "aod_kafka-monitor.1.6s68xx52qigmtb5u1cs1zadyc",
-              "value": "aod_kafka-monitor.1.6s68xx52qigmtb5u1cs1zadyc"
-            },
-            {
-              "selected": false,
-              "text": "aod_kibana.1.bx11yfuqiea1en9frde3y04xa",
-              "value": "aod_kibana.1.bx11yfuqiea1en9frde3y04xa"
-            },
-            {
-              "selected": false,
-              "text": "aod_logspout.lmpyahnqvsiuggtgg3wzz93ir.yvcyziwtw1f2wvgnol2rhh1s7",
-              "value": "aod_logspout.lmpyahnqvsiuggtgg3wzz93ir.yvcyziwtw1f2wvgnol2rhh1s7"
-            },
-            {
-              "selected": false,
-              "text": "aod_logstash.1.k5h6r3ybm3gp8aghm91d3mllc",
-              "value": "aod_logstash.1.k5h6r3ybm3gp8aghm91d3mllc"
-            },
-            {
-              "selected": false,
-              "text": "aod_mesos-master.1.3fa4tsvahyl5j7q7942l3vx78",
-              "value": "aod_mesos-master.1.3fa4tsvahyl5j7q7942l3vx78"
-            },
-            {
-              "selected": false,
-              "text": "aod_mesos-sparkdispatcher.1.1uo9nq7j5iy129scltvpput3a",
-              "value": "aod_mesos-sparkdispatcher.1.1uo9nq7j5iy129scltvpput3a"
-            },
-            {
-              "selected": false,
-              "text": "aod_metabase.1.feq8gxd59g0c93kbsne4vc04i",
-              "value": "aod_metabase.1.feq8gxd59g0c93kbsne4vc04i"
-            },
-            {
-              "selected": false,
-              "text": "aod_middlemanager1.1.88ncd1b9j36wkk16n8brosm9i",
-              "value": "aod_middlemanager1.1.88ncd1b9j36wkk16n8brosm9i"
-            },
-            {
-              "selected": false,
-              "text": "aod_middlemanager1.1.n0fy7fvjtyk8fklfzq7e2648g",
-              "value": "aod_middlemanager1.1.n0fy7fvjtyk8fklfzq7e2648g"
-            },
-            {
-              "selected": false,
-              "text": "aod_minio1.1.1emy0akrvbmjb5ukah350n8br",
-              "value": "aod_minio1.1.1emy0akrvbmjb5ukah350n8br"
-            },
-            {
-              "selected": false,
-              "text": "aod_minio1.1.vie1sccsa6acke3xb2n0lc43w",
-              "value": "aod_minio1.1.vie1sccsa6acke3xb2n0lc43w"
-            },
-            {
-              "selected": false,
-              "text": "aod_minio3.1.5a44umwr3861wdjdhnnpykqsb",
-              "value": "aod_minio3.1.5a44umwr3861wdjdhnnpykqsb"
-            },
-            {
-              "selected": false,
-              "text": "aod_minio3.1.r85t5jz6hvjrg8nmskn82gg9z",
-              "value": "aod_minio3.1.r85t5jz6hvjrg8nmskn82gg9z"
-            },
-            {
-              "selected": false,
-              "text": "aod_nginx.1.qkc3bxkxznokj4vbkfqj2rlaj",
-              "value": "aod_nginx.1.qkc3bxkxznokj4vbkfqj2rlaj"
-            },
-            {
-              "selected": false,
-              "text": "aod_overlord.1.ejoeidz9t6a6srr50a3c1zw2l",
-              "value": "aod_overlord.1.ejoeidz9t6a6srr50a3c1zw2l"
-            },
-            {
-              "selected": false,
-              "text": "aod_portainer.1.0038b2405v8d452q5ieedxoo0",
-              "value": "aod_portainer.1.0038b2405v8d452q5ieedxoo0"
-            },
-            {
-              "selected": false,
-              "text": "aod_prometheus.1.yhx9121f8vct4jwlmwij1pkfs",
-              "value": "aod_prometheus.1.yhx9121f8vct4jwlmwij1pkfs"
-            },
-            {
-              "selected": false,
-              "text": "aod_sparkoverseer.1.gb0yczdy3rmq6b3m5h4tm18sa",
-              "value": "aod_sparkoverseer.1.gb0yczdy3rmq6b3m5h4tm18sa"
-            },
-            {
-              "selected": false,
-              "text": "aod_sparkoverseer.1.nc070y7t1uytsq7c878jwsnhp",
-              "value": "aod_sparkoverseer.1.nc070y7t1uytsq7c878jwsnhp"
-            },
-            {
-              "selected": false,
-              "text": "aod_ui.1.qvtuox9l5iod33yywsouw1rr5",
-              "value": "aod_ui.1.qvtuox9l5iod33yywsouw1rr5"
-            },
-            {
-              "selected": false,
-              "text": "aod_ui.1.sbpoc94a6bu9pk25gevjirjj9",
-              "value": "aod_ui.1.sbpoc94a6bu9pk25gevjirjj9"
-            },
-            {
-              "selected": false,
-              "text": "aod_visualizer.1.n9y7fsymkynbsu8egpi6pu0cg",
-              "value": "aod_visualizer.1.n9y7fsymkynbsu8egpi6pu0cg"
-            },
-            {
-              "selected": false,
-              "text": "cleaner-io",
-              "value": "cleaner-io"
-            },
-            {
-              "selected": false,
-              "text": "ing_dict_get",
-              "value": "ing_dict_get"
-            },
-            {
-              "selected": false,
-              "text": "mon_obj_bulk_update",
-              "value": "mon_obj_bulk_update"
-            },
-            {
-              "selected": false,
-              "text": "mon_obj_create",
-              "value": "mon_obj_create"
-            },
-            {
-              "selected": false,
-              "text": "summary__by_alais_get",
-              "value": "summary__by_alais_get"
-            },
-            {
-              "selected": false,
-              "text": "tenant_get",
-              "value": "tenant_get"
-            },
-            {
-              "selected": false,
-              "text": "thr_cross_get",
-              "value": "thr_cross_get"
-            },
-            {
-              "selected": false,
-              "text": "thr_cross_mon_obj_get",
-              "value": "thr_cross_mon_obj_get"
-            },
-            {
-              "selected": false,
-              "text": "thr_prf_get",
-              "value": "thr_prf_get"
-            },
-            {
-              "selected": false,
-              "text": "valid_types_create",
-              "value": "valid_types_create"
-            },
-            {
-              "selected": false,
-              "text": "valid_types_get",
-              "value": "valid_types_get"
-            }
-          ],
-          "query": "label_values(name)",
-          "refresh": 0,
-          "regex": "",
-          "sort": 0,
-          "tagValuesQuery": "",
-          "tags": [],
-          "tagsQuery": "",
-          "type": "query",
-          "useTags": false
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
         }
       ]
     },
-    "time": {
-      "from": "now-24h",
-      "to": "now"
-    },
-    "timepicker": {
-      "refresh_intervals": [
-        "5s",
-        "10s",
-        "30s",
-        "1m",
-        "5m",
-        "15m",
-        "30m",
-        "1h",
-        "2h",
-        "1d"
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 16,
+        "x": 4,
+        "y": 9
+      },
+      "id": 10,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "go_goroutines{job=\"gather\"}",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": " ",
+          "refId": "A"
+        }
       ],
-      "time_options": [
-        "5m",
-        "15m",
-        "1h",
-        "6h",
-        "12h",
-        "24h",
-        "2d",
-        "7d",
-        "30d"
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Go Routines",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
       ]
     },
-    "timezone": "",
-    "title": "Gather",
-    "uid": "AtfSxPezz",
-    "version": 14
-  }
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 18
+      },
+      "id": 2,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "gather_api_call_received_since_startup",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "gather_api_call_received_since_startup",
+          "refId": "A"
+        },
+        {
+          "expr": "gather_api_call_completed_since_startup",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "gather_api_call_completed_since_startup",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Total API Requests",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ]
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 18
+      },
+      "id": 4,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "gather_admin_service_api_recieved_since_startup",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "admin_svc_rec",
+          "refId": "A"
+        },
+        {
+          "expr": "gather_admin_service_api_completed_since_startup",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "admin_svc_fin",
+          "refId": "B"
+        },
+        {
+          "expr": "gather_tenant_service_api_call_received_since_startup",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "tenant_svc_rec",
+          "refId": "C"
+        },
+        {
+          "expr": "gather_tenant_service_api_call_completed_since_startup",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "tenant_svc_fin",
+          "refId": "D"
+        },
+        {
+          "expr": "gather_metric_service_api_call_received_since_startup",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "metric_svc_rec",
+          "refId": "E"
+        },
+        {
+          "expr": "gather_metric_service_api_call_completed_since_startup",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "metric_svc_fin",
+          "refId": "F"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "APIs by Service",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ]
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 27
+      },
+      "id": 6,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "gather_pouch_changes_api_call_completed_since_startup",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "changes_fin",
+          "refId": "A"
+        },
+        {
+          "expr": "gather_pouch_changes_api_call_received_since_startup",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "changes_rec",
+          "refId": "B"
+        },
+        {
+          "expr": "gather_pouch_service_api_call_completed_since_startup",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "all_other_fin",
+          "refId": "C"
+        },
+        {
+          "expr": "gather_pouch_service_api_call_received_since_startup",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "all_other_rec",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Pouch API Requests",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 16,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "Prometheus",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Code",
+        "multi": true,
+        "name": "code",
+        "options": [],
+        "query": "label_values(code)",
+        "refresh": 1,
+        "regex": "",
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "Prometheus",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Name",
+        "multi": true,
+        "name": "name",
+        "options": [],
+        "query": "label_values(name)",
+        "refresh": 1,
+        "regex": "",
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "",
+  "title": "Gather",
+  "uid": "AtfSxPezz",
+  "version": 14
+}
