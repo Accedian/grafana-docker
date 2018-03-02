@@ -1,3 +1,4 @@
+* feature - adding go and gather dashboards.
 ## Current Release 
 ### 0.4.0 
 **Release Date:** Fri Mar  2 20:37:01 UTC 2018     
