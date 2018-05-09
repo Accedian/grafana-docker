@@ -1,3 +1,4 @@
+* Feature - Fixed prometheus datasource to worked with the unified URL datahub scheme
 ## Current Release 
 ### 0.6.0 
 **Release Date:** Fri Mar  2 21:57:33 UTC 2018     
