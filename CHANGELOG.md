@@ -1,8 +1,10 @@
-* Feature - Fixed prometheus datasource to worked with the unified URL datahub scheme
 ## Current Release 
+### 0.7.0 
+**Release Date:** Wed May  9 21:29:17 UTC 2018     
+## Previous Releases 
+* Feature - Fixed prometheus datasource to worked with the unified URL datahub scheme
 ### 0.6.0 
 **Release Date:** Fri Mar  2 21:57:33 UTC 2018     
-## Previous Releases 
 ### 0.5.0 
 **Release Date:** Fri Mar  2 20:54:59 UTC 2018     
 * feature - adding go and gather dashboards.
