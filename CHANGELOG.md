@@ -1,3 +1,4 @@
+* Feature - add Spark dashboard
 ## Current Release 
 ### 0.7.0 
 **Release Date:** Wed May  9 21:29:17 UTC 2018     
