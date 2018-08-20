@@ -1,8 +1,10 @@
-* Feature - add Spark dashboard
 ## Current Release 
+### 0.8.0 
+**Release Date:** Mon Aug 20 18:36:07 UTC 2018     
+## Previous Releases 
+* Feature - add Spark dashboard
 ### 0.7.0 
 **Release Date:** Wed May  9 21:29:17 UTC 2018     
-## Previous Releases 
 * Feature - Fixed prometheus datasource to worked with the unified URL datahub scheme
 ### 0.6.0 
 **Release Date:** Fri Mar  2 21:57:33 UTC 2018     
