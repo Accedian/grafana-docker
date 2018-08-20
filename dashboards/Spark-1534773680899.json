@@ -16,6 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": null,
+  "iteration": 1534786287786,
   "links": [],
   "panels": [
     {
@@ -137,16 +138,18 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(rate(spark_streaming_totalProcessedRecords{job=\"spark_$job\"}[10m]))\n",
+          "expr": "rate(spark_streaming_totalProcessedRecords{job=\"spark_$job\"}[10m])\n",
           "format": "time_series",
+          "hide": false,
           "interval": "1m",
           "intervalFactor": 1,
           "legendFormat": "totalProcessed",
           "refId": "A"
         },
         {
-          "expr": "avg(rate(spark_streaming_totalReceivedRecords{job=\"spark_$job\"}[10m]))",
+          "expr": "rate(spark_streaming_totalReceivedRecords{job=\"spark_$job\"}[10m])",
           "format": "time_series",
+          "hide": false,
           "interval": "1m",
           "intervalFactor": 1,
           "legendFormat": "totalReceived",
@@ -172,14 +175,16 @@
       },
       "yaxes": [
         {
+          "decimals": null,
           "format": "short",
-          "label": null,
+          "label": "",
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
+          "decimals": null,
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -829,7 +834,7 @@
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
