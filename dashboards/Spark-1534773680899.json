@@ -15,8 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": null,
-  "iteration": 1534786287786,
+  "iteration": 1536156108443,
   "links": [],
   "panels": [
     {
@@ -204,7 +203,7 @@
           {
             "evaluator": {
               "params": [
-                1
+                0.0001
               ],
               "type": "lt"
             },
@@ -269,13 +268,14 @@
       },
       "id": 4,
       "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
         "min": false,
         "show": true,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
       "linewidth": 1,
@@ -312,7 +312,7 @@
           "fill": true,
           "line": true,
           "op": "lt",
-          "value": 1
+          "value": 0.0001
         }
       ],
       "timeFrom": null,
@@ -402,13 +402,14 @@
       },
       "id": 10,
       "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
         "min": false,
         "show": true,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
       "linewidth": 1,
@@ -620,6 +621,13 @@
       "renderer": "flot",
       "repeat": "role",
       "repeatDirection": "v",
+      "scopedVars": {
+        "role": {
+          "selected": true,
+          "text": "driver",
+          "value": "driver"
+        }
+      },
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -781,6 +789,107 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 27
+      },
+      "id": 21,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "repeat": null,
+      "repeatDirection": "v",
+      "repeatIteration": 1536156108443,
+      "repeatPanelId": 20,
+      "scopedVars": {
+        "role": {
+          "selected": true,
+          "text": "executor",
+          "value": "executor"
+        }
+      },
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "spark_jvm_total_used{job=\"spark_$job\", role=\"$role\"}",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A"
+        },
+        {
+          "expr": "spark_jvm_total_max{job=\"spark_$job\", role=\"$role\"}",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Memory Utilization $role",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "decbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
   "refresh": "10s",
@@ -793,7 +902,10 @@
     "list": [
       {
         "allValue": null,
-        "current": {},
+        "current": {
+          "text": "metricsstreaming",
+          "value": "metricsstreaming"
+        },
         "datasource": "Prometheus",
         "hide": 0,
         "includeAll": false,
@@ -804,6 +916,7 @@
         "query": "label_values(job)",
         "refresh": 1,
         "regex": "/.*spark_(.*)/",
+        "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
         "tags": [],
@@ -813,7 +926,14 @@
       },
       {
         "allValue": null,
-        "current": {},
+        "current": {
+          "tags": [],
+          "text": "driver + executor",
+          "value": [
+            "driver",
+            "executor"
+          ]
+        },
         "datasource": "Prometheus",
         "hide": 0,
         "includeAll": false,
@@ -824,6 +944,7 @@
         "query": "label_values(role)",
         "refresh": 1,
         "regex": "",
+        "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
         "tags": [],
@@ -865,5 +986,5 @@
   "timezone": "",
   "title": "Spark",
   "uid": "ui8NZSpiz",
-  "version": 39
+  "version": 5
 }
