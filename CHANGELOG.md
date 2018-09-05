@@ -1,3 +1,4 @@
+* Feature - update Spark dashboard
 ## Current Release 
 ### 0.9.0 
 **Release Date:** Mon Aug 20 19:09:02 UTC 2018     
