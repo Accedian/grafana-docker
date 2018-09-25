@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1536156108443,
+  "iteration": 1537913292622,
   "links": [],
   "panels": [
     {
@@ -39,7 +39,7 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 5,
+        "w": 4,
         "x": 0,
         "y": 0
       },
@@ -108,7 +108,7 @@
       "datasource": "Prometheus",
       "fill": 1,
       "gridPos": {
-        "h": 9,
+        "h": 6,
         "w": 9,
         "x": 5,
         "y": 0
@@ -261,7 +261,7 @@
       "datasource": "Prometheus",
       "fill": 1,
       "gridPos": {
-        "h": 9,
+        "h": 6,
         "w": 9,
         "x": 14,
         "y": 0
@@ -334,10 +334,10 @@
       "yaxes": [
         {
           "format": "short",
-          "label": null,
-          "logBase": 1,
+          "label": "",
+          "logBase": 10,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -355,39 +355,166 @@
       }
     },
     {
-      "alert": {
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                5000
-              ],
-              "type": "gt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "5m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "avg"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "frequency": "60s",
-        "handler": 1,
-        "name": "Batch Timing alert",
-        "noDataState": "keep_state",
-        "notifications": []
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "Prometheus",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
       },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 0,
+        "y": 3
+      },
+      "id": 31,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "spark_AccedianStreamingMetrics_streaming_rawRecsConsumed",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Raw Records Consumed",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "Prometheus",
+      "format": "short",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 4,
+        "x": 0,
+        "y": 6
+      },
+      "id": 33,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "spark_AccedianStreamingMetrics_batch_batchNpavRecsConsumed",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "NPAV Records Pushed to S3",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -395,12 +522,12 @@
       "datasource": "Prometheus",
       "fill": 1,
       "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 9
+        "h": 5,
+        "w": 9,
+        "x": 5,
+        "y": 6
       },
-      "id": 10,
+      "id": 27,
       "legend": {
         "alignAsTable": true,
         "avg": true,
@@ -425,7 +552,215 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg_over_time(spark_streaming_lastCompletedBatch_totalDelay{job=\"spark_$job\"}[5m])",
+          "expr": "avg_over_time(spark_AccedianStreamingMetrics_streaming_rawRecordIngestionLag[3m])",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "rawRecord lag",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Raw Record Ingestion Lag",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": null,
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "decimals": null,
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "gridPos": {
+        "h": 5,
+        "w": 9,
+        "x": 14,
+        "y": 6
+      },
+      "id": 29,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "avg_over_time(spark_AccedianStreamingMetrics_batch_batchNpavIngestionLag[5m])",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "batch processing lag",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Batch NPAV Processing Lag",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "alert": {
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                15000
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "frequency": "60s",
+        "handler": 1,
+        "name": "Batch Timing alert",
+        "noDataState": "no_data",
+        "notifications": []
+      },
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 11
+      },
+      "id": 10,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": false,
+        "show": true,
+        "sortDesc": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "avg_over_time(spark_streaming_lastCompletedBatch_totalDelay{job=\"spark_metricsstreaming\"}[5m])",
           "format": "time_series",
           "interval": "5s",
           "intervalFactor": 1,
@@ -455,7 +790,7 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 5000
+          "value": 15000
         }
       ],
       "timeFrom": null,
@@ -508,17 +843,18 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 9
+        "y": 11
       },
-      "id": 18,
+      "id": 8,
       "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
         "min": false,
         "show": true,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
       "linewidth": 1,
@@ -534,24 +870,36 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg_over_time(spark_executor_threadpool_currentPool_size{job=\"spark_$job\"}[10m])",
+          "expr": "spark_streaming_waitingBatches",
           "format": "time_series",
+          "hide": false,
           "intervalFactor": 1,
-          "legendFormat": "current pool size",
           "refId": "A"
         },
         {
-          "expr": "avg_over_time(spark_executor_threadpool_activeTasks{job=\"spark_$job\"}[10m])",
+          "expr": "spark_streaming_runningBatches",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 1,
+          "refId": "B"
+        },
+        {
+          "expr": "spark_streaming_unprocessedBatches",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "active tasks",
-          "refId": "B"
+          "refId": "C"
+        },
+        {
+          "expr": "",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "refId": "D"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Executor Active Tasks",
+      "title": "Batch Stats",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -599,7 +947,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 18
+        "y": 20
       },
       "id": 20,
       "legend": {
@@ -698,9 +1046,9 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 18
+        "y": 20
       },
-      "id": 8,
+      "id": 18,
       "legend": {
         "avg": false,
         "current": false,
@@ -724,36 +1072,24 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "spark_streaming_waitingBatches",
+          "expr": "avg_over_time(spark_executor_threadpool_currentPool_size{job=\"spark_$job\"}[10m])",
           "format": "time_series",
-          "hide": false,
           "intervalFactor": 1,
+          "legendFormat": "current pool size",
           "refId": "A"
         },
         {
-          "expr": "spark_streaming_runningBatches",
+          "expr": "avg_over_time(spark_executor_threadpool_activeTasks{job=\"spark_$job\"}[10m])",
           "format": "time_series",
-          "hide": false,
           "intervalFactor": 1,
+          "legendFormat": "active tasks",
           "refId": "B"
-        },
-        {
-          "expr": "spark_streaming_unprocessedBatches",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "refId": "C"
-        },
-        {
-          "expr": "",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "refId": "D"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Batch Stats",
+      "title": "Executor Active Tasks",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -801,9 +1137,9 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 27
+        "y": 29
       },
-      "id": 21,
+      "id": 34,
       "legend": {
         "avg": false,
         "current": false,
@@ -823,7 +1159,7 @@
       "renderer": "flot",
       "repeat": null,
       "repeatDirection": "v",
-      "repeatIteration": 1536156108443,
+      "repeatIteration": 1537913292622,
       "repeatPanelId": 20,
       "scopedVars": {
         "role": {
@@ -927,7 +1263,6 @@
       {
         "allValue": null,
         "current": {
-          "tags": [],
           "text": "driver + executor",
           "value": [
             "driver",
@@ -986,5 +1321,5 @@
   "timezone": "",
   "title": "Spark",
   "uid": "ui8NZSpiz",
-  "version": 5
+  "version": 47
 }
