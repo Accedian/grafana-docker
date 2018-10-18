@@ -58,7 +58,7 @@
           "expr": "gather_api_call_duration"}",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "{{name}}:{{quantile}}",
+          "legendFormat": "{{name}}:{{code}}:{{quantile}}",
           "refId": "A"
         }
       ],
