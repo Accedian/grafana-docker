@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.13.0 
+**Release Date:** Thu Oct 18 14:44:46 UTC 2018     
+## Previous Releases 
 ### 0.12.0 
 **Release Date:** Wed Oct 17 19:07:57 UTC 2018     
-## Previous Releases 
 ### 0.11.0 
 **Release Date:** Tue Sep 25 22:34:47 UTC 2018     
 * Feature - update Spark dashboard with lag metrics
