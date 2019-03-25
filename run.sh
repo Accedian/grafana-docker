@@ -11,6 +11,14 @@ export GF_USERS_DEFAULT_THEME=light
 
 chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_LOGS"
 
+if [ -f /var/run/secrets/gce_oauth_key ]; then
+ export GF_AUTH_GOOGLE_CLIENT_ID=$(cat /var/run/secrets/gce_oauth_key)
+fi
+
+if [ -f /var/run/secrets/gce_oauth_secret ]; then
+ export GF_AUTH_GOOGLE_CLIENT_SECRET=$(cat /var/run/secrets/gce_oauth_secret)
+fi
+
 if [ ! -z ${GF_AWS_PROFILES+x} ]; then
     mkdir -p ~grafana/.aws/
     > ~grafana/.aws/credentials

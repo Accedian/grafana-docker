@@ -1,3 +1,5 @@
+* Feature - Added support for gce_oauth_key and gce_oauth_secret. When these values are set as docker secret (in swarm mode), they will be expanded to GF_AUTH_GOOGLE_CLIENT_ID and GF_AUTH_GOOGLE_CLIENT_SECRET respectively, so that grafana can use oauth
+
 ## Current Release 
 ### 0.15.0 
 **Release Date:** Thu Dec  6 13:28:07 UTC 2018     
