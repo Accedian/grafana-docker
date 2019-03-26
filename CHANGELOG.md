@@ -1,3 +1,4 @@
+* Feature - added the DONT_COPY_STOCK_DASHBOARDS env variable to not import default prov datasources and dashboards (and start without nothing)
 ## Current Release 
 ### 0.17.0 
 **Release Date:** Tue Mar 26 15:04:33 UTC 2019     

@@ -51,11 +51,13 @@ if [ ! -z "${GF_INSTALL_PLUGINS}" ]; then
   done
 fi
 
-rm -rf /etc/grafana/provisioning/*
-rm -rf /var/lib/grafana/dashboards/*
+if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
+  rm -rf /etc/grafana/provisioning/*
+  rm -rf /var/lib/grafana/dashboards/*
 
-cp -R /tmp/provisioning/ /etc/grafana/
-cp -R /tmp/dashboards/ /var/lib/grafana/
+  cp -R /tmp/provisioning/ /etc/grafana/
+  cp -R /tmp/dashboards/ /var/lib/grafana/
+fi
 
 exec gosu grafana /usr/sbin/grafana-server              \
   --homepath=/usr/share/grafana                         \
