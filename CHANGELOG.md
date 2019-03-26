@@ -1,3 +1,4 @@
+* Fix - Delete the content of based directories for pre-provisinning, not the directory (this allows to mount the directory as docker volumes)
 ## Current Release 
 ### 0.16.0 
 **Release Date:** Mon Mar 25 20:53:39 UTC 2019     
