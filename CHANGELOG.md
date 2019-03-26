@@ -1,8 +1,10 @@
-* Fix - Delete the content of based directories for pre-provisinning, not the directory (this allows to mount the directory as docker volumes)
 ## Current Release 
+### 0.17.0 
+**Release Date:** Tue Mar 26 15:04:33 UTC 2019     
+## Previous Releases 
+* Fix - Delete the content of based directories for pre-provisinning, not the directory (this allows to mount the directory as docker volumes)
 ### 0.16.0 
 **Release Date:** Mon Mar 25 20:53:39 UTC 2019     
-## Previous Releases 
 * Feature - Added support for gce_oauth_key and gce_oauth_secret. When these values are set as docker secret (in swarm mode), they will be expanded to GF_AUTH_GOOGLE_CLIENT_ID and GF_AUTH_GOOGLE_CLIENT_SECRET respectively, so that grafana can use oauth
 
 ### 0.15.0 
