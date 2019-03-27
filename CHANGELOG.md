@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.19.0 
+**Release Date:** Wed Mar 27 13:58:53 UTC 2019     
+## Previous Releases 
 ### 0.18.0 
 **Release Date:** Tue Mar 26 22:43:53 UTC 2019     
-## Previous Releases 
 * Feature - added the DONT_COPY_STOCK_DASHBOARDS env variable to not import default prov datasources and dashboards (and start without nothing)
 ### 0.17.0 
 **Release Date:** Tue Mar 26 15:04:33 UTC 2019     
