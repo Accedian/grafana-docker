@@ -1,8 +1,10 @@
-* Feature - added the DONT_COPY_STOCK_DASHBOARDS env variable to not import default prov datasources and dashboards (and start without nothing)
 ## Current Release 
+### 0.18.0 
+**Release Date:** Tue Mar 26 22:43:53 UTC 2019     
+## Previous Releases 
+* Feature - added the DONT_COPY_STOCK_DASHBOARDS env variable to not import default prov datasources and dashboards (and start without nothing)
 ### 0.17.0 
 **Release Date:** Tue Mar 26 15:04:33 UTC 2019     
-## Previous Releases 
 * Fix - Delete the content of based directories for pre-provisinning, not the directory (this allows to mount the directory as docker volumes)
 ### 0.16.0 
 **Release Date:** Mon Mar 25 20:53:39 UTC 2019     
