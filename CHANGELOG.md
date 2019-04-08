@@ -1,8 +1,10 @@
-* Feat - updated Spark dashboard to go with the Spark cluster changes
 ## Current Release 
+### 0.20.0 
+**Release Date:** Mon Apr  8 14:49:00 UTC 2019     
+## Previous Releases 
+* Feat - updated Spark dashboard to go with the Spark cluster changes
 ### 0.19.0 
 **Release Date:** Wed Mar 27 13:58:53 UTC 2019     
-## Previous Releases 
 ### 0.18.0 
 **Release Date:** Tue Mar 26 22:43:53 UTC 2019     
 * Feature - added the DONT_COPY_STOCK_DASHBOARDS env variable to not import default prov datasources and dashboards (and start without nothing)
