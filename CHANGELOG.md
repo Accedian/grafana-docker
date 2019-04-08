@@ -1,3 +1,4 @@
+* Fix - remove duplicate panel in Spark dashboard
 ## Current Release 
 ### 0.20.0 
 **Release Date:** Mon Apr  8 14:49:00 UTC 2019     
