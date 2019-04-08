@@ -1,3 +1,4 @@
+* Feat - updated Spark dashboard to go with the Spark cluster changes
 ## Current Release 
 ### 0.19.0 
 **Release Date:** Wed Mar 27 13:58:53 UTC 2019     
