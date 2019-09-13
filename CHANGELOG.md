@@ -1,3 +1,4 @@
+* Fix - updated spark prometheus metrics to include topic (npav-ts-metrics-multi-topic)
 ## Current Release 
 ### 0.22.0 
 **Release Date:** Mon Apr  8 17:47:25 UTC 2019     
