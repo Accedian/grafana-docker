@@ -340,7 +340,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Kafka Ingestion Rate",
+      "title": "Ingestion Rate",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -459,7 +459,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Raw Record Ingestion Lag",
+      "title": "Processing Lag",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -699,7 +699,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Batch Timing",
+      "title": "Streaming Batch Timing",
       "tooltip": {
         "shared": true,
         "sort": 0,
