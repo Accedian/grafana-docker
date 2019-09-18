@@ -1,3 +1,4 @@
+* Fix - update spark panel titles
 ## Current Release 
 ### 0.24.0 
 **Release Date:** Fri Sep 13 17:00:44 UTC 2019     
