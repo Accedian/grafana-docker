@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 19,
-  "iteration": 1554744342767,
+  "iteration": 1564407731648,
   "links": [],
   "panels": [
     {
@@ -318,6 +318,14 @@
           "intervalFactor": 1,
           "legendFormat": "storage",
           "refId": "D"
+        },
+        {
+          "expr": "avg_over_time(kafka_server_brokertopicmetrics_oneminuterate{topic=~\"npav-ts-metrics.+\", name=\"MessagesInPerSec\"}[3m])",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 1,
+          "legendFormat": "{{topic}}",
+          "refId": "E"
         }
       ],
       "thresholds": [
@@ -415,14 +423,14 @@
           "refId": "A"
         },
         {
-          "expr": "avg_over_time(spark_AccedianStreamingMetrics_ParquetStagingJob_ingestionLag{job=\"spark_parquetstaging\"}[10m])",
+          "expr": "avg_over_time(spark_AccedianStreamingMetrics_ParquetStagingJob_npav_ts_metrics_ingestionLag{job=\"spark_parquetstaging\"}[10m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "staging lag",
           "refId": "B"
         },
         {
-          "expr": "avg_over_time(spark_AccedianStreamingMetrics_objectDiscoveryBatch_ingestionLag[3m])",
+          "expr": "avg_over_time(spark_AccedianStreamingMetrics_objectDiscoveryBatch_discovered_object_ingestionLag[3m])",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -431,7 +439,7 @@
           "refId": "C"
         },
         {
-          "expr": "avg_over_time(spark_AccedianStreamingMetrics_objectStateBatch_ingestionLag[3m])",
+          "expr": "avg_over_time(spark_AccedianStreamingMetrics_objectStateBatch_object_state_ingestionLag[3m])",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -439,7 +447,7 @@
           "refId": "D"
         },
         {
-          "expr": "avg_over_time(spark_AccedianStreamingMetrics_baselineBatch_ingestionLag[3m])",
+          "expr": "avg_over_time(spark_AccedianStreamingMetrics_baselineBatch_object_state_ingestionLag[3m])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,

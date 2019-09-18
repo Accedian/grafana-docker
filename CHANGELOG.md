@@ -1,8 +1,17 @@
-* Fix - remove duplicate panel in Spark dashboard
 ## Current Release 
+### 0.24.0 
+**Release Date:** Fri Sep 13 17:00:44 UTC 2019     
+## Previous Releases 
+* Fix - updated spark prometheus metrics to include topic (npav-ts-metrics-multi-topic)
+### 0.23.0 
+**Release Date:** Tue Jul 30 17:33:01 UTC 2019     
+### 0.22.0 
+**Release Date:** Mon Apr  8 17:47:25 UTC 2019     
+### 0.21.0 
+**Release Date:** Mon Apr  8 16:48:35 UTC 2019     
+* Fix - remove duplicate panel in Spark dashboard
 ### 0.20.0 
 **Release Date:** Mon Apr  8 14:49:00 UTC 2019     
-## Previous Releases 
 * Feat - updated Spark dashboard to go with the Spark cluster changes
 ### 0.19.0 
 **Release Date:** Wed Mar 27 13:58:53 UTC 2019     
