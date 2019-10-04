@@ -430,7 +430,7 @@
           "refId": "B"
         },
         {
-          "expr": "avg_over_time(spark_AccedianStreamingMetrics_objectDiscoveryBatch_discovered_object_ingestionLag[3m])",
+          "expr": "avg_over_time(spark_AccedianStreamingMetrics_objectDiscoveryBatch_discovered_object_ingestionLag{job=\"spark_objectdiscovery\"}[3m])",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -439,7 +439,7 @@
           "refId": "C"
         },
         {
-          "expr": "avg_over_time(spark_AccedianStreamingMetrics_objectStateBatch_object_state_ingestionLag[3m])",
+          "expr": "avg_over_time(spark_AccedianStreamingMetrics_objectStateBatch_object_state_ingestionLag{job=\"spark_objectstate\"}[3m])",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -447,7 +447,7 @@
           "refId": "D"
         },
         {
-          "expr": "avg_over_time(spark_AccedianStreamingMetrics_baselineBatch_object_state_ingestionLag[3m])",
+          "expr": "avg_over_time(spark_AccedianStreamingMetrics_baselineBatch_object_state_ingestionLag{job=\"spark_baselinereport\"}[3m])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
