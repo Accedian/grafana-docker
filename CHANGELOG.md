@@ -1,8 +1,10 @@
-* Fix - change URL of grafana debian image. File renamed in S3
 ## Current Release 
+### 0.26.0 
+**Release Date:** Fri Oct  4 18:53:35 UTC 2019     
+## Previous Releases 
+* Fix - change URL of grafana debian image. File renamed in S3
 ### 0.25.0 
 **Release Date:** Wed Sep 18 12:50:52 UTC 2019     
-## Previous Releases 
 * Fix - update spark panel titles
 ### 0.24.0 
 **Release Date:** Fri Sep 13 17:00:44 UTC 2019     
