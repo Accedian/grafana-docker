@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.27.0 
+**Release Date:** Tue Nov  5 20:03:59 UTC 2019     
+## Previous Releases 
 ### 0.26.0 
 **Release Date:** Fri Oct  4 18:53:35 UTC 2019     
-## Previous Releases 
 * Fix - change URL of grafana debian image. File renamed in S3
 ### 0.25.0 
 **Release Date:** Wed Sep 18 12:50:52 UTC 2019     
