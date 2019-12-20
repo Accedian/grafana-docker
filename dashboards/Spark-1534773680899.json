@@ -423,10 +423,10 @@
           "refId": "A"
         },
         {
-          "expr": "avg_over_time(spark_AccedianStreamingMetrics_ParquetStagingJob_npav_ts_metrics_ingestionLag{job=\"spark_parquetstaging\"}[10m])",
+          "expr": "avg_over_time(spark_AccedianStreamingMetrics_ParquetStorageJob_npav_ts_metrics_ingestionLag{job=\"spark_parquetstorage\"}[10m])",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "staging lag",
+          "legendFormat": "storage lag",
           "refId": "B"
         },
         {
@@ -1006,5 +1006,5 @@
   "timezone": "",
   "title": "Spark",
   "uid": "ui8NZSpiz",
-  "version": 5
+  "version": 6
 }
