@@ -423,7 +423,7 @@
           "refId": "A"
         },
         {
-          "expr": "avg_over_time(spark_AccedianStreamingMetrics_ParquetStorageJob_npav_ts_metrics_ingestionLag{job=\"spark_parquetstorage\"}[10m])",
+          "expr": "avg_over_time(spark_AccedianStreamingMetrics_ParquetStorageJob_npav_ts_metrics_ingestionLag{job=\"spark_parquetstorage\"}[3m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "storage lag",
