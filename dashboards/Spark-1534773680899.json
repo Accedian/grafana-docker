@@ -430,10 +430,10 @@
           "refId": "A"
         },
         {
-          "expr": "avg_over_time(spark_AccedianStreamingMetrics_ParquetStagingJob_npav_ts_metrics_ingestionLag{job=\"spark_parquetstaging\"}[10m])",
+          "expr": "avg_over_time(spark_AccedianStreamingMetrics_ParquetStorageJob_npav_ts_metrics_ingestionLag{job=\"spark_parquetstorage\"}[3m])",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "staging lag",
+          "legendFormat": "storage lag",
           "refId": "B"
         },
         {
@@ -979,7 +979,7 @@
           "type": "date"
         },
         {
-          "alias": "Dropped Record Count",
+          "alias": "Dropped Rec Count",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -995,7 +995,7 @@
           "unit": "short"
         },
         {
-          "alias": "Dropped Record Delta",
+          "alias": "Dropped Rec Delta",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -1108,6 +1108,90 @@
       "title": "Dropped Record Counts",
       "transform": "table",
       "type": "table"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 11,
+        "x": 13,
+        "y": 20
+      },
+      "id": 32,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "avg_over_time(spark_AccedianStreamingMetrics_Compactor_numCompactionJobsQueued[3m])",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "compaction queue size",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Compaction Queue",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
   "refresh": "10s",
