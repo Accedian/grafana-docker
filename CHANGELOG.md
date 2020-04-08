@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.34.0 
+**Release Date:** Wed Apr  8 16:30:16 UTC 2020     
+## Previous Releases 
 ### 0.33.0 
 **Release Date:** Wed Apr  8 16:25:21 UTC 2020     
-## Previous Releases 
 ### 0.32.0 
 **Release Date:** Mon Mar  9 12:57:22 UTC 2020     
 ### 0.31.0 
