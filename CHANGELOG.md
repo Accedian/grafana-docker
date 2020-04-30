@@ -1,3 +1,4 @@
+* Feat - Adding alerting dashboard
 ## Current Release 
 ### 0.34.0 
 **Release Date:** Wed Apr  8 16:30:16 UTC 2020     
