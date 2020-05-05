@@ -1,7 +1,7 @@
 FROM debian:stretch
 
-ARG DOWNLOAD_URL="https://s3-us-west-2.amazonaws.com/grafana-releases/release/dist/grafana_latest_amd64.deb"
-
+#ARG DOWNLOAD_URL="https://s3-us-west-2.amazonaws.com/grafana-releases/release/dist/grafana_latest_amd64.deb"
+ARG DOWNLOAD_URL="https://dl.grafana.com/oss/release/grafana_6.7.3_amd64.deb"
 RUN apt-get update && \
     apt-get -y --no-install-recommends install libfontconfig curl ca-certificates && \
     apt-get clean && \
@@ -14,6 +14,9 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 VOLUME ["/var/lib/grafana", "/var/log/grafana", "/etc/grafana"]
+
+RUN grafana-cli plugins install xginn8-pagerduty-datasource && \
+    grafana-cli plugins install grafana-image-renderer
 
 EXPOSE 3000
 
