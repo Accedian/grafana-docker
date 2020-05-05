@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.36.0 
+**Release Date:** Tue May  5 16:39:53 UTC 2020     
+## Previous Releases 
 ### 0.35.0 
 **Release Date:** Thu Apr 30 14:50:18 UTC 2020     
-## Previous Releases 
 * Feat - Adding alerting dashboard
 ### 0.34.0 
 **Release Date:** Wed Apr  8 16:30:16 UTC 2020     
