@@ -1,8 +1,10 @@
-* Feat - Added SSH Logins Dashboard to monitor SSH access to VMs
 ## Current Release 
+### 0.40.0 
+**Release Date:** Wed Aug 12 19:16:33 UTC 2020     
+## Previous Releases 
+* Feat - Added SSH Logins Dashboard to monitor SSH access to VMs
 ### 0.39.0 
 **Release Date:** Fri Jul 17 11:28:07 UTC 2020     
-## Previous Releases 
 ### 0.38.0 
 **Release Date:** Mon May 11 11:44:34 UTC 2020     
 ### 0.37.0 
