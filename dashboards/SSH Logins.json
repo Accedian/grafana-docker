@@ -16,8 +16,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 15,
-  "iteration": 1597168880577,
+  "id": 20,
+  "iteration": 1597937694760,
   "links": [],
   "panels": [
     {
@@ -323,12 +323,12 @@
             },
             "reducer": {
               "params": [],
-              "type": "avg"
+              "type": "count"
             },
             "type": "query"
           }
         ],
-        "executionErrorState": "keep_state",
+        "executionErrorState": "alerting",
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
@@ -354,13 +354,13 @@
       "legend": {
         "alignAsTable": true,
         "avg": false,
-        "current": false,
+        "current": true,
         "max": false,
         "min": false,
         "rightSide": true,
         "show": true,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
       "linewidth": 1,
@@ -414,11 +414,13 @@
       ],
       "thresholds": [
         {
+          "$$hashKey": "object:3273",
           "colorMode": "critical",
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 0
+          "value": 0,
+          "yaxis": "left"
         }
       ],
       "timeFrom": null,
@@ -441,11 +443,12 @@
       "yaxes": [
         {
           "$$hashKey": "object:1446",
+          "decimals": 0,
           "format": "short",
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -659,9 +662,9 @@
   },
   "timezone": "",
   "title": "SSH Logins",
-  "uid": "1f07A0IMz",
+  "uid": "llEcgDNMk",
   "variables": {
     "list": []
   },
-  "version": 14
+  "version": 1
 }
