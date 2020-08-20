@@ -16,8 +16,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 20,
-  "iteration": 1597937694760,
+  "id": 22,
+  "iteration": 1597947683282,
   "links": [],
   "panels": [
     {
@@ -317,23 +317,23 @@
             "query": {
               "params": [
                 "A",
-                "5m",
+                "24h",
                 "now"
               ]
             },
             "reducer": {
               "params": [],
-              "type": "count"
+              "type": "sum"
             },
             "type": "query"
           }
         ],
-        "executionErrorState": "alerting",
-        "for": "5m",
-        "frequency": "1m",
+        "executionErrorState": "keep_state",
+        "for": "25m",
+        "frequency": "5m",
         "handler": 1,
         "name": "SSH Logins NOT using Vault alert",
-        "noDataState": "no_data",
+        "noDataState": "ok",
         "notifications": []
       },
       "aliasColors": {},
@@ -414,13 +414,11 @@
       ],
       "thresholds": [
         {
-          "$$hashKey": "object:3273",
           "colorMode": "critical",
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 0,
-          "yaxis": "left"
+          "value": 0
         }
       ],
       "timeFrom": null,
@@ -621,24 +619,37 @@
   "templating": {
     "list": [
       {
+        "allValue": null,
         "current": {
-          "selected": false,
           "text": "https://njl.npav.accedian.net",
           "value": "https://njl.npav.accedian.net"
         },
+        "datasource": "Prometheus",
+        "definition": "label_values(probe_success, instance)",
         "hide": 0,
+        "includeAll": false,
+        "index": -1,
         "label": null,
+        "multi": false,
         "name": "deployment_url",
         "options": [
           {
-            "selected": false,
+            "$$hashKey": "object:5020",
+            "selected": true,
             "text": "https://njl.npav.accedian.net",
             "value": "https://njl.npav.accedian.net"
           }
         ],
-        "query": "https://njl.npav.accedian.net",
+        "query": "label_values(probe_success, instance)",
+        "refresh": 0,
+        "regex": "",
         "skipUrlSync": false,
-        "type": "textbox"
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       }
     ]
   },
@@ -662,9 +673,9 @@
   },
   "timezone": "",
   "title": "SSH Logins",
-  "uid": "llEcgDNMk",
+  "uid": "lS1jDvHGz",
   "variables": {
     "list": []
   },
-  "version": 1
+  "version": 2
 }
