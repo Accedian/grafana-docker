@@ -1146,17 +1146,30 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg_over_time(spark_AccedianStreamingMetrics_Compactor_numCompactionJobsQueued[3m])",
+          "expr": "rate(spark_appender_files_processed[1m])",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "compaction queue size",
+          "legendFormat": "files processed tenantId: {{tenant}} objType: {{objectType}}",
           "refId": "A"
+        },
+        {
+          "expr": "rate(spark_appender_bytes_processed[1m])",
+          "interval": "",
+          "legendFormat": "bytes processed tenantId: {{tenant}} objType: {{objectType}}",
+          "refId": "B"
+        },
+        {
+          "expr": "rate(spark_appender_failures[1m])",
+          "interval": "",
+          "legendFormat": "failurestenantId: {{tenant}} objType: {{objectType}}",
+          "refId": "C"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Compaction Queue",
+      "title": "Parquet Appender File Processing",
       "tooltip": {
         "shared": true,
         "sort": 0,
