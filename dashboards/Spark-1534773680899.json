@@ -2,6 +2,7 @@
   "annotations": {
     "list": [
       {
+        "$$hashKey": "object:5001",
         "builtIn": 1,
         "datasource": "-- Grafana --",
         "enable": true,
@@ -15,8 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 19,
-  "iteration": 1564407731648,
+  "iteration": 1594992547285,
   "links": [],
   "panels": [
     {
@@ -422,6 +422,7 @@
       "steppedLine": false,
       "targets": [
         {
+          "$$hashKey": "object:5096",
           "expr": "avg_over_time(spark_AccedianStreamingMetrics_streaming_rawRecordIngestionLag[3m])",
           "format": "time_series",
           "interval": "",
@@ -430,6 +431,15 @@
           "refId": "A"
         },
         {
+          "$$hashKey": "object:5132",
+          "expr": "spark_kafkaProcessingLag{job=\"spark_parquetstreaming\"}",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "parquet stream {{tenant}}",
+          "refId": "G"
+        },
+        {
+          "$$hashKey": "object:5097",
           "expr": "avg_over_time(spark_AccedianStreamingMetrics_ParquetStorageJob_npav_ts_metrics_ingestionLag{job=\"spark_parquetstorage\"}[3m])",
           "format": "time_series",
           "intervalFactor": 1,
@@ -437,6 +447,7 @@
           "refId": "B"
         },
         {
+          "$$hashKey": "object:5098",
           "expr": "avg_over_time(spark_AccedianStreamingMetrics_objectDiscoveryBatch_discovered_object_ingestionLag{job=\"spark_objectdiscovery\"}[3m])",
           "format": "time_series",
           "hide": false,
@@ -446,6 +457,7 @@
           "refId": "C"
         },
         {
+          "$$hashKey": "object:5099",
           "expr": "avg_over_time(spark_AccedianStreamingMetrics_objectStateBatch_object_state_ingestionLag{job=\"spark_objectstate\"}[3m])",
           "format": "time_series",
           "hide": false,
@@ -454,6 +466,7 @@
           "refId": "D"
         },
         {
+          "$$hashKey": "object:5100",
           "expr": "avg_over_time(spark_AccedianStreamingMetrics_baselineBatch_object_state_ingestionLag{job=\"spark_baselinereport\"}[3m])",
           "format": "time_series",
           "interval": "",
@@ -462,6 +475,7 @@
           "refId": "E"
         },
         {
+          "$$hashKey": "object:5101",
           "expr": "avg_over_time(spark_AccedianStreamingMetrics_streaming_parquet_replay_lag[3m])",
           "format": "time_series",
           "intervalFactor": 1,
@@ -1208,7 +1222,7 @@
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 18,
+  "schemaVersion": 16,
   "style": "dark",
   "tags": [
     "spark"
@@ -1274,5 +1288,5 @@
   "timezone": "",
   "title": "Spark",
   "uid": "ui8NZSpiz",
-  "version": 5
+  "version": 25
 }
