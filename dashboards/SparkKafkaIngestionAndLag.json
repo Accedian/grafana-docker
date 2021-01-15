@@ -16,7 +16,6 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 24,
   "links": [],
   "panels": [
     {
@@ -63,27 +62,26 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg_over_time(spark_kafkaProcessingLag[2m])",
+          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=\"spark_raw_in\"}[2m])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "job: {{job}} topic:{{topic}} consumer:{{consumer}} ",
+          "legendFormat": "metricstreaming {{topic}}",
           "refId": "A"
         },
         {
-          "expr": "avg_over_time(spark_AccedianStreamingMetrics_streaming_rawRecordIngestionLag[2m])",
+          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"npav-ts-metrics.*\", consumer=~\"parquet-streaming.*\"}[2m])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{job}}_spark_raw_in",
-          "refId": "B"
+          "legendFormat": "parquetstreaming {{topic}}",
+          "refId": "C"
         },
         {
-          "expr": "",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "",
-          "refId": "C"
+          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=\"parquet-notif\"}[2m])",
+          "interval": "",
+          "legendFormat": "{{consumer}} {{topic}}",
+          "refId": "B"
         }
       ],
       "thresholds": [],
@@ -277,5 +275,5 @@
   "variables": {
     "list": []
   },
-  "version": 3
+  "version": 1
 }
