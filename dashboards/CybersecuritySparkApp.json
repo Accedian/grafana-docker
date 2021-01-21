@@ -29,9 +29,101 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 11,
-        "w": 17,
+        "w": 24,
         "x": 0,
         "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 11,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "(time() * 1000 - cybersecuritySparkApp_jobGauge{metricName=\"lastProcessedBatchTimestamp\"}) / 1000",
+          "interval": "",
+          "legendFormat": "{{jobName}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Time since the last batch was processed",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:488",
+          "format": "s",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:489",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 11,
+        "w": 17,
+        "x": 0,
+        "y": 11
       },
       "hiddenSeries": false,
       "id": 8,
@@ -62,7 +154,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "increase(cybersecuritySparkApp_bigQueryEventsWritten[10m])",
+          "expr": "increase(cybersecuritySparkApp_topicCounter{metricName=\"bigQueryRecordsWritten\"}[7m])",
           "instant": false,
           "interval": "",
           "legendFormat": "{{topic}}",
@@ -73,7 +165,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Number of events written to BigQuery",
+      "title": "Number of records written to BigQuery",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -119,9 +211,9 @@
         "h": 11,
         "w": 7,
         "x": 17,
-        "y": 0
+        "y": 11
       },
-      "id": 9,
+      "id": 14,
       "links": [],
       "options": {
         "displayMode": "basic",
@@ -140,7 +232,7 @@
                 "value": "null"
               }
             ],
-            "max": 1500,
+            "max": 200,
             "min": 0,
             "nullValueMode": "connected",
             "thresholds": {
@@ -163,7 +255,7 @@
       "pluginVersion": "6.7.3",
       "targets": [
         {
-          "expr": "increase(cybersecuritySparkApp_bigQueryBulkWrites[1d])",
+          "expr": "ceil(increase(cybersecuritySparkApp_topicCounter{metricName=\"bigQueryBulkWrites\"}[1d]))",
           "instant": true,
           "interval": "",
           "legendFormat": "{{topic}}",
@@ -172,7 +264,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Number of bulk writes to BigQuery for last 24h",
+      "title": "Number of bulk writes to BigQuery for the last 24h",
       "type": "bargauge"
     },
     {
@@ -182,7 +274,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 11
+        "y": 22
       },
       "id": 4,
       "options": {
@@ -212,7 +304,7 @@
       "pluginVersion": "6.7.3",
       "targets": [
         {
-          "expr": "topk(10, sort_desc(ceil(increase(cybersecuritySparkApp_numAlerts[$__range]))))",
+          "expr": "topk(10, sort_desc(ceil(increase(cybersecuritySparkApp_jobCounter{metricName=\"numAlerts\"}[$__range]))))",
           "instant": true,
           "interval": "",
           "legendFormat": "{{jobName}}",
@@ -236,7 +328,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 33
       },
       "hiddenSeries": false,
       "id": 2,
@@ -267,7 +359,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "cybersecuritySparkApp_numRecords",
+          "expr": "increase(cybersecuritySparkApp_jobCounter{metricName=\"numRecords\"}[30s])",
           "interval": "",
           "legendFormat": "{{jobName}}",
           "refId": "A"
@@ -326,9 +418,9 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 11,
-        "w": 24,
+        "w": 12,
         "x": 0,
-        "y": 33
+        "y": 44
       },
       "hiddenSeries": false,
       "id": 7,
@@ -359,7 +451,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "cybersecuritySparkApp_persistedEntries",
+          "expr": "increase(cybersecuritySparkApp_jobCounter{metricName=\"persistedEntries\"}[30s])",
           "interval": "",
           "legendFormat": "{{jobName}}",
           "refId": "A"
@@ -419,11 +511,12 @@
       "gridPos": {
         "h": 11,
         "w": 12,
-        "x": 0,
+        "x": 12,
         "y": 44
       },
       "hiddenSeries": false,
-      "id": 5,
+      "id": 6,
+      "interval": "",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -451,7 +544,8 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "cybersecuritySparkApp_persistenceTime{durationType=\"collection\"}",
+          "expr": "cybersecuritySparkApp_jobGauge{metricName=\"persistenceTime\"}",
+          "instant": false,
           "interval": "",
           "legendFormat": "{{jobName}}",
           "refId": "A"
@@ -461,7 +555,101 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Persistence: entries collection time",
+      "title": "Persistence time",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:57",
+          "format": "ms",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:58",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 0,
+        "y": 55
+      },
+      "hiddenSeries": false,
+      "id": 13,
+      "interval": "",
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "cybersecuritySparkApp_jobGauge{metricName=\"cycleDuration\"}",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{jobName}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Cycle duration",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -512,10 +700,11 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 44
+        "y": 55
       },
       "hiddenSeries": false,
-      "id": 6,
+      "id": 12,
+      "interval": "",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -543,7 +732,8 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "cybersecuritySparkApp_persistenceTime{durationType=\"persistence\"}",
+          "expr": "cybersecuritySparkApp_jobGauge{metricName=\"lagOfLatestAlert\"}",
+          "instant": false,
           "interval": "",
           "legendFormat": "{{jobName}}",
           "refId": "A"
@@ -553,7 +743,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Persistence: entries persistence time",
+      "title": "Lag of the latest alert",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -591,6 +781,257 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 0,
+        "y": 66
+      },
+      "hiddenSeries": false,
+      "id": 15,
+      "interval": "",
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "cybersecuritySparkApp_globalGauge{metricName=\"batchProcessingTime\"}",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Batch processing time",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:57",
+          "format": "ms",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:58",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 12,
+        "y": 66
+      },
+      "hiddenSeries": false,
+      "id": 16,
+      "interval": "",
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "cybersecuritySparkApp_globalGauge{metricName=\"recordsProcessingRate\"}",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Processing rate",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:57",
+          "format": "short",
+          "label": "records/sec",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:58",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 6,
+        "y": 77
+      },
+      "id": 9,
+      "links": [],
+      "options": {
+        "displayMode": "basic",
+        "fieldOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "defaults": {
+            "mappings": [
+              {
+                "$$hashKey": "object:673",
+                "id": 0,
+                "op": "=",
+                "text": "N/A",
+                "type": 1,
+                "value": "null"
+              }
+            ],
+            "max": 200,
+            "min": 0,
+            "nullValueMode": "connected",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "none"
+          },
+          "overrides": [],
+          "values": false
+        },
+        "orientation": "horizontal",
+        "showUnfilled": true
+      },
+      "pluginVersion": "6.7.3",
+      "targets": [
+        {
+          "expr": "ceil(increase(cybersecuritySparkApp_threatFeedCounter{metricName=\"numFailedFetches\"}[1d]))",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{threatFeedName}}",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Number of failed fetches from 3rd party threat feed for the last 24h",
+      "type": "bargauge"
     }
   ],
   "refresh": "5m",
@@ -624,5 +1065,5 @@
   "variables": {
     "list": []
   },
-  "version": 10
+  "version": 21
 }
