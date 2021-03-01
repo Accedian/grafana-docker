@@ -1,3 +1,4 @@
+* Feat - Add Spark Resources dashboard
 ## Current Release 
 ### 0.50.0 
 **Release Date:** Thu Jan 28 10:41:35 UTC 2021     
