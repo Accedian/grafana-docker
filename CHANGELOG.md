@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.53.0 
+**Release Date:** Thu Apr 15 14:44:36 UTC 2021     
+## Previous Releases 
 ### 0.52.0 
 **Release Date:** Tue Apr  6 09:56:31 UTC 2021     
-## Previous Releases 
 ### 0.51.0 
 **Release Date:** Tue Mar  2 00:01:16 UTC 2021     
 * Feat - Add Spark Resources dashboard
