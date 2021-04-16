@@ -3458,20 +3458,20 @@
             "query": {
               "params": [
                 "A",
-                "5m",
+                "10s",
                 "now"
               ]
             },
             "reducer": {
               "params": [],
-              "type": "last"
+              "type": "max"
             },
             "type": "query"
           }
         ],
         "executionErrorState": "alerting",
-        "for": "40m",
-        "frequency": "5m",
+        "for": "0s",
+        "frequency": "10s",
         "handler": 1,
         "name": "Failed automation test",
         "noDataState": "no_data",
@@ -3524,7 +3524,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "round(increase(cybersecuritySparkAppClusterTests_failCounter[1h]))",
+          "expr": "round(increase(cybersecuritySparkAppClusterTests_failCounter[1m]))",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -3586,7 +3586,7 @@
       }
     }
   ],
-  "refresh": "1m",
+  "refresh": "15m",
   "schemaVersion": 22,
   "style": "dark",
   "tags": [],
@@ -3594,7 +3594,7 @@
     "list": []
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {
@@ -3617,5 +3617,5 @@
   "variables": {
     "list": []
   },
-  "version": 129
+  "version": 139
 }
