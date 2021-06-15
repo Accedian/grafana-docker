@@ -148,6 +148,8 @@
         "min": false,
         "rightSide": false,
         "show": true,
+        "sort": "avg",
+        "sortDesc": true,
         "total": false,
         "values": true
       },
@@ -180,6 +182,12 @@
           "interval": "",
           "legendFormat": "{{consumer}} {{topic}}",
           "refId": "B"
+        },
+        {
+          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=\"alert-events\"}[2m])",
+          "interval": "",
+          "legendFormat": "{{topic}}",
+          "refId": "C"
         }
       ],
       "thresholds": [],
@@ -686,7 +694,7 @@
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {
@@ -720,5 +728,5 @@
   "variables": {
     "list": []
   },
-  "version": 17
+  "version": 18
 }
