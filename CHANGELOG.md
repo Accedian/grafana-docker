@@ -1,4 +1,5 @@
 ## Current Release 
+* Add Dashboard for License Metrics
 ### 0.55.0 
 **Release Date:** Wed May  5 16:01:58 UTC 2021     
 ## Previous Releases 
