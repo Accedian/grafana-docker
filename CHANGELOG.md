@@ -1,8 +1,10 @@
-## Current Release
+## Current Release 
+### 0.58.0 
+**Release Date:** Mon Jul 12 17:00:13 UTC 2021     
+## Previous Releases 
 * Add missing variable for License Metrics dashboard
 ### 0.57.0 
 **Release Date:** Mon Jun 28 13:19:58 UTC 2021     
-## Previous Releases 
 ### 0.56.0 
 **Release Date:** Thu Jun 17 01:12:43 UTC 2021     
 * Add Dashboard for License Metrics
