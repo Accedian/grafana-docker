@@ -1,3 +1,4 @@
+* Feat: Add OMS Panels to RR Dashboard
 ## Current Release 
 ### 0.58.0 
 **Release Date:** Mon Jul 12 17:00:13 UTC 2021     
