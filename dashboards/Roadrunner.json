@@ -947,7 +947,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "OpenMetricsScraper",
+      "title": "OpenMetricsScraper - Counters",
       "tooltip": {
         "shared": true,
         "sort": 0,
