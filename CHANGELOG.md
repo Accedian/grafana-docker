@@ -1,8 +1,10 @@
-* Feat: Add OMS Panels to RR Dashboard
 ## Current Release 
+### 0.59.0 
+**Release Date:** Wed Jul 14 17:42:10 UTC 2021     
+## Previous Releases 
+* Feat: Add OMS Panels to RR Dashboard
 ### 0.58.0 
 **Release Date:** Mon Jul 12 17:00:13 UTC 2021     
-## Previous Releases 
 * Add missing variable for License Metrics dashboard
 ### 0.57.0 
 **Release Date:** Mon Jun 28 13:19:58 UTC 2021     
