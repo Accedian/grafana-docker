@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1626105194939,
+  "iteration": 1633619730974,
   "links": [],
   "panels": [
     {
@@ -236,7 +236,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(60*rate(pvstorage_inserted_rows_total{tenant_id=~\"$tenant_id\"}[1h]))",
+          "expr": "sum(60*rate(pvstorage_inserted_rows_total[1h])) by (tenant_id)",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -464,37 +464,7 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": [
-      {
-        "allValue": null,
-        "current": {
-          "tags": [],
-          "text": "All",
-          "value": [
-            "$__all"
-          ]
-        },
-        "datasource": "Prometheus",
-        "definition": "label_values(tenant_id)",
-        "hide": 0,
-        "includeAll": true,
-        "index": -1,
-        "label": "tenant_id",
-        "multi": true,
-        "name": "tenant_id",
-        "options": [],
-        "query": "label_values(tenant_id)",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 1,
-        "tagValuesQuery": "",
-        "tags": [],
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
-      }
-    ]
+    "list": []
   },
   "time": {
     "from": "now-1h",

@@ -1,4 +1,5 @@
 ## Current Release 
+* Fix - Update LicenseMetrics dashboard for FlowAnalysisPerMinute
 ### 0.59.0 
 **Release Date:** Wed Jul 14 17:42:10 UTC 2021     
 ## Previous Releases 
