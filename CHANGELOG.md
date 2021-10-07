@@ -1,8 +1,10 @@
 ## Current Release 
+### 0.60.0 
+**Release Date:** Thu Oct  7 15:30:26 UTC 2021     
+## Previous Releases 
 * Fix - Update LicenseMetrics dashboard for FlowAnalysisPerMinute
 ### 0.59.0 
 **Release Date:** Wed Jul 14 17:42:10 UTC 2021     
-## Previous Releases 
 * Feat: Add OMS Panels to RR Dashboard
 ### 0.58.0 
 **Release Date:** Mon Jul 12 17:00:13 UTC 2021     
