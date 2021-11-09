@@ -1,3 +1,4 @@
+Feat - add some variables to the RR dashboard so you can easily scope data down to object type/zone/hostname
 ## Current Release 
 ### 0.60.0 
 **Release Date:** Thu Oct  7 15:30:26 UTC 2021     

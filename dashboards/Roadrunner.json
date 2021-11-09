@@ -2,7 +2,6 @@
   "annotations": {
     "list": [
       {
-        "$$hashKey": "object:290",
         "builtIn": 1,
         "datasource": "-- Grafana --",
         "enable": true,
@@ -16,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 11,
-  "iteration": 1616102352311,
+  "id": 23,
+  "iteration": 1636468216582,
   "links": [],
   "panels": [
     {
@@ -65,7 +64,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "increase(roadrunner_mo_count{hostname=~\"$Hostname\"}[1m])",
+          "expr": "increase(roadrunner_mo_count{hostname=~'$Hostname', zone=~'$Zone', objectType=~'$ObjectType'}[1m])",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -75,7 +74,7 @@
           "refId": "A"
         },
         {
-          "expr": "increase(roadrunner_record_count{hostname=~\"$Hostname\"}[1m])",
+          "expr": "increase(roadrunner_record_count{hostname=~'$Hostname', zone=~'$Zone', objectType=~'$ObjectType'}[1m])",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -84,16 +83,18 @@
           "refId": "B"
         },
         {
-          "expr": "increase(fedex_record_count{hostname=~\"$Hostname\"}[1m])",
+          "expr": "increase(fedex_record_count{hostname=~'$Hostname', zone=~'$Zone', objectType=~'$ObjectType'}[1m])",
           "format": "time_series",
           "hide": false,
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{hostname}}-{{zone}}-Fedex Record Count - {{objectType}}",
           "refId": "C"
         },
         {
-          "expr": "sum(increase(fedex_record_count{hostname=~\"$Hostname\"}[1m]))",
+          "expr": "sum(increase(fedex_record_count{hostname=~'$Hostname', zone=~'$Zone', objectType=~'$ObjectType'}[1m]))",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{hostname}}-{{zone}}-Fedex Record Count - Total",
           "refId": "D"
@@ -141,6 +142,124 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "hiddenSeries": false,
+      "id": 23,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "roadrunner_batch_processing_time_ms{hostname=~'$Hostname', zone=~'$Zone', objectType=~'$ObjectType'}",
+          "interval": "",
+          "legendFormat": "Batch-time-{{hostname}}-{{tenant}}-{{zone}}-{{objectType}}",
+          "refId": "A"
+        },
+        {
+          "expr": "roadrunner_sa_data_time_in_raw_chan{hostname=~'$Hostname', zone=~'$Zone', objectType=~'$ObjectType'}",
+          "interval": "",
+          "legendFormat": "Time-in-raw-{{hostname}}-{{tenant}}-{{zone}}-{{objectType}}",
+          "refId": "B"
+        },
+        {
+          "expr": "roadrunner_sa_data_time_to_parse{hostname=~'$Hostname', zone=~'$Zone', objectType=~'$ObjectType'}",
+          "interval": "",
+          "legendFormat": "Time-to-parse-{{hostname}}-{{tenant}}-{{zone}}-{{objectType}}",
+          "refId": "C"
+        },
+        {
+          "expr": "roadrunner_sa_data_time_to_persist{hostname=~'$Hostname', zone=~'$Zone', objectType=~'$ObjectType'}",
+          "interval": "",
+          "legendFormat": "Time-to-persist-{{hostname}}-{{tenant}}-{{zone}}-{{objectType}}",
+          "refId": "D"
+        },
+        {
+          "expr": "roadrunner_sa_data_ack_time{hostname=~'$Hostname', zone=~'$Zone', objectType=~'$ObjectType'}",
+          "interval": "",
+          "legendFormat": "ACK-time-{{hostname}}-{{tenant}}-{{zone}}-{{objectType}}",
+          "refId": "E"
+        },
+        {
+          "expr": "rate(roadrunner_sensor_agent_duplicate_connection_requests{hostname=~'$Hostname', zone=~'$Zone', objectType=~'$ObjectType'}[5m])",
+          "interval": "",
+          "legendFormat": "Dup-connections-{{hostname}}-{{tenant}}-{{zone}}}-{{objectType}}",
+          "refId": "F"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Open Metrics Batch Processing Time (ms)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "columns": [],
       "datasource": "Prometheus",
       "fontSize": "100%",
@@ -148,7 +267,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 30
       },
       "id": 8,
       "links": [],
@@ -306,7 +425,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 31
+        "y": 39
       },
       "hiddenSeries": false,
       "id": 2,
@@ -399,7 +518,7 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 31
+        "y": 39
       },
       "hiddenSeries": false,
       "id": 10,
@@ -484,12 +603,14 @@
       "dashes": false,
       "datasource": "Prometheus",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 42
+        "y": 50
       },
+      "hiddenSeries": false,
       "id": 4,
       "legend": {
         "alignAsTable": true,
@@ -506,6 +627,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -579,7 +703,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 42
+        "y": 50
       },
       "id": 6,
       "links": [],
@@ -699,6 +823,182 @@
       "type": "table"
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 59
+      },
+      "hiddenSeries": false,
+      "id": 19,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "roadrunner_badgerdb_lsm_size",
+          "interval": "",
+          "legendFormat": "{{hostname}}-{{tenant}}-{{zone}}-{{path}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Badger DB - LSM Size",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 59
+      },
+      "hiddenSeries": false,
+      "id": 21,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "roadrunner_badgerdb_vlog_size_bytes",
+          "interval": "",
+          "legendFormat": "{{hostname}}-{{tenant}}-{{zone}}-{{path}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Badger DB - VLog Size",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "cacheTimeout": null,
       "colorBackground": false,
       "colorValue": false,
@@ -720,8 +1020,8 @@
       "gridPos": {
         "h": 2,
         "w": 3,
-        "x": 9,
-        "y": 51
+        "x": 11,
+        "y": 67
       },
       "id": 13,
       "interval": null,
@@ -794,7 +1094,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 53
+        "y": 69
       },
       "hiddenSeries": false,
       "id": 15,
@@ -854,7 +1154,6 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:567",
           "format": "none",
           "label": null,
           "logBase": 1,
@@ -863,7 +1162,6 @@
           "show": true
         },
         {
-          "$$hashKey": "object:568",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -889,7 +1187,7 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 53
+        "y": 69
       },
       "hiddenSeries": false,
       "id": 17,
@@ -963,7 +1261,6 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:567",
           "format": "none",
           "label": null,
           "logBase": 1,
@@ -972,7 +1269,6 @@
           "show": true
         },
         {
-          "$$hashKey": "object:568",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -999,7 +1295,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 64
+        "y": 80
       },
       "hiddenSeries": false,
       "id": 16,
@@ -1059,7 +1355,6 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:567",
           "format": "s",
           "label": null,
           "logBase": 1,
@@ -1068,7 +1363,6 @@
           "show": true
         },
         {
-          "$$hashKey": "object:568",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1092,12 +1386,13 @@
       {
         "allValue": null,
         "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
+          "text": "test.qa.agentslab.analytics.accedian.io",
+          "value": [
+            "test.qa.agentslab.analytics.accedian.io"
+          ]
         },
         "datasource": "Prometheus",
-        "definition": "",
+        "definition": "label_values(hostname)",
         "hide": 0,
         "includeAll": true,
         "index": -1,
@@ -1107,6 +1402,199 @@
         "options": [],
         "query": "label_values(hostname)",
         "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "text": "jsultan-scale",
+          "value": [
+            "jsultan-scale"
+          ]
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(zone)",
+        "hide": 0,
+        "includeAll": true,
+        "index": -1,
+        "label": null,
+        "multi": true,
+        "name": "Zone",
+        "options": [
+          {
+            "selected": false,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "AWS-3",
+            "value": "AWS-3"
+          },
+          {
+            "selected": false,
+            "text": "AWS-31",
+            "value": "AWS-31"
+          },
+          {
+            "selected": false,
+            "text": "AWS-32",
+            "value": "AWS-32"
+          },
+          {
+            "selected": false,
+            "text": "AWS-33",
+            "value": "AWS-33"
+          },
+          {
+            "selected": false,
+            "text": "AWS-34",
+            "value": "AWS-34"
+          },
+          {
+            "selected": false,
+            "text": "AWS-7",
+            "value": "AWS-7"
+          },
+          {
+            "selected": false,
+            "text": "AWS-K",
+            "value": "AWS-K"
+          },
+          {
+            "selected": false,
+            "text": "GCP-1",
+            "value": "GCP-1"
+          },
+          {
+            "selected": false,
+            "text": "gdf-throughput",
+            "value": "gdf-throughput"
+          },
+          {
+            "selected": false,
+            "text": "gdf_echo_test",
+            "value": "gdf_echo_test"
+          },
+          {
+            "selected": false,
+            "text": "gdf_throughput_pc",
+            "value": "gdf_throughput_pc"
+          },
+          {
+            "selected": false,
+            "text": "jsultan-demo",
+            "value": "jsultan-demo"
+          },
+          {
+            "selected": false,
+            "text": "jsultan-gcp",
+            "value": "jsultan-gcp"
+          },
+          {
+            "selected": true,
+            "text": "jsultan-scale",
+            "value": "jsultan-scale"
+          },
+          {
+            "selected": false,
+            "text": "jsultanz",
+            "value": "jsultanz"
+          },
+          {
+            "selected": false,
+            "text": "se-mats",
+            "value": "se-mats"
+          }
+        ],
+        "query": "label_values(zone)",
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "text": "twamp-sf",
+          "value": [
+            "twamp-sf"
+          ]
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(objectType)",
+        "hide": 0,
+        "includeAll": true,
+        "index": -1,
+        "label": null,
+        "multi": true,
+        "name": "ObjectType",
+        "options": [
+          {
+            "selected": false,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "DataBroker",
+            "value": "DataBroker"
+          },
+          {
+            "selected": false,
+            "text": "ManagementBroker",
+            "value": "ManagementBroker"
+          },
+          {
+            "selected": false,
+            "text": "OpenMetrics",
+            "value": "OpenMetrics"
+          },
+          {
+            "selected": false,
+            "text": "echo-icmp",
+            "value": "echo-icmp"
+          },
+          {
+            "selected": false,
+            "text": "echo-udp",
+            "value": "echo-udp"
+          },
+          {
+            "selected": false,
+            "text": "throughput",
+            "value": "throughput"
+          },
+          {
+            "selected": false,
+            "text": "throughput_OM",
+            "value": "throughput_OM"
+          },
+          {
+            "selected": true,
+            "text": "twamp-sf",
+            "value": "twamp-sf"
+          },
+          {
+            "selected": false,
+            "text": "twamp-sl",
+            "value": "twamp-sl"
+          }
+        ],
+        "query": "label_values(objectType)",
+        "refresh": 0,
         "regex": "",
         "skipUrlSync": false,
         "sort": 0,
@@ -1149,9 +1637,9 @@
   },
   "timezone": "",
   "title": "Roadrunner",
-  "uid": "PNGklt9ik",
+  "uid": "PNGklt9ik-RR",
   "variables": {
     "list": []
   },
-  "version": 1
+  "version": 13
 }
