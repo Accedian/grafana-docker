@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.61.0 
+**Release Date:** Mon Nov 15 11:31:48 UTC 2021     
+## Previous Releases 
 ### 0.60.0 
 **Release Date:** Thu Oct  7 15:30:26 UTC 2021     
-## Previous Releases 
 * Fix - Update LicenseMetrics dashboard for FlowAnalysisPerMinute
 ### 0.59.0 
 **Release Date:** Wed Jul 14 17:42:10 UTC 2021     
