@@ -174,19 +174,13 @@
           "interval": "",
           "legendFormat": "{{topic}}",
           "refId": "C"
-        },
-        {
-          "expr": "spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\".*latent.*[\\\\.].*\"}",
-          "interval": "",
-          "legendFormat": "{{topic}}",
-          "refId": "B"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Lag",
+      "title": "Contemporary Lag",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -338,33 +332,35 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 11,
         "x": 11,
         "y": 10
       },
       "hiddenSeries": false,
-      "id": 6,
+      "id": 17,
       "legend": {
         "alignAsTable": true,
-        "avg": false,
+        "avg": true,
         "current": true,
         "max": false,
         "min": false,
+        "rightSide": false,
         "show": true,
-        "sort": "current",
+        "sort": "avg",
         "sortDesc": true,
         "total": false,
         "values": true
       },
       "lines": true,
       "linewidth": 1,
+      "links": [],
       "nullPointMode": "null",
       "options": {
         "dataLinks": []
       },
       "percentage": false,
-      "pointradius": 2,
+      "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
@@ -373,9 +369,11 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "spark_batchJobLag{queue=~\".*_queue\"}",
+          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\".*latent.*[\\\\.].*\"}[2m])",
+          "format": "time_series",
           "interval": "",
-          "legendFormat": "{{queue}}",
+          "intervalFactor": 1,
+          "legendFormat": "{{topic}}",
           "refId": "A"
         }
       ],
@@ -383,7 +381,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Batch Job Work Queue Lag",
+      "title": "Latent Lag",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -596,13 +594,13 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 9,
+        "h": 8,
         "w": 11,
         "x": 11,
-        "y": 18
+        "y": 20
       },
       "hiddenSeries": false,
-      "id": 12,
+      "id": 6,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -610,6 +608,8 @@
         "max": false,
         "min": false,
         "show": true,
+        "sort": "current",
+        "sortDesc": true,
         "total": false,
         "values": true
       },
@@ -629,17 +629,17 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "100.0 - 100 * (node_filesystem_avail{instance=~'.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"} / node_filesystem_size{instance=~'.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"})",
+          "expr": "spark_batchJobLag{queue=~\".*_queue\"}",
           "interval": "",
-          "legendFormat": "{{instance}}",
-          "refId": "D"
+          "legendFormat": "{{queue}}",
+          "refId": "A"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Spark Local Disk Utilization",
+      "title": "Batch Job Work Queue Lag",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -655,8 +655,7 @@
       },
       "yaxes": [
         {
-          "decimals": null,
-          "format": "percent",
+          "format": "short",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -688,7 +687,7 @@
       "gridPos": {
         "h": 8,
         "w": 11,
-        "x": 5,
+        "x": 0,
         "y": 27
       },
       "hiddenSeries": false,
@@ -782,6 +781,96 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 11,
+        "x": 11,
+        "y": 28
+      },
+      "hiddenSeries": false,
+      "id": 12,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "100.0 - 100 * (node_filesystem_avail{instance=~'.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"} / node_filesystem_size{instance=~'.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"})",
+          "interval": "",
+          "legendFormat": "{{instance}}",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Spark Local Disk Utilization",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": null,
+          "format": "percent",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
   "refresh": "30s",
@@ -823,10 +912,10 @@
     ]
   },
   "timezone": "",
-  "title": "Spark Ingestion and Lag",
-  "uid": "oaePhsqGz",
-  "variables": {
-    "list": []
+"title": "Spark Ingestion and Lag",
+"uid": "oaePhsqGz",
+"variables": {
+  "list": []
   },
-  "version": 18
+  "version": 17
 }
