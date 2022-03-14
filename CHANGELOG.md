@@ -1,10 +1,12 @@
-## Current Release
+## Current Release 
+### 0.62.0 
+**Release Date:** Mon Mar 14 16:21:42 UTC 2022     
+## Previous Releases 
 ### 0.62.0
 **Release Date:** Fri Mar 11 11:31:48 UTC 2022
 *Feat:Added Batch Job Monitoring dashboard 
 *Feat:Added a new panel to Spark Ingestion and Lag dashboard 
 *Fix: Added DOCKER_DEFAULT_PLATFORM for cross compilation     
-## Previous Releases
 ### 0.61.0
 **Release Date:** Mon Nov 15 11:31:48 UTC 2021  
 ### 0.60.0
@@ -149,3 +151,4 @@
 **Release Date:** Wed Feb 28 19:25:31 UTC 2018     
 ### 0.1.0
 **Release Date:** Wed Feb 28 19:17:58 UTC 2018
+
