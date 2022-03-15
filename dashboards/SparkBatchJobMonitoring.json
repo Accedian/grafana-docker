@@ -44,10 +44,6 @@
                 {
                   "color": "green",
                   "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 60
                 }
               ]
             },
@@ -74,7 +70,7 @@
           "refId": "B"
         },
         {
-          "expr": "avg(batch_job_processing_time{job=\"spark_aggregationpt1H\"})",
+          "expr": "avg(batch_job_processing_time{job=\"spark_aggregationpt1h\"})",
           "interval": "",
           "legendFormat": "spark_aggregation_PT1H",
           "refId": "C"
@@ -515,5 +511,5 @@
   "variables": {
     "list": []
   },
-  "version": 1
+  "version": 11
 }
