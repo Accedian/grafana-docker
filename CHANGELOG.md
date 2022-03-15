@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.63.0 
+**Release Date:** Tue Mar 15 13:44:36 UTC 2022     
+## Previous Releases 
 ### 0.62.0 
 **Release Date:** Mon Mar 14 16:21:42 UTC 2022     
-## Previous Releases 
 ### 0.62.0
 **Release Date:** Fri Mar 11 11:31:48 UTC 2022
 *Feat:Added Batch Job Monitoring dashboard 
