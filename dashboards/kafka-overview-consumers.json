@@ -523,7 +523,7 @@
         "useTags": false
       },
       {
-        "allValue": null,
+        "allValue": ".+",
         "current": {
           "text": "All",
           "value": "$__all"
