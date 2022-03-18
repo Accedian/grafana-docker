@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.65.0 
+**Release Date:** Fri Mar 18 13:57:19 UTC 2022     
+## Previous Releases 
 ### 0.64.0 
 **Release Date:** Wed Mar 16 14:21:24 UTC 2022     
-## Previous Releases 
 ### 0.63.0 
 **Release Date:** Tue Mar 15 13:44:36 UTC 2022     
 ### 0.62.0 
