@@ -2,6 +2,7 @@
   "annotations": {
     "list": [
       {
+        "$$hashKey": "object:59",
         "builtIn": 1,
         "datasource": "-- Grafana --",
         "enable": true,
@@ -15,7 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 39,
+  "iteration": 1648129356093,
   "links": [],
   "panels": [
     {
@@ -61,25 +62,18 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_streamingapp\"}[1m])",
+          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount{job=~\"$Job\"}[1m])",
           "hide": false,
           "interval": "",
-          "legendFormat": "{{job}} {{objectType}}",
+          "legendFormat": "{{job}}-{{objectType}}",
           "refId": "A"
-        },
-        {
-          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_latentapp\"}[1m])",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{job}} {{objectType}}",
-          "refId": "B"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "RecordCount",
+      "title": "Record Count",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -95,6 +89,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:182",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -103,6 +98,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:183",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -260,7 +256,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "kafka_server_brokertopicmetrics_oneminuterate{name=\"MessagesInPerSec\", topic=~\"npav-ts-metrics.*|spark_raw_in.*|parquet-notif|latent_raw_in.*|spark-latent.*\"}",
+          "expr": "kafka_server_brokertopicmetrics_oneminuterate{name=\"MessagesInPerSec\", topic=~\"npav-ts-metrics.*|spark_raw_in.*|latent_raw_in.*|spark-latent.*\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -720,16 +716,10 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "spark_queryBatchDuration{job=\"spark_streamingapp\"}",
+          "expr": "spark_queryBatchDuration{job=\"$JobB\"}",
           "interval": "",
-          "legendFormat": "raw batch duration {{query}}",
+          "legendFormat": "{{job}}-raw batch duration {{query}}",
           "refId": "A"
-        },
-        {
-          "expr": "spark_queryBatchDuration{job=\"spark_latentapp\"}",
-          "interval": "",
-          "legendFormat": "latent batch duration",
-          "refId": "B"
         }
       ],
       "thresholds": [
@@ -880,7 +870,93 @@
     "spark"
   ],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "tags": [],
+          "text": "spark_latentapp + spark_streamingapp",
+          "value": [
+            "spark_latentapp",
+            "spark_streamingapp"
+          ]
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(spark_AccedianStreamingMetrics_streaming_recCount{job=~\".*spark_latentapp|spark_streamingapp*.\"},job)",
+        "hide": 0,
+        "includeAll": false,
+        "index": -1,
+        "label": "Record Count Job",
+        "multi": true,
+        "name": "Job",
+        "options": [
+          {
+            "$$hashKey": "object:995",
+            "selected": true,
+            "text": "spark_latentapp",
+            "value": "spark_latentapp"
+          },
+          {
+            "$$hashKey": "object:996",
+            "selected": true,
+            "text": "spark_streamingapp",
+            "value": "spark_streamingapp"
+          }
+        ],
+        "query": "label_values(spark_AccedianStreamingMetrics_streaming_recCount{job=~\".*spark_latentapp|spark_streamingapp*.\"},job)",
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "tags": [],
+          "text": "spark_streamingapp",
+          "value": [
+            "spark_streamingapp"
+          ]
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(spark_queryBatchDuration{job=~\".*spark_latentapp|spark_streamingapp*.\"},job)",
+        "hide": 0,
+        "includeAll": false,
+        "index": -1,
+        "label": "Micro Batch Duration Job",
+        "multi": true,
+        "name": "JobB",
+        "options": [
+          {
+            "$$hashKey": "object:1030",
+            "selected": false,
+            "text": "spark_latentapp",
+            "value": "spark_latentapp"
+          },
+          {
+            "$$hashKey": "object:1031",
+            "selected": true,
+            "text": "spark_streamingapp",
+            "value": "spark_streamingapp"
+          }
+        ],
+        "query": "label_values(spark_queryBatchDuration{job=~\".*spark_latentapp|spark_streamingapp*.\"},job)",
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
   },
   "time": {
     "from": "now-12h",
@@ -912,10 +988,10 @@
     ]
   },
   "timezone": "",
-"title": "Spark Ingestion and Lag",
-"uid": "oaePhsqGz",
-"variables": {
-  "list": []
+  "title": "Spark Ingestion and Lag",
+  "uid": "oaePhsqGz",
+  "variables": {
+    "list": []
   },
-  "version": 17
+  "version": 30
 }
