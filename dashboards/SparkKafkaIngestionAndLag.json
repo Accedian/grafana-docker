@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1648129356093,
+  "iteration": 1648129356095,
   "links": [],
   "panels": [
     {
@@ -716,7 +716,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "spark_queryBatchDuration{job=\"$JobB\"}",
+          "expr": "spark_queryBatchDuration{job=~\"$JobB\"}",
           "interval": "",
           "legendFormat": "{{job}}-raw batch duration {{query}}",
           "refId": "A"
@@ -918,8 +918,9 @@
         "allValue": null,
         "current": {
           "tags": [],
-          "text": "spark_streamingapp",
+          "text": "spark_latentapp + spark_streamingapp",
           "value": [
+            "spark_latentapp",
             "spark_streamingapp"
           ]
         },
@@ -934,7 +935,7 @@
         "options": [
           {
             "$$hashKey": "object:1030",
-            "selected": false,
+            "selected": true,
             "text": "spark_latentapp",
             "value": "spark_latentapp"
           },
