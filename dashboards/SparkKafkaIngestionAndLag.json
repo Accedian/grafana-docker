@@ -2,6 +2,7 @@
   "annotations": {
     "list": [
       {
+        "$$hashKey": "object:57",
         "builtIn": 1,
         "datasource": "-- Grafana --",
         "enable": true,
@@ -15,7 +16,6 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 39,
   "links": [],
   "panels": [
     {
@@ -64,14 +64,14 @@
           "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_streamingapp\"}[1m])",
           "hide": false,
           "interval": "",
-          "legendFormat": "{{job}} {{objectType}}",
+          "legendFormat": "{{job}}--{{tenant}}-{{objectType}}",
           "refId": "A"
         },
         {
           "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_latentapp\"}[1m])",
           "hide": false,
           "interval": "",
-          "legendFormat": "{{job}} {{objectType}}",
+          "legendFormat": "{{job}}--{{tenant}}-{{objectType}}",
           "refId": "B"
         }
       ],
@@ -728,7 +728,7 @@
         {
           "expr": "spark_queryBatchDuration{job=\"spark_latentapp\"}",
           "interval": "",
-          "legendFormat": "latent batch duration",
+          "legendFormat": "latent batch duration {{query}}",
           "refId": "B"
         }
       ],
@@ -912,10 +912,10 @@
     ]
   },
   "timezone": "",
-"title": "Spark Ingestion and Lag",
-"uid": "oaePhsqGz",
-"variables": {
-  "list": []
+  "title": "Spark Ingestion and Lag",
+  "uid": "oaePhsqGz",
+  "variables": {
+    "list": []
   },
-  "version": 17
+  "version": 32
 }
