@@ -728,7 +728,7 @@
         {
           "expr": "spark_queryBatchDuration{job=\"spark_latentapp\"}",
           "interval": "",
-          "legendFormat": "raw batch duration {{query}}",
+          "legendFormat": "latent batch duration {{query}}",
           "refId": "B"
         }
       ],
