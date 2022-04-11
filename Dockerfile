@@ -17,6 +17,7 @@ VOLUME ["/var/lib/grafana", "/var/log/grafana", "/etc/grafana"]
 
 RUN grafana-cli plugins install xginn8-pagerduty-datasource && \
     grafana-cli plugins install grafana-image-renderer && \
+    grafana-cli plugins install grafana-clock-panel 1.0.3 && \
     grafana-cli plugins install grafana-piechart-panel
 
 EXPOSE 3000
