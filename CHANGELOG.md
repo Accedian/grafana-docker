@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.73.0 
+**Release Date:** Wed May 11 07:46:11 UTC 2022     
+## Previous Releases 
 ### 0.70.0 
 **Release Date:** Mon Apr 11 17:02:18 UTC 2022     
-## Previous Releases 
 ### grafana-docker
 * Fix - clock plugin and make provisioned dashbaords saveable
 * Feat - Add in Object Type Metrics provisioned dashboard
