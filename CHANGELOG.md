@@ -1,3 +1,5 @@
+* Fix -Add avg/current values to RecordCount panel on Spark ingestion Dashboard : https://app.asana.com/0/1201487391697105/1202064245081710/f
+* Fix - Update spak Disk utilisation panel to support monitoring deployments running sparkworker nodes
 ## Current Release 
 ### 0.73.0 
 **Release Date:** Wed May 11 07:46:11 UTC 2022     
