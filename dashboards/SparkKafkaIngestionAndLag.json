@@ -37,13 +37,13 @@
       "interval": "",
       "legend": {
         "alignAsTable": true,
-        "avg": false,
-        "current": false,
+        "avg": true,
+        "current": true,
         "max": false,
         "min": false,
         "show": true,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": false,
       "linewidth": 1,
@@ -95,6 +95,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:135",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -103,6 +104,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:136",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -196,6 +198,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:222",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -204,6 +207,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:223",
           "format": "short",
           "label": null,
           "logBase": 1,
