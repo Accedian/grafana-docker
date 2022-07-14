@@ -1,8 +1,10 @@
-* Feat - New RR Dashboard with some APIMode and more detailed metrics [Asana Task](https://app.asana.com/0/1202511350916992/1202547980823243/f)
 ## Current Release 
+### 0.76.0 
+**Release Date:** Thu Jul 14 20:36:48 UTC 2022     
+## Previous Releases 
+* Feat - New RR Dashboard with some APIMode and more detailed metrics [Asana Task](https://app.asana.com/0/1202511350916992/1202547980823243/f)
 ### 0.75.0 
 **Release Date:** Wed Jul  6 12:37:23 UTC 2022     
-## Previous Releases 
 ### 0.74.0 
 **Release Date:** Thu May 19 16:00:36 UTC 2022     
 * Fix -Add avg/current values to RecordCount panel on Spark ingestion Dashboard : https://app.asana.com/0/1201487391697105/1202064245081710/f
