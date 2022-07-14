@@ -1,3 +1,4 @@
+* Feat - New RR Dashboard with some APIMode and more detailed metrics [Asana Task](https://app.asana.com/0/1202511350916992/1202547980823243/f)
 ## Current Release 
 ### 0.75.0 
 **Release Date:** Wed Jul  6 12:37:23 UTC 2022     
