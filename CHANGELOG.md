@@ -1,6 +1,7 @@
 ## Current Release 
 ### 0.76.0
 **Release Date:** Wed Jul 20 12:21:23 UTC 2022
+* Feat: Added Custom Reports Dashboard
 ## Previous Releases 
 ### 0.75.0
 **Release Date:** Wed Jul  6 12:37:23 UTC 2022   
