@@ -1,7 +1,11 @@
 ## Current Release 
-### 0.76.0 
-**Release Date:** Thu Jul 14 20:36:48 UTC 2022     
+### 0.77.0
+**Release Date:** Wed Jul 20 12:21:23 UTC 2022
+* Feat: New Custom Reports Dashboard
+[Asana Task](https://app.asana.com/0/1201825567223644/1202005753652075/f)
 ## Previous Releases 
+### 0.76.0 
+**Release Date:** Thu Jul 14 20:36:48 UTC 2022    
 * Feat - New RR Dashboard with some APIMode and more detailed metrics [Asana Task](https://app.asana.com/0/1202511350916992/1202547980823243/f)
 ### 0.75.0 
 **Release Date:** Wed Jul  6 12:37:23 UTC 2022     
