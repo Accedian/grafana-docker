@@ -1,7 +1,9 @@
 ## Current Release 
-### 0.75.0 
-**Release Date:** Wed Jul  6 12:37:23 UTC 2022     
+### 0.76.0
+**Release Date:** Wed Jul 20 12:21:23 UTC 2022
 ## Previous Releases 
+### 0.75.0
+**Release Date:** Wed Jul  6 12:37:23 UTC 2022   
 ### 0.74.0 
 **Release Date:** Thu May 19 16:00:36 UTC 2022     
 * Fix -Add avg/current values to RecordCount panel on Spark ingestion Dashboard : https://app.asana.com/0/1201487391697105/1202064245081710/f
