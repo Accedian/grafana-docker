@@ -1,8 +1,10 @@
-* Fix: Remove references to ENV variables [Asana Task](https://app.asana.com/0/1202511350916992/1202547980823243/f)
 ## Current Release 
+### 0.78.0 
+**Release Date:** Thu Jul 21 18:57:17 UTC 2022     
+## Previous Releases 
+* Fix: Remove references to ENV variables [Asana Task](https://app.asana.com/0/1202511350916992/1202547980823243/f)
 ### 0.77.0 
 **Release Date:** Wed Jul 20 16:08:57 UTC 2022     
-## Previous Releases 
 ### 0.77.0
 **Release Date:** Wed Jul 20 12:21:23 UTC 2022
 * Feat: New Custom Reports Dashboard
