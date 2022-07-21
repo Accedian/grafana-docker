@@ -1,3 +1,4 @@
+* Fix: Remove references to ENV variables [Asana Task](https://app.asana.com/0/1202511350916992/1202547980823243/f)
 ## Current Release 
 ### 0.77.0 
 **Release Date:** Wed Jul 20 16:08:57 UTC 2022     
