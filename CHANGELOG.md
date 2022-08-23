@@ -1,8 +1,10 @@
-* Feat - Add new panels to Roadrunner (detailed) dashboard [Asana Task](https://app.asana.com/0/1202678428957543/1202678428957547/f)
 ## Current Release 
+### 0.79.0 
+**Release Date:** Tue Aug 23 18:33:31 UTC 2022     
+## Previous Releases 
+* Feat - Add new panels to Roadrunner (detailed) dashboard [Asana Task](https://app.asana.com/0/1202678428957543/1202678428957547/f)
 ### 0.78.0 
 **Release Date:** Thu Jul 21 18:57:17 UTC 2022     
-## Previous Releases 
 * Fix: Remove references to ENV variables [Asana Task](https://app.asana.com/0/1202511350916992/1202547980823243/f)
 ### 0.77.0 
 **Release Date:** Wed Jul 20 16:08:57 UTC 2022     
