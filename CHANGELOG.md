@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.80.0 
+**Release Date:** Wed Sep  7 20:12:57 UTC 2022     
+## Previous Releases 
 ### 0.79.0 
 **Release Date:** Tue Aug 23 18:33:31 UTC 2022     
-## Previous Releases 
 * Feat - Add new panels to Roadrunner (detailed) dashboard [Asana Task](https://app.asana.com/0/1202678428957543/1202678428957547/f)
 ### 0.78.0 
 **Release Date:** Thu Jul 21 18:57:17 UTC 2022     
