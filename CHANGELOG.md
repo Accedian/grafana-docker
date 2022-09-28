@@ -1,9 +1,11 @@
+## Current Release 
+### 0.81.0 
+**Release Date:** Wed Sep 28 20:22:10 UTC 2022     
+## Previous Releases 
 * Feat - Add Latent Batch partitions count panel to sparkIngestionndLag [Asana] (https://app.asana.com/0/1133479128121896/1202716334041153/f)
 
-## Current Release 
 ### 0.80.0 
 **Release Date:** Wed Sep  7 20:12:57 UTC 2022     
-## Previous Releases 
 ### 0.79.0 
 **Release Date:** Tue Aug 23 18:33:31 UTC 2022     
 * Feat - Add new panels to Roadrunner (detailed) dashboard [Asana Task](https://app.asana.com/0/1202678428957543/1202678428957547/f)
