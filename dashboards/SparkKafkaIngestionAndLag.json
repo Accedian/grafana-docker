@@ -2,7 +2,6 @@
   "annotations": {
     "list": [
       {
-        "$$hashKey": "object:57",
         "builtIn": 1,
         "datasource": "-- Grafana --",
         "enable": true,
@@ -16,6 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
+  "id": 27,
   "links": [],
   "panels": [
     {
@@ -95,7 +95,6 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:135",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -104,7 +103,6 @@
           "show": true
         },
         {
-          "$$hashKey": "object:136",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -198,7 +196,6 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:222",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -207,7 +204,6 @@
           "show": true
         },
         {
-          "$$hashKey": "object:223",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -643,7 +639,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Batch Job Work Queue Lag",
+      "title": "Contemporary Batch Job Work Queue Lag",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -788,6 +784,96 @@
     },
     {
       "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 11,
+        "x": 11,
+        "y": 28
+      },
+      "hiddenSeries": false,
+      "id": 19,
+      "interval": "",
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "spark_AccedianLatentBatchPartitionsCount",
+          "interval": "",
+          "legendFormat": "{{jobName}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Latent Batch Job Partitions Count",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
@@ -798,7 +884,7 @@
         "h": 9,
         "w": 11,
         "x": 11,
-        "y": 28
+        "y": 36
       },
       "hiddenSeries": false,
       "id": 12,
@@ -887,7 +973,7 @@
     "list": []
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {
@@ -921,5 +1007,5 @@
   "variables": {
     "list": []
   },
-  "version": 33
+  "version": 4
 }
