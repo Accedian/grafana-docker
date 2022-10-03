@@ -2,7 +2,6 @@
   "annotations": {
     "list": [
       {
-        "$$hashKey": "object:7",
         "builtIn": 1,
         "datasource": "-- Grafana --",
         "enable": true,
@@ -16,10 +15,11 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
+  "id": 5,
   "links": [],
   "panels": [
     {
-      "collapsed": false,
+      "collapsed": true,
       "datasource": null,
       "gridPos": {
         "h": 1,
@@ -28,635 +28,636 @@
         "y": 0
       },
       "id": 60,
-      "panels": [],
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "description": "Count of Kafka messages not yet consumed",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 6,
+            "w": 24,
+            "x": 0,
+            "y": 1
+          },
+          "hiddenSeries": false,
+          "id": 54,
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "dataLinks": []
+          },
+          "percentage": false,
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(kafka_consumergroup_lag{consumergroup=~\"cybersecurity.cyberapp.[a-z]+\",instance=\"kafka-topic-metric-exporter:9308\",job=\"kafka-topic-metrics\", topic=~\"pvx.*\"}) by (topic)",
+              "hide": true,
+              "interval": "",
+              "legendFormat": " {{topic}}",
+              "refId": "B"
+            },
+            {
+              "expr": "sum(kafka_topic_partition_current_offset{topic=~\"pvx.*\"}) - sum(max_over_time(spark_CustomMetricSource_batch_processedOffsetsSum{job=\"cyberapp\"}[12h]))",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "processing lag",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(cybersecuritySparkApp_topicGauge{topic=~\"pvx.*\", metricName=\"untilOffsetSum\"}) -  sum(cybersecuritySparkApp_topicGauge{topic=~\"pvx.*\", metricName=\"fromOffsetSum\"})",
+              "hide": true,
+              "interval": "",
+              "legendFormat": "processed records",
+              "refId": "D"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Processing lag",
+          "tooltip": {
+            "shared": true,
+            "sort": 2,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "alert": {
+            "alertRuleTags": {},
+            "conditions": [
+              {
+                "evaluator": {
+                  "params": [
+                    1
+                  ],
+                  "type": "lt"
+                },
+                "operator": {
+                  "type": "and"
+                },
+                "query": {
+                  "params": [
+                    "A",
+                    "5m",
+                    "now"
+                  ]
+                },
+                "reducer": {
+                  "params": [],
+                  "type": "diff_abs"
+                },
+                "type": "query"
+              }
+            ],
+            "executionErrorState": "alerting",
+            "for": "5m",
+            "frequency": "1m",
+            "handler": 1,
+            "name": "Batch processing duration alert",
+            "noDataState": "no_data",
+            "notifications": []
+          },
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 7
+          },
+          "hiddenSeries": false,
+          "id": 15,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": false,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "connected",
+          "options": {
+            "dataLinks": []
+          },
+          "percentage": false,
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "spark_CustomMetricSource_batch_processingTimeMs{job=\"cyberapp\"}",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [
+            {
+              "colorMode": "critical",
+              "fill": true,
+              "line": true,
+              "op": "lt",
+              "value": 1
+            }
+          ],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Batch processing duration",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "ms",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "alert": {
+            "alertRuleTags": {},
+            "conditions": [
+              {
+                "evaluator": {
+                  "params": [
+                    1
+                  ],
+                  "type": "lt"
+                },
+                "operator": {
+                  "type": "and"
+                },
+                "query": {
+                  "params": [
+                    "B",
+                    "20m",
+                    "now"
+                  ]
+                },
+                "reducer": {
+                  "params": [],
+                  "type": "diff_abs"
+                },
+                "type": "query"
+              }
+            ],
+            "executionErrorState": "alerting",
+            "for": "5m",
+            "frequency": "1m",
+            "handler": 1,
+            "name": "Spark batch start delay alert",
+            "noDataState": "alerting",
+            "notifications": []
+          },
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "description": "Time taken for the first job of this batch to start processing from the time this batch was submitted to the streaming scheduler.",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 7
+          },
+          "hiddenSeries": false,
+          "id": 46,
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "dataLinks": []
+          },
+          "percentage": false,
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "time() - spark_CustomMetricSource_batch_timestamp{job=\"cyberapp\", role=\"driver\"} / 1000",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "batch timestamp",
+              "refId": "A"
+            },
+            {
+              "expr": "spark_CustomMetricSource_batch_timestamp{job=\"cyberapp\", role=\"driver\"} / 1000",
+              "hide": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [
+            {
+              "colorMode": "critical",
+              "fill": true,
+              "line": true,
+              "op": "lt",
+              "value": 1
+            }
+          ],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Spark batch start delay",
+          "tooltip": {
+            "shared": true,
+            "sort": 2,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "ms",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 13
+          },
+          "hiddenSeries": false,
+          "id": 30,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": false,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "connected",
+          "options": {
+            "dataLinks": []
+          },
+          "percentage": false,
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "spark_CustomMetricSource_batch_numRecords{job=\"cyberapp\"}",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Number of records in a batch",
+          "tooltip": {
+            "shared": true,
+            "sort": 2,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "alert": {
+            "alertRuleTags": {},
+            "conditions": [
+              {
+                "evaluator": {
+                  "params": [
+                    1
+                  ],
+                  "type": "lt"
+                },
+                "operator": {
+                  "type": "and"
+                },
+                "query": {
+                  "params": [
+                    "C",
+                    "10m",
+                    "now"
+                  ]
+                },
+                "reducer": {
+                  "params": [],
+                  "type": "avg"
+                },
+                "type": "query"
+              }
+            ],
+            "executionErrorState": "alerting",
+            "for": "10m",
+            "frequency": "1m",
+            "handler": 1,
+            "message": "Cyberapp is performing inadequate.",
+            "name": "Processing ratio alert",
+            "noDataState": "alerting",
+            "notifications": []
+          },
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 13
+          },
+          "hiddenSeries": false,
+          "id": 16,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": false,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "connected",
+          "options": {
+            "dataLinks": []
+          },
+          "percentage": false,
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "spark_CustomMetricSource_batch_processingRate{job=\"cyberapp\"}",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "processingRate",
+              "refId": "A"
+            },
+            {
+              "expr": "spark_CustomMetricSource_batch_inputRate{job=\"cyberapp\"}",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "inputRate",
+              "refId": "B"
+            },
+            {
+              "expr": "spark_CustomMetricSource_batch_processingRate{job=\"cyberapp\"} / spark_CustomMetricSource_batch_inputRate{job=\"cyberapp\"}",
+              "hide": true,
+              "interval": "",
+              "legendFormat": "ratio",
+              "refId": "C"
+            }
+          ],
+          "thresholds": [
+            {
+              "colorMode": "critical",
+              "fill": true,
+              "line": true,
+              "op": "lt",
+              "value": 1
+            }
+          ],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Processing rate",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": "records/sec",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
       "title": "Batch Processing Stats",
       "type": "row"
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "description": "Count of Kafka messages not yet consumed",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 6,
-        "w": 24,
-        "x": 0,
-        "y": 1
-      },
-      "hiddenSeries": false,
-      "id": 54,
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "sum(kafka_consumergroup_lag{consumergroup=~\"cybersecurity.cyberapp.[a-z]+\",instance=\"kafka-topic-metric-exporter:9308\",job=\"kafka-topic-metrics\", topic=~\"pvx.*\"}) by (topic)",
-          "hide": true,
-          "interval": "",
-          "legendFormat": " {{topic}}",
-          "refId": "B"
-        },
-        {
-          "expr": "sum(kafka_topic_partition_current_offset{topic=~\"pvx.*\"}) - sum(max_over_time(spark_CustomMetricSource_batch_processedOffsetsSum{job=\"cyberapp\"}[12h]))",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "processing lag",
-          "refId": "A"
-        },
-        {
-          "expr": "sum(cybersecuritySparkApp_topicGauge{topic=~\"pvx.*\", metricName=\"untilOffsetSum\"}) -  sum(cybersecuritySparkApp_topicGauge{topic=~\"pvx.*\", metricName=\"fromOffsetSum\"})",
-          "hide": true,
-          "interval": "",
-          "legendFormat": "processed records",
-          "refId": "D"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Processing lag",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "alert": {
-        "alertRuleTags": {},
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                1
-              ],
-              "type": "lt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "5m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "diff_abs"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "for": "5m",
-        "frequency": "1m",
-        "handler": 1,
-        "name": "Batch processing duration alert",
-        "noDataState": "no_data",
-        "notifications": []
-      },
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 6,
-        "w": 12,
-        "x": 0,
-        "y": 7
-      },
-      "hiddenSeries": false,
-      "id": 15,
-      "interval": "",
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "rightSide": true,
-        "show": false,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "connected",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "spark_CustomMetricSource_batch_processingTimeMs{job=\"cyberapp\"}",
-          "instant": false,
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [
-        {
-          "colorMode": "critical",
-          "fill": true,
-          "line": true,
-          "op": "lt",
-          "value": 1
-        }
-      ],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Batch processing duration",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "ms",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "alert": {
-        "alertRuleTags": {},
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                1
-              ],
-              "type": "lt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "B",
-                "20m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "diff_abs"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "for": "5m",
-        "frequency": "1m",
-        "handler": 1,
-        "name": "Spark batch start delay alert",
-        "noDataState": "alerting",
-        "notifications": []
-      },
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "description": "Time taken for the first job of this batch to start processing from the time this batch was submitted to the streaming scheduler.",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 6,
-        "w": 12,
-        "x": 12,
-        "y": 7
-      },
-      "hiddenSeries": false,
-      "id": 46,
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "time() - spark_CustomMetricSource_batch_timestamp{job=\"cyberapp\", role=\"driver\"} / 1000",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "batch timestamp",
-          "refId": "A"
-        },
-        {
-          "expr": "spark_CustomMetricSource_batch_timestamp{job=\"cyberapp\", role=\"driver\"} / 1000",
-          "hide": true,
-          "interval": "",
-          "legendFormat": "",
-          "refId": "B"
-        }
-      ],
-      "thresholds": [
-        {
-          "colorMode": "critical",
-          "fill": true,
-          "line": true,
-          "op": "lt",
-          "value": 1
-        }
-      ],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Spark batch start delay",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "ms",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 6,
-        "w": 12,
-        "x": 0,
-        "y": 13
-      },
-      "hiddenSeries": false,
-      "id": 30,
-      "interval": "",
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "rightSide": true,
-        "show": false,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "connected",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "spark_CustomMetricSource_batch_numRecords{job=\"cyberapp\"}",
-          "instant": false,
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Number of records in a batch",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "alert": {
-        "alertRuleTags": {},
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                1
-              ],
-              "type": "lt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "C",
-                "10m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "avg"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "for": "10m",
-        "frequency": "1m",
-        "handler": 1,
-        "message": "Cyberapp is performing inadequate.",
-        "name": "Processing ratio alert",
-        "noDataState": "alerting",
-        "notifications": []
-      },
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 6,
-        "w": 12,
-        "x": 12,
-        "y": 13
-      },
-      "hiddenSeries": false,
-      "id": 16,
-      "interval": "",
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "rightSide": true,
-        "show": false,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "connected",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "spark_CustomMetricSource_batch_processingRate{job=\"cyberapp\"}",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "legendFormat": "processingRate",
-          "refId": "A"
-        },
-        {
-          "expr": "spark_CustomMetricSource_batch_inputRate{job=\"cyberapp\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "inputRate",
-          "refId": "B"
-        },
-        {
-          "expr": "spark_CustomMetricSource_batch_processingRate{job=\"cyberapp\"} / spark_CustomMetricSource_batch_inputRate{job=\"cyberapp\"}",
-          "hide": true,
-          "interval": "",
-          "legendFormat": "ratio",
-          "refId": "C"
-        }
-      ],
-      "thresholds": [
-        {
-          "colorMode": "critical",
-          "fill": true,
-          "line": true,
-          "op": "lt",
-          "value": 1
-        }
-      ],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Processing rate",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": "records/sec",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
     },
     {
       "collapsed": true,
@@ -665,7 +666,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 1
       },
       "id": 64,
       "panels": [
@@ -1166,7 +1167,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 2
       },
       "id": 62,
       "panels": [
@@ -1179,194 +1180,10 @@
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 3
-          },
-          "hiddenSeries": false,
-          "id": 19,
-          "legend": {
-            "alignAsTable": false,
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "connected",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "cybersecuritySparkApp_jobGauge{metricName=\"stateCounter\"}",
-              "instant": false,
-              "interval": "",
-              "intervalFactor": 1,
-              "legendFormat": "{{jobName}}",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Total states in Redis",
-          "tooltip": {
-            "shared": true,
-            "sort": 2,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "Prometheus",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 3
-          },
-          "hiddenSeries": false,
-          "id": 31,
-          "interval": "",
-          "legend": {
-            "alignAsTable": false,
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "increase(cybersecuritySparkApp_jobGauge{metricName=\"newStatesCreated\"}[1m])",
-              "instant": false,
-              "interval": "",
-              "legendFormat": "{{jobName}}",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Number of states created per minute",
-          "tooltip": {
-            "shared": true,
-            "sort": 2,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "none",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "Prometheus",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 11
+            "y": 3
           },
           "hiddenSeries": false,
           "id": 40,
@@ -1397,15 +1214,17 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "increase(cybersecuritySparkApp_jobGauge{metricName=\"redisGetLatency\"}[1m])/1000",
+              "expr": "increase(spark_CustomMetricSource_statestore_readLatency[1m])/1000",
+              "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{jobName}}",
+              "legendFormat": "{{detection}} ",
               "refId": "A"
             },
             {
-              "expr": "sum(increase(cybersecuritySparkApp_jobGauge{metricName=\"redisGetLatency\"}[1m]))/1000",
+              "expr": "sum(increase(spark_CustomMetricSource_statestore_readLatency[1m]))/1000",
+              "hide": false,
               "interval": "",
               "legendFormat": "total latency (across all partitions)",
               "refId": "B"
@@ -1415,7 +1234,7 @@
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "Total Redis GET latency",
+          "title": "READ latency",
           "tooltip": {
             "shared": true,
             "sort": 2,
@@ -1464,7 +1283,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 11
+            "y": 3
           },
           "hiddenSeries": false,
           "id": 38,
@@ -1495,16 +1314,16 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "increase(cybersecuritySparkApp_jobGauge{metricName=\"redisWriteLatency\"}[1m])/1000",
+              "expr": "increase(spark_CustomMetricSource_statestore_writeLatency[1m])/1000",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{jobName}}",
+              "legendFormat": "{{detection}}",
               "refId": "A"
             },
             {
-              "expr": "sum(increase(cybersecuritySparkApp_jobGauge{metricName=\"redisWriteLatency\"}[1m]))/1000",
+              "expr": "sum(increase(spark_CustomMetricSource_statestore_writeLatency[1m]))/1000",
               "interval": "",
               "legendFormat": "total latency (across partitions)",
               "refId": "B"
@@ -1514,7 +1333,7 @@
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "Total Redis WRITE latency",
+          "title": "WRITE latency",
           "tooltip": {
             "shared": true,
             "sort": 2,
@@ -1563,7 +1382,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 20
+            "y": 12
           },
           "hiddenSeries": false,
           "id": 33,
@@ -1594,12 +1413,10 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "increase(cybersecuritySparkApp_jobGauge{metricName=\"redisGets\"}[1m])",
-              "instant": false,
+              "expr": "increase(spark_CustomMetricSource_statestore_reads[1m])",
               "interval": "",
-              "intervalFactor": 1,
-              "legendFormat": "{{jobName}}",
-              "refId": "A"
+              "legendFormat": "{{detection}}",
+              "refId": "B"
             }
           ],
           "thresholds": [],
@@ -1655,7 +1472,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 20
+            "y": 12
           },
           "hiddenSeries": false,
           "id": 34,
@@ -1686,11 +1503,11 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "increase(cybersecuritySparkApp_jobGauge{metricName=\"redisWrites\"}[1m])",
+              "expr": "increase(spark_CustomMetricSource_statestore_writes[1m])",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{jobName}}",
+              "legendFormat": "{{detection}}",
               "refId": "A"
             }
           ],
@@ -1747,7 +1564,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 29
+            "y": 21
           },
           "hiddenSeries": false,
           "id": 41,
@@ -1778,11 +1595,11 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "increase(cybersecuritySparkApp_jobGauge{metricName=\"serializeLatency\"}[1m])/1000",
+              "expr": "increase(spark_CustomMetricSource_statestore_serializeLatency[1m])",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{jobName}}",
+              "legendFormat": "{{detection}}",
               "refId": "A"
             }
           ],
@@ -1839,7 +1656,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 29
+            "y": 21
           },
           "hiddenSeries": false,
           "id": 42,
@@ -1870,11 +1687,11 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "increase(cybersecuritySparkApp_jobGauge{metricName=\"deserializeLatency\"}[1m])/1000",
+              "expr": "increase(spark_CustomMetricSource_statestore_deserializeLatency[1m])",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{jobName}}",
+              "legendFormat": "{{detection}}",
               "refId": "A"
             }
           ],
@@ -1931,7 +1748,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 37
+            "y": 29
           },
           "hiddenSeries": false,
           "id": 20,
@@ -1962,10 +1779,10 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "cybersecuritySparkApp_jobGauge{metricName=\"stateEvictionCounter\"}",
+              "expr": "spark_CustomMetricSource_statestore_evictedCount",
               "interval": "",
               "intervalFactor": 2,
-              "legendFormat": "{{jobName}}",
+              "legendFormat": "{{detection}}",
               "refId": "A"
             }
           ],
@@ -2022,7 +1839,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 3
       },
       "id": 58,
       "panels": [],
@@ -2041,7 +1858,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 11,
@@ -2126,7 +1943,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 32
+        "y": 14
       },
       "id": 4,
       "options": {
@@ -2183,7 +2000,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 32
+        "y": 14
       },
       "hiddenSeries": false,
       "id": 76,
@@ -2239,7 +2056,6 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:278",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -2248,7 +2064,6 @@
           "show": true
         },
         {
-          "$$hashKey": "object:279",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -2274,7 +2089,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 40
+        "y": 22
       },
       "hiddenSeries": false,
       "id": 78,
@@ -2362,7 +2177,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 40
+        "y": 22
       },
       "hiddenSeries": false,
       "id": 80,
@@ -2450,7 +2265,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 48
+        "y": 30
       },
       "hiddenSeries": false,
       "id": 29,
@@ -2541,7 +2356,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 48
+        "y": 30
       },
       "hiddenSeries": false,
       "id": 36,
@@ -2635,7 +2450,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 56
+        "y": 38
       },
       "hiddenSeries": false,
       "id": 44,
@@ -2692,7 +2507,6 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:931",
           "format": "ms",
           "label": null,
           "logBase": 1,
@@ -2701,7 +2515,6 @@
           "show": true
         },
         {
-          "$$hashKey": "object:932",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -2727,7 +2540,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 56
+        "y": 38
       },
       "hiddenSeries": false,
       "id": 35,
@@ -2787,7 +2600,6 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:1465",
           "format": "none",
           "label": null,
           "logBase": 1,
@@ -2796,7 +2608,6 @@
           "show": true
         },
         {
-          "$$hashKey": "object:1466",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -2822,7 +2633,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 64
+        "y": 46
       },
       "hiddenSeries": false,
       "id": 37,
@@ -2915,7 +2726,7 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 64
+        "y": 46
       },
       "hiddenSeries": false,
       "id": 39,
@@ -3039,7 +2850,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 75
+        "y": 57
       },
       "hiddenSeries": false,
       "id": 28,
@@ -3129,7 +2940,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 85
+        "y": 67
       },
       "hiddenSeries": false,
       "id": 13,
@@ -3221,7 +3032,7 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 85
+        "y": 67
       },
       "hiddenSeries": false,
       "id": 43,
@@ -3308,7 +3119,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 96
+        "y": 78
       },
       "id": 21,
       "links": [],
@@ -3368,7 +3179,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 96
+        "y": 78
       },
       "id": 22,
       "links": [],
@@ -3434,7 +3245,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 105
+        "y": 87
       },
       "hiddenSeries": false,
       "id": 23,
@@ -3526,7 +3337,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 113
+        "y": 95
       },
       "hiddenSeries": false,
       "id": 24,
@@ -3620,7 +3431,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 121
+        "y": 103
       },
       "hiddenSeries": false,
       "id": 32,
@@ -3707,7 +3518,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 129
+        "y": 111
       },
       "id": 9,
       "links": [],
@@ -3766,7 +3577,7 @@
         "h": 11,
         "w": 17,
         "x": 0,
-        "y": 136
+        "y": 118
       },
       "hiddenSeries": false,
       "id": 8,
@@ -3852,7 +3663,7 @@
         "h": 11,
         "w": 7,
         "x": 17,
-        "y": 136
+        "y": 118
       },
       "id": 14,
       "links": [],
@@ -3919,7 +3730,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 147
+        "y": 129
       },
       "hiddenSeries": false,
       "id": 17,
@@ -4010,7 +3821,7 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 147
+        "y": 129
       },
       "hiddenSeries": false,
       "id": 18,
@@ -4121,5 +3932,5 @@
   "variables": {
     "list": []
   },
-  "version": 4
+  "version": 2
 }
