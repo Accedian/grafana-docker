@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.83.0 
+**Release Date:** Mon Oct  3 08:56:42 UTC 2022     
+## Previous Releases 
 ### 0.82.0 
 **Release Date:** Wed Sep 28 20:27:42 UTC 2022     
-## Previous Releases 
 * Feat - Add Latent Batch partitions count panel to sparkIngestionndLag [Asana](https://app.asana.com/0/1133479128121896/1202716334041153/f)
 
 ### 0.80.0 
