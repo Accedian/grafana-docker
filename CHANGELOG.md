@@ -1,3 +1,4 @@
+* Feat - Add PersistenceService metrics to the Roadrunner dashboard [Asana](https://app.asana.com/0/1199574676083399/1203406613035602/f)
 ## Current Release 
 ### 0.83.0 
 **Release Date:** Mon Oct  3 08:56:42 UTC 2022     
