@@ -1,12 +1,8 @@
-## Current Release 
-### 0.87.0 
-**Release Date:** Mon Dec 12 19:28:08 UTC 2022     
-## Previous Releases 
-* Fix: gNMI dashboard unavailable 
-
+## Current Release   
 ### 0.86.0 
 **Release Date:** Tue Dec  6 16:27:44 UTC 2022     
 * Alert Service - Extract alerts metrics dashboard from gather [Asana](https://app.asana.com/0/1202421299651189/1203447968630089/f)
+## Previous Releases 
 ### 0.85.0 
 **Release Date:** Tue Dec  6 16:23:00 UTC 2022     
 * Added Ignite and Analytics-streamer dashboards
