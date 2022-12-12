@@ -1,3 +1,5 @@
+* Fix: gNMI dashboard unavailable 
+
 ## Current Release 
 ### 0.88.0 
 **Release Date:** Mon Dec 12 20:10:41 UTC 2022     
