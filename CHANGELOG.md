@@ -1,3 +1,4 @@
+* Add new panel and edit existing panels in Spark Batch Jobs Monitoring Dashboard [Asana Task](https://app.asana.com/0/0/1203536422256547/f)
 ## Current Release 
 ### 0.86.0 
 **Release Date:** Tue Dec  6 16:27:44 UTC 2022     
