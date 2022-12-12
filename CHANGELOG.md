@@ -1,3 +1,4 @@
+* Add mo-summary topic to spark Ingestion and Lag panels
 * Add new panel and edit existing panels in Spark Batch Jobs Monitoring Dashboard [Asana Task](https://app.asana.com/0/0/1203536422256547/f)
 ## Current Release 
 ### 0.86.0 
