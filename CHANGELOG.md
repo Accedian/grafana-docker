@@ -1,9 +1,15 @@
 * Add mo-summary topic to spark Ingestion and Lag panels
 * Add new panel and edit existing panels in Spark Batch Jobs Monitoring Dashboard [Asana Task](https://app.asana.com/0/0/1203536422256547/f)
 ## Current Release 
+### 0.89.0 
+**Release Date:** Mon Dec 12 20:20:34 UTC 2022     
+## Previous Releases 
+* Fix: gNMI dashboard unavailable 
+
+### 0.88.0 
+**Release Date:** Mon Dec 12 20:10:41 UTC 2022     
 ### 0.86.0 
 **Release Date:** Tue Dec  6 16:27:44 UTC 2022     
-## Previous Releases 
 * Alert Service - Extract alerts metrics dashboard from gather [Asana](https://app.asana.com/0/1202421299651189/1203447968630089/f)
 ### 0.85.0 
 **Release Date:** Tue Dec  6 16:23:00 UTC 2022     
