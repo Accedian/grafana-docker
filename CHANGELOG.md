@@ -1,8 +1,10 @@
-* Alert Service - Modify dashboard and add new panel with metrics [Asana](https://app.asana.com/0/1202421299651189/1203447968630095/f)
 ## Current Release 
+### 0.92.0 
+**Release Date:** Wed Dec 21 08:52:55 UTC 2022     
+## Previous Releases 
+* Alert Service - Modify dashboard and add new panel with metrics [Asana](https://app.asana.com/0/1202421299651189/1203447968630095/f)
 ### 0.91.0 
 **Release Date:** Tue Dec 20 20:46:43 UTC 2022     
-## Previous Releases 
 * Add alert-export dashboard
 ### 0.90.0 
 **Release Date:** Thu Dec 15 14:48:46 UTC 2022     
