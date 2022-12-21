@@ -100,7 +100,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_active_alert_errors_total[1m]) + rate(alert_service_mqtt_errors_total[1m]) + rate(alert_service_errors_total[1m])",
+          "expr": "sum(irate(alert_service_active_alert_errors_total[5m])) + sum(irate(alert_service_mqtt_errors_total[5m])) + sum(irate(alert_service_errors_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Errors",
@@ -186,7 +186,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "abs(rate(alert_service_consumed_kafka_mgs_total[1m]) - rate(alert_service_produced_mqtt_mgs_total[1m]))",
+          "expr": "abs(sum(irate(alert_service_consumed_kafka_mgs_total[5m])) - sum(irate(alert_service_produced_mqtt_mgs_total[5m])))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka In : MQTT Out",
@@ -269,7 +269,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_session_mgs_total[1m])",
+          "expr": "sum(irate(alert_service_session_mgs_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -352,7 +352,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_capture_mgs_total[1m])",
+          "expr": "sum(irate(alert_service_capture_mgs_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -490,7 +490,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_errors_total[5m])",
+          "expr": "sum(irate(alert_service_errors_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Alert Errors",
@@ -504,7 +504,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_mqtt_errors_total[5m])",
+          "expr": "sum(irate(alert_service_mqtt_errors_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "MQTT Errors",
@@ -518,7 +518,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "alert_service_active_errors_total",
+          "expr": "sum(irate(alert_service_active_errors_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Active Errors",
@@ -601,7 +601,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_consumed_kafka_mgs_total[1m])",
+          "expr": "sum(irate(alert_service_consumed_kafka_mgs_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -684,7 +684,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_produced_mqtt_mgs_total[1m])",
+          "expr": "sum(irate(alert_service_produced_mqtt_mgs_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -767,7 +767,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_netsec_mgs_total[1m])",
+          "expr": "sum(irate(alert_service_netsec_mgs_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -850,7 +850,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_anonmaly_mgs_total[1m])",
+          "expr": "sum(irate(alert_service_anonmaly_mgs_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -954,7 +954,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "(sum(rate(alert_service_rest_api_call_duration_seconds_sum[5m])) by (endpoint)) / (sum(rate(alert_service_rest_api_call_duration_seconds_count[5m])) by (endpoint))",
+          "expr": "(sum(irate(alert_service_rest_api_call_duration_seconds_sum[5m])) by (endpoint)) / (sum(irate(alert_service_rest_api_call_duration_seconds_count[5m])) by (endpoint))",
           "legendFormat": "{{endpoint}}",
           "range": true,
           "refId": "A"
@@ -1024,7 +1024,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "(sum(rate(alert_service_rest_api_call_duration_seconds_sum[5m])) by (endpoint)) / (sum(rate(alert_service_rest_api_call_duration_seconds_count[5m])) by (endpoint))",
+          "expr": "(sum(irate(alert_service_rest_api_call_duration_seconds_sum[5m])) by (endpoint)) / (sum(irate(alert_service_rest_api_call_duration_seconds_count[5m])) by (endpoint))",
           "format": "time_series",
           "instant": false,
           "legendFormat": "{{endpoint}}",
@@ -1128,7 +1128,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_session_mgs_total[1m])",
+          "expr": "sum(irate(alert_service_session_mgs_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "session",
@@ -1141,7 +1141,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_capture_mgs_total[1m])",
+          "expr": "sum(irate(alert_service_capture_mgs_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "capture",
@@ -1154,7 +1154,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_anomaly_mgs_total[1m])",
+          "expr": "sum(irate(alert_service_anomaly_mgs_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "anomaly",
@@ -1167,7 +1167,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_netsec_mgs_total[1m])",
+          "expr": "sum(irate(alert_service_netsec_mgs_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "network security",
@@ -1272,7 +1272,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_consumed_kafka_mgs_total[1m])",
+          "expr": "sum(irate(alert_service_consumed_kafka_mgs_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka msgs",
@@ -1285,7 +1285,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_produced_mqtt_mgs_total[1m])",
+          "expr": "sum(irate(alert_service_produced_mqtt_mgs_total[5m]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -1390,7 +1390,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_cleared_total[1m])",
+          "expr": "sum(irate(alert_service_cleared_total[5m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Cleared",
@@ -1509,7 +1509,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_session_mgs_total[1m])",
+          "expr": "sum(irate(alert_service_session_mgs_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "session",
@@ -1522,7 +1522,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_capture_mgs_total[1m])",
+          "expr": "sum(irate(alert_service_capture_mgs_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "catpure",
@@ -1535,7 +1535,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(alert_service_netsec_mgs_total[1m])",
+          "expr": "sum(irate(alert_service_netsec_mgs_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "netsec",
@@ -1548,7 +1548,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "alert_service_anomaly_mgs_total",
+          "expr": "sum(alert_service_anomaly_mgs_total)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "anomaly",
@@ -1699,7 +1699,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "1m",
+  "refresh": "5m",
   "schemaVersion": 37,
   "style": "dark",
   "tags": [],
