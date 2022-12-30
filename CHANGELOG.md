@@ -1,7 +1,34 @@
 ## Current Release 
+### 0.92.0 
+**Release Date:** Wed Dec 21 08:52:55 UTC 2022     
+## Previous Releases 
+* Alert Service - Modify dashboard and add new panel with metrics [Asana](https://app.asana.com/0/1202421299651189/1203447968630095/f)
+### 0.91.0 
+**Release Date:** Tue Dec 20 20:46:43 UTC 2022     
+* Add alert-export dashboard
+### 0.90.0 
+**Release Date:** Thu Dec 15 14:48:46 UTC 2022     
+* Add mo-summary topic to spark Ingestion and Lag panels
+* Add new panel and edit existing panels in Spark Batch Jobs Monitoring Dashboard [Asana Task](https://app.asana.com/0/0/1203536422256547/f)
+### 0.89.0 
+**Release Date:** Mon Dec 12 20:20:34 UTC 2022     
+* Fix: gNMI dashboard unavailable 
+
+### 0.88.0 
+**Release Date:** Mon Dec 12 20:10:41 UTC 2022     
+### 0.86.0 
+**Release Date:** Tue Dec  6 16:27:44 UTC 2022     
+* Alert Service - Extract alerts metrics dashboard from gather [Asana](https://app.asana.com/0/1202421299651189/1203447968630089/f)
+### 0.85.0 
+**Release Date:** Tue Dec  6 16:23:00 UTC 2022     
+* Added Ignite and Analytics-streamer dashboards
+### 0.84.0 
+**Release Date:** Wed Nov 30 18:55:42 UTC 2022     
+* Feat - Add PersistenceService metrics to the Roadrunner dashboard [Asana](https://app.asana.com/0/1199574676083399/1203406613035602/f)
+### 0.83.0 
+**Release Date:** Mon Oct  3 08:56:42 UTC 2022     
 ### 0.82.0 
 **Release Date:** Wed Sep 28 20:27:42 UTC 2022     
-## Previous Releases 
 * Feat - Add Latent Batch partitions count panel to sparkIngestionndLag [Asana](https://app.asana.com/0/1133479128121896/1202716334041153/f)
 
 ### 0.80.0 

@@ -2,6 +2,7 @@
   "annotations": {
     "list": [
       {
+        "$$hashKey": "object:7",
         "builtIn": 1,
         "datasource": "-- Grafana --",
         "enable": true,
@@ -15,15 +16,15 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 30,
+  "id": 31,
   "links": [],
   "panels": [
     {
       "cacheTimeout": null,
       "datasource": "Prometheus",
       "gridPos": {
-        "h": 10,
-        "w": 24,
+        "h": 5,
+        "w": 12,
         "x": 0,
         "y": 0
       },
@@ -44,244 +45,104 @@
                 {
                   "color": "green",
                   "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
                 }
               ]
-            },
-            "unit": "s"
+            }
           },
           "overrides": [],
           "values": false
         },
-        "orientation": "vertical",
+        "orientation": "horizontal",
         "showUnfilled": true
       },
       "pluginVersion": "6.7.3",
       "targets": [
         {
-          "expr": "avg(batch_job_processing_time{job=\"spark_aggregationpt15m\",granularity=\"PT15M\"})",
+          "expr": "histogram_quantile(0.95, sum(rate(ignite_processing_time_ms_bucket{component=\"normalize\"}[5m])) by (le))",
+          "format": "time_series",
+          "instant": false,
           "interval": "",
-          "legendFormat": "spark_aggregation_PT15M",
+          "legendFormat": "Normalize",
           "refId": "A"
         },
         {
-          "expr": "avg(batch_job_processing_time{job=\"spark_aggregationpt1m\"})",
+          "expr": "histogram_quantile(0.95, sum(rate(ignite_processing_time_ms_bucket{component=\"kafka_producer\"}[5m])) by (le))",
           "interval": "",
-          "legendFormat": "spark_aggregation_PT1M",
+          "legendFormat": "Kafka Producer message write",
           "refId": "B"
         },
         {
-          "expr": "avg(batch_job_processing_time{job=\"spark_aggregationpt1h\"})",
+          "expr": "histogram_quantile(0.95, sum(rate(ignite_processing_time_ms_bucket{component=\"marshal\"}[5m])) by (le))",
           "interval": "",
-          "legendFormat": "spark_aggregation_PT1H",
+          "legendFormat": "Serialize metric to JSON",
           "refId": "C"
         },
         {
-          "expr": "avg(batch_job_processing_time{job=\"spark_tablefinalizer\"})",
+          "expr": "histogram_quantile(0.95, sum(rate(ignite_processing_time_ms_bucket{component=\"deserialize_fedex\"}[5m])) by (le))",
           "interval": "",
-          "legendFormat": "spark_tablefinalizer",
+          "legendFormat": "Deserialize Fedex Message",
           "refId": "D"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Average Batch Jobs Duration/tenant/objectType",
+      "title": "Processing time (ms) 95th",
       "type": "bargauge"
     },
     {
-      "aliasColors": {},
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": "Prometheus",
-      "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 10
-      },
-      "hiddenSeries": false,
-      "id": 12,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "batch_jobs_execution_time/10",
-          "interval": "",
-          "legendFormat": "{{job}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Batch Jobs Execution Time",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "dtdurationms",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
+        "h": 5,
         "w": 12,
         "x": 12,
-        "y": 10
+        "y": 0
       },
-      "hiddenSeries": false,
-      "id": 6,
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": true,
-        "max": true,
-        "min": true,
-        "rightSide": false,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
+      "id": 12,
       "options": {
-        "dataLinks": []
+        "fieldOptions": {
+          "calcs": [
+            "last"
+          ],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": [],
+          "values": false
+        },
+        "orientation": "vertical",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
       },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
+      "pluginVersion": "6.7.3",
       "targets": [
         {
-          "expr": "batch_job_processing_time{job=\"spark_aggregationpt15m\"}",
+          "expr": "ignite_kafka_total_producers",
           "interval": "",
-          "legendFormat": "{{job}}--{{tenant}}--{{objectType}}",
+          "legendFormat": "",
           "refId": "A"
-        },
-        {
-          "expr": "batch_job_processing_time{job=\"spark_aggregationpt1m\"}",
-          "interval": "",
-          "legendFormat": "{{job}}--{{tenant}}--{{objectType}}",
-          "refId": "B"
-        },
-        {
-          "expr": "batch_job_processing_time{job=\"spark_aggregationpt1h\"}",
-          "interval": "",
-          "legendFormat": "{{job}}--{{tenant}}--{{objectType}}",
-          "refId": "C"
-        },
-        {
-          "expr": "batch_job_processing_time{job=\"spark_tablefinalizer\"}",
-          "interval": "",
-          "legendFormat": "{{job}}--{{tenant}}--{{objectType}}",
-          "refId": "D"
         }
       ],
-      "thresholds": [],
       "timeFrom": null,
-      "timeRegions": [],
       "timeShift": null,
-      "title": "Batch Jobs Processing Time/tenant/objectType",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "s",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
+      "title": "Active Kafka Producers",
+      "type": "gauge"
     },
     {
       "aliasColors": {},
@@ -292,10 +153,10 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 12,
         "x": 0,
-        "y": 18
+        "y": 5
       },
       "hiddenSeries": false,
       "id": 2,
@@ -324,35 +185,17 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(job_scheduling_delay{job=\"spark_tablefinalizer\",tableName=\"raw\"})",
+          "expr": "ignite_ingestion_lag",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
-        },
-        {
-          "expr": "avg(job_scheduling_delay{job=\"spark_tablefinalizer\",tableName=\"agg-PT1M\"})",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "B"
-        },
-        {
-          "expr": "avg(job_scheduling_delay{job=\"spark_tablefinalizer\",tableName=\"agg-PT1H\"})",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "C"
-        },
-        {
-          "expr": "avg(job_scheduling_delay{job=\"spark_tablefinalizer\",tableName=\"agg-PT15M\"})",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "D"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Compactions Scheduling Delay",
+      "title": "Ingestion Lag",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -368,6 +211,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:252",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -376,6 +220,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:253",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -391,20 +236,20 @@
     },
     {
       "aliasColors": {},
-      "bars": true,
+      "bars": false,
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 12,
         "x": 12,
-        "y": 18
+        "y": 5
       },
       "hiddenSeries": false,
-      "id": 8,
+      "id": 6,
       "legend": {
         "avg": false,
         "current": false,
@@ -414,7 +259,7 @@
         "total": false,
         "values": false
       },
-      "lines": false,
+      "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
@@ -430,17 +275,30 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "batch_job_records_written",
+          "expr": "rate(ignite_normalizer_total_fedex_msg_processed[5m])",
+          "hide": false,
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "Fedex processed",
           "refId": "A"
+        },
+        {
+          "expr": "rate(ignite_normalizer_total_normalized[5m])",
+          "interval": "",
+          "legendFormat": "Normalized",
+          "refId": "B"
+        },
+        {
+          "expr": "rate(ignite_kafka_total_sent[5m])",
+          "interval": "",
+          "legendFormat": "Kafka sent",
+          "refId": "C"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Number of Records Written per job",
+      "title": "Processing rates ",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -456,6 +314,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:99",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -464,6 +323,284 @@
           "show": true
         },
         {
+          "$$hashKey": "object:100",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 14
+      },
+      "hiddenSeries": false,
+      "id": 8,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_ignite\"}",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Memory usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:111",
+          "format": "decbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:112",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 14
+      },
+      "hiddenSeries": false,
+      "id": 10,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "rate(container_cpu_user_seconds_total{container_label_com_docker_swarm_service_name=\"aod_ignite\"}[5m]) * 100",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "CPU usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:204",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:205",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "description": "Error rate during normalization. Turn on debug logs on ignite to get details",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 22
+      },
+      "hiddenSeries": false,
+      "id": 14,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "rate(ignite_normalizer_data_conversion[5m])",
+          "interval": "",
+          "legendFormat": "Data conversion errors [{{field}}]",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(ignite_normalizer_apply_sql_expression[5m])",
+          "interval": "",
+          "legendFormat": "SQL Expression errors [{{field}}]",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Normalization errors",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:816",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:817",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -478,6 +615,7 @@
       }
     }
   ],
+  "refresh": "5s",
   "schemaVersion": 22,
   "style": "dark",
   "tags": [],
@@ -485,7 +623,7 @@
     "list": []
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {
@@ -503,10 +641,10 @@
     ]
   },
   "timezone": "",
-  "title": "Spark Batch Jobs Monitoring",
-  "uid": "d26AACL7k",
+  "title": "Ignite Dashboard",
+  "uid": "XRZc5xNVz",
   "variables": {
     "list": []
   },
-  "version": 3
+  "version": 15
 }
