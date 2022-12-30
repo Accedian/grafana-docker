@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.93.0 
+**Release Date:** Fri Dec 30 12:51:22 UTC 2022     
+## Previous Releases 
 ### 0.92.0 
 **Release Date:** Wed Dec 21 08:52:55 UTC 2022     
-## Previous Releases 
 * Alert Service - Modify dashboard and add new panel with metrics [Asana](https://app.asana.com/0/1202421299651189/1203447968630095/f)
 ### 0.91.0 
 **Release Date:** Tue Dec 20 20:46:43 UTC 2022     
