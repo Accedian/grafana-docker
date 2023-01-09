@@ -19,10 +19,7 @@
   "liveNow": false,
   "panels": [
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -86,10 +83,7 @@
       "pluginVersion": "9.3.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_active_alert_errors_total[5m])) + sum(irate(alert_service_mqtt_errors_total[5m])) + sum(irate(alert_service_errors_total[5m]))",
           "format": "time_series",
@@ -104,10 +98,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -172,10 +163,7 @@
       "pluginVersion": "9.3.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "abs(sum(irate(alert_service_consumed_kafka_mgs_total[5m])) - sum(irate(alert_service_produced_mqtt_mgs_total[5m])))",
           "format": "time_series",
@@ -190,10 +178,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -255,10 +240,7 @@
       "pluginVersion": "9.3.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_session_mgs_total[5m]))",
           "format": "time_series",
@@ -273,10 +255,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -338,10 +317,7 @@
       "pluginVersion": "9.3.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_capture_mgs_total[5m]))",
           "format": "time_series",
@@ -389,10 +365,7 @@
         "noDataState": "no_data",
         "notifications": []
       },
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "description": "There should not be any errors in the alerting workflow. If there are errors, we at least have a rough timestamp to check alert service logs.",
       "fieldConfig": {
         "defaults": {
@@ -476,10 +449,7 @@
       "targets": [
         {
           "$$hashKey": "object:340",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_errors_total[5m]))",
           "format": "time_series",
@@ -490,10 +460,7 @@
         },
         {
           "$$hashKey": "object:341",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_mqtt_errors_total[5m]))",
           "format": "time_series",
@@ -504,10 +471,7 @@
         },
         {
           "$$hashKey": "object:342",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_active_errors_total[5m]))",
           "format": "time_series",
@@ -522,10 +486,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -587,10 +548,7 @@
       "pluginVersion": "9.3.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_consumed_kafka_mgs_total[5m]))",
           "format": "time_series",
@@ -605,10 +563,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -670,10 +625,7 @@
       "pluginVersion": "9.3.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_produced_mqtt_mgs_total[5m]))",
           "format": "time_series",
@@ -688,10 +640,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -753,10 +702,7 @@
       "pluginVersion": "9.3.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_netsec_mgs_total[5m]))",
           "format": "time_series",
@@ -771,10 +717,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -836,10 +779,7 @@
       "pluginVersion": "9.3.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_anonmaly_mgs_total[5m]))",
           "format": "time_series",
@@ -854,10 +794,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -940,10 +877,7 @@
       "pluginVersion": "9.3.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "(sum(irate(alert_service_rest_api_call_duration_seconds_sum[5m])) by (endpoint)) / (sum(irate(alert_service_rest_api_call_duration_seconds_count[5m])) by (endpoint))",
           "legendFormat": "{{endpoint}}",
@@ -956,10 +890,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1009,10 +940,7 @@
       "pluginVersion": "9.3.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "exemplar": false,
           "expr": "(sum(irate(alert_service_rest_api_call_duration_seconds_sum[5m])) by (endpoint)) / (sum(irate(alert_service_rest_api_call_duration_seconds_count[5m])) by (endpoint))",
@@ -1028,10 +956,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1114,10 +1039,7 @@
       "pluginVersion": "9.3.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_session_mgs_total[5m]))",
           "format": "time_series",
@@ -1127,10 +1049,7 @@
           "refId": "C"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_capture_mgs_total[5m]))",
           "format": "time_series",
@@ -1140,10 +1059,7 @@
           "refId": "D"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_anomaly_mgs_total[5m]))",
           "format": "time_series",
@@ -1153,10 +1069,7 @@
           "refId": "A"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_netsec_mgs_total[5m]))",
           "format": "time_series",
@@ -1171,10 +1084,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "description": "This is a graph to show the pattern of MQTT and Kafka. They should ideally be identical and if they diverge, it means alert service is unable to keep up.",
       "fieldConfig": {
         "defaults": {
@@ -1258,10 +1168,7 @@
       "pluginVersion": "9.3.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_consumed_kafka_mgs_total[5m]))",
           "format": "time_series",
@@ -1271,10 +1178,7 @@
           "refId": "B"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_produced_mqtt_mgs_total[5m]))",
           "format": "time_series",
@@ -1290,10 +1194,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1376,10 +1277,7 @@
       "pluginVersion": "9.3.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_cleared_total[5m])",
           "format": "time_series",
@@ -1389,10 +1287,7 @@
           "refId": "C"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "rate(alert_service_active_alert_total[1m])",
           "format": "time_series",
@@ -1407,10 +1302,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "description": "Type of alerts going through the system since alert service startup. Not useful as is. Maybe more useful as a pie chart",
       "fieldConfig": {
         "defaults": {
@@ -1495,10 +1387,7 @@
       "pluginVersion": "9.3.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_session_mgs_total[5m]))",
           "format": "time_series",
@@ -1508,10 +1397,7 @@
           "refId": "A"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_capture_mgs_total[5m]))",
           "format": "time_series",
@@ -1521,10 +1407,7 @@
           "refId": "B"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(irate(alert_service_netsec_mgs_total[5m]))",
           "format": "time_series",
@@ -1534,10 +1417,7 @@
           "refId": "C"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(alert_service_anomaly_mgs_total)",
           "format": "time_series",
@@ -1585,10 +1465,7 @@
         "noDataState": "no_data",
         "notifications": []
       },
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": "Prometheus",
       "description": "This chart will tell you if the Kafka output and the MQTT output are diverging. If they are, then this can be a sign that alert service is not able to keep up with the amount of data Kafka is outputting.",
       "fieldConfig": {
         "defaults": {
@@ -1672,10 +1549,7 @@
       "pluginVersion": "9.3.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "abs(rate(alert_service_consumed_kafka_mgs_total[1m]) - rate(alert_service_produced_mqtt_mgs_total[1m]))",
           "format": "time_series",
