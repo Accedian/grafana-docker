@@ -1,4 +1,5 @@
-## Current Release 
+* Alert Service - dashboard uid change
+## Current Release
 ### 0.94.0 
 **Release Date:** Mon Jan  9 10:19:39 UTC 2023     
 ## Previous Releases 
