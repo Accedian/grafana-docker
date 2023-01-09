@@ -3,20 +3,11 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": {
-          "type": "datasource",
-          "uid": "grafana"
-        },
+        "datasource": "-- Grafana --",
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
-        "target": {
-          "limit": 100,
-          "matchAny": false,
-          "tags": [],
-          "type": "dashboard"
-        },
         "type": "dashboard"
       }
     ]
@@ -1736,7 +1727,7 @@
     ]
   },
   "timezone": "",
-  "title": "Alerts",
+  "title": "Alert Service Metrics",
   "uid": "kzGizW3Wz",
   "version": 1,
   "weekStart": ""
