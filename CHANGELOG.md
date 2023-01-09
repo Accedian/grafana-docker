@@ -1,4 +1,5 @@
-## Current Release 
+* Alert Service - dashboard name change
+## Current Release
 ### 0.93.0 
 **Release Date:** Fri Dec 30 12:51:22 UTC 2022     
 ## Previous Releases 
