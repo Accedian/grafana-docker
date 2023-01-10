@@ -47,7 +47,13 @@ if [ ! -z "${GF_INSTALL_PLUGINS}" ]; then
   IFS=','
   for plugin in ${GF_INSTALL_PLUGINS}; do
     IFS=$OLDIFS
-    gosu grafana grafana-cli --pluginsDir "${GF_PATHS_PLUGINS}" plugins install ${plugin}
+    if [[ $plugin =~ .*\;.* ]]; then
+        pluginUrl=$(echo "$plugin" | cut -d';' -f 1)
+        pluginInstallFolder=$(echo "$plugin" | cut -d';' -f 2)
+        gosu grafana cli --pluginUrl ${pluginUrl} --pluginsDir "${GF_PATHS_PLUGINS}" plugins install "${pluginInstallFolder}"
+    else
+        gosu grafana cli --pluginsDir "${GF_PATHS_PLUGINS}" plugins install ${plugin}
+    fi
   done
 fi
 
