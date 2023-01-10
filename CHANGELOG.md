@@ -1,8 +1,10 @@
+## Current Release 
+### 0.96.0 
+**Release Date:** Tue Jan 10 12:10:20 UTC 2023     
+## Previous Releases 
 * Fix Alert Service dashboard - plugin not supported [Asana](https://app.asana.com/0/1202421299651189/1203672766314299/f)
-## Current Release
 ### 0.95.0 
 **Release Date:** Mon Jan  9 11:16:48 UTC 2023     
-## Previous Releases 
 * Alert Service - dashboard uid change
 ### 0.94.0 
 **Release Date:** Mon Jan  9 10:19:39 UTC 2023     
