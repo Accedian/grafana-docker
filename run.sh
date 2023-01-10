@@ -50,18 +50,24 @@ if [ ! -z "${GF_INSTALL_PLUGINS}" ]; then
     if [[ $plugin =~ .*\;.* ]]; then
         pluginUrl=$(echo "$plugin" | cut -d';' -f 1)
         pluginInstallFolder=$(echo "$plugin" | cut -d';' -f 2)
-        gosu grafana cli --pluginUrl ${pluginUrl} --pluginsDir "${GF_PATHS_PLUGINS}" plugins install "${pluginInstallFolder}"
+        gosu grafana grafana-cli --pluginUrl ${pluginUrl} --pluginsDir "${GF_PATHS_PLUGINS}" plugins install "${pluginInstallFolder}"
     else
-        gosu grafana cli --pluginsDir "${GF_PATHS_PLUGINS}" plugins install ${plugin}
+        gosu grafana grafana-cli --pluginsDir "${GF_PATHS_PLUGINS}" plugins install ${plugin}
     fi
   done
 fi
 
 if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
+  echo "Deleting existing provisioning"
   rm -rf /etc/grafana/provisioning/*
+
+  echo "Deleting existing dashboards"
   rm -rf /var/lib/grafana/dashboards/*
 
+  echo "Copying stock provisioning"
   cp -R /tmp/provisioning/ /etc/grafana/
+
+  echo "Copying stock dashboars"
   cp -R /tmp/dashboards/ /var/lib/grafana/
 fi
 

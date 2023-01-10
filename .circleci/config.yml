@@ -19,7 +19,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Building Docker Container
-          command: make docker
+          command: make build
 
   release:
     docker:
@@ -47,7 +47,7 @@ jobs:
                git semver minor
                export DOCKER_VER=$(git semver get)
                git push origin master ${DOCKER_VER}
-               make push  
+               make push
             fi
 
 workflows:

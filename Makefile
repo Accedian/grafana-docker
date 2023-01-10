@@ -1,11 +1,28 @@
-DOCKER_REPO_NAME:= gcr.io/npav-172917/
-DOCKER_IMAGE_NAME := grafana
-DOCKER_VER := $(if $(DOCKER_VER),$(DOCKER_VER),$(shell whoami)-dev)
+IMAGE_REPO := gcr.io/npav-172917
+IMAGE_NAME := grafana
+IMAGE_TAG ?= $(shell whoami)-dev
+
 DOCKER_DEFAULT_PLATFORM := linux/amd64
 export DOCKER_DEFAULT_PLATFORM
-all: docker
-docker:
-	export _docker_repo=${DOCKER_REPO_NAME}; export _grafana_version=${GRAFANA_VERSION}; export _docker_version=${DOCKER_VER}; ./build.sh
 
-push: docker
-	docker push $(DOCKER_REPO_NAME)$(DOCKER_IMAGE_NAME):$(DOCKER_VER)
+GRAFANA_VERSION ?= 9.1.3
+GRAFANA_URL ?= https://dl.grafana.com/oss/release/grafana_$(GRAFANA_VERSION)_amd64.deb
+GOSU_URL ?= https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64
+
+.PHONY: all
+all: build
+
+.PHONY: build
+build:
+	@echo "Building Grafana image: $(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)"
+	@echo "Using Grafana URL $(GRAFANA_URL)"
+	@echo "Using GOSU URL $(GOSU_URL)"
+	docker build \
+        --no-cache=true \
+        --build-arg "GRAFANA_URL=$(GRAFANA_URL)" \
+        --build-arg "GOSU_URL=$(GOSU_URL)" \
+        --tag "$(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)" \
+        .
+
+push:
+	docker push "$(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)"
