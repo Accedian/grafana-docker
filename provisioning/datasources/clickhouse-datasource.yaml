@@ -1,0 +1,20 @@
+apiVersion: 1
+
+datasources:
+  - name: ClickHouse
+    type: grafana-clickhouse-datasource
+    jsonData:
+      # <str>: Default database to be used. Can be empty
+      defaultDatabase: default
+      # <str>: Native or HTTP for transport
+      protocol: native
+      # <int>: ClickHouse TCP port
+      port: 10000
+      # <bool>: Toggle on if the connection is secure
+      secure: false
+      # <string>: Server TCP address
+      server: clickhouse1a
+      # <string>: ClickHouse username
+      username: monitoring
+      # <bool>: Skip TLS Verify
+      tlsSkipVerify: false
