@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:11.6-slim
 
 #ARG DOWNLOAD_URL="https://s3-us-west-2.amazonaws.com/grafana-releases/release/dist/grafana_latest_amd64.deb"
 ARG DOWNLOAD_URL="https://dl.grafana.com/oss/release/grafana_9.1.3_amd64.deb"
