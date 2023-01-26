@@ -24,5 +24,5 @@ build:
         --tag "$(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)" \
         .
 
-push:
+push: build
 	docker push "$(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)"
