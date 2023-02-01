@@ -1,8 +1,10 @@
 ## Current Release 
+### 0.99.0 
+**Release Date:** Wed Feb  1 14:15:40 UTC 2023     
+## Previous Releases 
 ### 0.98.0 
 **Release Date:** Thu Jan 26 16:09:11 UTC 2023     
 * Feat: New Fedex Dashboard [Asana](https://app.asana.com/0/1203411329194882/1203411329194909/f)
-## Previous Releases 
 ### 0.97.0 
 **Release Date:** Thu Jan 26 15:00:18 UTC 2023     
 ### 0.96.0 
