@@ -1,8 +1,10 @@
-* Fix: Metrics for alert service api calls not shown correctly [Asana](https://app.asana.com/0/1202421299651189/1203882620723234/f)
 ## Current Release 
+### 0.100.0 
+**Release Date:** Wed Feb  8 09:40:09 UTC 2023     
+## Previous Releases 
+* Fix: Metrics for alert service api calls not shown correctly [Asana](https://app.asana.com/0/1202421299651189/1203882620723234/f)
 ### 0.99.0 
 **Release Date:** Wed Feb  1 14:15:40 UTC 2023     
-## Previous Releases 
 ### 0.98.0 
 **Release Date:** Thu Jan 26 16:09:11 UTC 2023     
 * Feat: New Fedex Dashboard [Asana](https://app.asana.com/0/1203411329194882/1203411329194909/f)
