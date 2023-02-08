@@ -966,7 +966,7 @@
       },
       "lines": true,
       "linewidth": 1,
-      "nullPointMode": "null",
+      "nullPointMode": "null as zero",
       "options": {
         "dataLinks": []
       },
@@ -983,7 +983,8 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "(sum(irate(alert_service_rest_api_call_duration_seconds_sum[5m])) by (endpoint)) / (sum(irate(alert_service_rest_api_call_duration_seconds_count[5m])) by (endpoint))",
+          "expr": "(sum(rate(alert_service_rest_api_call_duration_seconds_sum[5m])) by (endpoint)) / (sum(rate(alert_service_rest_api_call_duration_seconds_count[5m])) by (endpoint))",
+          "interval": "",
           "legendFormat": "{{endpoint}}",
           "range": true,
           "refId": "A"
@@ -1010,14 +1011,15 @@
       },
       "yaxes": [
         {
-          "format": "short",
-          "label": null,
+          "format": "s",
+          "label": "",
           "logBase": 1,
           "max": null,
           "min": "0",
           "show": true
         },
         {
+          "decimals": null,
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1085,7 +1087,8 @@
                   "value": 80
                 }
               ]
-            }
+            },
+            "unit": "s"
           },
           "overrides": [],
           "values": false
@@ -1108,9 +1111,10 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "exemplar": false,
-          "expr": "(sum(irate(alert_service_rest_api_call_duration_seconds_sum[5m])) by (endpoint)) / (sum(irate(alert_service_rest_api_call_duration_seconds_count[5m])) by (endpoint))",
+          "expr": "(sum(rate(alert_service_rest_api_call_duration_seconds_sum[5m])) by (endpoint)) / (sum(rate(alert_service_rest_api_call_duration_seconds_count[5m])) by (endpoint))",
           "format": "time_series",
           "instant": false,
+          "interval": "",
           "legendFormat": "{{endpoint}}",
           "range": true,
           "refId": "A"
@@ -1722,5 +1726,5 @@
   "timezone": "",
   "title": "Alert Service Metrics",
   "uid": "6f7e92a8",
-  "version": 3
+  "version": 4
 }
