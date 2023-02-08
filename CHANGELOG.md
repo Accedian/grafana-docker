@@ -1,3 +1,4 @@
+* Fix: Metrics for alert service api calls not shown correctly [Asana](https://app.asana.com/0/1202421299651189/1203882620723234/f)
 ## Current Release 
 ### 0.99.0 
 **Release Date:** Wed Feb  1 14:15:40 UTC 2023     
