@@ -1,3 +1,4 @@
+* Feat - Update Roadrunner dashboard with new Persistence Service and Failed Files metrics [Asana](https://app.asana.com/0/1199574676083399/1203337433864712/f)
 ## Current Release 
 ### 0.100.0 
 **Release Date:** Wed Feb  8 09:40:09 UTC 2023     
