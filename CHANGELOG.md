@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.103.0 
+**Release Date:** Fri Feb 10 14:53:24 UTC 2023     
+## Previous Releases 
 ### 0.102.0 
 **Release Date:** Fri Feb 10 08:32:53 UTC 2023     
-## Previous Releases 
 * Fix: Refactoring of alert service dashboard [Asana](https://app.asana.com/0/1202421299651189/1203936039863649/f)
 ### 0.101.0
 **Release Date:** Thu Feb  9 19:10:10 UTC 2023
