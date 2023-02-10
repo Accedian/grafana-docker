@@ -31,7 +31,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "description": "",
       "fieldConfig": {
@@ -91,7 +91,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -135,7 +135,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "description": "",
       "fieldConfig": {
@@ -195,7 +195,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -227,7 +227,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -273,7 +273,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -293,7 +293,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -339,7 +339,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -359,7 +359,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -405,7 +405,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -425,7 +425,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -471,7 +471,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -491,7 +491,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "description": "",
       "fieldConfig": {
@@ -636,7 +636,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -763,7 +763,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -998,7 +998,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -1128,7 +1128,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "description": "",
       "fieldConfig": {
@@ -1352,7 +1352,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -1515,7 +1515,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1627,7 +1627,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -1706,6 +1706,26 @@
         "name": "filters",
         "skipUrlSync": false,
         "type": "adhoc"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "clickhouse1a",
+          "value": "clickhouse1a"
+        },
+        "description": "All ClickHouse available datasource",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Datasource",
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "grafana-clickhouse-datasource",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "/(?=clickhouse.*)/",
+        "skipUrlSync": false,
+        "type": "datasource"
       }
     ]
   },
@@ -1717,6 +1737,6 @@
   "timezone": "",
   "title": "ClickHouse - Cluster Analysis",
   "uid": "_hAsuzBnz",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }

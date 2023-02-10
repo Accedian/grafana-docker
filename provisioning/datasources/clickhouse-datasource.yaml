@@ -1,10 +1,9 @@
 apiVersion: 1
 
 datasources:
-  - &clickhouse
-    name: clickhouse1a
+  - name: clickhouse1a
     type: grafana-clickhouse-datasource
-    jsonData: &clickhouse-jsondata
+    jsonData:
       # <str>: Default database to be used. Can be empty
       defaultDatabase: default
       # <str>: Native or HTTP for transport
@@ -21,43 +20,78 @@ datasources:
       tlsSkipVerify: false
 
   - name: clickhouse1b
-    <<: *clickhouse
+    type: grafana-clickhouse-datasource
     jsonData:
-      <<: *clickhouse-jsondata
+      defaultDatabase: default
+      protocol: native
+      port: 10000
+      secure: false
       server: clickhouse1b
+      username: monitoring
+      tlsSkipVerify: false
 
   - name: clickhouse2a
-    <<: *clickhouse
+    type: grafana-clickhouse-datasource
     jsonData:
-      <<: *clickhouse-jsondata
+      defaultDatabase: default
+      protocol: native
+      port: 10000
+      secure: false
       server: clickhouse2a
+      username: monitoring
+      tlsSkipVerify: false
 
   - name: clickhouse2b
-    <<: *clickhouse
+    type: grafana-clickhouse-datasource
     jsonData:
-      <<: *clickhouse-jsondata
+      defaultDatabase: default
+      protocol: native
+      port: 10000
+      secure: false
       server: clickhouse2b
+      username: monitoring
+      tlsSkipVerify: false
 
   - name: clickhouse3a
-    <<: *clickhouse
+    type: grafana-clickhouse-datasource
     jsonData:
-      <<: *clickhouse-jsondata
+      defaultDatabase: default
+      protocol: native
+      port: 10000
+      secure: false
       server: clickhouse3a
+      username: monitoring
+      tlsSkipVerify: false
 
   - name: clickhouse3b
-    <<: *clickhouse
+    type: grafana-clickhouse-datasource
     jsonData:
-      <<: *clickhouse-jsondata
+      defaultDatabase: default
+      protocol: native
+      port: 10000
+      secure: false
       server: clickhouse3b
+      username: monitoring
+      tlsSkipVerify: false
 
   - name: clickhouse4a
-    <<: *clickhouse
+    type: grafana-clickhouse-datasource
     jsonData:
-      <<: *clickhouse-jsondata
+      defaultDatabase: default
+      protocol: native
+      port: 10000
+      secure: false
       server: clickhouse4a
+      username: monitoring
+      tlsSkipVerify: false
 
   - name: clickhouse4b
-    <<: *clickhouse
+    type: grafana-clickhouse-datasource
     jsonData:
-      <<: *clickhouse-jsondata
+      defaultDatabase: default
+      protocol: native
+      port: 10000
+      secure: false
       server: clickhouse4b
+      username: monitoring
+      tlsSkipVerify: false
