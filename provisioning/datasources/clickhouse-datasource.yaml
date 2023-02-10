@@ -1,9 +1,10 @@
 apiVersion: 1
 
 datasources:
-  - name: ClickHouse
+  - &clickhouse
+    name: clickhouse1a
     type: grafana-clickhouse-datasource
-    jsonData:
+    jsonData: &clickhouse-jsondata
       # <str>: Default database to be used. Can be empty
       defaultDatabase: default
       # <str>: Native or HTTP for transport
@@ -18,3 +19,45 @@ datasources:
       username: monitoring
       # <bool>: Skip TLS Verify
       tlsSkipVerify: false
+
+  - name: clickhouse1b
+    <<: *clickhouse
+    jsonData:
+      <<: *clickhouse-jsondata
+      server: clickhouse1b
+
+  - name: clickhouse2a
+    <<: *clickhouse
+    jsonData:
+      <<: *clickhouse-jsondata
+      server: clickhouse2a
+
+  - name: clickhouse2b
+    <<: *clickhouse
+    jsonData:
+      <<: *clickhouse-jsondata
+      server: clickhouse2b
+
+  - name: clickhouse3a
+    <<: *clickhouse
+    jsonData:
+      <<: *clickhouse-jsondata
+      server: clickhouse3a
+
+  - name: clickhouse3b
+    <<: *clickhouse
+    jsonData:
+      <<: *clickhouse-jsondata
+      server: clickhouse3b
+
+  - name: clickhouse4a
+    <<: *clickhouse
+    jsonData:
+      <<: *clickhouse-jsondata
+      server: clickhouse4a
+
+  - name: clickhouse4b
+    <<: *clickhouse
+    jsonData:
+      <<: *clickhouse-jsondata
+      server: clickhouse4b
