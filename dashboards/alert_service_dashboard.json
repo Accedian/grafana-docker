@@ -20,105 +20,90 @@
   "panels": [
     {
       "datasource": "Prometheus",
+      "description": "Drops means that alert service was not running",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": -1,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "stepBefore",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "percent"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
             }
-          ],
+          },
+          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#299c46",
+                "color": "green",
                 "value": null
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 1
-              },
-              {
-                "color": "#d44a3a",
-                "value": 2
               }
             ]
-          },
-          "unit": "none"
+          }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
-        "w": 3,
+        "h": 5,
+        "w": 24,
         "x": 0,
         "y": 0
       },
-      "id": 8,
-      "links": [],
-      "maxDataPoints": 100,
+      "id": 29,
       "options": {
-        "colorMode": "background",
-        "fieldOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            }
-          },
-          "overrides": [],
-          "values": false
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
         },
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
       },
-      "pluginVersion": "6.7.3",
+      "pluginVersion": "9.1.3",
       "targets": [
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_active_alert_errors_total[5m])) + sum(irate(alert_service_mqtt_errors_total[5m])) + sum(irate(alert_service_errors_total[5m]))",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "Errors",
+          "expr": "up{job=\"alert_service\"}",
+          "legendFormat": "{{instance}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Alert Errors per min",
-      "transparent": true,
-      "type": "stat"
+      "title": "Alert Service Instances Up Status",
+      "type": "timeseries"
     },
     {
       "datasource": "Prometheus",
@@ -127,30 +112,16 @@
           "color": {
             "mode": "thresholds"
           },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
+          "mappings": [],
           "thresholds": {
-            "mode": "absolute",
+            "mode": "percentage",
             "steps": [
               {
-                "color": "#299c46",
+                "color": "green",
                 "value": null
               },
               {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 1
-              },
-              {
-                "color": "#d44a3a",
+                "color": "red",
                 "value": 5
               }
             ]
@@ -162,8 +133,74 @@
       "gridPos": {
         "h": 4,
         "w": 3,
+        "x": 0,
+        "y": 5
+      },
+      "id": 8,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.1.3",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(alert_service_errors_total[$__interval]))",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Errors",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Alert Errors",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
         "x": 3,
-        "y": 0
+        "y": 5
       },
       "hideTimeOverride": false,
       "id": 6,
@@ -171,29 +208,6 @@
       "maxDataPoints": 100,
       "options": {
         "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            }
-          },
-          "overrides": [],
-          "values": false
-        },
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "horizontal",
@@ -206,12 +220,12 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "6.7.3",
+      "pluginVersion": "9.1.3",
       "targets": [
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "abs(sum(irate(alert_service_consumed_kafka_mgs_total[5m])) - sum(irate(alert_service_produced_mqtt_mgs_total[5m])))",
+          "expr": "abs(sum(increase(alert_service_consumed_kafka_mgs_total[$__interval])) - sum(increase(alert_service_produced_mqtt_mgs_total[$__interval])))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka In : MQTT Out",
@@ -219,7 +233,7 @@
           "refId": "A"
         }
       ],
-      "title": "Input Output Lag per min",
+      "title": "Input Output Lag",
       "transparent": true,
       "type": "stat"
     },
@@ -231,17 +245,7 @@
             "fixedColor": "rgb(31, 120, 193)",
             "mode": "fixed"
           },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
+          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -263,7 +267,7 @@
         "h": 4,
         "w": 3,
         "x": 6,
-        "y": 0
+        "y": 5
       },
       "hideTimeOverride": false,
       "id": 15,
@@ -271,29 +275,6 @@
       "maxDataPoints": 100,
       "options": {
         "colorMode": "none",
-        "fieldOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            }
-          },
-          "overrides": [],
-          "values": false
-        },
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "horizontal",
@@ -306,12 +287,12 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "6.7.3",
+      "pluginVersion": "9.1.3",
       "targets": [
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_session_mgs_total[5m]))",
+          "expr": "sum(round(increase(alert_service_session_mgs_total[$__interval])))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -319,7 +300,7 @@
           "refId": "A"
         }
       ],
-      "title": "Session Msgs per min",
+      "title": "Session Msgs rate",
       "transparent": true,
       "type": "stat"
     },
@@ -331,17 +312,7 @@
             "fixedColor": "rgb(31, 120, 193)",
             "mode": "fixed"
           },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
+          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -363,7 +334,7 @@
         "h": 4,
         "w": 3,
         "x": 9,
-        "y": 0
+        "y": 5
       },
       "hideTimeOverride": false,
       "id": 17,
@@ -371,29 +342,6 @@
       "maxDataPoints": 100,
       "options": {
         "colorMode": "none",
-        "fieldOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            }
-          },
-          "overrides": [],
-          "values": false
-        },
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "horizontal",
@@ -406,12 +354,12 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "6.7.3",
+      "pluginVersion": "9.1.3",
       "targets": [
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_capture_mgs_total[5m]))",
+          "expr": "sum(round(increase(alert_service_capture_mgs_total[$__interval])))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -419,7 +367,7 @@
           "refId": "A"
         }
       ],
-      "title": "Capture Msgs per min",
+      "title": "Capture Msgs rate",
       "transparent": true,
       "type": "stat"
     },
@@ -430,46 +378,56 @@
       "dashes": false,
       "datasource": "Prometheus",
       "description": "There should not be any errors in the alerting workflow. If there are errors, we at least have a rough timestamp to check alert service logs.",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 5
       },
       "hiddenSeries": false,
       "id": 4,
       "legend": {
-        "avg": false,
-        "current": false,
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
         "max": false,
         "min": false,
+        "rightSide": false,
         "show": true,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
-      "linewidth": 1,
+      "linewidth": 2,
       "links": [],
-      "nullPointMode": "null",
+      "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "9.3.1",
-      "pointradius": 2,
-      "points": false,
+      "pluginVersion": "9.1.3",
+      "pointradius": 0.5,
+      "points": true,
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
-      "stack": false,
+      "stack": true,
       "steppedLine": false,
       "targets": [
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_errors_total[5m]))",
+          "expr": "sum(increase(alert_service_errors_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Alert Errors",
@@ -479,7 +437,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_mqtt_errors_total[5m]))",
+          "expr": "sum(increase(alert_service_mqtt_errors_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "MQTT Errors",
@@ -489,7 +447,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_active_errors_total[5m]))",
+          "expr": "sum(increase(alert_service_active_alert_errors_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Active Errors",
@@ -498,9 +456,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Alert Parsing Errors",
       "tooltip": {
         "shared": true,
@@ -510,33 +466,27 @@
       "transparent": true,
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "format": "short",
-          "label": null,
+          "$$hashKey": "object:180",
+          "format": "none",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
+          "$$hashKey": "object:181",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -547,17 +497,7 @@
             "fixedColor": "rgb(31, 120, 193)",
             "mode": "fixed"
           },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
+          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -579,7 +519,7 @@
         "h": 4,
         "w": 3,
         "x": 0,
-        "y": 4
+        "y": 9
       },
       "hideTimeOverride": false,
       "id": 13,
@@ -587,29 +527,6 @@
       "maxDataPoints": 100,
       "options": {
         "colorMode": "none",
-        "fieldOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            }
-          },
-          "overrides": [],
-          "values": false
-        },
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "horizontal",
@@ -622,12 +539,12 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "6.7.3",
+      "pluginVersion": "9.1.3",
       "targets": [
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_consumed_kafka_mgs_total[5m]))",
+          "expr": "sum(increase(alert_service_consumed_kafka_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -635,7 +552,7 @@
           "refId": "A"
         }
       ],
-      "title": "Kafka ingestion per min",
+      "title": "Kafka ingestion",
       "transparent": true,
       "type": "stat"
     },
@@ -647,17 +564,7 @@
             "fixedColor": "rgb(31, 120, 193)",
             "mode": "fixed"
           },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
+          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -679,7 +586,7 @@
         "h": 4,
         "w": 3,
         "x": 3,
-        "y": 4
+        "y": 9
       },
       "hideTimeOverride": false,
       "id": 14,
@@ -687,29 +594,6 @@
       "maxDataPoints": 100,
       "options": {
         "colorMode": "none",
-        "fieldOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            }
-          },
-          "overrides": [],
-          "values": false
-        },
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "horizontal",
@@ -722,12 +606,12 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "6.7.3",
+      "pluginVersion": "9.1.3",
       "targets": [
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_produced_mqtt_mgs_total[5m]))",
+          "expr": "sum(round(increase(alert_service_produced_mqtt_mgs_total[$__interval])))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -735,7 +619,7 @@
           "refId": "A"
         }
       ],
-      "title": "MQTT Messages per min",
+      "title": "MQTT Msgs rate",
       "transparent": true,
       "type": "stat"
     },
@@ -747,17 +631,7 @@
             "fixedColor": "rgb(31, 120, 193)",
             "mode": "fixed"
           },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
+          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -779,7 +653,7 @@
         "h": 4,
         "w": 3,
         "x": 6,
-        "y": 4
+        "y": 9
       },
       "hideTimeOverride": false,
       "id": 18,
@@ -787,29 +661,6 @@
       "maxDataPoints": 100,
       "options": {
         "colorMode": "none",
-        "fieldOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            }
-          },
-          "overrides": [],
-          "values": false
-        },
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "horizontal",
@@ -822,12 +673,12 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "6.7.3",
+      "pluginVersion": "9.1.3",
       "targets": [
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_netsec_mgs_total[5m]))",
+          "expr": "sum(increase(alert_service_netsec_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -835,7 +686,7 @@
           "refId": "A"
         }
       ],
-      "title": "NetSec Msgs per min",
+      "title": "NetSec Msgs rate",
       "transparent": true,
       "type": "stat"
     },
@@ -847,17 +698,7 @@
             "fixedColor": "rgb(31, 120, 193)",
             "mode": "fixed"
           },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
+          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -879,7 +720,7 @@
         "h": 4,
         "w": 3,
         "x": 9,
-        "y": 4
+        "y": 9
       },
       "hideTimeOverride": false,
       "id": 19,
@@ -887,29 +728,6 @@
       "maxDataPoints": 100,
       "options": {
         "colorMode": "none",
-        "fieldOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            }
-          },
-          "overrides": [],
-          "values": false
-        },
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "horizontal",
@@ -922,12 +740,12 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "6.7.3",
+      "pluginVersion": "9.1.3",
       "targets": [
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_anonmaly_mgs_total[5m]))",
+          "expr": "sum(increase(alert_service_anomaly_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -935,7 +753,7 @@
           "refId": "A"
         }
       ],
-      "title": "Anomaly Msgs per min",
+      "title": "Anomaly Msgs rate",
       "transparent": true,
       "type": "stat"
     },
@@ -945,33 +763,42 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 13
       },
       "hiddenSeries": false,
       "id": 26,
       "legend": {
-        "avg": false,
-        "current": false,
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
         "max": false,
         "min": false,
         "show": true,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "9.3.1",
+      "pluginVersion": "9.1.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -991,10 +818,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Average API Calls Duration over time",
+      "title": "Average API Calls Duration in the last 5 min",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1003,34 +828,28 @@
       "transparent": true,
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
+          "$$hashKey": "object:68",
           "format": "s",
           "label": "",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
-          "decimals": null,
+          "$$hashKey": "object:69",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1061,51 +880,27 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 12,
         "x": 12,
-        "y": 8
+        "y": 13
       },
       "id": 27,
       "options": {
         "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            },
-            "unit": "s"
-          },
-          "overrides": [],
-          "values": false
-        },
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "mean"
           ],
           "fields": "",
           "values": false
         },
         "textMode": "auto"
       },
-      "pluginVersion": "6.7.3",
+      "pluginVersion": "9.1.3",
       "targets": [
         {
           "datasource": "Prometheus",
@@ -1120,7 +915,7 @@
           "refId": "A"
         }
       ],
-      "title": "Average API Calls Duration in the last 5 minutes",
+      "title": "Average API Calls Duration in the last 5 min",
       "transparent": true,
       "type": "stat"
     },
@@ -1130,13 +925,19 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 13,
         "w": 12,
         "x": 0,
-        "y": 16
+        "y": 22
       },
       "hiddenSeries": false,
       "id": 20,
@@ -1154,10 +955,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "9.3.1",
+      "pluginVersion": "9.1.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1169,7 +970,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_session_mgs_total[5m]))",
+          "expr": "sum(irate(alert_service_session_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "session",
@@ -1179,7 +980,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_capture_mgs_total[5m]))",
+          "expr": "sum(irate(alert_service_capture_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "capture",
@@ -1189,7 +990,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_anomaly_mgs_total[5m]))",
+          "expr": "sum(irate(alert_service_anomaly_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "anomaly",
@@ -1199,7 +1000,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_netsec_mgs_total[5m]))",
+          "expr": "sum(irate(alert_service_netsec_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "network security",
@@ -1208,10 +1009,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Alert msg type per min",
+      "title": "Alert msg type",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1220,33 +1019,27 @@
       "transparent": true,
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
+          "$$hashKey": "object:1119",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
+          "$$hashKey": "object:1120",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1256,13 +1049,19 @@
       "dashes": false,
       "datasource": "Prometheus",
       "description": "This is a graph to show the pattern of MQTT and Kafka. They should ideally be identical and if they diverge, it means alert service is unable to keep up.",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 13,
         "w": 12,
         "x": 12,
-        "y": 16
+        "y": 22
       },
       "hiddenSeries": false,
       "id": 2,
@@ -1278,12 +1077,12 @@
       "lines": true,
       "linewidth": 1,
       "links": [],
-      "nullPointMode": "null",
+      "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "9.3.1",
+      "pluginVersion": "9.1.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1315,9 +1114,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Input/Output Metrics (stacked)",
       "tooltip": {
         "shared": true,
@@ -1327,33 +1124,27 @@
       "transparent": true,
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
+          "$$hashKey": "object:491",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
+          "$$hashKey": "object:492",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1362,13 +1153,19 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 12,
         "w": 12,
         "x": 0,
-        "y": 29
+        "y": 35
       },
       "hiddenSeries": false,
       "id": 21,
@@ -1386,10 +1183,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "9.3.1",
+      "pluginVersion": "9.1.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1401,7 +1198,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_cleared_total[5m]))",
+          "expr": "sum(rate(alert_service_cleared_total[$__interval]))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1413,7 +1210,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "irate(alert_service_active_alert_total[5m])",
+          "expr": "sum(rate(alert_service_active_alert_total[$__interval]))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1423,10 +1220,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Active/Clear per min",
+      "title": "Active/Clear alerts",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1435,33 +1230,27 @@
       "transparent": true,
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "format": "short",
-          "label": null,
+          "$$hashKey": "object:124",
+          "format": "cps",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
+          "$$hashKey": "object:125",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1471,13 +1260,19 @@
       "dashes": false,
       "datasource": "Prometheus",
       "description": "Type of alerts going through the system since alert service startup. Not useful as is. Maybe more useful as a pie chart",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 12,
         "w": 12,
         "x": 12,
-        "y": 29
+        "y": 35
       },
       "hiddenSeries": false,
       "id": 12,
@@ -1495,10 +1290,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "9.3.1",
+      "pluginVersion": "9.1.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1510,7 +1305,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_session_mgs_total[5m]))",
+          "expr": "sum(irate(alert_service_session_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "session",
@@ -1520,7 +1315,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_capture_mgs_total[5m]))",
+          "expr": "sum(irate(alert_service_capture_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "catpure",
@@ -1530,7 +1325,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_netsec_mgs_total[5m]))",
+          "expr": "sum(irate(alert_service_netsec_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "netsec",
@@ -1540,7 +1335,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(alert_service_anomaly_mgs_total)",
+          "expr": "sum(irate(alert_service_anomaly_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "anomaly",
@@ -1549,10 +1344,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Alert Message Types Counts per min",
+      "title": "Alert Message Types Counts",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1561,33 +1354,27 @@
       "transparent": true,
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
+          "$$hashKey": "object:1040",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
+          "$$hashKey": "object:1041",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1597,13 +1384,19 @@
       "dashes": false,
       "datasource": "Prometheus",
       "description": "This chart will tell you if the Kafka output and the MQTT output are diverging. If they are, then this can be a sign that alert service is not able to keep up with the amount of data Kafka is outputting.",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 12,
         "w": 12,
         "x": 12,
-        "y": 41
+        "y": 47
       },
       "hiddenSeries": false,
       "id": 10,
@@ -1621,10 +1414,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "9.3.1",
+      "pluginVersion": "9.1.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1636,7 +1429,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "abs(rate(alert_service_consumed_kafka_mgs_total[1m]) - rate(alert_service_produced_mqtt_mgs_total[1m]))",
+          "expr": "abs(irate(alert_service_consumed_kafka_mgs_total[$__interval]) - rate(alert_service_produced_mqtt_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka - MQTT",
@@ -1645,9 +1438,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Kafka MQTT Divergence",
       "tooltip": {
         "shared": true,
@@ -1657,38 +1448,32 @@
       "transparent": true,
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
+          "$$hashKey": "object:884",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
+          "$$hashKey": "object:885",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     }
   ],
   "refresh": "5m",
-  "schemaVersion": 22,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {

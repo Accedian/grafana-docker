@@ -1,10 +1,11 @@
-## Current Release 
-### 0.101.0 
-**Release Date:** Thu Feb  9 19:10:10 UTC 2023     
-## Previous Releases 
+* Fix: Refactoring of alert service dashboard [Asana](https://app.asana.com/0/1202421299651189/1203936039863649/f)
+## Current Release
+### 0.101.0
+**Release Date:** Thu Feb  9 19:10:10 UTC 2023
+## Previous Releases
 * Feat - Update Roadrunner dashboard with new Persistence Service and Failed Files metrics [Asana](https://app.asana.com/0/1199574676083399/1203337433864712/f)
-### 0.100.0 
-**Release Date:** Wed Feb  8 09:40:09 UTC 2023     
+### 0.100.0
+**Release Date:** Wed Feb  8 09:40:09 UTC 2023
 * Fix: Metrics for alert service api calls not shown correctly [Asana](https://app.asana.com/0/1202421299651189/1203882620723234/f)
 ### 0.99.0 
 **Release Date:** Wed Feb  1 14:15:40 UTC 2023     
