@@ -1,3 +1,4 @@
+* Feat: MOSummaryConsolidator Delta dashboard from running job [Asana Task](https://app.asana.com/0/1133479128121896/1203328848884985/f)
 ## Current Release 
 ### 0.103.0 
 **Release Date:** Fri Feb 10 14:53:24 UTC 2023     
