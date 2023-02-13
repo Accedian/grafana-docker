@@ -1,8 +1,10 @@
-* Feat: MOSummaryConsolidator Delta dashboard from running job [Asana Task](https://app.asana.com/0/1133479128121896/1203328848884985/f)
 ## Current Release 
+### 0.104.0 
+**Release Date:** Mon Feb 13 22:13:41 UTC 2023     
+## Previous Releases 
+* Feat: MOSummaryConsolidator Delta dashboard from running job [Asana Task](https://app.asana.com/0/1133479128121896/1203328848884985/f)
 ### 0.103.0 
 **Release Date:** Fri Feb 10 14:53:24 UTC 2023     
-## Previous Releases 
 ### 0.102.0 
 **Release Date:** Fri Feb 10 08:32:53 UTC 2023     
 * Fix: Refactoring of alert service dashboard [Asana](https://app.asana.com/0/1202421299651189/1203936039863649/f)
