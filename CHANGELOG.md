@@ -1,4 +1,5 @@
-## Current Release 
+* Fix: Metrics for alert service - micro tca alerts were not included [Asana](https://app.asana.com/0/1202421299651189/1203965761436765/f)
+## Current Release
 ### 0.104.0 
 **Release Date:** Mon Feb 13 22:13:41 UTC 2023     
 ## Previous Releases 
