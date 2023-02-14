@@ -13,9 +13,9 @@
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 35,
+  "id": 38,
   "links": [],
   "panels": [
     {
@@ -96,7 +96,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "up{job=\"alert_service\"}",
+          "expr": "up{job=\"alert-service\"}",
           "legendFormat": "{{instance}}",
           "range": true,
           "refId": "A"
@@ -292,7 +292,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(round(increase(alert_service_session_mgs_total[$__interval])))",
+          "expr": "sum(increase(alert_service_session_mgs_total[$__interval])) + sum(increase(alert_service_micro_tca_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -359,7 +359,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(round(increase(alert_service_capture_mgs_total[$__interval])))",
+          "expr": "sum(increase(alert_service_capture_mgs_total[$__interval])) + sum(increase(alert_service_capture_automatic_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -611,7 +611,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(round(increase(alert_service_produced_mqtt_mgs_total[$__interval])))",
+          "expr": "sum(increase(alert_service_produced_mqtt_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -970,7 +970,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_session_mgs_total[$__interval]))",
+          "expr": "sum(rate(alert_service_session_mgs_total[$__interval])) + sum(rate(alert_service_micro_tca_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "session",
@@ -980,7 +980,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_capture_mgs_total[$__interval]))",
+          "expr": "sum(rate(alert_service_capture_mgs_total[$__interval])) + sum(rate(alert_service_capture_automatic_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "capture",
@@ -990,7 +990,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_anomaly_mgs_total[$__interval]))",
+          "expr": "sum(rate(alert_service_anomaly_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "anomaly",
@@ -1000,7 +1000,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_netsec_mgs_total[$__interval]))",
+          "expr": "sum(rate(alert_service_netsec_mgs_total[$__interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "network security",
@@ -1010,7 +1010,7 @@
       ],
       "thresholds": [],
       "timeRegions": [],
-      "title": "Alert msg type",
+      "title": "Alerts rates by type",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1094,7 +1094,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_consumed_kafka_mgs_total[5m]))",
+          "expr": "sum(rate(alert_service_consumed_kafka_mgs_total[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka msgs",
@@ -1104,7 +1104,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(irate(alert_service_produced_mqtt_mgs_total[5m]))",
+          "expr": "sum(rate(alert_service_produced_mqtt_mgs_total[5m]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -1221,7 +1221,7 @@
       ],
       "thresholds": [],
       "timeRegions": [],
-      "title": "Active/Clear alerts",
+      "title": "Raised/Cleared alerts",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1259,130 +1259,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "description": "Type of alerts going through the system since alert service startup. Not useful as is. Maybe more useful as a pie chart",
-      "fieldConfig": {
-        "defaults": {
-          "links": []
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 12,
-        "y": 35
-      },
-      "hiddenSeries": false,
-      "id": 12,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "9.1.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum(irate(alert_service_session_mgs_total[$__interval]))",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "session",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum(irate(alert_service_capture_mgs_total[$__interval]))",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "catpure",
-          "range": true,
-          "refId": "B"
-        },
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum(irate(alert_service_netsec_mgs_total[$__interval]))",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "netsec",
-          "range": true,
-          "refId": "C"
-        },
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum(irate(alert_service_anomaly_mgs_total[$__interval]))",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "anomaly",
-          "range": true,
-          "refId": "D"
-        }
-      ],
-      "thresholds": [],
-      "timeRegions": [],
-      "title": "Alert Message Types Counts",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transparent": true,
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:1040",
-          "format": "short",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:1041",
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
       "description": "This chart will tell you if the Kafka output and the MQTT output are diverging. If they are, then this can be a sign that alert service is not able to keep up with the amount of data Kafka is outputting.",
       "fieldConfig": {
         "defaults": {
@@ -1396,7 +1272,7 @@
         "h": 12,
         "w": 12,
         "x": 12,
-        "y": 47
+        "y": 35
       },
       "hiddenSeries": false,
       "id": 10,
@@ -1511,5 +1387,6 @@
   "timezone": "",
   "title": "Alert Service Metrics",
   "uid": "6f7e92a8",
-  "version": 4
+  "version": 7,
+  "weekStart": ""
 }
