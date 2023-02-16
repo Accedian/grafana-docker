@@ -1,4 +1,5 @@
-## Current Release 
+* New dashboard for alert service + fixing rate interval [Asana](https://app.asana.com/0/1202421299651189/1203974162946127/f)
+## Current Release
 ### 0.105.0 
 **Release Date:** Tue Feb 14 12:37:19 UTC 2023     
 ## Previous Releases 
