@@ -1,8 +1,10 @@
+## Current Release 
+### 0.106.0 
+**Release Date:** Thu Feb 16 10:41:22 UTC 2023     
+## Previous Releases 
 * New dashboard for alert service + fixing rate interval [Asana](https://app.asana.com/0/1202421299651189/1203974162946127/f)
-## Current Release
 ### 0.105.0 
 **Release Date:** Tue Feb 14 12:37:19 UTC 2023     
-## Previous Releases 
 * Fix: Metrics for alert service - micro tca alerts were not included [Asana](https://app.asana.com/0/1202421299651189/1203965761436765/f)
 ### 0.104.0 
 **Release Date:** Mon Feb 13 22:13:41 UTC 2023     
