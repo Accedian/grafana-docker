@@ -15,9 +15,66 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 38,
+  "id": 2,
   "links": [],
+  "liveNow": false,
   "panels": [
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 31,
+      "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.1.3",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(alert_service_current_active_alerts)",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Active Alerts overtime",
+      "type": "stat"
+    },
     {
       "datasource": "Prometheus",
       "description": "Drops means that alert service was not running",
@@ -73,9 +130,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 24,
-        "x": 0,
+        "h": 4,
+        "w": 12,
+        "x": 12,
         "y": 0
       },
       "id": 29,
@@ -134,7 +191,7 @@
         "h": 4,
         "w": 3,
         "x": 0,
-        "y": 5
+        "y": 4
       },
       "id": 8,
       "links": [],
@@ -159,7 +216,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(increase(alert_service_errors_total[$__interval]))",
+          "expr": "sum(increase(alert_service_errors_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Errors",
@@ -200,7 +257,7 @@
         "h": 4,
         "w": 3,
         "x": 3,
-        "y": 5
+        "y": 4
       },
       "hideTimeOverride": false,
       "id": 6,
@@ -225,7 +282,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "abs(sum(increase(alert_service_consumed_kafka_mgs_total[$__interval])) - sum(increase(alert_service_produced_mqtt_mgs_total[$__interval])))",
+          "expr": "abs(sum(increase(alert_service_consumed_kafka_mgs_total[$__rate_interval])) - sum(increase(alert_service_produced_mqtt_mgs_total[$__rate_interval])))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka In : MQTT Out",
@@ -267,7 +324,7 @@
         "h": 4,
         "w": 3,
         "x": 6,
-        "y": 5
+        "y": 4
       },
       "hideTimeOverride": false,
       "id": 15,
@@ -292,7 +349,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(increase(alert_service_session_mgs_total[$__interval])) + sum(increase(alert_service_micro_tca_mgs_total[$__interval]))",
+          "expr": "sum(increase(alert_service_session_mgs_total[$__rate_interval])) + sum(increase(alert_service_micro_tca_mgs_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -334,7 +391,7 @@
         "h": 4,
         "w": 3,
         "x": 9,
-        "y": 5
+        "y": 4
       },
       "hideTimeOverride": false,
       "id": 17,
@@ -359,7 +416,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(increase(alert_service_capture_mgs_total[$__interval])) + sum(increase(alert_service_capture_automatic_mgs_total[$__interval]))",
+          "expr": "sum(increase(alert_service_capture_mgs_total[$__rate_interval])) + sum(increase(alert_service_capture_automatic_mgs_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -390,7 +447,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 5
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 4,
@@ -421,7 +478,7 @@
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
-      "stack": true,
+      "stack": false,
       "steppedLine": false,
       "targets": [
         {
@@ -519,7 +576,7 @@
         "h": 4,
         "w": 3,
         "x": 0,
-        "y": 9
+        "y": 8
       },
       "hideTimeOverride": false,
       "id": 13,
@@ -544,7 +601,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(increase(alert_service_consumed_kafka_mgs_total[$__interval]))",
+          "expr": "sum(increase(alert_service_consumed_kafka_mgs_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -586,7 +643,7 @@
         "h": 4,
         "w": 3,
         "x": 3,
-        "y": 9
+        "y": 8
       },
       "hideTimeOverride": false,
       "id": 14,
@@ -611,7 +668,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(increase(alert_service_produced_mqtt_mgs_total[$__interval]))",
+          "expr": "sum(increase(alert_service_produced_mqtt_mgs_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -653,7 +710,7 @@
         "h": 4,
         "w": 3,
         "x": 6,
-        "y": 9
+        "y": 8
       },
       "hideTimeOverride": false,
       "id": 18,
@@ -678,7 +735,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(increase(alert_service_netsec_mgs_total[$__interval]))",
+          "expr": "sum(increase(alert_service_netsec_mgs_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -720,7 +777,7 @@
         "h": 4,
         "w": 3,
         "x": 9,
-        "y": 9
+        "y": 8
       },
       "hideTimeOverride": false,
       "id": 19,
@@ -745,7 +802,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(increase(alert_service_anomaly_mgs_total[$__interval]))",
+          "expr": "sum(increase(alert_service_anomaly_mgs_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka Ingestion",
@@ -775,7 +832,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 13
+        "y": 12
       },
       "hiddenSeries": false,
       "id": 26,
@@ -883,7 +940,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 13
+        "y": 12
       },
       "id": 27,
       "options": {
@@ -937,7 +994,7 @@
         "h": 13,
         "w": 12,
         "x": 0,
-        "y": 22
+        "y": 21
       },
       "hiddenSeries": false,
       "id": 20,
@@ -970,7 +1027,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(alert_service_session_mgs_total[$__interval])) + sum(rate(alert_service_micro_tca_mgs_total[$__interval]))",
+          "expr": "sum(rate(alert_service_session_mgs_total[$__rate_interval])) + sum(rate(alert_service_micro_tca_mgs_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "session",
@@ -980,7 +1037,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(alert_service_capture_mgs_total[$__interval])) + sum(rate(alert_service_capture_automatic_mgs_total[$__interval]))",
+          "expr": "sum(rate(alert_service_capture_mgs_total[$__rate_interval])) + sum(rate(alert_service_capture_automatic_mgs_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "capture",
@@ -990,7 +1047,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(alert_service_anomaly_mgs_total[$__interval]))",
+          "expr": "sum(rate(alert_service_anomaly_mgs_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "anomaly",
@@ -1000,7 +1057,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(alert_service_netsec_mgs_total[$__interval]))",
+          "expr": "sum(rate(alert_service_netsec_mgs_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "network security",
@@ -1061,7 +1118,7 @@
         "h": 13,
         "w": 12,
         "x": 12,
-        "y": 22
+        "y": 21
       },
       "hiddenSeries": false,
       "id": 2,
@@ -1094,7 +1151,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(alert_service_consumed_kafka_mgs_total[5m]))",
+          "expr": "sum(rate(alert_service_consumed_kafka_mgs_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka msgs",
@@ -1104,7 +1161,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(alert_service_produced_mqtt_mgs_total[5m]))",
+          "expr": "sum(rate(alert_service_produced_mqtt_mgs_total[$__rate_interval]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -1165,7 +1222,7 @@
         "h": 12,
         "w": 12,
         "x": 0,
-        "y": 35
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 21,
@@ -1198,9 +1255,11 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(alert_service_cleared_total[$__interval]))",
+          "exemplar": false,
+          "expr": "sum(rate(alert_service_cleared_alert_total[$__rate_interval]))",
           "format": "time_series",
           "hide": false,
+          "instant": false,
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "Cleared",
@@ -1210,7 +1269,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(alert_service_active_alert_total[$__interval]))",
+          "expr": "sum(rate(alert_service_active_alert_total[$__rate_interval]))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1272,7 +1331,7 @@
         "h": 12,
         "w": 12,
         "x": 12,
-        "y": 35
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 10,
@@ -1305,7 +1364,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "abs(irate(alert_service_consumed_kafka_mgs_total[$__interval]) - rate(alert_service_produced_mqtt_mgs_total[$__interval]))",
+          "expr": "abs(irate(alert_service_consumed_kafka_mgs_total[$__rate_interval]) - rate(alert_service_produced_mqtt_mgs_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Kafka - MQTT",
@@ -1387,6 +1446,6 @@
   "timezone": "",
   "title": "Alert Service Metrics",
   "uid": "6f7e92a8",
-  "version": 7,
+  "version": 8,
   "weekStart": ""
 }
