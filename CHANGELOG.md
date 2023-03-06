@@ -1,8 +1,10 @@
-* Fix: Update gNMI dashboard to support multiple analytics-streamers [Asana](https://app.asana.com/0/1202876257534184/1204119453925966)
 ## Current Release 
+### 0.107.0 
+**Release Date:** Mon Mar  6 20:59:36 UTC 2023     
+## Previous Releases 
+* Fix: Update gNMI dashboard to support multiple analytics-streamers [Asana](https://app.asana.com/0/1202876257534184/1204119453925966)
 ### 0.106.0 
 **Release Date:** Thu Feb 16 10:41:22 UTC 2023     
-## Previous Releases 
 * New dashboard for alert service + fixing rate interval [Asana](https://app.asana.com/0/1202421299651189/1203974162946127/f)
 ### 0.105.0 
 **Release Date:** Tue Feb 14 12:37:19 UTC 2023     
