@@ -25,7 +25,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 9,
+  "id": 32,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -341,11 +341,23 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum(rate(analytics_streamer_gNMI_stage_processing_time_ns_sum{component=\"AnalyticsStreamer\"}[1m]))\n/  \nsum(rate(analytics_streamer_gNMI_stage_processing_time_ns_count{component=\"AnalyticsStreamer\"}[1m]))",
+          "expr": "sum(rate(analytics_streamer_gNMI_stage_processing_time_ns_sum{component=\"gNMI_Client\"}[1m]))\n/  \nsum(rate(analytics_streamer_gNMI_stage_processing_time_ns_count{component=\"gNMI_Client\"}[1m]))",
           "interval": "",
-          "legendFormat": "Analytics Streamer Application",
+          "legendFormat": "gNMI Server -> Client Delivery",
           "range": true,
           "refId": "F"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(analytics_streamer_gNMI_stage_processing_time_ns_sum{component=\"AnalyticsStreamer\"}[1m]))\n/  \nsum(rate(analytics_streamer_gNMI_stage_processing_time_ns_count{component=\"AnalyticsStreamer\"}[1m]))",
+          "hide": false,
+          "legendFormat": "Analytics Streamer Total",
+          "range": true,
+          "refId": "G"
         }
       ],
       "title": "Stage Processing Time",
@@ -1262,6 +1274,6 @@
   "timezone": "",
   "title": "Analytics-Streamer gNMI",
   "uid": "L1-exxdVz",
-  "version": 11,
+  "version": 12,
   "weekStart": ""
 }
