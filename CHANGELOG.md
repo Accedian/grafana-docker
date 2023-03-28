@@ -1,8 +1,10 @@
-* Feat - Analytics Streamer add metric to track gNMI client side delay [Asana Task](https://app.asana.com/0/520715087448241/1204259913485253)
 ## Current Release 
+### 0.108.0 
+**Release Date:** Tue Mar 28 20:02:13 UTC 2023     
+## Previous Releases 
+* Feat - Analytics Streamer add metric to track gNMI client side delay [Asana Task](https://app.asana.com/0/520715087448241/1204259913485253)
 ### 0.107.0 
 **Release Date:** Mon Mar  6 20:59:36 UTC 2023     
-## Previous Releases 
 * Fix: Update gNMI dashboard to support multiple analytics-streamers [Asana](https://app.asana.com/0/1202876257534184/1204119453925966)
 ### 0.106.0 
 **Release Date:** Thu Feb 16 10:41:22 UTC 2023     
