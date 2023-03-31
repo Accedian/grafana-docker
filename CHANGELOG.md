@@ -1,3 +1,4 @@
+* Feat - bootstrap Foxtrot dashboard [Asana Task](https://app.asana.com/0/1203669339406776/1202458568143107/f)
 ## Current Release 
 ### 0.108.0 
 **Release Date:** Tue Mar 28 20:02:13 UTC 2023     
