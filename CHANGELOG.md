@@ -1,8 +1,10 @@
-* Feat - bootstrap Foxtrot dashboard [Asana Task](https://app.asana.com/0/1203669339406776/1202458568143107/f)
 ## Current Release 
+### 0.109.0 
+**Release Date:** Tue Apr  4 13:06:27 UTC 2023     
+## Previous Releases 
+* Feat - bootstrap Foxtrot dashboard [Asana Task](https://app.asana.com/0/1203669339406776/1202458568143107/f)
 ### 0.108.0 
 **Release Date:** Tue Mar 28 20:02:13 UTC 2023     
-## Previous Releases 
 * Feat - Analytics Streamer add metric to track gNMI client side delay [Asana Task](https://app.asana.com/0/520715087448241/1204259913485253)
 ### 0.107.0 
 **Release Date:** Mon Mar  6 20:59:36 UTC 2023     
