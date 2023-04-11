@@ -1,8 +1,10 @@
-* Feat - Foxtrot Postgres call time panel [Asana Task](https://app.asana.com/0/1203669339406776/1202458568143107/f)
 ## Current Release 
+### 0.110.0 
+**Release Date:** Tue Apr 11 07:45:49 UTC 2023     
+## Previous Releases 
+* Feat - Foxtrot Postgres call time panel [Asana Task](https://app.asana.com/0/1203669339406776/1202458568143107/f)
 ### 0.109.0 
 **Release Date:** Tue Apr  4 13:06:27 UTC 2023     
-## Previous Releases 
 * Feat - bootstrap Foxtrot dashboard [Asana Task](https://app.asana.com/0/1203669339406776/1202458568143107/f)
 ### 0.108.0 
 **Release Date:** Tue Mar 28 20:02:13 UTC 2023     
