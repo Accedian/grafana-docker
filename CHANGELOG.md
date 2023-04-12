@@ -1,3 +1,4 @@
+Fix - add panel to adh-fedex dashboard for RR websocket teardown/rejection counts [Asana] (https://app.asana.com/0/1201489317584292/1204359876608335/f)
 ## Current Release 
 ### 0.111.0 
 **Release Date:** Wed Apr 12 11:59:24 UTC 2023     
