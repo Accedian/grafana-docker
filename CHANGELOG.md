@@ -1,3 +1,4 @@
+* Fix - appropriate default values for variables in clickhouse-dashboard-cluster
 ## Current Release 
 ### 0.110.0 
 **Release Date:** Tue Apr 11 07:45:49 UTC 2023     

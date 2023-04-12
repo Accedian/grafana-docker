@@ -1674,13 +1674,13 @@
     "list": [
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "All",
           "value": "$__all"
         },
         "datasource": {
           "type": "grafana-clickhouse-datasource",
-          "uid": "ClickHouse"
+          "uid": "${datasource}"
         },
         "definition": "SELECT name FROM system.databases;",
         "hide": 0,
