@@ -1,8 +1,10 @@
-Fix - add panel to adh-fedex dashboard for RR websocket teardown/rejection counts [Asana] (https://app.asana.com/0/1201489317584292/1204359876608335/f)
 ## Current Release 
+### 0.112.0 
+**Release Date:** Wed Apr 12 18:02:14 UTC 2023     
+## Previous Releases 
+Fix - add panel to adh-fedex dashboard for RR websocket teardown/rejection counts [Asana] (https://app.asana.com/0/1201489317584292/1204359876608335/f)
 ### 0.111.0 
 **Release Date:** Wed Apr 12 11:59:24 UTC 2023     
-## Previous Releases 
 * Fix - appropriate default values for variables in clickhouse-dashboard-cluster
 ### 0.110.0 
 **Release Date:** Tue Apr 11 07:45:49 UTC 2023     
