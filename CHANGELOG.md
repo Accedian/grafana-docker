@@ -1,7 +1,66 @@
 ## Current Release 
+### 0.113.0 
+**Release Date:** Tue Apr 18 15:38:53 UTC 2023     
+## Previous Releases 
+* Fix - Clean up of Roadrunner(Detailed) dashboard [Asana](https://app.asana.com/0/1199733373661982/1204359876608337/f)
+### 0.112.0 
+**Release Date:** Wed Apr 12 18:02:14 UTC 2023     
+Fix - add panel to adh-fedex dashboard for RR websocket teardown/rejection counts [Asana] (https://app.asana.com/0/1201489317584292/1204359876608335/f)
+### 0.111.0 
+**Release Date:** Wed Apr 12 11:59:24 UTC 2023     
+* Fix - appropriate default values for variables in clickhouse-dashboard-cluster
+### 0.110.0 
+**Release Date:** Tue Apr 11 07:45:49 UTC 2023     
+* Feat - Foxtrot Postgres call time panel [Asana Task](https://app.asana.com/0/1203669339406776/1202458568143107/f)
+### 0.109.0 
+**Release Date:** Tue Apr  4 13:06:27 UTC 2023     
+* Feat - bootstrap Foxtrot dashboard [Asana Task](https://app.asana.com/0/1203669339406776/1202458568143107/f)
+### 0.108.0 
+**Release Date:** Tue Mar 28 20:02:13 UTC 2023     
+* Feat - Analytics Streamer add metric to track gNMI client side delay [Asana Task](https://app.asana.com/0/520715087448241/1204259913485253)
+### 0.107.0 
+**Release Date:** Mon Mar  6 20:59:36 UTC 2023     
+* Fix: Update gNMI dashboard to support multiple analytics-streamers [Asana](https://app.asana.com/0/1202876257534184/1204119453925966)
+### 0.106.0 
+**Release Date:** Thu Feb 16 10:41:22 UTC 2023     
+* New dashboard for alert service + fixing rate interval [Asana](https://app.asana.com/0/1202421299651189/1203974162946127/f)
+### 0.105.0 
+**Release Date:** Tue Feb 14 12:37:19 UTC 2023     
+* Fix: Metrics for alert service - micro tca alerts were not included [Asana](https://app.asana.com/0/1202421299651189/1203965761436765/f)
+### 0.104.0 
+**Release Date:** Mon Feb 13 22:13:41 UTC 2023     
+* Feat: MOSummaryConsolidator Delta dashboard from running job [Asana Task](https://app.asana.com/0/1133479128121896/1203328848884985/f)
+### 0.103.0 
+**Release Date:** Fri Feb 10 14:53:24 UTC 2023     
+### 0.102.0 
+**Release Date:** Fri Feb 10 08:32:53 UTC 2023     
+* Fix: Refactoring of alert service dashboard [Asana](https://app.asana.com/0/1202421299651189/1203936039863649/f)
+### 0.101.0
+**Release Date:** Thu Feb  9 19:10:10 UTC 2023
+* Feat - Update Roadrunner dashboard with new Persistence Service and Failed Files metrics [Asana](https://app.asana.com/0/1199574676083399/1203337433864712/f)
+### 0.100.0
+**Release Date:** Wed Feb  8 09:40:09 UTC 2023
+* Fix: Metrics for alert service api calls not shown correctly [Asana](https://app.asana.com/0/1202421299651189/1203882620723234/f)
+### 0.99.0 
+**Release Date:** Wed Feb  1 14:15:40 UTC 2023     
+### 0.98.0 
+**Release Date:** Thu Jan 26 16:09:11 UTC 2023     
+* Feat: New Fedex Dashboard [Asana](https://app.asana.com/0/1203411329194882/1203411329194909/f)
+### 0.97.0 
+**Release Date:** Thu Jan 26 15:00:18 UTC 2023     
+### 0.96.0 
+**Release Date:** Tue Jan 10 12:10:20 UTC 2023     
+* Fix Alert Service dashboard - plugin not supported [Asana](https://app.asana.com/0/1202421299651189/1203672766314299/f)
+### 0.95.0 
+**Release Date:** Mon Jan  9 11:16:48 UTC 2023     
+* Alert Service - dashboard uid change
+### 0.94.0 
+**Release Date:** Mon Jan  9 10:19:39 UTC 2023     
+* Alert Service - dashboard name change
+### 0.93.0 
+**Release Date:** Fri Dec 30 12:51:22 UTC 2022     
 ### 0.92.0 
 **Release Date:** Wed Dec 21 08:52:55 UTC 2022     
-## Previous Releases 
 * Alert Service - Modify dashboard and add new panel with metrics [Asana](https://app.asana.com/0/1202421299651189/1203447968630095/f)
 ### 0.91.0 
 **Release Date:** Tue Dec 20 20:46:43 UTC 2022     

@@ -19,7 +19,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Building Docker Container
-          command: make docker
+          command: make build
 
   release:
     docker:
@@ -45,9 +45,9 @@ jobs:
                git config --global user.email "${CIRCLE_USERNAME}@accedian.com"
                git config --global user.name "CircleCI"
                git semver minor
-               export DOCKER_VER=$(git semver get)
-               git push origin master ${DOCKER_VER}
-               make push  
+               export IMAGE_TAG=$(git semver get)
+               git push origin master ${IMAGE_TAG}
+               make push
             fi
 
 workflows:
