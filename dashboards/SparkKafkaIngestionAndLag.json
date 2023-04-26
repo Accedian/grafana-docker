@@ -982,8 +982,8 @@
     "list": []
   },
   "time": {
-    "from": "2022-12-08T14:22:46.633Z",
-    "to": "2022-12-08T18:30:13.911Z"
+    "from": "now-1h",
+    "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
