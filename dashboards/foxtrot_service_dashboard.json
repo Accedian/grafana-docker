@@ -30,7 +30,10 @@
     "liveNow": false,
     "panels": [
       {
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
         "description": "Drops means the service was not running",
         "fieldConfig": {
           "defaults": {
@@ -108,7 +111,7 @@
             "datasource": "Prometheus",
             "editorMode": "code",
             "expr": "up{job=\"foxtrot-service\"}",
-            "legendFormat": "{{instance}}",
+            "legendFormat": "Instance {{instance}}",
             "range": true,
             "refId": "A"
           }
@@ -118,7 +121,6 @@
       },
       {
         "datasource": "Prometheus",
-        "description": "",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -128,6 +130,93 @@
               "axisCenteredZero": false,
               "axisColorMode": "text",
               "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 1,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 0
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 24,
+          "x": 0,
+          "y": 5
+        },
+        "id": 20,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "datasource": "Prometheus",
+            "editorMode": "builder",
+            "expr": "rate(foxtrot_ws_server_unhandled_messages_total[$__rate_interval])",
+            "legendFormat": "On instance {{instance}}",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Unhandled (no handler by message type was found) WebSocket Server messages rate ",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "Prometheus",
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "Messages per second",
               "axisPlacement": "auto",
               "barAlignment": 0,
               "drawStyle": "line",
@@ -170,21 +259,22 @@
                   "value": 0
                 }
               ]
-            }
+            },
+            "unit": "msg/s"
           },
           "overrides": []
         },
         "gridPos": {
-          "h": 7,
+          "h": 8,
           "w": 24,
           "x": 0,
-          "y": 5
+          "y": 10
         },
         "id": 17,
         "options": {
           "legend": {
             "calcs": [],
-            "displayMode": "list",
+            "displayMode": "table",
             "placement": "bottom",
             "showLegend": true
           },
@@ -198,15 +288,16 @@
             "datasource": "Prometheus",
             "editorMode": "builder",
             "exemplar": false,
-            "expr": "foxtrot_ws_server_handle_duration_count",
+            "expr": "rate(foxtrot_ws_server_handle_duration_count[$__rate_interval])",
             "format": "time_series",
             "instant": false,
+            "interval": "",
             "legendFormat": "Message type \"{{message_type}}\" resulted in related HTTP code {{related_http_code}}",
             "range": true,
             "refId": "A"
           }
         ],
-        "title": "WS Server messages",
+        "title": "WebSocket Server messages rate",
         "type": "timeseries"
       },
       {
@@ -220,7 +311,7 @@
             "custom": {
               "axisCenteredZero": false,
               "axisColorMode": "text",
-              "axisLabel": "",
+              "axisLabel": "Messages per second",
               "axisPlacement": "auto",
               "barAlignment": 0,
               "drawStyle": "line",
@@ -268,16 +359,16 @@
           "overrides": []
         },
         "gridPos": {
-          "h": 7,
+          "h": 8,
           "w": 24,
           "x": 0,
-          "y": 12
+          "y": 18
         },
         "id": 18,
         "options": {
           "legend": {
             "calcs": [],
-            "displayMode": "list",
+            "displayMode": "table",
             "placement": "bottom",
             "showLegend": true
           },
@@ -290,16 +381,14 @@
           {
             "datasource": "Prometheus",
             "editorMode": "builder",
-            "exemplar": false,
-            "expr": "foxtrot_ws_server_handle_duration",
-            "format": "time_series",
-            "instant": false,
-            "legendFormat": "Message type \"{{message_type}}\" resulted in HTTP code {{related_http_code}} in quantile {{quantile}} ",
+            "expr": "rate(foxtrot_ws_server_handle_duration_bucket[$__rate_interval])",
+            "hide": false,
+            "legendFormat": "Message type \"{{message_type}}\" resulted in HTTP code {{related_http_code}} in lower or equal {{le}} seconds ",
             "range": true,
-            "refId": "A"
+            "refId": "B"
           }
         ],
-        "title": "WS Server messages duration",
+        "title": "WebSocket Server messages duration rate",
         "type": "timeseries"
       },
       {
@@ -312,24 +401,24 @@
             "custom": {
               "axisCenteredZero": false,
               "axisColorMode": "text",
-              "axisLabel": "",
+              "axisLabel": "Messages per second per second",
               "axisPlacement": "auto",
               "barAlignment": 0,
               "drawStyle": "line",
-              "fillOpacity": 10,
+              "fillOpacity": 0,
               "gradientMode": "none",
               "hideFrom": {
                 "legend": false,
                 "tooltip": false,
                 "viz": false
               },
-              "lineInterpolation": "linear",
+              "lineInterpolation": "smooth",
               "lineWidth": 1,
-              "pointSize": 5,
+              "pointSize": 1,
               "scaleDistribution": {
                 "type": "linear"
               },
-              "showPoints": "never",
+              "showPoints": "auto",
               "spanNulls": false,
               "stacking": {
                 "group": "A",
@@ -352,28 +441,27 @@
                   "value": 80
                 }
               ]
-            },
-            "unit": "short"
+            }
           },
           "overrides": []
         },
         "gridPos": {
-          "h": 7,
+          "h": 8,
           "w": 24,
           "x": 0,
-          "y": 19
+          "y": 26
         },
         "id": 1,
         "links": [],
         "options": {
           "legend": {
             "calcs": [],
-            "displayMode": "list",
+            "displayMode": "table",
             "placement": "bottom",
             "showLegend": true
           },
           "tooltip": {
-            "mode": "multi",
+            "mode": "single",
             "sort": "none"
           }
         },
@@ -381,20 +469,19 @@
         "targets": [
           {
             "datasource": "Prometheus",
-            "editorMode": "code",
-            "expr": "foxtrot_postgres_method_call_duration",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": "Method {{name}} in {{quantile}} quantile",
+            "editorMode": "builder",
+            "expr": "foxtrot_postgres_method_call_duration_bucket",
+            "hide": false,
+            "legendFormat": "Method \"{{method_name}}\" resulted in HTTP code {{related_http_code}} in lower or equal {{le}} seconds ",
             "range": true,
             "refId": "A"
           }
         ],
-        "title": "Postgres Call Time",
+        "title": "Postgres method call duration rate",
         "type": "timeseries"
       }
     ],
-    "refresh": "5s",
+    "refresh": "1m",
     "schemaVersion": 37,
     "style": "dark",
     "tags": [],
@@ -402,13 +489,13 @@
       "list": []
     },
     "time": {
-      "from": "now-30m",
+      "from": "now-15m",
       "to": "now"
     },
     "timepicker": {},
     "timezone": "",
     "title": "Foxtrot Service",
     "uid": "8x_bV3f4k",
-    "version": 4,
+    "version": 7,
     "weekStart": ""
   }
