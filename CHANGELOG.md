@@ -1,3 +1,5 @@
+* Change default time range for Spark Ingestion and Lag dashboard [Asana](https://app.asana.com/0/1201489317584292/1204415956101184/f)
+
 ## Current Release 
 ### 0.114.0 
 **Release Date:** Wed Apr 26 15:37:12 UTC 2023     
