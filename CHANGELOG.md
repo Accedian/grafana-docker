@@ -1,3 +1,4 @@
+* Support Multiple Ignite Nodes [Asana](https://app.asana.com/0/1202176318424854/1204427100421145)
 ## Current Release 
 ### 0.115.0 
 **Release Date:** Wed Apr 26 16:04:35 UTC 2023     
