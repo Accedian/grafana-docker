@@ -1,9 +1,11 @@
+## Current Release 
+### 0.118.0 
+**Release Date:** Tue May  9 17:33:41 UTC 2023     
+## Previous Releases 
 * Remove Deprecated Spark Ingestion and Lag Grafana Dashboard widget "Contemporary Batch Job Work Queue Lag" [Asana](https://app.asana.com/0/1200469496011803/1204449738364582/f)
 
-## Current Release
 ### 0.117.0
 **Release Date:** Fri May  5 11:49:51 UTC 2023     
-## Previous Releases
 Roadrunner update server [Asana](https://app.asana.com/0/1204139580644856/1204105776993399/f)
 ### 0.116.0
 **Release Date:** Thu May  4 07:26:22 UTC 2023     
@@ -299,3 +301,4 @@ Fix - add panel to adh-fedex dashboard for RR websocket teardown/rejection count
 **Release Date:** Wed Feb 28 19:25:31 UTC 2018     
 ### 0.1.0
 **Release Date:** Wed Feb 28 19:17:58 UTC 2018
+
