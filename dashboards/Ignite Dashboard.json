@@ -584,9 +584,9 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "ignite_ingestion_lag{topic_partition!~\"mo-summary-.*\"}",
+          "expr": "sum by (topic) (ignite_ingestion_lag{topic!~\"mo-summary-.*\"})",
           "interval": "",
-          "legendFormat": "{{topic_partition}}",
+          "legendFormat": "{{topic}}",
           "range": true,
           "refId": "A"
         }
@@ -1165,7 +1165,7 @@
     "list": []
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {
@@ -1185,6 +1185,6 @@
   "timezone": "",
   "title": "Ignite Dashboard",
   "uid": "XRZc5xNVz",
-  "version": 12,
+  "version": 14,
   "weekStart": ""
 }
