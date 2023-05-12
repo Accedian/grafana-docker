@@ -3,20 +3,30 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 27,
+  "id": 35,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
       "aliasColors": {},
@@ -49,9 +59,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "9.1.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -76,9 +87,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "RecordCount",
       "tooltip": {
         "shared": true,
@@ -87,33 +96,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -150,9 +150,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "9.1.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -162,11 +163,12 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"spark_raw_in.*\"}[2m])",
+          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"ignite.contemporary.*\"}[2m])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{topic}}",
+          "range": true,
           "refId": "A"
         },
         {
@@ -174,18 +176,10 @@
           "interval": "",
           "legendFormat": "{{topic}}",
           "refId": "C"
-        },
-        {
-          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"mo-summary-.*\"}[2m])",
-          "interval": "",
-          "legendFormat": "{{topic}}",
-          "refId": "B"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Contemporary Lag",
       "tooltip": {
         "shared": true,
@@ -194,33 +188,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -254,9 +239,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "9.1.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -266,33 +252,17 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "kafka_server_brokertopicmetrics_oneminuterate{name=\"MessagesInPerSec\", topic=~\"npav-ts-metrics.*|spark_raw_in.*|parquet-notif|latent_raw_in.*|spark-latent.*|mo-summary-.*\"}",
+          "expr": "kafka_server_brokertopicmetrics_oneminuterate{name=\"MessagesInPerSec\", topic=~\"ignite.*|parquet-notif|spark-latent.*\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{topic}}",
+          "range": true,
           "refId": "A"
-        },
-        {
-          "expr": "",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "",
-          "refId": "C"
-        },
-        {
-          "expr": "",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "",
-          "refId": "B"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Ingestion Rate",
       "tooltip": {
         "shared": true,
@@ -301,33 +271,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -364,9 +325,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "9.1.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -376,18 +338,17 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\".*latent.*[\\\\.].*\"}[2m])",
+          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"ignite.latent.*|spark-latent.*\"}[2m])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{topic}}",
+          "range": true,
           "refId": "A"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Latent Lag",
       "tooltip": {
         "shared": true,
@@ -396,33 +357,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -437,7 +389,6 @@
       },
       "id": 8,
       "links": [],
-      "pageSize": null,
       "scroll": true,
       "showHeader": true,
       "sort": {
@@ -455,7 +406,6 @@
         {
           "alias": "Dropped Rec Count",
           "align": "auto",
-          "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
             "rgba(237, 129, 40, 0.89)",
@@ -472,7 +422,6 @@
         {
           "alias": "Dropped Rec Delta",
           "align": "auto",
-          "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
             "rgba(237, 129, 40, 0.89)",
@@ -489,7 +438,6 @@
         {
           "alias": "TenantId",
           "align": "auto",
-          "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
             "rgba(237, 129, 40, 0.89)",
@@ -506,7 +454,6 @@
         {
           "alias": "Cause",
           "align": "auto",
-          "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
             "rgba(237, 129, 40, 0.89)",
@@ -523,7 +470,6 @@
         {
           "alias": "ObjectType",
           "align": "auto",
-          "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
             "rgba(237, 129, 40, 0.89)",
@@ -540,7 +486,6 @@
         {
           "alias": "Job",
           "align": "auto",
-          "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
             "rgba(237, 129, 40, 0.89)",
@@ -557,7 +502,6 @@
         {
           "alias": "",
           "align": "auto",
-          "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
             "rgba(237, 129, 40, 0.89)",
@@ -591,97 +535,6 @@
       "title": "Dropped Record Counts",
       "transform": "table",
       "type": "table"
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 11,
-        "x": 11,
-        "y": 24
-      },
-      "hiddenSeries": false,
-      "id": 6,
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": true,
-        "max": false,
-        "min": false,
-        "show": true,
-        "sort": "current",
-        "sortDesc": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "spark_batchJobLag{queue=~\".*_queue\"}",
-          "interval": "",
-          "legendFormat": "{{queue}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Contemporary Batch Job Work Queue Lag",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
     },
     {
       "aliasColors": {},
@@ -807,9 +660,10 @@
       "linewidth": 1,
       "nullPointMode": "connected",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "9.1.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -841,9 +695,7 @@
           "yaxis": "left"
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Micro Batch Duration",
       "tooltip": {
         "shared": true,
@@ -852,27 +704,19 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "ms",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
@@ -973,7 +817,7 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 22,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [
     "spark"
@@ -1013,8 +857,6 @@
   "timezone": "",
   "title": "Spark Ingestion and Lag",
   "uid": "oaePhsqGz",
-  "variables": {
-    "list": []
-  },
-  "version": 7
+  "version": 4,
+  "weekStart": ""
 }
