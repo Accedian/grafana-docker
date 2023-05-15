@@ -24,14 +24,14 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 43,
+  "id": 7,
   "links": [],
   "liveNow": false,
   "panels": [
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "PBFA97CFB590B2093"
       },
       "description": "",
       "fieldConfig": {
@@ -109,10 +109,10 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "roadrunner_websocket_teardown_count",
+          "expr": "rate(roadrunner_websocket_teardown_count[$__interval])",
           "legendFormat": "{{connectorId}}-teardown",
           "range": true,
           "refId": "A"
@@ -120,12 +120,12 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "roadrunner_websocket_rejected_count",
+          "expr": "rate(roadrunner_websocket_rejected_count[$__interval])",
           "hide": false,
-          "legendFormat": "{{connectorId}}-rejected",
+          "legendFormat": "__auto",
           "range": true,
           "refId": "B"
         }
@@ -140,7 +140,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -187,21 +187,24 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "PBFA97CFB590B2093"
           },
-          "expr": "websocket_read_time_ms_sum",
-          "interval": "",
-          "legendFormat": "",
+          "editorMode": "code",
+          "expr": "rate(websocket_read_time_ms_bucket[$__interval])",
+          "legendFormat": "__auto",
+          "range": true,
           "refId": "A"
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "PBFA97CFB590B2093"
           },
-          "expr": "websocket_ack_time_ms_sum",
-          "interval": "",
-          "legendFormat": "",
+          "editorMode": "code",
+          "expr": "rate(websocket_ack_time_ms_bucket[$__interval])",
+          "hide": false,
+          "legendFormat": "__auto",
+          "range": true,
           "refId": "B"
         }
       ],
@@ -242,7 +245,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -289,11 +292,12 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "PBFA97CFB590B2093"
           },
-          "expr": "histogram_quantile(0.95, sum(rate(roadrunner_message_process_time_seconds_bucket[1h])) by (le))",
-          "interval": "",
-          "legendFormat": "",
+          "editorMode": "code",
+          "expr": "rate(roadrunner_message_process_time_seconds_count[$__interval])",
+          "legendFormat": "__auto",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -334,7 +338,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -380,11 +384,12 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "PBFA97CFB590B2093"
           },
-          "expr": "file_processing_time_seconds_sum",
-          "interval": "",
-          "legendFormat": "",
+          "editorMode": "code",
+          "expr": "rate(file_processing_time_seconds_bucket[$__interval])",
+          "legendFormat": "__auto",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -425,7 +430,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -471,11 +476,12 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "PBFA97CFB590B2093"
           },
-          "expr": "roadrunner_message_process_time_seconds_sum",
-          "interval": "",
-          "legendFormat": "",
+          "editorMode": "code",
+          "expr": "rate(roadrunner_message_process_time_seconds_sum[$__interval])",
+          "legendFormat": "__auto",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -516,7 +522,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -562,24 +568,18 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "PBFA97CFB590B2093"
           },
-          "expr": "rate(fedex_kafka_producer_bytes_count[1h])",
-          "interval": "",
-          "legendFormat": "kafka producer bytes count",
+          "editorMode": "code",
+          "expr": "rate(fedex_kafka_producer_bytes_count[$__interval])",
+          "legendFormat": "__auto",
+          "range": true,
           "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
-          "refId": "B"
         }
       ],
       "thresholds": [],
       "timeRegions": [],
-      "title": "kafka bytes count (last hour)",
+      "title": "kafka bytes count",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -614,7 +614,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -660,11 +660,12 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "PBFA97CFB590B2093"
           },
-          "expr": "producer_chan_send_time_ms_sum",
-          "interval": "",
-          "legendFormat": "",
+          "editorMode": "code",
+          "expr": "rate(producer_chan_send_time_ms_bucket[$__interval])",
+          "legendFormat": "__auto",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -699,12 +700,60 @@
       }
     },
     {
-      "columns": [],
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "PBFA97CFB590B2093"
       },
-      "fontSize": "100%",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "right",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "decimals": 2,
+          "displayName": "",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Time"
+              },
+              {
+                "id": "unit",
+                "value": "time: YYYY-MM-DD HH:mm:ss"
+              },
+              {
+                "id": "custom.align"
+              }
+            ]
+          }
+        ]
+      },
       "gridPos": {
         "h": 12,
         "w": 24,
@@ -713,60 +762,49 @@
       },
       "id": 16,
       "links": [],
-      "pageSize": 10,
-      "pluginVersion": "6.7.3",
-      "showHeader": true,
-      "sort": {
-        "col": 0,
-        "desc": true
-      },
-      "styles": [
-        {
-          "alias": "Time",
-          "align": "auto",
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "pattern": "Time",
-          "type": "date"
-        },
-        {
-          "alias": "",
-          "align": "right",
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
           ],
-          "decimals": 2,
-          "pattern": "/.*/",
-          "thresholds": [],
-          "type": "number",
-          "unit": "short"
-        }
-      ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.1.3",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "PBFA97CFB590B2093"
           },
-          "expr": "rate(roadrunner_mo_count[15m])",
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "rate(roadrunner_mo_count[$__interval])",
           "format": "table",
           "instant": true,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "",
+          "legendFormat": "__auto",
+          "range": false,
           "refId": "A"
         }
       ],
       "title": "roadrunner mo's",
-      "transform": "table",
-      "type": "table-old"
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {
+            "reducers": []
+          }
+        }
+      ],
+      "type": "table"
     },
     {
       "columns": [],
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "PBFA97CFB590B2093"
       },
       "fontSize": "100%",
       "gridPos": {
@@ -775,17 +813,108 @@
         "x": 0,
         "y": 44
       },
+      "id": 20,
+      "links": [],
+      "pageSize": 10,
+      "pluginVersion": "6.7.3",
+      "showHeader": true,
+      "sort": {
+        "col": 2,
+        "desc": true
+      },
+      "styles": [
+        {
+          "$$hashKey": "object:874",
+          "alias": "Rejected",
+          "align": "auto",
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "Rejected",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        },
+        {
+          "$$hashKey": "object:199",
+          "alias": "",
+          "align": "right",
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 0,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum by (connectorId, hostname) (roadrunner_websocket_rejected_count)",
+          "format": "time_series",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "Rejected"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum by(connectorId, hostname) (rate(roadrunner_websocket_teardown_count[$__interval]))",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "Teardown"
+        }
+      ],
+      "title": "roadrunner connection result",
+      "transform": "timeseries_to_rows",
+      "type": "table-old"
+    },
+    {
+      "columns": [],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 56
+      },
       "id": 17,
       "links": [],
       "pageSize": 10,
       "pluginVersion": "6.7.3",
       "showHeader": true,
       "sort": {
-        "col": 0,
+        "col": 1,
         "desc": true
       },
       "styles": [
         {
+          "$$hashKey": "object:163",
           "alias": "Time",
           "align": "auto",
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -793,6 +922,7 @@
           "type": "date"
         },
         {
+          "$$hashKey": "object:164",
           "alias": "",
           "align": "right",
           "colors": [
@@ -811,14 +941,15 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
+          "exemplar": false,
           "expr": "roadrunner_sensor_agent_connections",
           "format": "table",
           "instant": true,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "",
+          "legendFormat": "__auto",
+          "range": false,
           "refId": "A"
         }
       ],
@@ -834,7 +965,7 @@
     "list": []
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
@@ -854,6 +985,6 @@
   "timezone": "",
   "title": "adh-fedex",
   "uid": "crA9QWAVk",
-  "version": 1,
+  "version": 3,
   "weekStart": ""
 }
