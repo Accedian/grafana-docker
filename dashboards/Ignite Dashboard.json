@@ -173,11 +173,23 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "builder",
-          "expr": "ignite_normalizer_discovery_errors_total",
+          "expr": "rate(ignite_normalizer_discovery_errors_total[5m])",
           "hide": false,
           "legendFormat": "Discovery errors: {{reason}}",
           "range": true,
           "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "builder",
+          "expr": "rate(ignite_normalizer_missing_object_identifier_total[5m])",
+          "hide": false,
+          "legendFormat": "Missing MO Identifier: {{identifier}}",
+          "range": true,
+          "refId": "C"
         }
       ],
       "title": "Discovery / Continuity Error Counters",
@@ -277,7 +289,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "builder",
-          "expr": "ignite_normalizer_continuity_total",
+          "expr": "rate(ignite_normalizer_continuity_total[5m])",
           "hide": false,
           "legendFormat": "Changed sessions (continuity)",
           "range": true,
@@ -1252,6 +1264,6 @@
   "timezone": "",
   "title": "Ignite Dashboard",
   "uid": "XRZc5xNVz",
-  "version": 21,
+  "version": 13,
   "weekStart": ""
 }
