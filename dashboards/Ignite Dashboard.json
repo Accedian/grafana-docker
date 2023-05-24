@@ -1218,7 +1218,7 @@
           "text": "Prometheus",
           "value": "Prometheus"
         },
-        "hide": 0,
+        "hide": 2,
         "includeAll": false,
         "multi": false,
         "name": "DS_PROMETHEUS",
@@ -1252,6 +1252,6 @@
   "timezone": "",
   "title": "Ignite Dashboard",
   "uid": "XRZc5xNVz",
-  "version": 19,
+  "version": 21,
   "weekStart": ""
 }
