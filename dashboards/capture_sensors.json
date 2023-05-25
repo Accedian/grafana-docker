@@ -1,0 +1,3523 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Catpure sensor monitoring",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 41,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 12,
+      "panels": [],
+      "title": "Processor",
+      "type": "row"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Capture sensors uptime",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "collectd_uptime{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\"}",
+          "legendFormat": "{{capture_id}} uptime",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Uptime",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Capture sensor system load",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      },
+      "id": 16,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "label_replace({__name__=~\"collectd_load_.*term\",job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\"}, \"term\", \"$1\", \"__name__\", \"collectd_load_(.*)term\")",
+          "interval": "",
+          "legendFormat": "{{capture_id}} {{term}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "System Load",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Capture sensor CPUs average",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 18,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum without (cpu,exported_instance, instance, job, monitor, tenant_id)(irate(collectd_cpu_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\"}[1m]))  \n/ ignoring(type) group_left \n  sum without (cpu, type,exported_instance, instance, job, monitor, tenant_id)(irate(collectd_cpu_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\"}[1m])) ",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{capture_id}} - {{type}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "CPUs average (jiffies)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "id": 10,
+      "panels": [],
+      "title": "Memory",
+      "type": "row"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Capture sensor memory usage in Bytes (IEC i.e. in power of 1024)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 20,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "collectd_memory{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\"}",
+          "interval": "",
+          "legendFormat": "{{capture_id}} - {{memory}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Memory usage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Capture sensor swap usage in Bytes (IEC i.e. in power of 1024)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 21,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "collectd_swap{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\"}",
+          "interval": "",
+          "legendFormat": "{{capture_id}} - {{swap}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Swap usage",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
+      "id": 8,
+      "panels": [],
+      "title": "Disk Usage",
+      "type": "row"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Capture sensor filesystem root usage in Bytes  (IEC i.e. in power of 1024)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 23,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "collectd_df_df_complex{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",df=\"root\"}",
+          "interval": "",
+          "legendFormat": "{{capture_id}} - {{df}} - {{type}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Filesystem root usage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Capture sensor filesystem root usage in Bytes  (IEC i.e. in power of 1024)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "id": 24,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "collectd_df_df_complex{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",df=\"srv\"}",
+          "interval": "",
+          "legendFormat": "{{capture_id}} - {{df}} - {{type}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Filesystem srv usage",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 31
+      },
+      "id": 26,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 32
+          },
+          "id": 28,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "irate(collectd_disk_disk_time_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m])",
+              "interval": "",
+              "legendFormat": "{{disk}} read",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_disk_disk_time_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m]) * -1",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{disk}} write",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Operation duration (ms)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Disk data transfer in Bytes per seconds (IEC i.e. in power of 1024)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 32
+          },
+          "id": 29,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "irate(collectd_disk_disk_octets_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m])",
+              "interval": "",
+              "legendFormat": "{{disk}} read",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_disk_disk_octets_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m]) * -1",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{disk}} write",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Transfert (B/s)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "iops"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 39
+          },
+          "id": 30,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "irate(collectd_disk_disk_merged_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m])",
+              "interval": "",
+              "legendFormat": "{{disk}} read",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_disk_disk_merged_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m]) * -1",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{disk}} write",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Merged operation",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "iops"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 39
+          },
+          "id": 31,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "irate(collectd_disk_disk_ops_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m])",
+              "interval": "",
+              "legendFormat": "{{disk}} read",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_disk_disk_ops_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m]) * -1",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{disk}} write",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Operation/s",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Disk / (persistence)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      },
+      "id": 33,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 47
+          },
+          "id": 34,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "irate(collectd_disk_disk_time_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m])",
+              "interval": "",
+              "legendFormat": "{{disk}} read",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_disk_disk_time_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m]) * -1",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{disk}} write",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Operation duration (ms)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Disk data transfer in Bytes per seconds (IEC i.e. in power of 1024)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 47
+          },
+          "id": 35,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "irate(collectd_disk_disk_octets_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m])",
+              "interval": "",
+              "legendFormat": "{{disk}} read",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_disk_disk_octets_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m]) * -1",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{disk}} write",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Transfert (B/s)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "iops"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 54
+          },
+          "id": 36,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "irate(collectd_disk_disk_merged_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m])",
+              "interval": "",
+              "legendFormat": "{{disk}} read",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_disk_disk_merged_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m]) * -1",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{disk}} write",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Merged operation",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "iops"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 54
+          },
+          "id": 37,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "irate(collectd_disk_disk_ops_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m])",
+              "interval": "",
+              "legendFormat": "{{disk}} read",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_disk_disk_ops_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m]) * -1",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{disk}} write",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Operation/s",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Disk /srv (monodisk)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 33
+      },
+      "id": 39,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 34
+          },
+          "id": 40,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "irate(collectd_disk_disk_time_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m])",
+              "interval": "",
+              "legendFormat": "{{disk}} read",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_disk_disk_time_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m]) * -1",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{disk}} write",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Operation duration (ms)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Disk data transfer in Bytes per seconds (IEC i.e. in power of 1024)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 34
+          },
+          "id": 41,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "irate(collectd_disk_disk_octets_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m])",
+              "interval": "",
+              "legendFormat": "{{disk}} read",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_disk_disk_octets_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m]) * -1",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{disk}} write",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Transfert (B/s)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "iops"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 41
+          },
+          "id": 42,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "irate(collectd_disk_disk_merged_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m])",
+              "interval": "",
+              "legendFormat": "{{disk}} read",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_disk_disk_merged_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m]) * -1",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{disk}} write",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Merged operation",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "iops"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 41
+          },
+          "id": 43,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "irate(collectd_disk_disk_ops_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m])",
+              "interval": "",
+              "legendFormat": "{{disk}} read",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_disk_disk_ops_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m]) * -1",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{disk}} write",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Operation/s",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Disk /srv (multidisk)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 34
+      },
+      "id": 45,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 35
+          },
+          "id": 47,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "collectd_iostat_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",iostat=~\"$actual_disks\", type=\"rrqm_s\"}",
+              "interval": "",
+              "legendFormat": "{{iostat}} read (rrqm/s)",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "collectd_iostat_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",iostat=~\"$actual_disks\", type=\"wrqm_s\"}",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{iostat}} write (wrqm/s)",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Merged requests queued to [[actual_disks]] per second",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "iops"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 35
+          },
+          "id": 48,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "collectd_iostat_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",iostat=~\"$actual_disks\", type=\"r_s\"}",
+              "interval": "",
+              "legendFormat": "{{iostat}} read (r/s)",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "collectd_iostat_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",iostat=~\"$actual_disks\", type=\"w_s\"}",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{iostat}} write (w/s)",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Number of requests (after merge) on [[actual_disks]]",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "MiBs"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 42
+          },
+          "id": 49,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "collectd_iostat_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",iostat=~\"$actual_disks\", type=\"rMB_s\"}",
+              "interval": "",
+              "legendFormat": "{{iostat}} read (rMB/s)",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "collectd_iostat_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",iostat=~\"$actual_disks\", type=\"wMB_s\"}",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{iostat}} write (wMB/s)",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Throughput on [[actual_disks]] (MB/s)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "kbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 42
+          },
+          "id": 50,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "collectd_iostat_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",iostat=~\"$actual_disks\", type=\"rareq-sz\"}",
+              "interval": "",
+              "legendFormat": "{{iostat}} read (rareq-sz)",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "collectd_iostat_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",iostat=~\"$actual_disks\", type=\"wareq-sz\"}",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{iostat}} write (wareq-sz)",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Average request size on [[actual_disks]] (kilobytes)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 49
+          },
+          "id": 51,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "collectd_iostat_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",iostat=~\"$actual_disks\", type=\"r_await\"}",
+              "interval": "",
+              "legendFormat": "{{iostat}} read (r_await)",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "collectd_iostat_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",iostat=~\"$actual_disks\", type=\"w_await\"}",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{iostat}} write (w_await)",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Average request wait time (queue time + service time) on [[actual_disks]] (ms)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 49
+          },
+          "id": 52,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "collectd_iostat_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",iostat=~\"$actual_disks\", type=\"aqu-sz\"}",
+              "interval": "",
+              "legendFormat": "{{iostat}} queue length (aqu-sz)",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Average request queue length on [[actual_disks]]",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 56
+          },
+          "id": 53,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "collectd_iostat_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",iostat=~\"$actual_disks\", type=\"%util\"}",
+              "interval": "",
+              "legendFormat": "{{iostat}} utilization (%util)",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "[[actual_disks]] utilization (%)",
+          "type": "timeseries"
+        }
+      ],
+      "repeat": "actual_disks",
+      "repeatDirection": "h",
+      "title": "Disk IO stats [[actual_disks]]",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 35
+      },
+      "id": 6,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Network data traffic in Bytes per seconds (IEC i.e. in power of 1024)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 36
+          },
+          "id": 62,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "irate(collectd_interface_if_octets_rx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[1m])",
+              "interval": "",
+              "legendFormat": "{{interface}} rx",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_interface_if_octets_tx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[1m]) * -1",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{interface}} tx",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Traffic (B/s)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Network data traffic in packets per seconds",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "pps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 36
+          },
+          "id": 63,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "irate(collectd_interface_if_packets_rx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[1m])",
+              "interval": "",
+              "legendFormat": "{{interface}} rx",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_interface_if_packets_tx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[1m]) * -1",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{interface}} tx",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Packets",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Network interfaces errors per second",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "cps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 43
+          },
+          "id": 64,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "irate(collectd_interface_if_errors_rx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[1m])",
+              "interval": "",
+              "legendFormat": "{{interface}} rx",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_interface_if_errors_tx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[1m]) * -1",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{interface}} tx",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Errors",
+          "type": "timeseries"
+        }
+      ],
+      "repeat": "nif",
+      "repeatDirection": "h",
+      "title": "Network interface [[nif]]",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 43
+      },
+      "id": 4,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Process memory usage in Bytes (IEC i.e. in power of 1024)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 44
+          },
+          "id": 96,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "label_replace({__name__=~\"collectd_processes_ps_(vm|data|rss)\",job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",processes=~\"$process_name\"}, \"ps_type\", \"$1\", \"__name__\", \"collectd_processes_ps_(.*)\")",
+              "interval": "",
+              "legendFormat": "{{capture_id}} - {{ps_type}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "[[process_name]] memory usage",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Number of processes and threads",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 44
+          },
+          "id": 125,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "label_replace({__name__=~\"collectd_processes_ps_count_(processes|threads)\",job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",processes=~\"$process_name\"}, \"ps_type\", \"$1\", \"__name__\", \"collectd_processes_ps_count_(.*)\")",
+              "interval": "",
+              "legendFormat": "{{capture_id}} - {{ps_type}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "[[process_name]]  processes and threads",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Process CPU time usage in percentage",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 100,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 44
+          },
+          "id": 126,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_processes_ps_cputime_syst_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",processes=~\"$process_name\"}[1m]) * 0.0001",
+              "interval": "",
+              "legendFormat": "{{capture_id}} - syst",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "irate(collectd_processes_ps_cputime_user_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",processes=~\"$process_name\"}[1m]) * 0.0001",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{capture_id}} - user",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "[[process_name]]  CPU time (%)",
+          "type": "timeseries"
+        }
+      ],
+      "repeat": "process_name",
+      "repeatDirection": "h",
+      "title": "Process [[process_name]]",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 52
+      },
+      "id": 2,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "celsius"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 53
+          },
+          "id": 94,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "collectd_temperature_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\"}",
+              "interval": "",
+              "legendFormat": "{{capture_id}} - {{temperature}} - {{type}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Temperature",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Temperature",
+      "type": "row"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "14af36b4-f879-4c2f-a716-f0d7657b479f",
+          "value": "14af36b4-f879-4c2f-a716-f0d7657b479f"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(collectd_uptime{}, tenant_id)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Tenant",
+        "multi": false,
+        "name": "tenant_id",
+        "options": [],
+        "query": {
+          "query": "label_values(collectd_uptime{}, tenant_id)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "CE300AI33A30612",
+          "value": "CE300AI33A30612"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(collectd_uptime{tenant_id=\"$tenant_id\"}, capture_id)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Capture IDs",
+        "multi": false,
+        "name": "capture_id",
+        "options": [],
+        "query": {
+          "query": "label_values(collectd_uptime{tenant_id=\"$tenant_id\"}, capture_id)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(collectd_iostat_gauge{tenant_id=\"$tenant_id\",capture_id=\"$capture_id\"}, iostat)",
+        "hide": 2,
+        "includeAll": true,
+        "label": "actual_disks",
+        "multi": true,
+        "name": "actual_disks",
+        "options": [],
+        "query": {
+          "query": "label_values(collectd_iostat_gauge{tenant_id=\"$tenant_id\",capture_id=\"$capture_id\"}, iostat)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "[^loop].*",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(collectd_interface_if_octets_rx_total{tenant_id=\"$tenant_id\",capture_id=\"$capture_id\"}, interface)",
+        "hide": 2,
+        "includeAll": true,
+        "label": "nif",
+        "multi": true,
+        "name": "nif",
+        "options": [],
+        "query": {
+          "query": "label_values(collectd_interface_if_octets_rx_total{tenant_id=\"$tenant_id\",capture_id=\"$capture_id\"}, interface)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "[^lo|^wg|^tun].*",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": "",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(collectd_processes_ps_vm{tenant_id=\"$tenant_id\",capture_id=\"$capture_id\"}, processes)",
+        "hide": 2,
+        "includeAll": true,
+        "label": "Process name",
+        "multi": true,
+        "name": "process_name",
+        "options": [],
+        "query": {
+          "query": "label_values(collectd_processes_ps_vm{tenant_id=\"$tenant_id\",capture_id=\"$capture_id\"}, processes)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "^(?:(?!clickhouse-serv|distribute|nevrax|pv-storage|pvbackd|ramen).)*$",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Capture sensors",
+  "uid": "VbvXRYUVz",
+  "version": 19,
+  "weekStart": ""
+}
