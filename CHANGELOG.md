@@ -1,9 +1,22 @@
 * Update ObjectTypeMetrics grafana board [Asana](https://app.asana.com/0/1133479128121896/1203519344322276/f)
 
-## Current Release
+## Current Release 
+### 0.122.0 
+**Release Date:** Fri May 26 11:58:58 UTC 2023     
+## Previous Releases 
+### 0.121.0 
+**Release Date:** Fri May 19 13:40:22 UTC 2023     
+### 0.120.0 
+**Release Date:** Mon May 15 09:27:24 UTC 2023     
+### 0.119.0 
+**Release Date:** Fri May 12 13:07:38 UTC 2023     
+Roadrunner update server, dashboard tuning [Asana](https://app.asana.com/0/1204139580644856/1204105776993399/f)
+### 0.118.0 
+**Release Date:** Tue May  9 17:33:41 UTC 2023     
+* Remove Deprecated Spark Ingestion and Lag Grafana Dashboard widget "Contemporary Batch Job Work Queue Lag" [Asana](https://app.asana.com/0/1200469496011803/1204449738364582/f)
+
 ### 0.117.0
 **Release Date:** Fri May  5 11:49:51 UTC 2023     
-## Previous Releases
 Roadrunner update server [Asana](https://app.asana.com/0/1204139580644856/1204105776993399/f)
 ### 0.116.0
 **Release Date:** Thu May  4 07:26:22 UTC 2023     
