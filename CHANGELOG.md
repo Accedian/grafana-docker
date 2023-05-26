@@ -1,50 +1,52 @@
-## Current Release 
-### 0.117.0 
+* Update ObjectTypeMetrics grafana board [Asana](https://app.asana.com/0/1133479128121896/1203519344322276/f)
+
+## Current Release
+### 0.117.0
 **Release Date:** Fri May  5 11:49:51 UTC 2023     
-## Previous Releases 
+## Previous Releases
 Roadrunner update server [Asana](https://app.asana.com/0/1204139580644856/1204105776993399/f)
-### 0.116.0 
+### 0.116.0
 **Release Date:** Thu May  4 07:26:22 UTC 2023     
 * Foxtrot dashboards for handlers [Asana](https://app.asana.com/0/1203669339406776/1202458568143107/f)
-### 0.115.0 
+### 0.115.0
 **Release Date:** Wed Apr 26 16:04:35 UTC 2023     
 * Change default time range for Spark Ingestion and Lag dashboard [Asana](https://app.asana.com/0/1201489317584292/1204415956101184/f)
 
-### 0.114.0 
+### 0.114.0
 **Release Date:** Wed Apr 26 15:37:12 UTC 2023     
-### 0.113.0 
+### 0.113.0
 **Release Date:** Tue Apr 18 15:38:53 UTC 2023     
 * Fix - Clean up of Roadrunner(Detailed) dashboard [Asana](https://app.asana.com/0/1199733373661982/1204359876608337/f)
-### 0.112.0 
+### 0.112.0
 **Release Date:** Wed Apr 12 18:02:14 UTC 2023     
 Fix - add panel to adh-fedex dashboard for RR websocket teardown/rejection counts [Asana] (https://app.asana.com/0/1201489317584292/1204359876608335/f)
-### 0.111.0 
+### 0.111.0
 **Release Date:** Wed Apr 12 11:59:24 UTC 2023     
 * Fix - appropriate default values for variables in clickhouse-dashboard-cluster
-### 0.110.0 
+### 0.110.0
 **Release Date:** Tue Apr 11 07:45:49 UTC 2023     
 * Feat - Foxtrot Postgres call time panel [Asana Task](https://app.asana.com/0/1203669339406776/1202458568143107/f)
-### 0.109.0 
+### 0.109.0
 **Release Date:** Tue Apr  4 13:06:27 UTC 2023     
 * Feat - bootstrap Foxtrot dashboard [Asana Task](https://app.asana.com/0/1203669339406776/1202458568143107/f)
-### 0.108.0 
+### 0.108.0
 **Release Date:** Tue Mar 28 20:02:13 UTC 2023     
 * Feat - Analytics Streamer add metric to track gNMI client side delay [Asana Task](https://app.asana.com/0/520715087448241/1204259913485253)
-### 0.107.0 
+### 0.107.0
 **Release Date:** Mon Mar  6 20:59:36 UTC 2023     
 * Fix: Update gNMI dashboard to support multiple analytics-streamers [Asana](https://app.asana.com/0/1202876257534184/1204119453925966)
-### 0.106.0 
+### 0.106.0
 **Release Date:** Thu Feb 16 10:41:22 UTC 2023     
 * New dashboard for alert service + fixing rate interval [Asana](https://app.asana.com/0/1202421299651189/1203974162946127/f)
-### 0.105.0 
+### 0.105.0
 **Release Date:** Tue Feb 14 12:37:19 UTC 2023     
 * Fix: Metrics for alert service - micro tca alerts were not included [Asana](https://app.asana.com/0/1202421299651189/1203965761436765/f)
-### 0.104.0 
+### 0.104.0
 **Release Date:** Mon Feb 13 22:13:41 UTC 2023     
 * Feat: MOSummaryConsolidator Delta dashboard from running job [Asana Task](https://app.asana.com/0/1133479128121896/1203328848884985/f)
-### 0.103.0 
+### 0.103.0
 **Release Date:** Fri Feb 10 14:53:24 UTC 2023     
-### 0.102.0 
+### 0.102.0
 **Release Date:** Fri Feb 10 08:32:53 UTC 2023     
 * Fix: Refactoring of alert service dashboard [Asana](https://app.asana.com/0/1202421299651189/1203936039863649/f)
 ### 0.101.0
@@ -53,105 +55,105 @@ Fix - add panel to adh-fedex dashboard for RR websocket teardown/rejection count
 ### 0.100.0
 **Release Date:** Wed Feb  8 09:40:09 UTC 2023
 * Fix: Metrics for alert service api calls not shown correctly [Asana](https://app.asana.com/0/1202421299651189/1203882620723234/f)
-### 0.99.0 
+### 0.99.0
 **Release Date:** Wed Feb  1 14:15:40 UTC 2023     
-### 0.98.0 
+### 0.98.0
 **Release Date:** Thu Jan 26 16:09:11 UTC 2023     
 * Feat: New Fedex Dashboard [Asana](https://app.asana.com/0/1203411329194882/1203411329194909/f)
-### 0.97.0 
+### 0.97.0
 **Release Date:** Thu Jan 26 15:00:18 UTC 2023     
-### 0.96.0 
+### 0.96.0
 **Release Date:** Tue Jan 10 12:10:20 UTC 2023     
 * Fix Alert Service dashboard - plugin not supported [Asana](https://app.asana.com/0/1202421299651189/1203672766314299/f)
-### 0.95.0 
+### 0.95.0
 **Release Date:** Mon Jan  9 11:16:48 UTC 2023     
 * Alert Service - dashboard uid change
-### 0.94.0 
+### 0.94.0
 **Release Date:** Mon Jan  9 10:19:39 UTC 2023     
 * Alert Service - dashboard name change
-### 0.93.0 
+### 0.93.0
 **Release Date:** Fri Dec 30 12:51:22 UTC 2022     
-### 0.92.0 
+### 0.92.0
 **Release Date:** Wed Dec 21 08:52:55 UTC 2022     
 * Alert Service - Modify dashboard and add new panel with metrics [Asana](https://app.asana.com/0/1202421299651189/1203447968630095/f)
-### 0.91.0 
+### 0.91.0
 **Release Date:** Tue Dec 20 20:46:43 UTC 2022     
 * Add alert-export dashboard
-### 0.90.0 
+### 0.90.0
 **Release Date:** Thu Dec 15 14:48:46 UTC 2022     
 * Add mo-summary topic to spark Ingestion and Lag panels
 * Add new panel and edit existing panels in Spark Batch Jobs Monitoring Dashboard [Asana Task](https://app.asana.com/0/0/1203536422256547/f)
-### 0.89.0 
+### 0.89.0
 **Release Date:** Mon Dec 12 20:20:34 UTC 2022     
-* Fix: gNMI dashboard unavailable 
+* Fix: gNMI dashboard unavailable
 
-### 0.88.0 
+### 0.88.0
 **Release Date:** Mon Dec 12 20:10:41 UTC 2022     
-### 0.86.0 
+### 0.86.0
 **Release Date:** Tue Dec  6 16:27:44 UTC 2022     
 * Alert Service - Extract alerts metrics dashboard from gather [Asana](https://app.asana.com/0/1202421299651189/1203447968630089/f)
-### 0.85.0 
+### 0.85.0
 **Release Date:** Tue Dec  6 16:23:00 UTC 2022     
 * Added Ignite and Analytics-streamer dashboards
-### 0.84.0 
+### 0.84.0
 **Release Date:** Wed Nov 30 18:55:42 UTC 2022     
 * Feat - Add PersistenceService metrics to the Roadrunner dashboard [Asana](https://app.asana.com/0/1199574676083399/1203406613035602/f)
-### 0.83.0 
+### 0.83.0
 **Release Date:** Mon Oct  3 08:56:42 UTC 2022     
-### 0.82.0 
+### 0.82.0
 **Release Date:** Wed Sep 28 20:27:42 UTC 2022     
 * Feat - Add Latent Batch partitions count panel to sparkIngestionndLag [Asana](https://app.asana.com/0/1133479128121896/1202716334041153/f)
 
-### 0.80.0 
+### 0.80.0
 **Release Date:** Wed Sep  7 20:12:57 UTC 2022     
-### 0.79.0 
+### 0.79.0
 **Release Date:** Tue Aug 23 18:33:31 UTC 2022     
 * Feat - Add new panels to Roadrunner (detailed) dashboard [Asana Task](https://app.asana.com/0/1202678428957543/1202678428957547/f)
-### 0.78.0 
+### 0.78.0
 **Release Date:** Thu Jul 21 18:57:17 UTC 2022     
 * Fix: Remove references to ENV variables [Asana Task](https://app.asana.com/0/1202511350916992/1202547980823243/f)
-### 0.77.0 
+### 0.77.0
 **Release Date:** Wed Jul 20 16:08:57 UTC 2022     
 ### 0.77.0
 **Release Date:** Wed Jul 20 12:21:23 UTC 2022
 * Feat: New Custom Reports Dashboard
 [Asana Task](https://app.asana.com/0/1201825567223644/1202005753652075/f)
-### 0.76.0 
+### 0.76.0
 **Release Date:** Thu Jul 14 20:36:48 UTC 2022    
 * Feat - New RR Dashboard with some APIMode and more detailed metrics [Asana Task](https://app.asana.com/0/1202511350916992/1202547980823243/f)
-### 0.75.0 
+### 0.75.0
 **Release Date:** Wed Jul  6 12:37:23 UTC 2022     
-### 0.74.0 
+### 0.74.0
 **Release Date:** Thu May 19 16:00:36 UTC 2022     
 * Fix -Add avg/current values to RecordCount panel on Spark ingestion Dashboard : https://app.asana.com/0/1201487391697105/1202064245081710/f
 * Fix - Update spak Disk utilisation panel to support monitoring deployments running sparkworker nodes
-### 0.73.0 
+### 0.73.0
 **Release Date:** Wed May 11 07:46:11 UTC 2022     
-### 0.70.0 
+### 0.70.0
 **Release Date:** Mon Apr 11 17:02:18 UTC 2022     
 ### grafana-docker
 * Fix - clock plugin and make provisioned dashbaords saveable
 * Feat - Add in Object Type Metrics provisioned dashboard
-### 0.69.0 
+### 0.69.0
 **Release Date:** Fri Apr  8 19:11:03 UTC 2022     
-### 0.68.0 
+### 0.68.0
 **Release Date:** Fri Apr  8 18:45:29 UTC 2022     
-### 0.67.0 
+### 0.67.0
 **Release Date:** Tue Apr  5 11:56:39 UTC 2022     
-### 0.66.0 
+### 0.66.0
 **Release Date:** Wed Mar 30 20:45:58 UTC 2022     
-### 0.65.0 
+### 0.65.0
 **Release Date:** Fri Mar 18 13:57:19 UTC 2022     
-### 0.64.0 
+### 0.64.0
 **Release Date:** Wed Mar 16 14:21:24 UTC 2022     
-### 0.63.0 
+### 0.63.0
 **Release Date:** Tue Mar 15 13:44:36 UTC 2022     
-### 0.62.0 
+### 0.62.0
 **Release Date:** Mon Mar 14 16:21:42 UTC 2022     
 ### 0.62.0
 **Release Date:** Fri Mar 11 11:31:48 UTC 2022
-*Feat:Added Batch Job Monitoring dashboard 
-*Feat:Added a new panel to Spark Ingestion and Lag dashboard 
+*Feat:Added Batch Job Monitoring dashboard
+*Feat:Added a new panel to Spark Ingestion and Lag dashboard
 *Fix: Added DOCKER_DEFAULT_PLATFORM for cross compilation     
 ### 0.61.0
 **Release Date:** Mon Nov 15 11:31:48 UTC 2021  
@@ -297,4 +299,3 @@ Fix - add panel to adh-fedex dashboard for RR websocket teardown/rejection count
 **Release Date:** Wed Feb 28 19:25:31 UTC 2018     
 ### 0.1.0
 **Release Date:** Wed Feb 28 19:17:58 UTC 2018
-
