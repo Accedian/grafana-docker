@@ -501,7 +501,7 @@
             "uid": "000000001"
           },
           "editorMode": "code",
-          "expr": "sum by(tenant,objectType) (spark_AccedianStreamingMetrics_streaming_maxTimestamp{job=\"spark_$AppName\"}!=9223372036854776000)",
+          "expr": "sum by(tenant,objectType) (spark_AccedianStreamingMetrics_streaming_maxTimestamp{job=\"spark_$AppName\"}!=-9223372036854776000)",
           "format": "table",
           "instant": true,
           "interval": "",
