@@ -1,4 +1,41 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.1.3"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph (old)",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -25,14 +62,14 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 32,
+  "id": null,
   "links": [],
   "liveNow": false,
   "panels": [
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "${DS_PROMETHEUS}"
       },
       "description": "Panel to show insight into what the current state of the streamer is",
       "fieldConfig": {
@@ -95,7 +132,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "expr": "sum (analytics_streamer_gNMI_info_active_tenant_streams)",
           "interval": "",
@@ -105,7 +142,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "expr": "sum (analytics_streamer_gNMI_info_active_tenant_subscriptions)",
           "interval": "",
@@ -115,7 +152,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "expr": "sum (analytics_streamer_gNMI_info_active_kafka_consumers)",
           "interval": "",
@@ -133,7 +170,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -179,7 +216,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "analytics_streamer_gNMI_info_active_tenant_monitored_objects",
@@ -224,7 +261,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "${DS_PROMETHEUS}"
       },
       "description": "Gauge to monitor time per stage in pipeline",
       "fieldConfig": {
@@ -278,7 +315,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "sum(rate(analytics_streamer_gNMI_stage_processing_time_ns_sum{component=\"KafkaConsumer\"}[1m]))\n/  \nsum(rate(analytics_streamer_gNMI_stage_processing_time_ns_count{component=\"KafkaConsumer\"}[1m]))",
@@ -290,7 +327,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "sum(rate(analytics_streamer_gNMI_stage_queue_time_ns_sum{component=\"KafkaConsumer->YangProcessor\"}[1m]))\n/  \nsum(rate(analytics_streamer_gNMI_stage_queue_time_ns_count{component=\"KafkaConsumer->YangProcessor\"}[1m]))",
@@ -302,7 +339,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "sum(rate(analytics_streamer_gNMI_stage_processing_time_ns_sum{component=\"YangProcessor\"}[1m]))\n/  \nsum(rate(analytics_streamer_gNMI_stage_processing_time_ns_count{component=\"YangProcessor\"}[1m]))",
@@ -314,7 +351,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "sum(rate(analytics_streamer_gNMI_stage_queue_time_ns_sum{component=\"YangProcessor->gNMI_Server\"}[1m]))\n/  \nsum(rate(analytics_streamer_gNMI_stage_queue_time_ns_count{component=\"YangProcessor->gNMI_Server\"}[1m]))",
@@ -326,7 +363,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "sum(rate(analytics_streamer_gNMI_stage_processing_time_ns_sum{component=\"gNMI_Server\"}[1m]))\n/  \nsum(rate(analytics_streamer_gNMI_stage_processing_time_ns_count{component=\"gNMI_Server\"}[1m]))",
@@ -338,7 +375,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "sum(rate(analytics_streamer_gNMI_stage_processing_time_ns_sum{component=\"gNMI_Client\"}[1m]))\n/  \nsum(rate(analytics_streamer_gNMI_stage_processing_time_ns_count{component=\"gNMI_Client\"}[1m]))",
@@ -350,7 +387,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "sum(rate(analytics_streamer_gNMI_stage_processing_time_ns_sum{component=\"AnalyticsStreamer\"}[1m]))\n/  \nsum(rate(analytics_streamer_gNMI_stage_processing_time_ns_count{component=\"AnalyticsStreamer\"}[1m]))",
@@ -370,7 +407,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "${DS_PROMETHEUS}"
       },
       "description": "Rate of messages processed",
       "fieldConfig": {
@@ -417,7 +454,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "rate(analytics_streamer_gNMI_info_total_kafka_msg_processed[1m])",
@@ -429,7 +466,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "rate(analytics_streamer_gNMI_info_total_yang_msg_processed[1m])",
@@ -441,7 +478,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "rate(analytics_streamer_gNMI_info_total_gnmi_msg_processed[1m])",
@@ -497,7 +534,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -543,7 +580,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "analytics_streamer_gNMI_ingestion_lag",
@@ -590,7 +627,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "${DS_PROMETHEUS}"
       },
       "description": "Time in seconds from metric creation to streaming out to a client",
       "fieldConfig": {
@@ -638,7 +675,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "analytics_streamer_gNMI_ingestion_metrics_stream_time_s_sum / analytics_streamer_gNMI_ingestion_metrics_stream_time_s_count",
@@ -688,7 +725,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -734,7 +771,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~\"aod_analytics-streamer.*\"}",
@@ -783,7 +820,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -829,7 +866,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "rate(container_cpu_user_seconds_total{container_label_com_docker_swarm_service_name=~\"aod_analytics-streamer.*\"}[5m]) * 100",
@@ -876,7 +913,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -922,7 +959,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "sum by (cause)(analytics_streamer_gNMI_server_subscription_failure)",
@@ -971,7 +1008,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1017,7 +1054,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "sum by (system) (analytics_streamer_gNMI_info_communication_failure)",
@@ -1066,7 +1103,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1112,7 +1149,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "sum by (field) (analytics_streamer_gNMI_yang_data_missing)",
@@ -1159,7 +1196,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1205,7 +1242,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "sum by (field) (analytics_streamer_gNMI_kafka_data_mapping)",
@@ -1251,7 +1288,25 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "DS_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      }
+    ]
   },
   "time": {
     "from": "now-5m",
@@ -1274,6 +1329,6 @@
   "timezone": "",
   "title": "Analytics-Streamer gNMI",
   "uid": "L1-exxdVz",
-  "version": 12,
+  "version": 2,
   "weekStart": ""
 }
