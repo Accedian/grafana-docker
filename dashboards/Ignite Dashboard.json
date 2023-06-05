@@ -615,13 +615,14 @@
       "hiddenSeries": false,
       "id": 2,
       "legend": {
-        "avg": false,
-        "current": false,
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
         "max": false,
         "min": false,
         "show": true,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
       "linewidth": 1,
@@ -646,6 +647,7 @@
           },
           "editorMode": "code",
           "expr": "sum by (topic) (ignite_ingestion_lag{topic!~\"mo-summary-.*\"})",
+          "format": "time_series",
           "interval": "",
           "legendFormat": "{{topic}}",
           "range": true,
@@ -1244,7 +1246,7 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {
@@ -1264,6 +1266,6 @@
   "timezone": "",
   "title": "Ignite Dashboard",
   "uid": "XRZc5xNVz",
-  "version": 13,
+  "version": 15,
   "weekStart": ""
 }
