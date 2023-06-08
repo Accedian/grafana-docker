@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.125.0 
+**Release Date:** Thu Jun  8 15:04:03 UTC 2023     
+## Previous Releases 
 ### 0.124.0 
 **Release Date:** Mon Jun  5 15:30:43 UTC 2023     
-## Previous Releases 
 * Update Spark Ingestion and Lag Board with new topic[Asana](https://app.asana.com/0/1133479128121896/1204190306654517)
 * Support Multiple Ignite Nodes [Asana](https://app.asana.com/0/1202176318424854/1204427100421145)
 ### 0.123.0 
