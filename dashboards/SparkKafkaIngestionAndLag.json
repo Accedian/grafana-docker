@@ -59,7 +59,7 @@
       "options": {
         "displayLabels": [],
         "legend": {
-          "displayMode": "list",
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true,
           "values": [
@@ -87,8 +87,8 @@
             "uid": "000000001"
           },
           "editorMode": "builder",
-          "expr": "sum by(job, tenant, objectType) (rate(spark_AccedianStreamingMetrics_streaming_recCount[5m]))",
-          "legendFormat": "{{job}}--{{tenant}}--{{objectType}}",
+          "expr": "sum by(job, tenant) (rate(spark_AccedianStreamingMetrics_streaming_recCount{tenant=\"$tenant\"}[2m]))",
+          "legendFormat": "{{job}}--{{tenant}}",
           "range": true,
           "refId": "A"
         }
@@ -730,7 +730,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "000000001"
+      },
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -774,9 +777,15 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "000000001"
+          },
+          "editorMode": "code",
           "expr": "100.0 - 100 * (node_filesystem_avail{instance=~'.*sparkworker.*|.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"} / node_filesystem_size{instance=~'.*sparkworker.*|.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"})",
           "interval": "",
           "legendFormat": "{{instance}}",
+          "range": true,
           "refId": "D"
         }
       ],
@@ -916,7 +925,34 @@
     "spark"
   ],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "96946968-559b-491d-b818-3bddb40309d1",
+          "value": "96946968-559b-491d-b818-3bddb40309d1"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "000000001"
+        },
+        "definition": "label_values(tenant)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "tenant",
+        "options": [],
+        "query": {
+          "query": "label_values(tenant)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
   },
   "time": {
     "from": "now-1h",
@@ -950,6 +986,6 @@
   "timezone": "",
   "title": "Spark Ingestion and Lag",
   "uid": "oaePhsqGz",
-  "version": 14,
+  "version": 16,
   "weekStart": ""
 }
