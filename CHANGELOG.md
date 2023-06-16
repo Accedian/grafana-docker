@@ -1,3 +1,4 @@
+* Add REST API Call duration panel to Foxtrot dashboard [Asana](https://app.asana.com/0/1203669339406776/1202458568143107/f)
 ## Current Release 
 ### 0.126.0 
 **Release Date:** Thu Jun 15 12:19:30 UTC 2023     
