@@ -83,7 +83,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "",
+      "description": "Turn on debug logs on ignite to get details or tail the audit-log Kafka topic",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -161,8 +161,8 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "builder",
-          "expr": "rate(ignite_normalizer_continuity_errors_total[5m])",
+          "editorMode": "code",
+          "expr": "sum by (reason) (rate(ignite_normalizer_continuity_errors_total[5m]))",
           "legendFormat": "Continuity errors: {{reason}}",
           "range": true,
           "refId": "A"
@@ -172,8 +172,8 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "builder",
-          "expr": "rate(ignite_normalizer_discovery_errors_total[5m])",
+          "editorMode": "code",
+          "expr": "sum by (reason) (rate(ignite_normalizer_discovery_errors_total[5m]))",
           "hide": false,
           "legendFormat": "Discovery errors: {{reason}}",
           "range": true,
@@ -184,8 +184,8 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "builder",
-          "expr": "rate(ignite_normalizer_missing_object_identifier_total[5m])",
+          "editorMode": "code",
+          "expr": "sum by (identifier) (rate(ignite_normalizer_missing_object_identifier_total[5m]))",
           "hide": false,
           "legendFormat": "Missing MO Identifier: {{identifier}}",
           "range": true,
@@ -277,8 +277,8 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "builder",
-          "expr": "rate(ignite_normalizer_discovery_total[5m])",
+          "editorMode": "code",
+          "expr": "sum by (instance) (rate(ignite_normalizer_discovery_total[5m]))",
           "legendFormat": "Discovered sessions",
           "range": true,
           "refId": "A"
@@ -288,8 +288,8 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "builder",
-          "expr": "rate(ignite_normalizer_continuity_total[5m])",
+          "editorMode": "code",
+          "expr": "sum by (instance) (rate(ignite_normalizer_continuity_total[5m]))",
           "hide": false,
           "legendFormat": "Changed sessions (continuity)",
           "range": true,
@@ -794,7 +794,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "builder",
+          "editorMode": "code",
           "expr": "rate(ignite_kafka_total_dropped[5m])",
           "format": "time_series",
           "legendFormat": "{{objectType}} [tenant {{tenantId}}] reason: {{reason}}",
@@ -861,9 +861,11 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "rate(ignite_normalizer_data_conversion[5m])",
+          "editorMode": "code",
+          "expr": "sum by (field) (rate(ignite_normalizer_data_conversion[5m]))",
           "interval": "",
           "legendFormat": "Data conversion errors [{{field}}]",
+          "range": true,
           "refId": "A"
         },
         {
@@ -871,9 +873,11 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "rate(ignite_normalizer_apply_sql_expression[5m])",
+          "editorMode": "code",
+          "expr": "sum by (field) (rate(ignite_normalizer_apply_sql_expression[5m]))",
           "interval": "",
           "legendFormat": "SQL Expression errors [{{field}}]",
+          "range": true,
           "refId": "B"
         }
       ],
@@ -965,9 +969,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(container_cpu_user_seconds_total{container_label_com_docker_swarm_service_name=~\"aod_ignite.*\"}[5m]) * 100",
+          "expr": "rate(container_cpu_user_seconds_total{container_label_com_docker_swarm_task_name=~\"aod_ignite.*\"}[5m]) * 100",
           "interval": "",
-          "legendFormat": "{{container_label_com_docker_swarm_service_name}}.{{container_label_com_docker_swarm_service_id}}",
+          "legendFormat": "{{name}}",
           "range": true,
           "refId": "A"
         }
@@ -1060,10 +1064,11 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(ignite_normalizer_total_fedex_msg_processed[5m])",
+          "expr": "sum by (instance) (rate(ignite_normalizer_total_fedex_msg_processed[5m]))",
+          "format": "time_series",
           "hide": false,
           "interval": "",
-          "legendFormat": "{{job}}:Fedex processed",
+          "legendFormat": "{{instance}} [Fedex processed]",
           "range": true,
           "refId": "A"
         },
@@ -1073,9 +1078,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(ignite_normalizer_total_normalized[5m])",
+          "expr": "sum by (instance) (rate(ignite_normalizer_total_normalized[5m]))",
           "interval": "",
-          "legendFormat": "{{job}}:Normalized",
+          "legendFormat": "{{instance}} [Normalized]",
           "range": true,
           "refId": "B"
         },
@@ -1085,9 +1090,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(ignite_kafka_total_sent[5m])",
+          "expr": "sum by (instance) (rate(ignite_kafka_total_sent[5m]))",
           "interval": "",
-          "legendFormat": "{{job}}:Kafka sent",
+          "legendFormat": "{{instance}} [Kafka sent]",
           "range": true,
           "refId": "C"
         }
@@ -1182,7 +1187,7 @@
           "editorMode": "code",
           "expr": "container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~\"aod_ignite.*\"}",
           "interval": "",
-          "legendFormat": "{{container_label_com_docker_swarm_service_name}}.{{container_label_com_docker_swarm_service_id}}",
+          "legendFormat": "{{name}}",
           "range": true,
           "refId": "A"
         }
@@ -1246,7 +1251,7 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {
@@ -1266,6 +1271,6 @@
   "timezone": "",
   "title": "Ignite Dashboard",
   "uid": "XRZc5xNVz",
-  "version": 15,
+  "version": 26,
   "weekStart": ""
 }
