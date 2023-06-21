@@ -1,3 +1,4 @@
+* Fix - Foxtrot intances up datasource [Asana](https://app.asana.com/0/1203669339406776/1202458568143107/f)
 ## Current Release 
 ### 0.130.0 
 **Release Date:** Tue Jun 20 14:06:51 UTC 2023     
