@@ -1,8 +1,10 @@
-* Adding multi host compatible grafana dashboard
 ## Current Release 
+### 0.132.0 
+**Release Date:** Wed Jun 21 16:31:42 UTC 2023     
+## Previous Releases 
+* Adding multi host compatible grafana dashboard
 ### 0.131.0 
 **Release Date:** Wed Jun 21 12:52:46 UTC 2023     
-## Previous Releases 
 * Fix - Foxtrot intances up datasource [Asana](https://app.asana.com/0/1203669339406776/1202458568143107/f)
 ### 0.130.0 
 **Release Date:** Tue Jun 20 14:06:51 UTC 2023     
