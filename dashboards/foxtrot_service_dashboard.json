@@ -30,10 +30,7 @@
     "liveNow": false,
     "panels": [
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
-        },
+        "datasource": "Prometheus",
         "description": "Drops means the service was not running",
         "fieldConfig": {
           "defaults": {
