@@ -1,8 +1,24 @@
-## Current Release 
-### 0.134.0 
-**Release Date:** Mon Jun 26 17:30:19 UTC 2023     
-## Previous Releases 
 * Update Spark Ingestion and Lag Board with new panel [Asana](https://app.asana.com/0/1133479128121896/1204473156793164/f)
+## Current Release 
+### 0.133.0 
+**Release Date:** Sun Jun 25 20:32:38 UTC 2023     
+## Previous Releases 
+### 0.132.0 
+**Release Date:** Wed Jun 21 16:31:42 UTC 2023     
+* Adding multi host compatible grafana dashboard
+### 0.131.0 
+**Release Date:** Wed Jun 21 12:52:46 UTC 2023     
+* Fix - Foxtrot intances up datasource [Asana](https://app.asana.com/0/1203669339406776/1202458568143107/f)
+### 0.130.0 
+**Release Date:** Tue Jun 20 14:06:51 UTC 2023     
+### 0.129.0 
+**Release Date:** Fri Jun 16 19:54:38 UTC 2023     
+### 0.128.0 
+**Release Date:** Fri Jun 16 14:28:44 UTC 2023     
+* Update Spark Ingestion and Lag Board with new panel [Asana](https://app.asana.com/0/1133479128121896/1204473156793164/f)
+### 0.127.0 
+**Release Date:** Fri Jun 16 13:33:38 UTC 2023     
+* Add REST API Call duration panel to Foxtrot dashboard [Asana](https://app.asana.com/0/1203669339406776/1202458568143107/f)
 ### 0.126.0 
 **Release Date:** Thu Jun 15 12:19:30 UTC 2023     
 ### 0.125.0 
@@ -325,4 +341,3 @@ Fix - add panel to adh-fedex dashboard for RR websocket teardown/rejection count
 **Release Date:** Wed Feb 28 19:25:31 UTC 2018     
 ### 0.1.0
 **Release Date:** Wed Feb 28 19:17:58 UTC 2018
-
