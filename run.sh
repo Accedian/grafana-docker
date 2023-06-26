@@ -1,32 +1,27 @@
 #!/bin/bash -e
 
-PERMISSIONS_OK=0
+export GF_USERS_DEFAULT_THEME=light
 
-if [ ! -r "$GF_PATHS_CONFIG" ]; then
-    echo "GF_PATHS_CONFIG='$GF_PATHS_CONFIG' is not readable."
-    PERMISSIONS_OK=1
+: "${GF_PATHS_CONFIG:=/etc/grafana/grafana.ini}"
+: "${GF_PATHS_DATA:=/var/lib/grafana}"
+: "${GF_PATHS_LOGS:=/var/log/grafana}"
+: "${GF_PATHS_PLUGINS:=/var/lib/grafana/plugins}"
+: "${GF_PATHS_PROVISIONING:=/etc/grafana/provisioning}"
+: "${DS_PROMETHEUS:=http://localhost:9090}"
+
+chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_LOGS"
+
+if [ -f /var/run/secrets/gce_oauth_key ]; then
+ export GF_AUTH_GOOGLE_CLIENT_ID=$(cat /var/run/secrets/gce_oauth_key)
 fi
 
-if [ ! -w "$GF_PATHS_DATA" ]; then
-    echo "GF_PATHS_DATA='$GF_PATHS_DATA' is not writable."
-    PERMISSIONS_OK=1
-fi
-
-if [ ! -r "$GF_PATHS_HOME" ]; then
-    echo "GF_PATHS_HOME='$GF_PATHS_HOME' is not readable."
-    PERMISSIONS_OK=1
-fi
-
-if [ $PERMISSIONS_OK -eq 1 ]; then
-    echo "You may have issues with file permissions, more information here: http://docs.grafana.org/installation/docker/#migration-from-a-previous-version-of-the-docker-container-to-5-1-or-later"
-fi
-
-if [ ! -d "$GF_PATHS_PLUGINS" ]; then
-    mkdir "$GF_PATHS_PLUGINS"
+if [ -f /var/run/secrets/gce_oauth_secret ]; then
+ export GF_AUTH_GOOGLE_CLIENT_SECRET=$(cat /var/run/secrets/gce_oauth_secret)
 fi
 
 if [ ! -z ${GF_AWS_PROFILES+x} ]; then
-    > "$GF_PATHS_HOME/.aws/credentials"
+    mkdir -p ~grafana/.aws/
+    > ~grafana/.aws/credentials
 
     for profile in ${GF_AWS_PROFILES}; do
         access_key_varname="GF_AWS_${profile}_ACCESS_KEY_ID"
@@ -34,49 +29,54 @@ if [ ! -z ${GF_AWS_PROFILES+x} ]; then
         region_varname="GF_AWS_${profile}_REGION"
 
         if [ ! -z "${!access_key_varname}" -a ! -z "${!secret_key_varname}" ]; then
-            echo "[${profile}]" >> "$GF_PATHS_HOME/.aws/credentials"
-            echo "aws_access_key_id = ${!access_key_varname}" >> "$GF_PATHS_HOME/.aws/credentials"
-            echo "aws_secret_access_key = ${!secret_key_varname}" >> "$GF_PATHS_HOME/.aws/credentials"
+            echo "[${profile}]" >> ~grafana/.aws/credentials
+            echo "aws_access_key_id = ${!access_key_varname}" >> ~grafana/.aws/credentials
+            echo "aws_secret_access_key = ${!secret_key_varname}" >> ~grafana/.aws/credentials
             if [ ! -z "${!region_varname}" ]; then
-                echo "region = ${!region_varname}" >> "$GF_PATHS_HOME/.aws/credentials"
+                echo "region = ${!region_varname}" >> ~grafana/.aws/credentials
             fi
         fi
     done
 
-    chmod 600 "$GF_PATHS_HOME/.aws/credentials"
+    chown grafana:grafana -R ~grafana/.aws
+    chmod 600 ~grafana/.aws/credentials
 fi
-
-# Convert all environment variables with names ending in __FILE into the content of
-# the file that they point at and use the name without the trailing __FILE.
-# This can be used to carry in Docker secrets.
-for VAR_NAME in $(env | grep '^GF_[^=]\+__FILE=.\+' | sed -r "s/([^=]*)__FILE=.*/\1/g"); do
-    VAR_NAME_FILE="$VAR_NAME"__FILE
-    if [ "${!VAR_NAME}" ]; then
-        echo >&2 "ERROR: Both $VAR_NAME and $VAR_NAME_FILE are set (but are exclusive)"
-        exit 1
-    fi
-    echo "Getting secret $VAR_NAME from ${!VAR_NAME_FILE}"
-    export "$VAR_NAME"="$(< "${!VAR_NAME_FILE}")"
-    unset "$VAR_NAME_FILE"
-done
-
-export HOME="$GF_PATHS_HOME"
 
 if [ ! -z "${GF_INSTALL_PLUGINS}" ]; then
   OLDIFS=$IFS
   IFS=','
   for plugin in ${GF_INSTALL_PLUGINS}; do
     IFS=$OLDIFS
-    grafana-cli --pluginsDir "${GF_PATHS_PLUGINS}" plugins install ${plugin}
+    if [[ $plugin =~ .*\;.* ]]; then
+        pluginUrl=$(echo "$plugin" | cut -d';' -f 1)
+        pluginInstallFolder=$(echo "$plugin" | cut -d';' -f 2)
+        gosu grafana grafana-cli --pluginUrl ${pluginUrl} --pluginsDir "${GF_PATHS_PLUGINS}" plugins install "${pluginInstallFolder}"
+    else
+        gosu grafana grafana-cli --pluginsDir "${GF_PATHS_PLUGINS}" plugins install ${plugin}
+    fi
   done
 fi
 
-exec grafana-server                                         \
-  --homepath="$GF_PATHS_HOME"                               \
-  --config="$GF_PATHS_CONFIG"                               \
-  "$@"                                                      \
-  cfg:default.log.mode="console"                            \
-  cfg:default.paths.data="$GF_PATHS_DATA"                   \
-  cfg:default.paths.logs="$GF_PATHS_LOGS"                   \
-  cfg:default.paths.plugins="$GF_PATHS_PLUGINS"             \
-  cfg:default.paths.provisioning="$GF_PATHS_PROVISIONING"
+if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
+  echo "Deleting existing provisioning"
+  rm -rf /etc/grafana/provisioning/*
+
+  echo "Deleting existing dashboards"
+  rm -rf /var/lib/grafana/dashboards/*
+
+  echo "Copying stock provisioning"
+  cp -R /tmp/provisioning/ /etc/grafana/
+
+  echo "Copying stock dashboars"
+  cp -R /tmp/dashboards/ /var/lib/grafana/
+fi
+
+exec gosu grafana /usr/sbin/grafana-server              \
+  --homepath=/usr/share/grafana                         \
+  --config="$GF_PATHS_CONFIG"                           \
+  cfg:default.log.mode="console"                        \
+  cfg:default.paths.data="$GF_PATHS_DATA"               \
+  cfg:default.paths.logs="$GF_PATHS_LOGS"               \
+  cfg:default.paths.plugins="$GF_PATHS_PLUGINS"         \
+  cfg:default.paths.provisioning=$GF_PATHS_PROVISIONING \
+  "$@"

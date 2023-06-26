@@ -1,0 +1,66 @@
+# Golang CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2
+# Jobs
+  
+jobs:
+  build:
+    docker:
+      - image: gcr.io/npav-172917/docker-go-sdk:1.0.1-alpine
+        auth:
+          username: ${GCR_DOCKER_RO_USERNAME}
+          password: ${GCR_DOCKER_RO_PASSWORD}
+
+    working_directory: /root/go/src/github.com/accedian/grafana-docker
+
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Building Docker Container
+          command: make build
+
+  release:
+    docker:
+      - image: gcr.io/npav-172917/docker-go-sdk:1.0.1-alpine
+        auth:
+          username: ${GCR_DOCKER_RO_USERNAME}
+          password: ${GCR_DOCKER_RO_PASSWORD}
+
+    working_directory: /root/go/src/github.com/accedian/grafana-docker
+    steps:
+      - checkout 
+      
+      - setup_remote_docker
+            
+      - run:
+          name: "Push image to GCR"
+          command: |
+            # Only push docker image when on master branch on the Accedian project
+            if [ "${CIRCLE_BRANCH}" == "master" ] && [ "${CIRCLE_PROJECT_USERNAME}" == "Accedian" ]; then
+               echo $GCLOUD_SERVICE_KEY | base64 -d  > ${HOME}/gcloud-service-key.json
+               docker login -u _json_key -p "$(echo $GCR_DOCKER_RW_PASSWORD)" https://gcr.io
+               echo "Now Tagging"
+               git config --global user.email "${CIRCLE_USERNAME}@accedian.com"
+               git config --global user.name "CircleCI"
+               git semver minor
+               export IMAGE_TAG=$(git semver get)
+               git push origin master ${IMAGE_TAG}
+               make push
+            fi
+
+workflows:
+  version: 2
+  build_and_release:
+    jobs:
+      - build:
+          context: org-global
+
+      - release:
+          context: org-global
+          requires:
+            - build
+          filters:
+            branches:
+              only: master       
