@@ -29,72 +29,92 @@
   "liveNow": false,
   "panels": [
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "mappings": []
-        },
-        "overrides": []
-      },
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
-        "h": 8,
+        "h": 14,
         "w": 11,
         "x": 0,
         "y": 0
       },
-      "id": 21,
-      "options": {
-        "displayLabels": [],
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true,
-          "values": [
-            "percent"
-          ],
-          "width": 9
-        },
-        "pieType": "pie",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
+      "hiddenSeries": false,
+      "id": 16,
+      "interval": "",
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
       },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.1.3",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
-          "editorMode": "builder",
-          "expr": "sum by(job, tenant) (rate(spark_AccedianStreamingMetrics_streaming_recCount{tenant=\"$tenant\"}[2m]))",
-          "legendFormat": "{{job}}--{{tenant}}",
-          "range": true,
+          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_streamingapp\"}[1m])",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{job}}--{{tenant}}-{{objectType}}",
           "refId": "A"
+        },
+        {
+          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_latentapp\"}[1m])",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{job}}--{{tenant}}-{{objectType}}",
+          "refId": "B"
         }
       ],
-      "title": "Split of Data RecordsPercentage",
-      "type": "piechart"
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "RecordCount",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
     },
     {
       "aliasColors": {},
@@ -190,21 +210,20 @@
     },
     {
       "aliasColors": {},
-      "bars": true,
+      "bars": false,
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 14,
+        "h": 10,
         "w": 11,
         "x": 0,
-        "y": 8
+        "y": 14
       },
       "hiddenSeries": false,
-      "id": 16,
-      "interval": "",
+      "id": 2,
       "legend": {
         "alignAsTable": true,
         "avg": true,
@@ -215,15 +234,16 @@
         "total": false,
         "values": true
       },
-      "lines": false,
+      "lines": true,
       "linewidth": 1,
+      "links": [],
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
       "percentage": false,
       "pluginVersion": "9.1.3",
-      "pointradius": 2,
+      "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
@@ -232,23 +252,18 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_streamingapp\"}[1m])",
-          "hide": false,
+          "expr": "kafka_server_brokertopicmetrics_oneminuterate{name=\"MessagesInPerSec\", topic=~\"ignite.*|parquet-notif|spark-latent.*\"}",
+          "format": "time_series",
           "interval": "",
-          "legendFormat": "{{job}}--{{tenant}}-{{objectType}}",
+          "intervalFactor": 1,
+          "legendFormat": "{{topic}}",
+          "range": true,
           "refId": "A"
-        },
-        {
-          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_latentapp\"}[1m])",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{job}}--{{tenant}}-{{objectType}}",
-          "refId": "B"
         }
       ],
       "thresholds": [],
       "timeRegions": [],
-      "title": "RecordCount",
+      "title": "Ingestion Rate",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -363,175 +378,6 @@
       }
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 10,
-        "w": 11,
-        "x": 0,
-        "y": 22
-      },
-      "hiddenSeries": false,
-      "id": 2,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": true,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "9.1.3",
-      "pointradius": 5,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "kafka_server_brokertopicmetrics_oneminuterate{name=\"MessagesInPerSec\", topic=~\"ignite.*|parquet-notif|spark-latent.*\"}",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{topic}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeRegions": [],
-      "title": "Ingestion Rate",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        },
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "links": []
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 11,
-        "x": 11,
-        "y": 24
-      },
-      "hiddenSeries": false,
-      "id": 19,
-      "interval": "",
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": true,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "9.1.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "spark_AccedianLatentBatchPartitionsCount",
-          "interval": "",
-          "legendFormat": "{{jobName}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeRegions": [],
-      "title": "Latent Batch Job Partitions Count",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        },
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
-    },
-    {
       "columns": [],
       "datasource": "Prometheus",
       "fieldConfig": {
@@ -563,7 +409,7 @@
         "h": 9,
         "w": 11,
         "x": 0,
-        "y": 32
+        "y": 24
       },
       "id": 8,
       "links": [],
@@ -727,13 +573,10 @@
     },
     {
       "aliasColors": {},
-      "bars": false,
+      "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -746,13 +589,14 @@
         "h": 9,
         "w": 11,
         "x": 11,
-        "y": 32
+        "y": 24
       },
       "hiddenSeries": false,
-      "id": 12,
+      "id": 19,
+      "interval": "",
       "legend": {
         "alignAsTable": true,
-        "avg": false,
+        "avg": true,
         "current": true,
         "max": false,
         "min": false,
@@ -760,7 +604,7 @@
         "total": false,
         "values": true
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
@@ -777,21 +621,15 @@
       "steppedLine": false,
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
-          "editorMode": "code",
-          "expr": "100.0 - 100 * (node_filesystem_avail{instance=~'.*sparkworker.*|.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"} / node_filesystem_size{instance=~'.*sparkworker.*|.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"})",
+          "expr": "spark_AccedianLatentBatchPartitionsCount",
           "interval": "",
-          "legendFormat": "{{instance}}",
-          "range": true,
-          "refId": "D"
+          "legendFormat": "{{jobName}}",
+          "refId": "A"
         }
       ],
       "thresholds": [],
       "timeRegions": [],
-      "title": "Spark Local Disk Utilization",
+      "title": "Latent Batch Job Partitions Count",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -805,7 +643,7 @@
       },
       "yaxes": [
         {
-          "format": "percent",
+          "format": "short",
           "logBase": 1,
           "show": true
         },
@@ -831,7 +669,7 @@
         "h": 13,
         "w": 11,
         "x": 0,
-        "y": 41
+        "y": 33
       },
       "hiddenSeries": false,
       "id": 14,
@@ -916,6 +754,262 @@
       "yaxis": {
         "align": false
       }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "000000001"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 13,
+        "w": 11,
+        "x": 11,
+        "y": 33
+      },
+      "hiddenSeries": false,
+      "id": 12,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.1.3",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "000000001"
+          },
+          "editorMode": "code",
+          "expr": "100.0 - 100 * (node_filesystem_avail{instance=~'.*sparkworker.*|.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"} / node_filesystem_size{instance=~'.*sparkworker.*|.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"})",
+          "interval": "",
+          "legendFormat": "{{instance}}",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Spark Local Disk Utilization",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percent",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "000000001"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Field"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 424
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last *"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Mean"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 68
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "First *"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 69
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 11,
+        "x": 11,
+        "y": 46
+      },
+      "id": 23,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Field"
+          }
+        ]
+      },
+      "pluginVersion": "9.1.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "000000001"
+          },
+          "editorMode": "code",
+          "expr": "avg by(tenant) (spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_latentapp\"}) / avg by(tenant) (spark_AccedianStreamingMetrics_streaming_recCount)*100",
+          "legendFormat": "{{tenant}}--spark_latentapp",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "000000001"
+          },
+          "editorMode": "code",
+          "expr": "100-(avg by(tenant) (spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_latentapp\"}) / avg by(tenant) (spark_AccedianStreamingMetrics_streaming_recCount)*100)",
+          "hide": false,
+          "legendFormat": "{{tenant}}--spark_streamingapp",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Split of Data Records Percentage",
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "includeTimeField": false,
+            "labelsToFields": false,
+            "mode": "seriesToRows",
+            "reducers": [
+              "mean",
+              "lastNotNull",
+              "firstNotNull"
+            ]
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Average number of records/tenant",
+            "mode": "reduceRow",
+            "reduce": {
+              "include": [
+                "Mean"
+              ],
+              "reducer": "mean"
+            }
+          }
+        }
+      ],
+      "type": "table"
     }
   ],
   "refresh": false,
@@ -925,34 +1019,7 @@
     "spark"
   ],
   "templating": {
-    "list": [
-      {
-        "current": {
-          "selected": false,
-          "text": "96946968-559b-491d-b818-3bddb40309d1",
-          "value": "96946968-559b-491d-b818-3bddb40309d1"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "000000001"
-        },
-        "definition": "label_values(tenant)",
-        "hide": 0,
-        "includeAll": false,
-        "multi": false,
-        "name": "tenant",
-        "options": [],
-        "query": {
-          "query": "label_values(tenant)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      }
-    ]
+    "list": []
   },
   "time": {
     "from": "now-1h",
@@ -986,6 +1053,6 @@
   "timezone": "",
   "title": "Spark Ingestion and Lag",
   "uid": "oaePhsqGz",
-  "version": 16,
+  "version": 19,
   "weekStart": ""
 }
