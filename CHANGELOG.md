@@ -1,3 +1,4 @@
+* Update Spark Ingestion and Lag Board with new  table panel [Asana](https://app.asana.com/0/1133479128121896/1204473156793164/f)
 ## Current Release 
 ### 0.132.0 
 **Release Date:** Mon Jun 26 20:00:24 UTC 2023     
