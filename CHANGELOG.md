@@ -1,3 +1,4 @@
+Metrics for rollback'ed updates [Asana](https://app.asana.com/0/1204139580644856/1204768697549326/f)
 ## Current Release 
 ### 0.132.0 
 **Release Date:** Mon Jun 26 20:00:24 UTC 2023     
