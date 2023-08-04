@@ -51,8 +51,9 @@
         "y": 0
       },
       "id": 8,
+      "interval": "5m",
       "links": [],
-      "maxDataPoints": 100,
+      "maxDataPoints": 10,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -60,7 +61,7 @@
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
-            "mean"
+            "max"
           ],
           "fields": "",
           "values": false
@@ -73,7 +74,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(increase(alert_service_errors_total[$__rate_interval]))",
+          "expr": "round(sum(increase(alert_service_errors_total[$__rate_interval])) + sum(increase(alert_service_mqtt_errors_total[$__rate_interval])))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Errors",
@@ -87,11 +88,11 @@
     },
     {
       "datasource": "Prometheus",
-      "description": "Shows if the Kafka output and the MQTT output are diverging. If they are, then this can be a sign that alert service is not able to keep up with the amount of data Kafka is outputting.",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "fixedColor": "rgb(31, 120, 193)",
+            "mode": "fixed"
           },
           "mappings": [],
           "thresholds": {
@@ -118,19 +119,20 @@
         "y": 0
       },
       "hideTimeOverride": false,
-      "id": 6,
+      "id": 13,
+      "interval": "5m",
       "links": [],
-      "maxDataPoints": 100,
       "options": {
-        "colorMode": "value",
+        "colorMode": "none",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
-            "mean"
+            "sum"
           ],
           "fields": "",
+          "limit": 1,
           "values": false
         },
         "textMode": "auto"
@@ -140,15 +142,15 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "abs(sum(increase(alert_service_consumed_kafka_mgs_total[$__rate_interval])) - sum(increase(alert_service_produced_mqtt_mgs_total[$__rate_interval])))",
+          "expr": "sum(increase(alert_service_consumed_kafka_mgs_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "Kafka In : MQTT Out",
+          "legendFormat": "Kafka Ingestion",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Consumed/Published Divergence",
+      "title": "Consumed Alerts (Kafka)",
       "transparent": true,
       "type": "stat"
     },
@@ -186,8 +188,8 @@
       },
       "hideTimeOverride": false,
       "id": 15,
+      "interval": "5m",
       "links": [],
-      "maxDataPoints": 100,
       "options": {
         "colorMode": "none",
         "graphMode": "area",
@@ -195,7 +197,7 @@
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
-            "mean"
+            "sum"
           ],
           "fields": "",
           "values": false
@@ -253,8 +255,8 @@
       },
       "hideTimeOverride": false,
       "id": 17,
+      "interval": "5m",
       "links": [],
-      "maxDataPoints": 100,
       "options": {
         "colorMode": "none",
         "graphMode": "area",
@@ -262,7 +264,7 @@
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
-            "mean"
+            "sum"
           ],
           "fields": "",
           "values": false
@@ -320,6 +322,7 @@
         "y": 0
       },
       "id": 27,
+      "interval": "5m",
       "options": {
         "colorMode": "value",
         "graphMode": "none",
@@ -358,8 +361,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "fixedColor": "rgb(31, 120, 193)",
-            "mode": "fixed"
+            "mode": "thresholds"
           },
           "mappings": [],
           "thresholds": {
@@ -371,7 +373,7 @@
               },
               {
                 "color": "red",
-                "value": 80
+                "value": 1
               }
             ]
           },
@@ -385,22 +387,22 @@
         "x": 0,
         "y": 4
       },
-      "hideTimeOverride": false,
-      "id": 13,
+      "id": 32,
+      "interval": "5m",
       "links": [],
-      "maxDataPoints": 100,
       "options": {
-        "colorMode": "none",
+        "colorMode": "value",
         "graphMode": "area",
-        "justifyMode": "auto",
+        "justifyMode": "center",
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
-            "mean"
+            "sum"
           ],
           "fields": "",
           "values": false
         },
+        "text": {},
         "textMode": "auto"
       },
       "pluginVersion": "9.1.3",
@@ -408,15 +410,15 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(increase(alert_service_consumed_kafka_mgs_total[$__rate_interval]))",
+          "expr": "sum(increase(alert_service_mqtt_errors_total[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "Kafka Ingestion",
+          "legendFormat": "Errors",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Consumed Alerts (Kafka)",
+      "title": "MQTT Errors",
       "transparent": true,
       "type": "stat"
     },
@@ -454,8 +456,8 @@
       },
       "hideTimeOverride": false,
       "id": 14,
+      "interval": "5m",
       "links": [],
-      "maxDataPoints": 100,
       "options": {
         "colorMode": "none",
         "graphMode": "area",
@@ -463,7 +465,7 @@
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
-            "mean"
+            "sum"
           ],
           "fields": "",
           "values": false
@@ -521,8 +523,8 @@
       },
       "hideTimeOverride": false,
       "id": 18,
+      "interval": "5m",
       "links": [],
-      "maxDataPoints": 100,
       "options": {
         "colorMode": "none",
         "graphMode": "area",
@@ -530,7 +532,7 @@
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
-            "mean"
+            "sum"
           ],
           "fields": "",
           "values": false
@@ -588,8 +590,8 @@
       },
       "hideTimeOverride": false,
       "id": 19,
+      "interval": "5m",
       "links": [],
-      "maxDataPoints": 100,
       "options": {
         "colorMode": "none",
         "graphMode": "area",
@@ -597,7 +599,7 @@
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
-            "mean"
+            "sum"
           ],
           "fields": "",
           "values": false
@@ -622,6 +624,139 @@
       "type": "stat"
     },
     {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 0,
+        "y": 8
+      },
+      "id": 33,
+      "interval": "5m",
+      "links": [],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.1.3",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(alert_service_active_alert_errors_total[$__rate_interval]))",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Errors",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Active Alert Errors",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Shows if the Kafka output and the MQTT output are diverging. If they are, then this can be a sign that alert service is not able to keep up with the amount of data Kafka is outputting.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 3,
+        "y": 8
+      },
+      "hideTimeOverride": false,
+      "id": 6,
+      "interval": "5m",
+      "links": [],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.1.3",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "abs(sum(increase(alert_service_consumed_kafka_mgs_total[$__rate_interval])) - sum(increase(alert_service_produced_mqtt_mgs_total[$__rate_interval])))",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Kafka In : MQTT Out",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Consumed/Published Divergence",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -639,7 +774,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 12
       },
       "hiddenSeries": false,
       "id": 26,
@@ -774,7 +909,7 @@
         "h": 4,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 19
       },
       "id": 29,
       "options": {
@@ -811,6 +946,8 @@
             "mode": "thresholds"
           },
           "mappings": [],
+          "min": 0,
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -828,9 +965,10 @@
         "h": 5,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 23
       },
       "id": 31,
+      "interval": "5m",
       "options": {
         "colorMode": "none",
         "graphMode": "area",
@@ -878,7 +1016,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 28
       },
       "hiddenSeries": false,
       "id": 4,
@@ -888,11 +1026,11 @@
         "current": true,
         "hideEmpty": true,
         "hideZero": true,
-        "max": false,
+        "max": true,
         "min": false,
         "rightSide": false,
         "show": true,
-        "total": true,
+        "total": false,
         "values": true
       },
       "lines": true,
@@ -915,7 +1053,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(increase(alert_service_errors_total[$__rate_interval]))",
+          "expr": "sum(increase(alert_service_errors_total[$__rate_interval])) + sum(increase(alert_service_mqtt_errors_total[$__rate_interval]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -928,6 +1066,7 @@
           "editorMode": "code",
           "expr": "sum(increase(alert_service_mqtt_errors_total[$__rate_interval]))",
           "format": "time_series",
+          "hide": false,
           "intervalFactor": 1,
           "legendFormat": "MQTT Errors",
           "range": true,
@@ -938,7 +1077,7 @@
           "editorMode": "code",
           "expr": "sum(increase(alert_service_active_alert_errors_total[$__rate_interval]))",
           "format": "time_series",
-          "hide": true,
+          "hide": false,
           "intervalFactor": 1,
           "legendFormat": "Active alert errors",
           "range": true,
@@ -981,7 +1120,7 @@
     },
     {
       "aliasColors": {},
-      "bars": false,
+      "bars": true,
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
@@ -999,23 +1138,25 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 36
       },
       "hiddenSeries": false,
       "id": 20,
+      "interval": "5m",
       "legend": {
+        "alignAsTable": false,
         "avg": false,
         "current": false,
         "max": false,
         "min": false,
         "show": true,
-        "total": false,
-        "values": false
+        "total": true,
+        "values": true
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 1,
       "links": [],
-      "nullPointMode": "null",
+      "nullPointMode": "null as zero",
       "options": {
         "alertThreshold": true
       },
@@ -1026,7 +1167,7 @@
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
-      "stack": false,
+      "stack": true,
       "steppedLine": false,
       "targets": [
         {
@@ -1106,7 +1247,7 @@
     },
     {
       "aliasColors": {},
-      "bars": false,
+      "bars": true,
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
@@ -1123,20 +1264,21 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 43
       },
       "hiddenSeries": false,
       "id": 21,
+      "interval": "5m",
       "legend": {
         "avg": false,
         "current": false,
         "max": false,
         "min": false,
         "show": true,
-        "total": false,
-        "values": false
+        "total": true,
+        "values": true
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
@@ -1150,7 +1292,7 @@
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
-      "stack": false,
+      "stack": true,
       "steppedLine": false,
       "targets": [
         {
@@ -1215,7 +1357,7 @@
     },
     {
       "aliasColors": {},
-      "bars": false,
+      "bars": true,
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
@@ -1232,21 +1374,22 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 48
+        "y": 51
       },
       "hiddenSeries": false,
       "id": 10,
+      "interval": "5m",
       "legend": {
         "alignAsTable": false,
         "avg": false,
         "current": true,
-        "max": false,
+        "max": true,
         "min": false,
         "show": true,
         "total": false,
         "values": true
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
@@ -1310,7 +1453,7 @@
     },
     {
       "aliasColors": {},
-      "bars": false,
+      "bars": true,
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
@@ -1327,20 +1470,21 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 56
+        "y": 59
       },
       "hiddenSeries": false,
       "id": 2,
+      "interval": "5m",
       "legend": {
         "avg": false,
         "current": false,
         "max": false,
         "min": false,
         "show": true,
-        "total": false,
-        "values": false
+        "total": true,
+        "values": true
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null as zero",
@@ -1354,7 +1498,7 @@
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
-      "stack": false,
+      "stack": true,
       "steppedLine": false,
       "targets": [
         {
@@ -1422,7 +1566,7 @@
     "list": []
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
