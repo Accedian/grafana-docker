@@ -24,7 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 64,
+  "id": 42,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -33,7 +33,7 @@
         "type": "prometheus",
         "uid": "000000001"
       },
-      "description": "RR reverted to the previous version. (rolled back update)",
+      "description": "Roadrunner that reverts to the previous version, specially including reverts to the deployment version.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -42,7 +42,7 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "",
+            "axisLabel": "RRs Count",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
@@ -66,7 +66,7 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "line"
+              "mode": "off"
             }
           },
           "mappings": [],
@@ -117,6 +117,18 @@
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "000000001"
+          },
+          "editorMode": "code",
+          "expr": "roadrunner_update_rolled_back_to_deployment{job=\"roadrunner_update_server\"}",
+          "hide": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "RR Update rolled back",
@@ -784,6 +796,6 @@
   "timezone": "",
   "title": "update server",
   "uid": "B0mIbRaVk",
-  "version": 2,
+  "version": 5,
   "weekStart": ""
 }
