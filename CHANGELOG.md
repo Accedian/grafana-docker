@@ -1,8 +1,10 @@
-* Updateserver: Prometheus metric about RR update reverted to a deployed version [Asana](https://app.asana.com/0/1204139580644856/1204768697549331/f)
 ## Current Release 
+### 0.139.0 
+**Release Date:** Fri Aug 11 07:41:53 UTC 2023     
+## Previous Releases 
+* Updateserver: Prometheus metric about RR update reverted to a deployed version [Asana](https://app.asana.com/0/1204139580644856/1204768697549331/f)
 ### 0.138.0 
 **Release Date:** Fri Aug  4 10:08:19 UTC 2023     
-## Previous Releases 
 ### 0.137.0 
 **Release Date:** Thu Jul 13 15:29:37 UTC 2023     
 * Updated Ignite dashboard [Asana}(https://app.asana.com/0/1204169067576059/1204678609258960) and [Asana](https://app.asana.com/0/1204169067576059/1204986867964301)
