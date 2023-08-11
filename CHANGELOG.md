@@ -1,3 +1,4 @@
+* Updateserver: Prometheus metric about RR update reverted to a deployed version [Asana](https://app.asana.com/0/1204139580644856/1204768697549331/f)
 ## Current Release 
 ### 0.138.0 
 **Release Date:** Fri Aug  4 10:08:19 UTC 2023     
