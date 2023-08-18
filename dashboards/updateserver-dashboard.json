@@ -54,6 +54,9 @@
               "viz": false
             },
             "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -66,7 +69,7 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "area"
             }
           },
           "mappings": [],
@@ -88,7 +91,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 7,
         "w": 23,
         "x": 0,
         "y": 0
@@ -112,11 +115,12 @@
             "type": "prometheus",
             "uid": "000000001"
           },
-          "editorMode": "builder",
-          "expr": "roadrunner_update_rolled_back{job=\"roadrunner_update_server\"}",
-          "legendFormat": "__auto",
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "sum(roadrunner_update_rolled_back{job=\"roadrunner_update_server\"})",
+          "legendFormat": "The update rolled back to the previous version",
           "range": true,
-          "refId": "A"
+          "refId": "The update rolled back to the previous version"
         },
         {
           "datasource": {
@@ -124,14 +128,26 @@
             "uid": "000000001"
           },
           "editorMode": "code",
-          "expr": "roadrunner_update_rolled_back_to_deployment{job=\"roadrunner_update_server\"}",
+          "expr": "sum(roadrunner_update_rolled_back_to_deployment{job=\"roadrunner_update_server\"})",
           "hide": false,
-          "legendFormat": "__auto",
+          "legendFormat": "The update rolled back to the deployed version",
           "range": true,
-          "refId": "B"
+          "refId": "The update rolled back to the deployed version"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "000000001"
+          },
+          "editorMode": "code",
+          "expr": "sum(roadrunner_failing_update_checks{job=\"roadrunner_update_server\"})",
+          "hide": false,
+          "legendFormat": "Failing updates",
+          "range": true,
+          "refId": "Failing updates"
         }
       ],
-      "title": "RR Update rolled back",
+      "title": "RR Update rolled back and failing updates",
       "type": "timeseries"
     },
     {
@@ -139,7 +155,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 5
+        "y": 7
       },
       "id": 16,
       "title": "Row title",
@@ -193,7 +209,7 @@
         "h": 8,
         "w": 11,
         "x": 0,
-        "y": 6
+        "y": 8
       },
       "id": 6,
       "options": {
@@ -308,7 +324,7 @@
         "h": 8,
         "w": 12,
         "x": 11,
-        "y": 6
+        "y": 8
       },
       "id": 8,
       "options": {
@@ -401,7 +417,7 @@
         "h": 8,
         "w": 7,
         "x": 0,
-        "y": 14
+        "y": 16
       },
       "id": 2,
       "options": {
@@ -460,7 +476,7 @@
         "h": 8,
         "w": 4,
         "x": 7,
-        "y": 14
+        "y": 16
       },
       "id": 4,
       "options": {
@@ -562,7 +578,7 @@
         "h": 8,
         "w": 12,
         "x": 11,
-        "y": 14
+        "y": 16
       },
       "id": 10,
       "options": {
@@ -656,7 +672,7 @@
         "h": 7,
         "w": 11,
         "x": 0,
-        "y": 22
+        "y": 24
       },
       "id": 12,
       "options": {
@@ -749,7 +765,7 @@
         "h": 8,
         "w": 12,
         "x": 11,
-        "y": 22
+        "y": 24
       },
       "id": 14,
       "options": {
@@ -781,7 +797,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "15m",
+  "refresh": "1h",
   "schemaVersion": 37,
   "style": "dark",
   "tags": [],
@@ -796,6 +812,6 @@
   "timezone": "",
   "title": "update server",
   "uid": "B0mIbRaVk",
-  "version": 5,
+  "version": 6,
   "weekStart": ""
 }
