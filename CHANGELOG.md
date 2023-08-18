@@ -1,8 +1,10 @@
-Updateserver: Metrics of failing RR updates [Asana](https://app.asana.com/0/1204139580644856/1205255390048901/f)
 ## Current Release 
+### 0.140.0 
+**Release Date:** Fri Aug 18 07:38:17 UTC 2023     
+## Previous Releases 
+Updateserver: Metrics of failing RR updates [Asana](https://app.asana.com/0/1204139580644856/1205255390048901/f)
 ### 0.139.0 
 **Release Date:** Fri Aug 11 07:41:53 UTC 2023     
-## Previous Releases 
 * Updateserver: Prometheus metric about RR update reverted to a deployed version [Asana](https://app.asana.com/0/1204139580644856/1204768697549331/f)
 ### 0.138.0 
 **Release Date:** Fri Aug  4 10:08:19 UTC 2023     
