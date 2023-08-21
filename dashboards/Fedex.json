@@ -29,10 +29,7 @@
   "liveNow": false,
   "panels": [
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -108,10 +105,7 @@
       "pluginVersion": "9.1.3",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "rate(roadrunner_websocket_teardown_count[$__interval])",
           "legendFormat": "{{connectorId}}-teardown",
@@ -119,10 +113,7 @@
           "refId": "A"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "rate(roadrunner_websocket_rejected_count[$__interval])",
           "hide": false,
@@ -139,10 +130,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -186,10 +174,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(websocket_read_time_ms_bucket[$__interval])) by (tenant, hostname, zone, connectorId, instance, job)",
           "legendFormat": "__auto",
@@ -197,10 +182,7 @@
           "refId": "A"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "rate(websocket_ack_time_ms_bucket[$__interval])",
           "hide": false,
@@ -246,10 +228,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -293,10 +272,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "rate(roadrunner_message_process_time_seconds_count[$__interval])",
           "legendFormat": "__auto",
@@ -341,10 +317,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -387,10 +360,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(file_processing_time_seconds_bucket[$__interval])) by (hostname, tenant, zone, instance, job)",
           "legendFormat": "__auto",
@@ -435,10 +405,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -481,10 +448,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "rate(roadrunner_message_process_time_seconds_sum[$__interval])",
           "legendFormat": "__auto",
@@ -525,10 +489,7 @@
       }
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -605,10 +566,7 @@
       "pluginVersion": "9.1.3",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "rate(fedex_kafka_producer_bytes_count[$__range]) > 0",
           "legendFormat": "__auto",
@@ -624,10 +582,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -670,10 +625,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "(sum(rate(producer_chan_send_time_ms_bucket[$__rate_interval])) by (tenant, hostname, zone, instance)) ",
           "legendFormat": "__auto",
@@ -714,10 +666,7 @@
       }
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -789,10 +738,7 @@
       "pluginVersion": "9.1.3",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "exemplar": false,
           "expr": "rate(roadrunner_mo_count[$__interval]) ",
