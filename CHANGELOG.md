@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.141.0 
+**Release Date:** Tue Aug 22 08:30:10 UTC 2023     
+## Previous Releases 
 ### 0.140.0 
 **Release Date:** Fri Aug 18 07:38:17 UTC 2023     
-## Previous Releases 
 Updateserver: Metrics of failing RR updates [Asana](https://app.asana.com/0/1204139580644856/1205255390048901/f)
 ### 0.139.0 
 **Release Date:** Fri Aug 11 07:41:53 UTC 2023     
