@@ -465,7 +465,7 @@
           "expr": "sum(kafka_consumergroup_lag{consumergroup=~\"cybersecurity.cyberapp.[a-z0-9]{8}-.+\",instance=\"kafka-topic-metric-exporter:9308\",job=\"kafka-topic-metrics\", topic=~\"pvx.*\"})",
           "hide": false,
           "interval": "",
-          "legendFormat": "lag",
+          "legendFormat": "processing lag",
           "range": true,
           "refId": "B"
         },
@@ -3280,7 +3280,7 @@
     "list": []
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
@@ -3300,6 +3300,6 @@
   "timezone": "",
   "title": "CybersecuritySparkApp",
   "uid": "h1nGBjTGz",
-  "version": 7,
+  "version": 13,
   "weekStart": ""
 }
