@@ -461,10 +461,12 @@
             "type": "prometheus",
             "uid": "000000001"
           },
-          "expr": "sum(kafka_consumergroup_lag{consumergroup=~\"cybersecurity.cyberapp.[a-z]+\",instance=\"kafka-topic-metric-exporter:9308\",job=\"kafka-topic-metrics\", topic=~\"pvx.*\"}) by (topic)",
-          "hide": true,
+          "editorMode": "code",
+          "expr": "sum(kafka_consumergroup_lag{consumergroup=~\"cybersecurity.cyberapp.[a-z0-9]{8}-.+\",instance=\"kafka-topic-metric-exporter:9308\",job=\"kafka-topic-metrics\", topic=~\"pvx.*\"})",
+          "hide": false,
           "interval": "",
-          "legendFormat": " {{topic}}",
+          "legendFormat": "processing lag",
+          "range": true,
           "refId": "B"
         },
         {
@@ -473,7 +475,7 @@
             "uid": "000000001"
           },
           "expr": "sum(kafka_topic_partition_current_offset{topic=~\"pvx.*\"}) - sum(max_over_time(spark_CustomMetricSource_batch_processedOffsetsSum{job=\"cyberapp\"}[12h]))",
-          "hide": false,
+          "hide": true,
           "interval": "",
           "legendFormat": "processing lag",
           "refId": "A"
@@ -3278,7 +3280,7 @@
     "list": []
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
@@ -3298,6 +3300,6 @@
   "timezone": "",
   "title": "CybersecuritySparkApp",
   "uid": "h1nGBjTGz",
-  "version": 12,
+  "version": 13,
   "weekStart": ""
 }
