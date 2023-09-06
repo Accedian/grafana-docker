@@ -24,7 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 49,
+  "id": 31,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -126,6 +126,106 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 11
+      },
+      "id": 20,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.1.3",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "rate(roadrunner_rejected_batches_due_to_bad_data_count[$__interval])",
+          "legendFormat": "{{connectorId}}-teardown",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "rate(roadrunner_rejected_batches_due_to_internal_errors_count[$__interval])",
+          "hide": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Roadrunner rejected batches",
+      "type": "timeseries"
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -143,7 +243,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 11
+        "y": 22
       },
       "hiddenSeries": false,
       "id": 8,
@@ -241,7 +341,7 @@
         "h": 13,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 33
       },
       "hiddenSeries": false,
       "id": 4,
@@ -330,7 +430,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 35
+        "y": 46
       },
       "hiddenSeries": false,
       "id": 6,
@@ -418,7 +518,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 47
+        "y": 58
       },
       "hiddenSeries": false,
       "id": 12,
@@ -531,8 +631,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -548,7 +647,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 57
+        "y": 68
       },
       "id": 2,
       "options": {
@@ -595,7 +694,7 @@
         "h": 14,
         "w": 24,
         "x": 0,
-        "y": 68
+        "y": 79
       },
       "hiddenSeries": false,
       "id": 10,
@@ -684,8 +783,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -721,7 +819,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 82
+        "y": 93
       },
       "id": 16,
       "links": [],
@@ -793,6 +891,6 @@
   "timezone": "",
   "title": "adh-fedex",
   "uid": "crA9QWAVk",
-  "version": 13,
+  "version": 1,
   "weekStart": ""
 }
