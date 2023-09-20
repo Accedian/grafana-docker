@@ -30,7 +30,8 @@
   "panels": [
     {
       "datasource": {
-        "type": "prometheus"
+        "type": "prometheus",
+        "uid": "000000001"
       },
       "description": "Number of violations of ingestion profile & dictionary validation rules",
       "fieldConfig": {
@@ -108,7 +109,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus"
+            "type": "prometheus",
+            "uid": "000000001"
           },
           "editorMode": "builder",
           "expr": "gather_ingestion_profile_dict_violations",
