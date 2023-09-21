@@ -1,3 +1,4 @@
+Added dashboard for tracking gather ingestion profile and dict. validation violations [Asana](https://app.asana.com/0/1203450045248205/1205384205616160/f)
 ## Current Release 
 ### 0.143.0 
 **Release Date:** Wed Sep  6 10:36:10 UTC 2023     
