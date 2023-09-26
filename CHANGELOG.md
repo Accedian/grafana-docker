@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.145.0 
+**Release Date:** Tue Sep 26 13:24:02 UTC 2023     
+## Previous Releases 
 ### 0.144.0 
 **Release Date:** Thu Sep 21 12:50:43 UTC 2023     
-## Previous Releases 
 Added dashboard for tracking gather ingestion profile and dict. validation violations [Asana](https://app.asana.com/0/1203450045248205/1205384205616160/f)
 ### 0.143.0 
 **Release Date:** Wed Sep  6 10:36:10 UTC 2023     
