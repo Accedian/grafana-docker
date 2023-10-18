@@ -1,7 +1,9 @@
 ## Current Release 
+### 0.147.0 
+**Release Date:** Wed Oct 18 10:23:32 UTC 2023     
+## Previous Releases 
 ### 0.146.0 
 **Release Date:** Mon Oct  2 14:02:20 UTC 2023     
-## Previous Releases 
 ### 0.145.0 
 **Release Date:** Tue Sep 26 13:24:02 UTC 2023     
 ### 0.144.0 
