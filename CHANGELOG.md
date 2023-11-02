@@ -1,8 +1,10 @@
-* Roadrunner: add connectorId to Roadrunner Connection Status panel legend [Asana](https://app.asana.com/0/1203946223090617/1205293981648408/f)
 ## Current Release 
+### 0.148.0 
+**Release Date:** Thu Nov  2 09:44:17 UTC 2023     
+## Previous Releases 
+* Roadrunner: add connectorId to Roadrunner Connection Status panel legend [Asana](https://app.asana.com/0/1203946223090617/1205293981648408/f)
 ### 0.147.0 
 **Release Date:** Wed Oct 18 10:23:32 UTC 2023     
-## Previous Releases 
 ### 0.146.0 
 **Release Date:** Mon Oct  2 14:02:20 UTC 2023     
 ### 0.145.0 
