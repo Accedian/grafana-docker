@@ -432,7 +432,7 @@
           "expr": "roadrunner_connection",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "{{hostname}}-{{zone}}-{{tenant}}",
+          "legendFormat": "{{hostname}}-{{zone}}-{{connectorId}}-{{tenant}}",
           "refId": "A"
         }
       ],
