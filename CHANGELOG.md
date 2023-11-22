@@ -1,3 +1,4 @@
+* Fix -> Updated grafana, OS and gosu versions as a result of TPS audit [Asana](https://app.asana.com/0/1164034792466845/1205921006706939/f)
 ## Current Release 
 ### 0.148.0 
 **Release Date:** Thu Nov  2 09:44:17 UTC 2023     
