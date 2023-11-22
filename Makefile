@@ -5,9 +5,9 @@ IMAGE_TAG ?= $(shell whoami)-dev
 DOCKER_DEFAULT_PLATFORM := linux/amd64
 export DOCKER_DEFAULT_PLATFORM
 
-GRAFANA_VERSION ?= 9.1.3
+GRAFANA_VERSION ?= 10.2.2
 GRAFANA_URL ?= https://dl.grafana.com/oss/release/grafana_$(GRAFANA_VERSION)_amd64.deb
-GOSU_URL ?= https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64
+GOSU_URL ?= https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64
 
 .PHONY: all
 all: build

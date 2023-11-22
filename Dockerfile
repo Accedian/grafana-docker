@@ -1,7 +1,7 @@
-FROM debian:11.6-slim
+FROM debian:stable-slim
 
-ARG GRAFANA_URL="https://dl.grafana.com/oss/release/grafana_9.1.3_amd64.deb"
-ARG GOSU_URL="https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64"
+ARG GRAFANA_URL="https://dl.grafana.com/oss/release/grafana_10.2.2_amd64.deb"
+ARG GOSU_URL="https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64"
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
@@ -10,6 +10,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         ca-certificates \
         curl \
         libfontconfig \
+        musl \
     && curl \
         --no-progress-meter \
         --write-out "curl: %{filename_effective} %{size_download}B %{speed_download}B/s\n" \
