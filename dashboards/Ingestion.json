@@ -2075,7 +2075,25 @@
   "schemaVersion": 38,
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "Prometheus",
+          "value": "PBFA97CFB590B2093"
+        },
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "DS_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      }
+    ]
   },
   "time": {
     "from": "now-24h",
@@ -2098,6 +2116,6 @@
   "timezone": "",
   "title": "Ingestion",
   "uid": "dc5ac485-58e8-4e9c-bc49-4c15a14f4d45",
-  "version": 22,
+  "version": 26,
   "weekStart": ""
 }
