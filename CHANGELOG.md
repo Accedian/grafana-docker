@@ -1,8 +1,10 @@
-* Roadrunner data flow dashboard [Asana](https://app.asana.com/0/1205807473497888/1205891361597234/f)
 ## Current Release 
+### 0.151.0 
+**Release Date:** Mon Feb 12 17:29:00 UTC 2024     
+## Previous Releases 
+* Roadrunner data flow dashboard [Asana](https://app.asana.com/0/1205807473497888/1205891361597234/f)
 ### 0.150.0 
 **Release Date:** Thu Jan 18 16:16:37 UTC 2024     
-## Previous Releases 
 ### 0.149.0 
 **Release Date:** Wed Nov 22 19:06:56 UTC 2023     
 * Fix -> Updated grafana, OS and gosu versions as a result of TPS audit [Asana](https://app.asana.com/0/1164034792466845/1205921006706939/f)
