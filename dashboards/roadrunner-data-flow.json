@@ -489,7 +489,7 @@
             "useBackend": false
           }
         ],
-        "title": "Open Metrics Scrapper channel load",
+        "title": "Open Metrics Scraper channel load",
         "type": "timeseries"
       }
     ],
