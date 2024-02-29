@@ -612,7 +612,7 @@
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "Task Shed datasource:{{datasource}}, Reason: {{reason}}",
+          "legendFormat": "Task Shed Datasource:{{datasource}}, Reason: {{reason}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -624,12 +624,12 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "gather_ingest_pacemaker_no_task_space{reason=\"insufficient_slots_available\"}",
+          "expr": "gather_ingest_pacemaker_no_task_space{reason=\"insufficient_slots_exist\"}",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "Insufficient Slots Datasource:{{datasource}}",
+          "legendFormat": "Insufficient Slots Exist Datasource:{{datasource}}",
           "range": true,
           "refId": "B",
           "useBackend": false
@@ -646,9 +646,26 @@
           "hide": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "submission cycle failure",
+          "legendFormat": "Submission Cycle Failure",
           "range": true,
           "refId": "C",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "gather_ingest_pacemaker_persistence_failure",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "Persistence Failure Datasource:{{datasource}}, Operation: {{operation}}",
+          "range": true,
+          "refId": "D",
           "useBackend": false
         }
       ],
