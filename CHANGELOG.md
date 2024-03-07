@@ -1,3 +1,4 @@
+Change MQTT connection status gauge to connection error counter [Asana](https://app.asana.com/0/1205807473497888/1206699347844306/f)
 ## Current Release 
 ### 0.152.0 
 **Release Date:** Thu Mar  7 08:51:20 UTC 2024     
