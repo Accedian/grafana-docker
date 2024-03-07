@@ -1,3 +1,4 @@
+Change Roadrunner Foxtrot connection status gauge to connection error counter [Asana](https://app.asana.com/0/1205807473497888/1206699347844306/f)
 ## Current Release 
 ### 0.151.0 
 **Release Date:** Mon Feb 12 17:29:00 UTC 2024     
