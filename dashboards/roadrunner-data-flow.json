@@ -306,7 +306,7 @@
       },
       {
         "datasource": "Prometheus",
-        "description": "It increases on successful connection with MQTT. Decreases in case of connection issues.",
+        "description": "It increases on connection issue with MQTT. Flat line is ok.",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -385,7 +385,7 @@
             "datasource": "Prometheus",
             "disableTextWrap": false,
             "editorMode": "builder",
-            "expr": "roadrunner_mqtt_connection_status",
+            "expr": "roadrunner_mqtt_connection_error",
             "fullMetaSearch": false,
             "includeNullMetadata": true,
             "instant": false,
@@ -395,7 +395,7 @@
             "useBackend": false
           }
         ],
-        "title": "MQTT connection status",
+        "title": "MQTT connection issues",
         "type": "timeseries"
       },
       {
