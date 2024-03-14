@@ -1,8 +1,10 @@
-* Feat - pacemaker addition to ingestion dashboard [Asana](https://app.asana.com/0/1205804467494021/1205817814251795)
 ## Current Release 
+### 0.154.0 
+**Release Date:** Thu Mar 14 19:16:36 UTC 2024     
+## Previous Releases 
+* Feat - pacemaker addition to ingestion dashboard [Asana](https://app.asana.com/0/1205804467494021/1205817814251795)
 ### 0.153.0 
 **Release Date:** Fri Mar  8 16:49:45 UTC 2024     
-## Previous Releases 
 Change MQTT connection status gauge to connection error counter [Asana](https://app.asana.com/0/1205807473497888/1206699347844306/f)
 ### 0.152.0 
 **Release Date:** Thu Mar  7 08:51:20 UTC 2024     
