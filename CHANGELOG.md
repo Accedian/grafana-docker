@@ -1,8 +1,10 @@
-* Fix - ingestion validations dashboard for Gather adjustments for gauge metrics usage [Asana](https://app.asana.com/0/1203450045248205/1206694555908557/f)
 ## Current Release 
+### 0.155.0 
+**Release Date:** Mon Mar 18 21:09:17 UTC 2024     
+## Previous Releases 
+* Fix - ingestion validations dashboard for Gather adjustments for gauge metrics usage [Asana](https://app.asana.com/0/1203450045248205/1206694555908557/f)
 ### 0.154.0 
 **Release Date:** Thu Mar 14 19:16:36 UTC 2024     
-## Previous Releases 
 * Feat - pacemaker addition to ingestion dashboard [Asana](https://app.asana.com/0/1205804467494021/1205817814251795)
 ### 0.153.0 
 **Release Date:** Fri Mar  8 16:49:45 UTC 2024     
