@@ -110,7 +110,7 @@
           "datasource": "Prometheus",
           "editorMode": "builder",
           "expr": "gather_ingestion_profile_dict_violations",
-          "legendFormat": "{{tenantId}}-{{dataType}}-{{dataId}}-{{errorType}}",
+          "legendFormat": "{{tenantId}}-{{dataType}}-{{dataId}}",
           "range": true,
           "refId": "A"
         }
