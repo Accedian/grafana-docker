@@ -977,7 +977,7 @@
     }
   ],
   "style": "dark",
-  "schemaVersion": 38,
+  "schemaVersion": 37,
   "tags": [],
   "templating": {
     "list": []
