@@ -1,3 +1,4 @@
+* Fix - ingestion validations dashboard for Gather adjustments for gauge metrics usage [Asana](https://app.asana.com/0/1203450045248205/1206694555908557/f)
 ## Current Release 
 ### 0.152.0 
 **Release Date:** Thu Mar  7 08:51:20 UTC 2024     
