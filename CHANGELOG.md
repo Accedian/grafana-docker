@@ -1,3 +1,4 @@
+Change - Plugins installed at build time and delivered with container rather than downloading each time on startup (Fixes OnPrem/Airgap) [Asana](https://app.asana.com/0/1164034792466845/1207030749728887/f)
 ## Current Release 
 ### 0.155.0 
 **Release Date:** Mon Mar 18 21:09:17 UTC 2024     
