@@ -30,6 +30,14 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get clean \
     && rm --recursive --force /var/lib/apt/lists/*
 
+RUN mkdir -p /data/grafana/plugins && chown -R grafana:grafana /data/grafana/plugins
+RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install xginn8-pagerduty-datasource
+RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install grafana-image-renderer 3.7.2
+#TODO  remove grafana-image-renderer version when official fix is implemented for the latest version
+RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install grafana-clock-panel
+RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install grafana-piechart-panel
+RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install grafana-clickhouse-datasource
+
 VOLUME ["/var/lib/grafana", "/var/log/grafana", "/etc/grafana"]
 
 EXPOSE 3000
