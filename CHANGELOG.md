@@ -1,8 +1,10 @@
-* Feat - Add dashboard for Telemetry Collector [Asana](https://app.asana.com/0/1206812330405242/1207416630261414/f)
 ## Current Release 
+### 0.157.0 
+**Release Date:** Fri Jun  7 14:43:41 UTC 2024     
+## Previous Releases 
+* Feat - Add dashboard for Telemetry Collector [Asana](https://app.asana.com/0/1206812330405242/1207416630261414/f)
 ### 0.156.0 
 **Release Date:** Mon Apr 29 17:20:15 UTC 2024     
-## Previous Releases 
 Change - Plugins installed at build time and delivered with container rather than downloading each time on startup (Fixes OnPrem/Airgap) [Asana](https://app.asana.com/0/1164034792466845/1207030749728887/f)
 ### 0.155.0 
 **Release Date:** Mon Mar 18 21:09:17 UTC 2024     
