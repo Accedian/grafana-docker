@@ -81,7 +81,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "roadrunner_tech_support_generation_seconds > 0",
+          "expr": "avg by(connectorId) (roadrunner_tech_support_generation_seconds{connectorId=\"$ConnectorID\"} > 0)",
           "legendFormat": "ConnectorID: {{connector_id}} | Zone: {{zone}}",
           "range": true,
           "refId": "A"
@@ -147,7 +147,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "roadrunner_tech_support_working",
+          "expr": "sum by(connectorId) (roadrunner_tech_support_working{connectorId=\"$ConnectorID\"})",
           "legendFormat": "ConnectorID: {{connector_id}} | Zone: {{zone}}",
           "range": true,
           "refId": "A"
@@ -167,6 +167,7 @@
             "mode": "thresholds"
           },
           "mappings": [],
+          "noValue": "No pending requests",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -179,7 +180,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "none"
         },
         "overrides": []
       },
@@ -193,7 +195,7 @@
       "options": {
         "colorMode": "value",
         "graphMode": "area",
-        "justifyMode": "auto",
+        "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
@@ -209,7 +211,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "builder",
-          "expr": "pending_tech_support_report_requests",
+          "expr": "sum by(connector_id) (pending_tech_support_report_requests{connector_id=\"$ConnectorID\"})",
           "legendFormat": "ConnectorID: {{connector_id}} | Zone: {{zone}}",
           "range": true,
           "refId": "A"
@@ -276,7 +278,9 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "(success_tech_support_report_requests + (canceled_tech_support_report_requests or (success_tech_support_report_requests - success_tech_support_report_requests))) * 100 / (requested_tech_support_report_requests - pending_tech_support_report_requests)",
+          "exemplar": false,
+          "expr": "sum by (connector_id) ((success_tech_support_report_requests{connector_id=\"$ConnectorID\"} + (canceled_tech_support_report_requests{connector_id=\"$ConnectorID\"} or (success_tech_support_report_requests{connector_id=\"$ConnectorID\"} - success_tech_support_report_requests{connector_id=\"$ConnectorID\"}))) * 100 / (requested_tech_support_report_requests{connector_id=\"$ConnectorID\"} - pending_tech_support_report_requests{connector_id=\"$ConnectorID\"}))",
+          "instant": false,
           "legendFormat": "ConnectorID: {{connector_id}} | Zone: {{zone}}",
           "range": true,
           "refId": "A"
@@ -286,7 +290,10 @@
       "type": "stat"
     },
     {
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -362,7 +369,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "builder",
-          "expr": "requested_tech_support_report_requests",
+          "expr": "requested_tech_support_report_requests{connector_id=\"$ConnectorID\"}",
           "legendFormat": "ConnectorID: {{connector_id}} | Zone: {{zone}}",
           "range": true,
           "refId": "A"
@@ -372,7 +379,10 @@
       "type": "timeseries"
     },
     {
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -449,7 +459,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "builder",
-          "expr": "canceled_tech_support_report_requests",
+          "expr": "canceled_tech_support_report_requests{connector_id=\"$ConnectorID\"}",
           "legendFormat": "ConnectorID: {{connector_id}} | Zone: {{zone}}",
           "range": true,
           "refId": "A"
@@ -538,7 +548,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "(success_tech_support_report_requests + (canceled_tech_support_report_requests or (success_tech_support_report_requests - success_tech_support_report_requests)))",
+          "expr": "(success_tech_support_report_requests{connector_id=\"$ConnectorID\"} + (canceled_tech_support_report_requests{connector_id=\"$ConnectorID\"} or (success_tech_support_report_requests{connector_id=\"$ConnectorID\"} - success_tech_support_report_requests{connector_id=\"$ConnectorID\"})))",
           "legendFormat": "ConnectorID: {{connector_id}} | Zone: {{zone}}",
           "range": true,
           "refId": "A"
@@ -548,7 +558,102 @@
       "type": "timeseries"
     },
     {
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 17
+      },
+      "id": 16,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "(sum by (connectorId) (roadrunner_tech_support_start_counter{connectorId=\"$ConnectorID\"}) / sum by (connector_id) (requested_tech_support_report_requests{connector_id=\"$ConnectorID\"}))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Panel Title",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -624,8 +729,8 @@
       "targets": [
         {
           "datasource": "Prometheus",
-          "editorMode": "builder",
-          "expr": "failed_tech_support_report_requests",
+          "editorMode": "code",
+          "expr": "failed_tech_support_report_requests{connector_id=\"$ConnectorID\"}",
           "legendFormat": "ConnectorID: {{connector_id}} | Zone: {{zone}}",
           "range": true,
           "refId": "A"
@@ -670,17 +775,47 @@
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values(zone)",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "Zone",
+        "options": [],
+        "query": {
+          "query": "label_values(zone)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Tech Support Report Tool",
   "uid": "SkcZKiyIz",
-  "version": 6,
+  "version": 3,
   "weekStart": ""
 }
