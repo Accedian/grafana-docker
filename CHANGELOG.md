@@ -1,8 +1,10 @@
-New dashboard for Remote Tech Support Tool Triggering [Asana](https://app.asana.com/0/1206854387585413/1207408549485181/f)
 ## Current Release 
+### 0.158.0 
+**Release Date:** Wed Jul 31 06:57:24 UTC 2024     
+## Previous Releases 
+New dashboard for Remote Tech Support Tool Triggering [Asana](https://app.asana.com/0/1206854387585413/1207408549485181/f)
 ### 0.157.0 
 **Release Date:** Fri Jun  7 14:43:41 UTC 2024     
-## Previous Releases 
 * Feat - Add dashboard for Telemetry Collector [Asana](https://app.asana.com/0/1206812330405242/1207416630261414/f)
 ### 0.156.0 
 **Release Date:** Mon Apr 29 17:20:15 UTC 2024     
