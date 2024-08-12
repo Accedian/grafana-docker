@@ -93,7 +93,32 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "{__name__=\"skylight_aaa_client_certificates_active\", instance=\"skylight-aaa:9191\", job=\"skylight-aaa\", tenantId=\"d9a7503b-ad6f-4720-bd23-c589f5e915a5\"}"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -121,12 +146,12 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "disableTextWrap": false,
-          "editorMode": "builder",
+          "editorMode": "code",
           "expr": "skylight_aaa_client_certificates_active",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "Active: {{tenantId}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -143,7 +168,7 @@
           "hide": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "Revoked: {{tenantId}}",
           "range": true,
           "refId": "B",
           "useBackend": false
@@ -160,7 +185,7 @@
           "hide": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "Total: {{tenantId}}",
           "range": true,
           "refId": "C",
           "useBackend": false
@@ -261,7 +286,7 @@
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "Tenant Certificate Expiry Days: {{tenantId}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -373,7 +398,7 @@
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "{{api}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -390,7 +415,7 @@
           "hide": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "Rejected Cert Authorization Requests",
           "range": true,
           "refId": "B",
           "useBackend": false
@@ -490,7 +515,7 @@
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "Hits",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -507,7 +532,7 @@
           "hide": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "Misses",
           "range": true,
           "refId": "B",
           "useBackend": false
@@ -607,7 +632,7 @@
           "hide": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "{{name}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -706,7 +731,7 @@
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "{{name}}",
           "range": true,
           "refId": "A",
           "useBackend": false
