@@ -189,6 +189,23 @@
           "range": true,
           "refId": "C",
           "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "skylight_aaa_client_certificates_ocsp_status",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "OCSP Status: {{status}} {{tenantId}}",
+          "range": true,
+          "refId": "D",
+          "useBackend": false
         }
       ],
       "title": "Client Certificate Statuses",
@@ -766,7 +783,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
