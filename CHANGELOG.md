@@ -1,3 +1,5 @@
+- Fix - Optimize Number of MOs panel in spark Ingestion and Lag dashborad [Asana](https://app.asana.com/0/1207589686024250/1208266838371249/f)
+- Feat - Add Number of Monitored Objects panel to spark ingestion and lag dashboard [Asana](https://app.asana.com/0/1207589686024250/1207768839321331/f)
 ## Current Release 
 ### 0.159.0 
 **Release Date:** Thu Aug  1 12:29:49 UTC 2024     
