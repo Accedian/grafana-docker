@@ -24,7 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 23,
+  "id": 27,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -877,7 +877,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "000000001"
       },
       "fieldConfig": {
         "defaults": {
@@ -890,16 +890,27 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "fillOpacity": 80,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
             "lineWidth": 1,
+            "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -931,31 +942,26 @@
       "id": 20,
       "interval": "2m",
       "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": true
         },
-        "orientation": "auto",
-        "showValue": "never",
-        "stacking": "none",
         "tooltip": {
           "mode": "single",
           "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 100
+        }
       },
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "000000001"
           },
           "editorMode": "code",
           "expr": "avg_over_time(spark_AccedianMonitoredObjectsCount[2m])",
@@ -965,8 +971,8 @@
           "refId": "A"
         }
       ],
-      "title": "Number of Monitored Objects",
-      "type": "barchart"
+      "title": "Forecasting: Number of Monitored Objects",
+      "type": "timeseries"
     }
   ],
   "refresh": "",
@@ -1009,6 +1015,6 @@
   "timezone": "",
   "title": "Spark Ingestion and Lag",
   "uid": "oaePhsqGz",
-  "version": 15,
+  "version": 28,
   "weekStart": ""
 }
