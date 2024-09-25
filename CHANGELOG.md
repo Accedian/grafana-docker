@@ -1,3 +1,4 @@
+Update capture-sensor dashboard
 ## Current Release 
 ### 0.159.0 
 **Release Date:** Thu Aug  1 12:29:49 UTC 2024     
