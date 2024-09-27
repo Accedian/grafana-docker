@@ -1,8 +1,10 @@
-Update capture-sensor dashboard
 ## Current Release 
+### 0.161.0 
+**Release Date:** Fri Sep 27 08:02:36 UTC 2024     
+## Previous Releases 
+Update capture-sensor dashboard
 ### 0.160.0 
 **Release Date:** Wed Sep 25 13:36:01 UTC 2024     
-## Previous Releases 
 - Fix - Optimize Number of MOs panel in spark Ingestion and Lag dashborad [Asana](https://app.asana.com/0/1207589686024250/1208266838371249/f)
 - Feat - Add Number of Monitored Objects panel to spark ingestion and lag dashboard [Asana](https://app.asana.com/0/1207589686024250/1207768839321331/f)
 ### 0.159.0 
