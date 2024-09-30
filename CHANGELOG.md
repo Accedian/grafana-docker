@@ -1,3 +1,4 @@
+* Fix - RR metrics coming from Foxtrot missing labels [Asana](https://app.asana.com/0/1208396396222905/1208420691524941/f)
 ## Current Release 
 ### 0.161.0 
 **Release Date:** Fri Sep 27 08:02:36 UTC 2024     
