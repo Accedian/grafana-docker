@@ -1,8 +1,10 @@
-* Fix - RR metrics coming from Foxtrot missing labels [Asana](https://app.asana.com/0/1208396396222905/1208420691524941/f)
 ## Current Release 
+### 0.162.0 
+**Release Date:** Mon Sep 30 10:40:41 UTC 2024     
+## Previous Releases 
+* Fix - RR metrics coming from Foxtrot missing labels [Asana](https://app.asana.com/0/1208396396222905/1208420691524941/f)
 ### 0.161.0 
 **Release Date:** Fri Sep 27 08:02:36 UTC 2024     
-## Previous Releases 
 Update capture-sensor dashboard
 ### 0.160.0 
 **Release Date:** Wed Sep 25 13:36:01 UTC 2024     
