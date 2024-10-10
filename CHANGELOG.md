@@ -1,8 +1,10 @@
-* Feat - Add dashboard for Skylight-AAA [Asana](https://app.asana.com/0/1207589688934697/1207591487804448/f)
 ## Current Release 
+### 0.163.0 
+**Release Date:** Thu Oct 10 12:23:56 UTC 2024     
+## Previous Releases 
+* Feat - Add dashboard for Skylight-AAA [Asana](https://app.asana.com/0/1207589688934697/1207591487804448/f)
 ### 0.162.0 
 **Release Date:** Mon Sep 30 10:40:41 UTC 2024     
-## Previous Releases 
 * Fix - RR metrics coming from Foxtrot missing labels [Asana](https://app.asana.com/0/1208396396222905/1208420691524941/f)
 ### 0.161.0 
 **Release Date:** Fri Sep 27 08:02:36 UTC 2024     
