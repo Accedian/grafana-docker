@@ -305,7 +305,7 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum without (cpu,exported_instance, instance, job, monitor, tenant_id)(irate(collectd_cpu_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\"}[1m]))  \n/ ignoring(type) group_left \n  sum without (cpu, type,exported_instance, instance, job, monitor, tenant_id)(irate(collectd_cpu_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\"}[1m])) ",
+          "expr": "sum without (cpu,exported_instance, instance, job, monitor, tenant_id)(irate(collectd_cpu_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\"}[5m]))  \n/ ignoring(type) group_left \n  sum without (cpu, type,exported_instance, instance, job, monitor, tenant_id)(irate(collectd_cpu_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\"}[5m])) ",
           "hide": false,
           "instant": false,
           "interval": "",
@@ -797,7 +797,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": false,
-              "expr": "irate(collectd_disk_disk_time_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m])",
+              "expr": "irate(collectd_disk_disk_time_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[5m])",
               "interval": "",
               "legendFormat": "{{disk}} read",
               "range": true,
@@ -806,7 +806,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_disk_disk_time_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m]) * -1",
+              "expr": "irate(collectd_disk_disk_time_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[5m]) * -1",
               "hide": false,
               "interval": "",
               "legendFormat": "{{disk}} write",
@@ -898,7 +898,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": false,
-              "expr": "irate(collectd_disk_disk_octets_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m])",
+              "expr": "irate(collectd_disk_disk_octets_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[5m])",
               "interval": "",
               "legendFormat": "{{disk}} read",
               "range": true,
@@ -907,7 +907,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_disk_disk_octets_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m]) * -1",
+              "expr": "irate(collectd_disk_disk_octets_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[5m]) * -1",
               "hide": false,
               "interval": "",
               "legendFormat": "{{disk}} write",
@@ -999,7 +999,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": false,
-              "expr": "irate(collectd_disk_disk_merged_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m])",
+              "expr": "irate(collectd_disk_disk_merged_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[5m])",
               "interval": "",
               "legendFormat": "{{disk}} read",
               "range": true,
@@ -1008,7 +1008,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_disk_disk_merged_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m]) * -1",
+              "expr": "irate(collectd_disk_disk_merged_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[5m]) * -1",
               "hide": false,
               "interval": "",
               "legendFormat": "{{disk}} write",
@@ -1100,7 +1100,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": false,
-              "expr": "irate(collectd_disk_disk_ops_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m])",
+              "expr": "irate(collectd_disk_disk_ops_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[5m])",
               "interval": "",
               "legendFormat": "{{disk}} read",
               "range": true,
@@ -1109,7 +1109,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_disk_disk_ops_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[1m]) * -1",
+              "expr": "irate(collectd_disk_disk_ops_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]4\"}[5m]) * -1",
               "hide": false,
               "interval": "",
               "legendFormat": "{{disk}} write",
@@ -1214,7 +1214,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": false,
-              "expr": "irate(collectd_disk_disk_time_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m])",
+              "expr": "irate(collectd_disk_disk_time_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[5m])",
               "interval": "",
               "legendFormat": "{{disk}} read",
               "range": true,
@@ -1223,7 +1223,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_disk_disk_time_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m]) * -1",
+              "expr": "irate(collectd_disk_disk_time_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[5m]) * -1",
               "hide": false,
               "interval": "",
               "legendFormat": "{{disk}} write",
@@ -1315,7 +1315,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": false,
-              "expr": "irate(collectd_disk_disk_octets_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m])",
+              "expr": "irate(collectd_disk_disk_octets_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[5m])",
               "interval": "",
               "legendFormat": "{{disk}} read",
               "range": true,
@@ -1324,7 +1324,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_disk_disk_octets_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m]) * -1",
+              "expr": "irate(collectd_disk_disk_octets_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[5m]) * -1",
               "hide": false,
               "interval": "",
               "legendFormat": "{{disk}} write",
@@ -1416,7 +1416,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": false,
-              "expr": "irate(collectd_disk_disk_merged_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m])",
+              "expr": "irate(collectd_disk_disk_merged_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[5m])",
               "interval": "",
               "legendFormat": "{{disk}} read",
               "range": true,
@@ -1425,7 +1425,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_disk_disk_merged_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m]) * -1",
+              "expr": "irate(collectd_disk_disk_merged_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[5m]) * -1",
               "hide": false,
               "interval": "",
               "legendFormat": "{{disk}} write",
@@ -1517,7 +1517,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": false,
-              "expr": "irate(collectd_disk_disk_ops_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m])",
+              "expr": "irate(collectd_disk_disk_ops_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[5m])",
               "interval": "",
               "legendFormat": "{{disk}} read",
               "range": true,
@@ -1526,7 +1526,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_disk_disk_ops_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[1m]) * -1",
+              "expr": "irate(collectd_disk_disk_ops_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]5\"}[5m]) * -1",
               "hide": false,
               "interval": "",
               "legendFormat": "{{disk}} write",
@@ -1631,7 +1631,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": false,
-              "expr": "irate(collectd_disk_disk_time_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m])",
+              "expr": "irate(collectd_disk_disk_time_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[5m])",
               "interval": "",
               "legendFormat": "{{disk}} read",
               "range": true,
@@ -1640,7 +1640,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_disk_disk_time_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m]) * -1",
+              "expr": "irate(collectd_disk_disk_time_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[5m]) * -1",
               "hide": false,
               "interval": "",
               "legendFormat": "{{disk}} write",
@@ -1732,7 +1732,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": false,
-              "expr": "irate(collectd_disk_disk_octets_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m])",
+              "expr": "irate(collectd_disk_disk_octets_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[5m])",
               "interval": "",
               "legendFormat": "{{disk}} read",
               "range": true,
@@ -1741,7 +1741,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_disk_disk_octets_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m]) * -1",
+              "expr": "irate(collectd_disk_disk_octets_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[5m]) * -1",
               "hide": false,
               "interval": "",
               "legendFormat": "{{disk}} write",
@@ -1833,7 +1833,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": false,
-              "expr": "irate(collectd_disk_disk_merged_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m])",
+              "expr": "irate(collectd_disk_disk_merged_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[5m])",
               "interval": "",
               "legendFormat": "{{disk}} read",
               "range": true,
@@ -1842,7 +1842,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_disk_disk_merged_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m]) * -1",
+              "expr": "irate(collectd_disk_disk_merged_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[5m]) * -1",
               "hide": false,
               "interval": "",
               "legendFormat": "{{disk}} write",
@@ -1934,7 +1934,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": false,
-              "expr": "irate(collectd_disk_disk_ops_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m])",
+              "expr": "irate(collectd_disk_disk_ops_read_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[5m])",
               "interval": "",
               "legendFormat": "{{disk}} read",
               "range": true,
@@ -1943,7 +1943,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_disk_disk_ops_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[1m]) * -1",
+              "expr": "irate(collectd_disk_disk_ops_write_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",disk=~\"sd[a|b]1\"}[5m]) * -1",
               "hide": false,
               "interval": "",
               "legendFormat": "{{disk}} write",
@@ -2743,7 +2743,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": false,
-              "expr": "irate(collectd_interface_if_octets_rx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[1m])",
+              "expr": "irate(collectd_interface_if_octets_rx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[5m])",
               "interval": "",
               "legendFormat": "{{interface}} rx",
               "range": true,
@@ -2752,7 +2752,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_interface_if_octets_tx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[1m]) * -1",
+              "expr": "irate(collectd_interface_if_octets_tx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[5m]) * -1",
               "hide": false,
               "interval": "",
               "legendFormat": "{{interface}} tx",
@@ -2844,7 +2844,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": false,
-              "expr": "irate(collectd_interface_if_packets_rx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[1m])",
+              "expr": "irate(collectd_interface_if_packets_rx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[5m])",
               "interval": "",
               "legendFormat": "{{interface}} rx",
               "range": true,
@@ -2853,7 +2853,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_interface_if_packets_tx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[1m]) * -1",
+              "expr": "irate(collectd_interface_if_packets_tx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[5m]) * -1",
               "hide": false,
               "interval": "",
               "legendFormat": "{{interface}} tx",
@@ -2945,7 +2945,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": false,
-              "expr": "irate(collectd_interface_if_errors_rx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[1m])",
+              "expr": "irate(collectd_interface_if_errors_rx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[5m])",
               "interval": "",
               "legendFormat": "{{interface}} rx",
               "range": true,
@@ -2954,7 +2954,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_interface_if_errors_tx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[1m]) * -1",
+              "expr": "irate(collectd_interface_if_errors_tx_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",interface=~\"$nif\"}[5m]) * -1",
               "hide": false,
               "interval": "",
               "legendFormat": "{{interface}} tx",
@@ -3241,7 +3241,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_processes_ps_cputime_syst_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",processes=~\"$process_name\"}[1m]) * 0.0001",
+              "expr": "irate(collectd_processes_ps_cputime_syst_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",processes=~\"$process_name\"}[5m]) * 0.0001",
               "interval": "",
               "legendFormat": "{{capture_id}} - syst",
               "range": true,
@@ -3250,7 +3250,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_processes_ps_cputime_user_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",processes=~\"$process_name\"}[1m]) * 0.0001",
+              "expr": "irate(collectd_processes_ps_cputime_user_total{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",processes=~\"$process_name\"}[5m]) * 0.0001",
               "hide": false,
               "interval": "",
               "legendFormat": "{{capture_id}} - user",
@@ -3460,7 +3460,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_junkie_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",junkie=~\"iface-eth.+\",type=~\".*_drop.*\"}[1m])",
+              "expr": "irate(collectd_junkie_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",junkie=~\"iface-eth.+\",type=~\".*_drop.*\"}[5m])",
               "interval": "",
               "legendFormat": "{{junkie}} / {{type}}",
               "range": true,
@@ -3550,7 +3550,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_junkie_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",junkie=~\"iface-eth.+\",type=\"tot_bytes\"}[1m])",
+              "expr": "irate(collectd_junkie_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",junkie=~\"iface-eth.+\",type=\"tot_bytes\"}[5m])",
               "interval": "",
               "legendFormat": "{{junkie}} / {{type}}",
               "range": true,
@@ -3640,7 +3640,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_junkie_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",junkie=~\"iface-eth.+\",type=\"tot_duplicate\"}[1m])",
+              "expr": "irate(collectd_junkie_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",junkie=~\"iface-eth.+\",type=\"tot_duplicate\"}[5m])",
               "interval": "",
               "legendFormat": "{{junkie}} / {{type}}",
               "range": true,
@@ -3730,7 +3730,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_junkie_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",junkie=~\"iface-eth.+\",type=\"tot_packets\"}[1m])",
+              "expr": "irate(collectd_junkie_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",junkie=~\"iface-eth.+\",type=\"tot_packets\"}[5m])",
               "interval": "",
               "legendFormat": "{{junkie}} / {{type}}",
               "range": true,
@@ -3820,7 +3820,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "irate(collectd_junkie_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",junkie=~\"iface-eth.+\",type=\"tot_received\"}[1m])",
+              "expr": "irate(collectd_junkie_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",junkie=~\"iface-eth.+\",type=\"tot_received\"}[5m])",
               "interval": "",
               "legendFormat": "{{junkie}} / {{type}}",
               "range": true,
@@ -3832,290 +3832,6 @@
         }
       ],
       "title": "Junkie internal stats - interfaces",
-      "type": "row"
-    },
-    {
-      "collapsed": true,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 54
-      },
-      "id": 316,
-      "panels": [
-        {
-          "datasource": "Prometheus",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 0,
-            "y": 55
-          },
-          "id": 377,
-          "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "irate(collectd_junkie_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",junkie=~\"worker-.+\",type=\"current_cells\"}[1m])",
-              "interval": "",
-              "legendFormat": "{{junkie}} / {{type}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Junkie stats - Worker current cells",
-          "type": "timeseries"
-        },
-        {
-          "datasource": "Prometheus",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 12,
-            "y": 55
-          },
-          "id": 378,
-          "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "irate(collectd_junkie_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",junkie=~\"worker-.+\",type=\"dropped_cells\"}[1m])",
-              "interval": "",
-              "legendFormat": "{{junkie}} / {{type}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Junkie stats - Worker dropped cells",
-          "type": "timeseries"
-        },
-        {
-          "datasource": "Prometheus",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 0,
-            "y": 62
-          },
-          "id": 379,
-          "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "irate(collectd_junkie_gauge{job=\"collectd\",monitor=\"capture\",tenant_id=\"$tenant_id\",capture_id=~\"$capture_id\",junkie=~\"worker-.+\",type=\"dumped_cells\"}[1m])",
-              "interval": "",
-              "legendFormat": "{{junkie}} / {{type}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Junkie stats - Worker dumped cells",
-          "type": "timeseries"
-        }
-      ],
-      "title": "Junkie internal stats - workers",
       "type": "row"
     }
   ],
