@@ -37,10 +37,7 @@
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -118,10 +115,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_metrics_rx_from_telegraf_cisco_telemetry_xr_environment",
@@ -134,10 +128,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_metrics_rx_from_telegraf_cisco_telemetry_xr_interface",
@@ -151,10 +142,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_metrics_rx_from_telegraf_cisco_telemetry_xr_policy",
@@ -172,10 +160,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -253,10 +238,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_data_gateway_published_metrics_cisco_telemetry_xr_environment",
@@ -269,10 +251,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_data_gateway_published_metrics_cisco_telemetry_xr_interface",
@@ -286,10 +265,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_data_gateway_published_metrics_cisco_telemetry_xr_policy",
@@ -307,10 +283,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -388,10 +361,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_object_type_count_cisco_telemetry_xr_environment",
@@ -404,10 +374,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_object_type_count_cisco_telemetry_xr_interface",
@@ -421,10 +388,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_object_type_count_cisco_telemetry_xr_policy",
@@ -442,10 +406,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -523,10 +484,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_error_stream_update_cisco_telemetry_xr_environment",
@@ -539,10 +497,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_error_stream_update_cisco_telemetry_xr_interface",
@@ -556,10 +511,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_error_stream_update_cisco_telemetry_xr_policy",
@@ -577,10 +529,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -659,10 +608,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_dropped_data_gateway_update_fail",
@@ -675,10 +621,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_dropped_missing_object_type",
@@ -692,10 +635,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_dropped_missing_value",
@@ -726,10 +666,7 @@
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -821,10 +758,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_telegraf_health_state",
@@ -841,10 +775,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "description": "Tracks the count of metrics written to the internal web socket between the embedded Telegraf instance and the agent application.",
       "fieldConfig": {
         "defaults": {
@@ -947,10 +878,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_write_metrics_written_output_websocket",
@@ -963,10 +891,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "expr": "",
           "hide": false,
           "instant": false,
@@ -974,10 +899,7 @@
           "refId": "B"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "expr": "",
           "hide": false,
           "instant": false,
@@ -989,10 +911,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1067,10 +986,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_write_metrics_filtered_output_websocket",
@@ -1087,10 +1003,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1165,10 +1078,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_agent_metrics_dropped",
@@ -1181,10 +1091,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_write_metrics_dropped_output_websocket",
@@ -1198,10 +1105,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "expr": "",
           "hide": false,
           "instant": false,
@@ -1213,10 +1117,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1293,10 +1194,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_agent_metrics_gathered",
@@ -1309,10 +1207,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_gather_metrics_gathered_input_cisco_telemetry_mdt",
@@ -1326,10 +1221,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_gather_metrics_gathered_input_internal",
@@ -1347,10 +1239,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1428,10 +1317,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_agent_gather_errors",
@@ -1444,10 +1330,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_gather_errors_input_internal",
@@ -1461,10 +1344,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_gather_errors_input_cisco_telemetry_mdt",
@@ -1495,10 +1375,7 @@
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1587,10 +1464,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "exemplar": false,
@@ -1608,10 +1482,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1688,10 +1559,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_management_stats_authenticationError",
@@ -1704,10 +1572,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_management_stats_authenticationSuccessful",
@@ -1725,10 +1590,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1815,10 +1677,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "exemplar": false,
@@ -1836,10 +1695,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1916,10 +1772,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_data_stats_authenticationError",
@@ -1932,10 +1785,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_data_stats_authenticationFailure",
@@ -1949,10 +1799,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_data_stats_authenticationSuccessful",
@@ -1970,10 +1817,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2051,10 +1895,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_data_stats_batchesInFlight",
@@ -2067,10 +1908,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_data_stats_batchesInQueue",
@@ -2088,10 +1926,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2168,10 +2003,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_data_stats_rxFromGenerator",
@@ -2184,10 +2016,7 @@
           "useBackend": false
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_data_stats_txToBroker",

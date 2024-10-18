@@ -25,15 +25,12 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 47,
+  "id": 57,
   "links": [],
   "liveNow": false,
   "panels": [
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -72,15 +69,13 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.1.3",
+      "pluginVersion": "10.2.2",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "editorMode": "builder",
           "expr": "avg by(connectorId) (roadrunner_tech_support_generation_seconds{connectorId=\"$ConnectorID\"} > 0)",
           "legendFormat": "ConnectorID: {{connector_id}} | Zone: {{zone}}",
@@ -92,10 +87,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -138,15 +130,13 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.1.3",
+      "pluginVersion": "10.2.2",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "editorMode": "builder",
           "expr": "sum by(connectorId) (roadrunner_tech_support_working{connectorId=\"$ConnectorID\"})",
           "legendFormat": "ConnectorID: {{connector_id}} | Zone: {{zone}}",
@@ -158,10 +148,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -205,9 +192,10 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.1.3",
+      "pluginVersion": "10.2.2",
       "targets": [
         {
           "datasource": "Prometheus",
@@ -222,10 +210,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -272,9 +257,10 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.1.3",
+      "pluginVersion": "10.2.2",
       "targets": [
         {
           "datasource": "Prometheus",
@@ -291,16 +277,14 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -314,6 +298,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -380,16 +365,14 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -403,6 +386,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -470,16 +454,14 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -493,6 +475,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -559,10 +542,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -604,15 +584,13 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.1.3",
+      "pluginVersion": "10.2.2",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource":"Prometheus", 
           "editorMode": "code",
           "expr": "(roadrunner_tech_support_start_counter{connectorId=\"$ConnectorID\"} / requested_tech_support_report_requests{connector_id=\"$ConnectorID\"})",
           "legendFormat": "__auto",
@@ -624,16 +602,14 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource":"Prometheus", 
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -647,6 +623,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -715,8 +692,7 @@
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 37,
-  "style": "dark",
+  "schemaVersion": 38,
   "tags": [],
   "templating": {
     "list": [
@@ -730,10 +706,7 @@
             "$__all"
           ]
         },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
-        },
+        "datasource":"Prometheus", 
         "definition": "label_values(connector_id)",
         "hide": 0,
         "includeAll": true,
@@ -760,10 +733,7 @@
             "$__all"
           ]
         },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
-        },
+        "datasource":"Prometheus", 
         "definition": "label_values(zone)",
         "hide": 0,
         "includeAll": true,
@@ -790,6 +760,6 @@
   "timezone": "",
   "title": "Tech Support Report Tool",
   "uid": "SkcZKiyIz",
-  "version": 5,
+  "version": 1,
   "weekStart": ""
 }
