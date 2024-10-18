@@ -1,3 +1,6 @@
+* Fix - missing charts from spark Ingestion and Lag [Asana](https://app.asana.com/0/1207589910511516/1208521223214145/f)
+* Fix - Telemetry Collector charts data source labeling [Asana](https://app.asana.com/0/1207589910511516/1208524073684153/f)
+* Fix - Tech Support Report Tool charts in Grafana report datasource not found [Asana](https://app.asana.com/0/1207589910511516/1208524073684147/f)
 ## Current Release 
 ### 0.163.0 
 **Release Date:** Thu Oct 10 12:23:56 UTC 2024     
