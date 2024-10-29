@@ -1,3 +1,4 @@
+* New graphs for MQTT and SNMP Trap messages and MQTT / SNMP service start/stop count [Assana](https://app.asana.com/0/1208319030362516/1208546743487066/f)
 ## Current Release 
 ### 0.164.0 
 **Release Date:** Fri Oct 18 14:18:57 UTC 2024     
