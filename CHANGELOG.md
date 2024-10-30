@@ -1,8 +1,10 @@
-* New graphs for MQTT and SNMP Trap messages and MQTT / SNMP service start/stop count [Assana](https://app.asana.com/0/1208319030362516/1208546743487066/f)
 ## Current Release 
+### 0.165.0 
+**Release Date:** Wed Oct 30 09:09:05 UTC 2024     
+## Previous Releases 
+* New graphs for MQTT and SNMP Trap messages and MQTT / SNMP service start/stop count [Assana](https://app.asana.com/0/1208319030362516/1208546743487066/f)
 ### 0.164.0 
 **Release Date:** Fri Oct 18 14:18:57 UTC 2024     
-## Previous Releases 
 * Fix - missing charts from spark Ingestion and Lag [Asana](https://app.asana.com/0/1207589910511516/1208521223214145/f)
 * Fix - Telemetry Collector charts data source labeling [Asana](https://app.asana.com/0/1207589910511516/1208524073684153/f)
 * Fix - Tech Support Report Tool charts in Grafana report datasource not found [Asana](https://app.asana.com/0/1207589910511516/1208524073684147/f)
