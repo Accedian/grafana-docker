@@ -1,3 +1,4 @@
+* Adding new metrics and logging for csv files validation [Asana](https://app.asana.com/0/1208319030362516/1208447007098038/f)
 ## Current Release 
 ### 0.165.0 
 **Release Date:** Wed Oct 30 09:09:05 UTC 2024     
