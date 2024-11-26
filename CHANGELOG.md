@@ -1,3 +1,4 @@
+Fix - Update record count panel with updated metric labels due to spark upgrade [Asana](https://app.asana.com/0/1207966128668826/1208739770836196/f)
 ## Current Release 
 ### 0.165.0 
 **Release Date:** Wed Oct 30 09:09:05 UTC 2024     
