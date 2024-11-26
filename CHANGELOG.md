@@ -1,8 +1,10 @@
-Fix - Update record count panel with updated metric labels due to spark upgrade [Asana](https://app.asana.com/0/1207966128668826/1208739770836196/f)
 ## Current Release 
+### 0.166.0 
+**Release Date:** Tue Nov 26 18:57:47 UTC 2024     
+## Previous Releases 
+Fix - Update record count panel with updated metric labels due to spark upgrade [Asana](https://app.asana.com/0/1207966128668826/1208739770836196/f)
 ### 0.165.0 
 **Release Date:** Wed Oct 30 09:09:05 UTC 2024     
-## Previous Releases 
 * New graphs for MQTT and SNMP Trap messages and MQTT / SNMP service start/stop count [Assana](https://app.asana.com/0/1208319030362516/1208546743487066/f)
 ### 0.164.0 
 **Release Date:** Fri Oct 18 14:18:57 UTC 2024     
