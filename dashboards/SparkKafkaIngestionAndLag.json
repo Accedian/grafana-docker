@@ -3,7 +3,7 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource":"Prometheus", 
+        "datasource": "Prometheus",
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -21,7 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 27,
+  "id": 44,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -69,9 +69,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_streamingapp\"}[1m])",
+          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount_total{job=\"spark_streamingapp\"}[1m])",
           "hide": false,
           "interval": "",
           "legendFormat": "{{job}}--{{tenant}}-{{objectType}}",
@@ -79,11 +79,13 @@
           "refId": "A"
         },
         {
-          "datasource":"Prometheus", 
-          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_latentapp\"}[1m])",
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount_total{job=\"spark_latentapp\"}[1m])",
           "hide": false,
           "interval": "",
           "legendFormat": "{{job}}--{{tenant}}-{{objectType}}",
+          "range": true,
           "refId": "B"
         }
       ],
@@ -297,7 +299,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -339,7 +341,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"ignite.latent.*|spark-latent.*\"}[2m])",
           "format": "time_series",
@@ -558,7 +560,9 @@
       ],
       "targets": [
         {
-          "expr": "sum by(job, tenant,objectType, cause) (spark_AccedianStreamingMetrics_streaming_droppedRecCount)",
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum by(job, tenant,objectType, cause) (spark_AccedianStreamingMetrics_streaming_droppedRecCount_total)",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -567,7 +571,9 @@
           "refId": "A"
         },
         {
-          "expr": "spark_AccedianStreamingMetrics_streaming_droppedRecCount - spark_AccedianStreamingMetrics_streaming_droppedRecCount offset $__interval >= 0",
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "spark_AccedianStreamingMetrics_streaming_droppedRecCount_total - spark_AccedianStreamingMetrics_streaming_droppedRecCount_total offset $__interval >= 0",
           "format": "table",
           "instant": true,
           "intervalFactor": 1,
@@ -767,7 +773,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -811,7 +817,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "100.0 - 100 * (node_filesystem_avail_bytes{instance=~'.*sparkworker.*|.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"} / node_filesystem_size_bytes{instance=~'.*sparkworker.*|.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"})",
           "instant": false,
@@ -987,6 +993,6 @@
   "timezone": "",
   "title": "Spark Ingestion and Lag",
   "uid": "oaePhsqGz",
-  "version": 32,
+  "version": 11,
   "weekStart": ""
 }
