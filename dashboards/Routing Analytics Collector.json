@@ -104,7 +104,7 @@
           "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "message_agentHealth_AggregationTimePerReductionCount_0",
+          "expr": "message_agentHealth_AggregationTimePerReductionCount",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
