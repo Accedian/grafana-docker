@@ -1,8 +1,10 @@
-* Adding new metrics and logging for csv files validation [Asana](https://app.asana.com/0/1208319030362516/1208447007098038/f)
 ## Current Release 
+### 0.168.0 
+**Release Date:** Fri Dec 13 14:51:33 UTC 2024     
+## Previous Releases 
+* Adding new metrics and logging for csv files validation [Asana](https://app.asana.com/0/1208319030362516/1208447007098038/f)
 ### 0.167.0 
 **Release Date:** Tue Dec  3 12:51:07 UTC 2024     
-## Previous Releases 
 * Feat - Add dashboard for ra collector [Asana](https://app.asana.com/0/1207589770978424/1208222207550153/f)
 ### 0.166.0 
 **Release Date:** Tue Nov 26 18:57:47 UTC 2024     
