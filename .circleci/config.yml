@@ -27,6 +27,7 @@ commands:
             vault kv get -format=yaml -field=data -mount=kv besbuilder | export_secrets
 
 # Jobs
+
 jobs:
   thebuild:
     machine: true
