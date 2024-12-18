@@ -1,8 +1,10 @@
-* Sky Topo Node Processor dashboard [Asana](https://app.asana.com/0/1208406814937360/1208044348370600/f)
 ## Current Release 
+### 0.169.0 
+**Release Date:** Wed Dec 18 14:07:17 UTC 2024     
+## Previous Releases 
+* Sky Topo Node Processor dashboard [Asana](https://app.asana.com/0/1208406814937360/1208044348370600/f)
 ### 0.168.0 
 **Release Date:** Fri Dec 13 14:51:33 UTC 2024     
-## Previous Releases 
 * Adding new metrics and logging for csv files validation [Asana](https://app.asana.com/0/1208319030362516/1208447007098038/f)
 ### 0.167.0 
 **Release Date:** Tue Dec  3 12:51:07 UTC 2024     
