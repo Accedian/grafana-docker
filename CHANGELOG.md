@@ -1,8 +1,10 @@
-* Adding latest Node Exporter(v2) Dashboard [Asana](https://app.asana.com/0/1207091151692154/1208839414967020/f)
 ## Current Release 
+### 0.170.0 
+**Release Date:** Thu Dec 19 16:54:32 UTC 2024     
+## Previous Releases 
+* Adding latest Node Exporter(v2) Dashboard [Asana](https://app.asana.com/0/1207091151692154/1208839414967020/f)
 ### 0.169.0 
 **Release Date:** Wed Dec 18 14:07:17 UTC 2024     
-## Previous Releases 
 * Sky Topo Node Processor dashboard [Asana](https://app.asana.com/0/1208406814937360/1208044348370600/f)
 ### 0.168.0 
 **Release Date:** Fri Dec 13 14:51:33 UTC 2024     
