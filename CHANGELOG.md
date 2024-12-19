@@ -1,3 +1,4 @@
+* Feat - Add Forecasting job metrics to Spark Batch Job Monitoring [Asana](https://app.asana.com/0/1207589910511516/1208916642906571/f)
 ## Current Release 
 ### 0.170.0 
 **Release Date:** Thu Dec 19 16:54:32 UTC 2024     
