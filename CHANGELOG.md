@@ -1,3 +1,4 @@
+* Adding latest Node Exporter(v2) Dashboard [Asana](https://app.asana.com/0/1207091151692154/1208839414967020/f)
 ## Current Release 
 ### 0.169.0 
 **Release Date:** Wed Dec 18 14:07:17 UTC 2024     
