@@ -7,7 +7,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: gcr.io/npav-172917/docker-go-sdk:1.0.1-alpine
+      - image: gcr.io/npav-172917/docker-go-sdk:0.42.0-debianstretch
         auth:
           username: ${GCR_DOCKER_RO_USERNAME}
           password: ${GCR_DOCKER_RO_PASSWORD}
@@ -23,7 +23,7 @@ jobs:
 
   release:
     docker:
-      - image: gcr.io/npav-172917/docker-go-sdk:1.0.1-alpine
+      - image: gcr.io/npav-172917/docker-go-sdk:0.42.0-debianstretch
         auth:
           username: ${GCR_DOCKER_RO_USERNAME}
           password: ${GCR_DOCKER_RO_PASSWORD}
