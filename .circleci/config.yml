@@ -55,7 +55,7 @@ workflows:
   build_and_release:
     jobs:
       - build:
-          context: org-gcp-npav
+          context: org-global
 
       - release:
           context: org-global
