@@ -9,7 +9,7 @@ jobs:
     docker:
       - image: gcr.io/npav-172917/docker-go-sdk:1.0.1-alpine
         auth:
-          username: ${GCR_DOCKER_RO_USERNAME}
+          username: _json_key
           password: ${GCR_DOCKER_RO_PASSWORD}
 
     working_directory: /root/go/src/github.com/accedian/grafana-docker
@@ -25,7 +25,7 @@ jobs:
     docker:
       - image: gcr.io/npav-172917/docker-go-sdk:1.0.1-alpine
         auth:
-          username: ${GCR_DOCKER_RO_USERNAME}
+          username: _json_key
           password: ${GCR_DOCKER_RO_PASSWORD}
 
     working_directory: /root/go/src/github.com/accedian/grafana-docker
