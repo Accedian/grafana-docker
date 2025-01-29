@@ -46,7 +46,7 @@ jobs:
   build:
     working_directory: ~/repo
     machine: true
-    resource_class: accedian/prod_bes-ubuntu-medium
+    resource_class: accedian/staging_bes-ubuntu-medium
 
     environment:
       CGO_ENABLED: 1
