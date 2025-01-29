@@ -1,17 +1,15 @@
 # Golang CircleCI 2.0 configuration file
 #
 # Check https://circleci.com/docs/2.0/language-go/ for more details
-orbs:
-  gcp-cli: circleci/gcp-cli@1.8.4
-  slack:   circleci/slack@3.4.2
+
 version: 2.1
 # Jobs
   
 jobs:
   build:
     docker:
-      - image: gcr.io/npav-172917/docker-go-sdk:0.58.0-alpine
-      # - image: gcr.io/npav-172917/aod-deployer:15.111.81
+      #- image: gcr.io/npav-172917/docker-go-sdk:0.58.0-alpine
+      - image: gcr.io/npav-172917/aod-deployer:15.111.81
         auth:
           username: ${GCR_DOCKER_RO_USERNAME}
           password: ${GCR_DOCKER_RO_PASSWORD}
