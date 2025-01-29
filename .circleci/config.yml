@@ -24,14 +24,17 @@ commands:
             vault login --no-print -method=github token=${GITHUB_TOKEN}
             vault kv get -format=yaml -field=data -mount=kv besbuilder | export_secrets
 
-            export REPOSITORY_PATH=$(echo $CIRCLE_REPOSITORY_URL | sed 's/https:\/\///')
-
       - gh/setup
 
       - run: 
           name: "Github Clone"
           command: |
+            echo "Checking out branch: $CIRCLE_BRANCH"
+            echo "Checking out PR branch $CIRCLE_PR_NUMBER"
+            echo "Checking out project repo name : $CIRCLE_PROJECT_REPONAME"
+            echo "Checking out project username : $CIRCLE_PROJECT_USERNAME"
             if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+              echo "Checking out PR branch $CIRCLE_PR_NUMBER"
               gh repo clone github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} .
               echo "Checking out PR branch $CIRCLE_PR_NUMBER"
               gh pr checkout $CIRCLE_PR_NUMBER
