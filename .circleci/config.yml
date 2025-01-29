@@ -11,8 +11,8 @@ jobs:
       #- image: gcr.io/npav-172917/docker-go-sdk:0.58.0-alpine
       - image: gcr.io/npav-172917/aod-deployer:15.111.81
         auth:
-          username: ${GCR_DOCKER_RO_USERNAME}
-          password: ${GCR_DOCKER_RO_PASSWORD}
+          username: _json_key
+          password: ${GCR_DOCKER_RW_PASSWORD}
 
     working_directory: /root/go/src/github.com/accedian/grafana-docker
 
