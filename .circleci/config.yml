@@ -33,8 +33,8 @@ commands:
           command: |
             if [ -n "$CIRCLE_PULL_REQUEST" ]; then
               gh repo clone github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} .
-              echo "Checking out PR branch"
-              gh pr checkout $CIRCLE_PR_NUMBER  
+              echo "Checking out PR branch $CIRCLE_PR_NUMBER"
+              gh pr checkout $CIRCLE_PR_NUMBER
             else
               echo "Checking out branch: $CIRCLE_BRANCH"
               gh repo clone github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} . -- "--branch=$CIRCLE_BRANCH"
