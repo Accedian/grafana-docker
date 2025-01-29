@@ -1,26 +1,89 @@
 # Golang CircleCI 2.0 configuration file
 #
 # Check https://circleci.com/docs/2.0/language-go/ for more details
-
 version: 2.1
+orbs:
+  slack: circleci/slack@4.1
+  gh: circleci/github-cli@2.5
+
+commands:
+  workspacesetup:
+    steps:
+      - run:
+          name: "Export secrets from vault and create context"
+          command: |
+            # export all secret
+            export $(grep -v '^#' /tmp/.envvault | xargs)
+            export_secrets() {
+              while read -r line; do
+                key=$(echo $line | cut -d: -f1 | xargs)
+                value=$(echo $line | cut -d: -f2 | xargs)
+                #echo "Parsed key-value pair: $key=$value"
+                echo "export $key=\"$value\"" >> $BASH_ENV
+              done
+            }
+            vault login --no-print -method=github token=${GITHUB_TOKEN}
+            vault kv get -format=yaml -field=data -mount=kv besbuilder | export_secrets
+
+            export REPOSITORY_PATH=$(echo $CIRCLE_REPOSITORY_URL | sed 's/https:\/\///')
+
+      - gh/setup
+
+      - run: 
+          name: "Github Clone"
+          command: |
+            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+              gh repo clone github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} .
+              echo "Checking out PR branch"
+              gh pr checkout $CIRCLE_PR_NUMBER  
+            else
+              echo "Checking out branch: $CIRCLE_BRANCH"
+              gh repo clone github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} . -- "--branch=$CIRCLE_BRANCH"
+            fi 
+            # what if it's a TAG
 # Jobs
   
 jobs:
   build:
-    docker:
-      - image: gcr.io/npav-172917/docker-go-sdk:0.58.0-alpine
-        auth:
-          username: _json_key
-          password: ${GCR_DOCKER_RO_PASSWORD}
 
-    working_directory: /root/go/src/github.com/accedian/grafana-docker
+    working_directory: ~/repo
+    machine: true
+    resource_class: accedian/prod_bes-ubuntu-medium
+
+    environment:
+      CGO_ENABLED: 1
 
     steps:
-      - checkout
-      - setup_remote_docker
+      - workspacesetup
+
+      - run:
+          name: "Login to Docker"
+          command: |
+            echo ${GCR_DOCKER_RO_PASSWORD} | base64 -d  | docker login -u ${GCR_DOCKER_RO_USERNAME} --password-stdin https://us-central1-docker.pkg.dev
+      
+      - run:
+          name: "Create a temp directory for artifacts"
+          command: |
+            mkdir -p /tmp/artifacts
+
       - run:
           name: Building Docker Container
           command: make build
+
+    # docker:
+    #   - image: gcr.io/npav-172917/docker-go-sdk:0.58.0-alpine
+    #     auth:
+    #       username: _json_key
+    #       password: ${GCR_DOCKER_RO_PASSWORD}
+
+    # # working_directory: /root/go/src/github.com/accedian/grafana-docker
+
+    # steps:
+    #   - checkout
+    #   - setup_remote_docker
+    #   - run:
+    #       name: Building Docker Container
+    #       command: make build
 
   release:
     docker:
@@ -52,15 +115,61 @@ jobs:
             fi
 
 workflows:
-  build_and_release:
+  version: 2
+  build_only:    # FORK workflow --- What if branch workflow 
+    when:
+      not:
+        and:
+          - or:
+            - equal: [master, << pipeline.git.branch >>]
+            - equal: [main, << pipeline.git.branch >>]
+            - matches:
+                pattern: /release\/.*/
+                value: << pipeline.git.branch >>
+          - matches:
+              pattern: "^https://github.com/[Aa]ccedian/.*"
+              value: << pipeline.project.git_url >>
+
     jobs:
       - build:
-          context: org-gcp-npavprod
+          context: bes-builder-gcp-skybuilder-prd-51843
 
+  build_and_release:
+    when: 
+      and:
+        - or:
+          - equal: [master, << pipeline.git.branch >>]
+          - equal: [main, << pipeline.git.branch >>]
+          - matches:
+              pattern: /release\/.*/
+              value: << pipeline.git.branch >>
+        - matches:
+            pattern: "^https://github.com/[Aa]ccedian/.*"
+            value: << pipeline.project.git_url >>
+    jobs:  
+      - build:
+          context: bes-builder-gcp-skybuilder-prd-51843
       - release:
-          context: org-gcp-npav
+          context: bes-builder-gcp-skybuilder-prd-51843
           requires:
             - build
           filters:
             branches:
-              only: master       
+              only: 
+                - main       
+                - /release\/.*/
+
+
+# workflows:
+#   build_and_release:
+#     jobs:
+#       - build:
+#           context: org-gcp-npavprod
+
+#       - release:
+#           context: org-gcp-npav
+#           requires:
+#             - build
+#           filters:
+#             branches:
+#               only: master       
