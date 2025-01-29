@@ -70,49 +70,70 @@ jobs:
           name: Building Docker Container
           command: make build
 
-    # docker:
-    #   - image: gcr.io/npav-172917/docker-go-sdk:0.58.0-alpine
-    #     auth:
-    #       username: _json_key
-    #       password: ${GCR_DOCKER_RO_PASSWORD}
-
-    # # working_directory: /root/go/src/github.com/accedian/grafana-docker
-
-    # steps:
-    #   - checkout
-    #   - setup_remote_docker
-    #   - run:
-    #       name: Building Docker Container
-    #       command: make build
 
   release:
-    docker:
-      - image: gcr.io/npav-172917/docker-go-sdk:0.58.0-alpine
-        auth:
-          username: _json_key
-          password: ${GCR_DOCKER_RO_PASSWORD}
-
-    working_directory: /root/go/src/github.com/accedian/grafana-docker
+    working_directory: ~/repo
+    machine: true
+    resource_class: accedian/staging_bes-ubuntu-medium
     steps:
-      - checkout 
-      
-      - setup_remote_docker
-            
+      - workspacesetup
       - run:
           name: "Push image to GCR"
           command: |
-            # Only push docker image when on master branch on the Accedian project
-            if [ "${CIRCLE_BRANCH}" == "master" ] && [ "${CIRCLE_PROJECT_USERNAME}" == "Accedian" ]; then
-               echo $GCLOUD_SERVICE_KEY | base64 -d  > ${HOME}/gcloud-service-key.json
-               docker login -u _json_key -p "$(echo $GCR_DOCKER_RW_PASSWORD)" https://gcr.io
-               echo "Now Tagging"
-               git config --global user.email "${CIRCLE_USERNAME}@accedian.com"
-               git config --global user.name "CircleCI"
-               git semver minor
-               export IMAGE_TAG=$(git semver get)
-               git push origin master ${IMAGE_TAG}
-               make push
+            # SemVer Setup
+            mkdir semver
+            cd semver
+            git clone https://github.com/Accedian/git-semver.git
+            cd git-semver
+            git checkout 3.0.1.5
+            ./install.sh
+            cd ~/repo
+
+            # Docker Login
+            echo $GCLOUD_SERVICE_KEY | base64 -d  > ${HOME}/gcloud-service-key.json
+            docker login -u _json_key -p "$(echo $GCR_DOCKER_RW_PASSWORD | base64 -d)" https://us-central1-docker.pkg.dev
+            
+            # Determine tagging strategy
+            echo "Now Tagging"
+            git config --global user.email "${CIRCLE_USERNAME}@accedian.com"
+            git config --global user.name "CircleCI"
+            
+            action=minor
+            
+            if [[ ${CIRCLE_BRANCH} =~ release/* ]]; then
+              echo "Triggering a patch"
+              action=patch
+            else
+              echo "Triggering a minor update"
+              action=minor
             fi
+
+            # Tag locally and export new version tag info
+            git semver $action
+            git describe --tags > current-version
+            export DOCKER_VER=$(git semver get)
+            export BINARY_VER=$(git semver get)
+            git add current-version
+            git commit --amend -m "$(git log --pretty=format:'%s' -n 1)"
+
+            # Update master/release Accedian Repo tag & branch
+            git push origin ${DOCKER_VER}
+            git push origin ${CIRCLE_BRANCH}
+
+            # Run multi-platform builder & push to gcr.io
+            export DOCKER_CLI_EXPERIMENTAL=enabled
+            docker run --rm --privileged tonistiigi/binfmt:latest --install linux/amd64,linux/arm64/v8
+            docker buildx create --name circleBuilder
+            docker buildx use circleBuilder
+            
+            make push
+            
+            # echo "devhub docker login"
+            # echo ${DEVHUB_TOKEN} | docker login -u ${DEVHUB_USER} --password-stdin https://artifactory.devhub-cloud.cisco.com
+            # make circleci-devhubpush
+
+            docker buildx rm circleBuilder
+
 
 workflows:
   version: 2
