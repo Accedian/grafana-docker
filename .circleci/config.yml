@@ -55,10 +55,10 @@ workflows:
   build_and_release:
     jobs:
       - build:
-          context: org-global
+          context: org-gcp-npav
 
       - release:
-          context: org-global
+          context: org-gcp-npav
           requires:
             - build
           filters:
