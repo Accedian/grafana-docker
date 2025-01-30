@@ -95,7 +95,7 @@ jobs:
 
             # Docker Login
             echo $GCLOUD_SERVICE_KEY | base64 -d  > ${HOME}/gcloud-service-key.json
-            docker login -u _json_key -p "$(echo $GCR_DOCKER_RW_PASSWORD | base64 -d)" https://us-central1-docker.pkg.dev
+            docker login -u _json_key -p "$(echo $GCR_DOCKER_RW_PASSWORD | base64 -d)" https://gcr.io
             
             # Determine tagging strategy
             echo "Now Tagging"
