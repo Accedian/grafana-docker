@@ -33,6 +33,7 @@ commands:
             echo "Checking out PR branch $CIRCLE_PR_NUMBER"
             echo "Checking out project repo name : $CIRCLE_PROJECT_REPONAME"
             echo "Checking out project username : $CIRCLE_PROJECT_USERNAME"
+            gh repo set-default ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
             if [ -n "$CIRCLE_PULL_REQUEST" ]; then
               echo "Checking out PR branch $CIRCLE_PR_NUMBER"
               gh repo clone github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} .
