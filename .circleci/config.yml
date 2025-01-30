@@ -1,66 +1,200 @@
 # Golang CircleCI 2.0 configuration file
 #
 # Check https://circleci.com/docs/2.0/language-go/ for more details
-version: 2
+version: 2.1
+orbs:
+  gh: circleci/github-cli@2.5
+
+commands:
+  workspacesetup:
+    steps:
+      - run:
+          name: "Export secrets from vault and create context"
+          command: |
+            # export all secret
+            export $(grep -v '^#' /tmp/.envvault | xargs)
+            export_secrets() {
+              while read -r line; do
+                key=$(echo $line | cut -d: -f1 | xargs)
+                value=$(echo $line | cut -d: -f2 | xargs)
+                #echo "Parsed key-value pair: $key=$value"
+                echo "export $key=\"$value\"" >> $BASH_ENV
+              done
+            }
+            vault login --no-print -method=github token=${GITHUB_TOKEN}
+            vault kv get -format=yaml -field=data -mount=kv besbuilder | export_secrets
+
+      - gh/setup
+
+      - run: 
+          name: "Github Clone"
+          command: |
+            echo "Checking out branch: $CIRCLE_BRANCH"
+            echo "Checking out PR branch $CIRCLE_PR_NUMBER"
+            echo "Checking out project repo name : $CIRCLE_PROJECT_REPONAME"
+            echo "Checking out project username : $CIRCLE_PROJECT_USERNAME"
+            
+            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+              echo "Checking out PR branch $CIRCLE_PR_NUMBER"
+              gh repo clone github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} .
+              gh repo set-default ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
+              echo "Checking out PR branch $CIRCLE_PR_NUMBER"
+              gh pr checkout $CIRCLE_PR_NUMBER
+            else
+              echo "Checking out branch: $CIRCLE_BRANCH"
+              gh repo clone github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} . -- "--branch=$CIRCLE_BRANCH"
+              gh repo set-default ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
+            fi 
+            # what if it's a TAG
 # Jobs
   
 jobs:
   build:
-    docker:
-      - image: gcr.io/npav-172917/docker-go-sdk:1.0.1-alpine
-        auth:
-          username: ${GCR_DOCKER_RO_USERNAME}
-          password: ${GCR_DOCKER_RO_PASSWORD}
+    working_directory: ~/repo
+    machine: true
+    resource_class: accedian/prod_bes-ubuntu-medium
 
-    working_directory: /root/go/src/github.com/accedian/grafana-docker
+    environment:
+      CGO_ENABLED: 1
 
     steps:
-      - checkout
-      - setup_remote_docker
+      - workspacesetup
+
+      - run:
+          name: "Login to Docker"
+          command: |
+            echo ${GCR_DOCKER_RO_PASSWORD} | base64 -d  | docker login -u ${GCR_DOCKER_RO_USERNAME} --password-stdin https://us-central1-docker.pkg.dev
+      
+      - run:
+          name: "Create a temp directory for artifacts"
+          command: |
+            mkdir -p /tmp/artifacts
+
       - run:
           name: Building Docker Container
           command: make build
 
-  release:
-    docker:
-      - image: gcr.io/npav-172917/docker-go-sdk:1.0.1-alpine
-        auth:
-          username: ${GCR_DOCKER_RO_USERNAME}
-          password: ${GCR_DOCKER_RO_PASSWORD}
 
-    working_directory: /root/go/src/github.com/accedian/grafana-docker
+  release:
+    working_directory: ~/repo
+    machine: true
+    resource_class: accedian/prod_bes-ubuntu-medium
     steps:
-      - checkout 
-      
-      - setup_remote_docker
-            
+      - workspacesetup
       - run:
           name: "Push image to GCR"
           command: |
-            # Only push docker image when on master branch on the Accedian project
-            if [ "${CIRCLE_BRANCH}" == "master" ] && [ "${CIRCLE_PROJECT_USERNAME}" == "Accedian" ]; then
-               echo $GCLOUD_SERVICE_KEY | base64 -d  > ${HOME}/gcloud-service-key.json
-               docker login -u _json_key -p "$(echo $GCR_DOCKER_RW_PASSWORD)" https://gcr.io
-               echo "Now Tagging"
-               git config --global user.email "${CIRCLE_USERNAME}@accedian.com"
-               git config --global user.name "CircleCI"
-               git semver minor
-               export IMAGE_TAG=$(git semver get)
-               git push origin master ${IMAGE_TAG}
-               make push
+            # SemVer Setup
+            mkdir semver
+            cd semver
+            git clone https://github.com/Accedian/git-semver.git
+            cd git-semver
+            git checkout 3.0.1.5
+            ./install.sh
+            cd ~/repo
+
+            # Docker Login
+            echo $GCLOUD_SERVICE_KEY | base64 -d  > ${HOME}/gcloud-service-key.json
+            docker login -u _json_key -p "$(echo $GCR_DOCKER_RW_PASSWORD | base64 -d)" https://us-central1-docker.pkg.dev
+            
+            # Determine tagging strategy
+            echo "Now Tagging"
+            git config --global user.email "${CIRCLE_USERNAME}@accedian.com"
+            git config --global user.name "CircleCI"
+            
+            action=minor
+            
+            if [[ ${CIRCLE_BRANCH} =~ release/* ]]; then
+              echo "Triggering a patch"
+              action=patch
+            else
+              echo "Triggering a minor update"
+              action=minor
             fi
 
+            # Tag locally and export new version tag info
+            git semver $action
+            git describe --tags > current-version
+            export DOCKER_VER=$(git semver get)
+            export BINARY_VER=$(git semver get)
+            git add current-version
+            git commit --amend -m "$(git log --pretty=format:'%s' -n 1)"
+
+            # Update master/release Accedian Repo tag & branch
+            git push origin ${DOCKER_VER}
+            git push origin ${CIRCLE_BRANCH}
+
+            # Run multi-platform builder & push to gcr.io
+            export DOCKER_CLI_EXPERIMENTAL=enabled
+            docker run --rm --privileged tonistiigi/binfmt:latest --install linux/amd64,linux/arm64/v8
+            docker buildx create --name circleBuilder
+            docker buildx use circleBuilder
+            
+            make push
+            
+            # echo "devhub docker login"
+            # echo ${DEVHUB_TOKEN} | docker login -u ${DEVHUB_USER} --password-stdin https://artifactory.devhub-cloud.cisco.com
+            # make circleci-devhubpush
+
+            docker buildx rm circleBuilder
+
+
 workflows:
-  version: 2
-  build_and_release:
+  version: 2.1
+  build_only:
+    when:
+      not:
+        and:
+          - or:
+            - equal: [master, << pipeline.git.branch >>]
+            - equal: [main, << pipeline.git.branch >>]
+            - matches:
+                pattern: /release\/.*/
+                value: << pipeline.git.branch >>
+          - matches:
+              pattern: "^https://github.com/[Aa]ccedian/.*"
+              value: << pipeline.project.git_url >>
+
     jobs:
       - build:
-          context: org-global
+          context: bes-builder-gcp-skybuilder-prd-51843
 
+  build_and_release:
+    when: 
+      and:
+        - or:
+          - equal: [master, << pipeline.git.branch >>]
+          - equal: [main, << pipeline.git.branch >>]
+          - matches:
+              pattern: /release\/.*/
+              value: << pipeline.git.branch >>
+        - matches:
+            pattern: "^https://github.com/[Aa]ccedian/.*"
+            value: << pipeline.project.git_url >>
+    jobs:  
+      - build:
+          context: bes-builder-gcp-skybuilder-prd-51843
       - release:
-          context: org-global
+          context: bes-builder-gcp-skybuilder-prd-51843
           requires:
             - build
           filters:
             branches:
-              only: master       
+              only: 
+                - main       
+                - /release\/.*/
+
+
+# workflows:
+#   build_and_release:
+#     jobs:
+#       - build:
+#           context: org-gcp-npavprod
+
+#       - release:
+#           context: org-gcp-npav
+#           requires:
+#             - build
+#           filters:
+#             branches:
+#               only: master       
