@@ -1,7 +1,9 @@
 ## Current Release
+### 0.174.0
+**Release Date:** Fri Jan 31 19:59:46 UTC 2025
+## Previous Releases
 ### 0.173.0
 **Release Date:** Fri Jan 31 19:20:05 UTC 2025
-## Previous Releases
 * Fix - Update latet grafana for CORONA Fix [Asana](https://app.asana.com/0/1205788273681601/1209266352230632)
 ### 0.172.0
 **Release Date:** Thu Jan 30 20:49:30 UTC 2025
