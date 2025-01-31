@@ -19,8 +19,8 @@ endif
 BUILD_PLATFORMS ?= linux/amd64,linux/arm64/v8
 
 GRAFANA_VERSION ?= 11.5.0
-GRAFANA_URL ?= https://dl.grafana.com/oss/release/grafana_$(GRAFANA_VERSION)_amd64.deb
-GOSU_URL ?= https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64
+GRAFANA_URL ?= https://dl.grafana.com/oss/release/grafana_$(GRAFANA_VERSION)_BUILD_PLATFORMS.deb
+GOSU_URL ?= https://github.com/tianon/gosu/releases/download/1.17/gosu-BUILD_PLATFORMS
 
 .PHONY: all
 all: build
@@ -34,5 +34,8 @@ docker:
 	docker buildx build --build-arg VERSION=$(DOCKER_VER) --platform $(LOCAL_BUILD_PLATFORM) -t $(DOCKER_REPO_NAME)$(DOCKER_IMAGE_NAME):$(DOCKER_VER) --load .
 
 push: 
-	echo "building with $(BUILD_PLATFORMS)"
-	docker buildx build --build-arg VERSION=$(DOCKER_VER) --platform $(BUILD_PLATFORMS) -t $(DOCKER_REPO_NAME)$(DOCKER_IMAGE_NAME):$(DOCKER_VER) --push .
+	@echo "building with $(BUILD_PLATFORMS)"
+	@echo "Building Grafana image: $(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)"
+	@echo "Using Grafana URL $(GRAFANA_URL)"
+	@echo "Using GOSU URL $(GOSU_URL)"
+	docker buildx build --build-arg GRAFANA_VERSION=$(GRAFANA_VERSION) --build-arg VERSION=$(DOCKER_VER) --platform $(BUILD_PLATFORMS) -t $(DOCKER_REPO_NAME)$(DOCKER_IMAGE_NAME):$(DOCKER_VER) --push .
