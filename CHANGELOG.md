@@ -1,8 +1,10 @@
-* Fix - Update latet grafana for CORONA Fix [Asana](https://app.asana.com/0/1205788273681601/1209266352230632)
 ## Current Release
+### 0.173.0
+**Release Date:** Fri Jan 31 19:20:05 UTC 2025
+## Previous Releases
+* Fix - Update latet grafana for CORONA Fix [Asana](https://app.asana.com/0/1205788273681601/1209266352230632)
 ### 0.172.0
 **Release Date:** Thu Jan 30 20:49:30 UTC 2025
-## Previous Releases
 ### 0.171.0
 **Release Date:** Thu Jan 30 20:20:10 UTC 2025
 Move on BES Builder model
