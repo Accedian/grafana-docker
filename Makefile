@@ -18,9 +18,9 @@ ifeq ($(UNAME),arm64)
 endif
 BUILD_PLATFORMS ?= linux/amd64,linux/arm64/v8
 
-GRAFANA_VERSION ?= 10.2.2
-GRAFANA_URL ?= https://dl.grafana.com/oss/release/grafana_$(GRAFANA_VERSION)_BUILD_PLATFORMS.deb
-GOSU_URL ?= https://github.com/tianon/gosu/releases/download/1.17/gosu-BUILD_PLATFORMS
+GRAFANA_VERSION ?= 11.5.0
+GRAFANA_URL ?= https://dl.grafana.com/oss/release/grafana_$(GRAFANA_VERSION)_amd64.deb
+GOSU_URL ?= https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64
 
 .PHONY: all
 all: build
