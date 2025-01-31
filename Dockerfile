@@ -1,6 +1,6 @@
 FROM debian:stable-slim
 
-ARG GRAFANA_URL="https://dl.grafana.com/oss/release/grafana_10.2.2_amd64.deb"
+ARG GRAFANA_URL="https://dl.grafana.com/oss/release/grafana_11.5.0_amd64.deb"
 ARG GOSU_URL="https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64"
 
 RUN export DEBIAN_FRONTEND=noninteractive \
