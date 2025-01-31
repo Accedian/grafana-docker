@@ -1,7 +1,9 @@
 FROM debian:stable-slim
 
-ARG GRAFANA_URL="https://dl.grafana.com/oss/release/grafana_10.2.2_amd64.deb"
-ARG GOSU_URL="https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64"
+ARG TARGETARCH
+ARG GRAFANA_URL="https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION}_${TARGETARCH}.deb"
+ARG GOSU_URL="https://github.com/tianon/gosu/releases/download/1.17/gosu-${TARGETARCH}"
+
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
