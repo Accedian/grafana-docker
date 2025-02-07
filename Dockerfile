@@ -1,7 +1,10 @@
 FROM debian:stable-slim
 
-ARG GRAFANA_URL="https://dl.grafana.com/oss/release/grafana_10.2.2_amd64.deb"
-ARG GOSU_URL="https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64"
+ARG TARGETARCH
+ARG GRAFANA_VERSION
+ARG GRAFANA_URL="https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION}_${TARGETARCH}.deb"
+ARG GOSU_URL="https://github.com/tianon/gosu/releases/download/1.17/gosu-${TARGETARCH}"
+
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
@@ -32,8 +35,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 
 RUN mkdir -p /data/grafana/plugins && chown -R grafana:grafana /data/grafana/plugins
 RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install xginn8-pagerduty-datasource
-RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install grafana-image-renderer 3.7.2
-#TODO  remove grafana-image-renderer version when official fix is implemented for the latest version
+RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install grafana-image-renderer
 RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install grafana-clock-panel
 RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install grafana-piechart-panel
 RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install grafana-clickhouse-datasource
