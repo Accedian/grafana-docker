@@ -1,8 +1,10 @@
-* Fix: Sky-Topo Dashboard not loading [Asana Task](https://app.asana.com/0/1207589773532684/1208845582538486)
 ## Current Release
+### 0.178.0
+**Release Date:** Fri Feb 21 15:08:30 UTC 2025
+## Previous Releases
+* Fix: Sky-Topo Dashboard not loading [Asana Task](https://app.asana.com/0/1207589773532684/1208845582538486)
 ### 0.177.0
 **Release Date:** Tue Feb 18 21:01:49 UTC 2025
-## Previous Releases
 * Feat: Sky-Topo Dashboard [Asana Task](https://app.asana.com/0/1207589773532684/1208845582538486)
 ### 0.176.0
 **Release Date:** Fri Jan 31 20:34:35 UTC 2025
