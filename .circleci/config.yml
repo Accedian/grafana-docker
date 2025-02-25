@@ -30,7 +30,8 @@ commands:
           name: "Github Clone"
           command: |
             echo "Checking out branch: $CIRCLE_BRANCH"
-            echo "Checking out PR branch $CIRCLE_PR_NUMBER"
+            echo "Checking out CIRCLE_PR_NUMBER branch $CIRCLE_PR_NUMBER"
+            echo "Checking out CIRCLE_PULL_REQUEST branch $CIRCLE_PULL_REQUEST"
             echo "Checking out project repo name : $CIRCLE_PROJECT_REPONAME"
             echo "Checking out project username : $CIRCLE_PROJECT_USERNAME"
             
