@@ -22,10 +22,7 @@
     "links": [],
     "panels": [
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
+        "datasource": "Prometheus",
         "description": "",
         "fieldConfig": {
           "defaults": {
@@ -109,10 +106,7 @@
         "pluginVersion": "11.5.0",
         "targets": [
           {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
+            "datasource": "Prometheus",
             "editorMode": "code",
             "expr": "sky_topo_max_nodes",
             "format": "time_series",
@@ -122,10 +116,7 @@
             "refId": "A"
           },
           {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
+            "datasource": "Prometheus",
             "editorMode": "code",
             "expr": "sky_topo_current_nodes",
             "hide": false,
@@ -139,10 +130,7 @@
         "type": "timeseries"
       },
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
+        "datasource": "Prometheus",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -225,10 +213,7 @@
         "pluginVersion": "11.5.0",
         "targets": [
           {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
+            "datasource": "Prometheus",
             "editorMode": "code",
             "expr": "increase(sky_topo_errors_total[$__rate_interval])",
             "instant": false,
@@ -241,10 +226,7 @@
         "type": "timeseries"
       },
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
+        "datasource": "Prometheus",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -323,10 +305,7 @@
         "pluginVersion": "11.5.0",
         "targets": [
           {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
+            "datasource": "Prometheus",
             "editorMode": "code",
             "expr": "increase(sky_topo_records_processed_total[$__rate_interval])",
             "instant": false,
@@ -339,10 +318,7 @@
         "type": "timeseries"
       },
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
+        "datasource": "Prometheus",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -426,10 +402,7 @@
         "pluginVersion": "11.5.0",
         "targets": [
           {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
+            "datasource": "Prometheus",
             "editorMode": "code",
             "expr": "rate(sky_topo_node_provisioning_duration_seconds_sum[$__interval])/rate(sky_topo_node_provisioning_duration_seconds_count[$__interval])",
             "instant": false,
@@ -440,6 +413,105 @@
         ],
         "title": "Node Provisioning Avg Duration",
         "type": "timeseries"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "fieldMinMax": false,
+            "mappings": [],
+            "noValue": "0",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "bool_yes_no"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 10,
+          "w": 24,
+          "x": 0,
+          "y": 16
+        },
+        "id": 6,
+        "options": {
+          "legend": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.5.0",
+        "targets": [
+          {
+            "datasource": "Prometheus",
+            "disableTextWrap": false,
+            "editorMode": "builder",
+            "exemplar": false,
+            "expr": "druid_supervisor_healthy",
+            "format": "time_series",
+            "fullMetaSearch": false,
+            "includeNullMetadata": true,
+            "instant": false,
+            "legendFormat": "{{id}}",
+            "range": true,
+            "refId": "A",
+            "useBackend": false
+          }
+        ],
+        "title": "Druid Supervisor Healthy",
+        "type": "timeseries"
       }
     ],
     "preload": false,
@@ -447,26 +519,7 @@
     "schemaVersion": 40,
     "tags": [],
     "templating": {
-      "list": [
-        {
-          "current": {
-            "selected": true,
-            "text": "Prometheus",
-            "value": "PBFA97CFB590B2093"
-          },
-          "hide": 0,
-          "includeAll": false,
-          "multi": false,
-          "name": "DS_PROMETHEUS",
-          "options": [],
-          "query": "prometheus",
-          "queryValue": "",
-          "refresh": 1,
-          "regex": "",
-          "skipUrlSync": false,
-          "type": "datasource"
-        }
-      ]
+      "list": []
     },
     "time": {
       "from": "now-3h",
