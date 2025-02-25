@@ -16,7 +16,7 @@ LOCAL_BUILD_PLATFORM := linux/amd64
 ifeq ($(UNAME),arm64)
 	LOCAL_BUILD_PLATFORM = linux/arm64/v8
 endif
-BUILD_PLATFORMS ?= linux/amd64 #linux/arm64/v8 remove arm64 from list because plugin not suuported
+BUILD_PLATFORMS ?= linux/amd64 #linux/arm64/v8 remove arm64 from list because plugin not supported
 
 GRAFANA_VERSION ?= 11.5.0
 GRAFANA_URL ?= https://dl.grafana.com/oss/release/grafana_$(GRAFANA_VERSION)

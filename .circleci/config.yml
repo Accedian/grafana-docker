@@ -35,11 +35,10 @@ commands:
             echo "Checking out project username : $CIRCLE_PROJECT_USERNAME"
             
             if [ -n "$CIRCLE_PULL_REQUEST" ]; then
-              echo "Checking out PR branch $CIRCLE_PR_NUMBER"
+              echo "Checking out PR branch $CIRCLE_PULL_REQUEST"
               gh repo clone github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} .
               gh repo set-default ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
-              echo "Checking out PR branch $CIRCLE_PR_NUMBER"
-              gh pr checkout $CIRCLE_PR_NUMBER
+              gh pr checkout $CIRCLE_PULL_REQUEST
             else
               echo "Checking out branch: $CIRCLE_BRANCH"
               gh repo clone github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} . -- "--branch=$CIRCLE_BRANCH"
