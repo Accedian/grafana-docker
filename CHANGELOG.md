@@ -1,7 +1,9 @@
 ## Current Release
+### 0.181.0
+**Release Date:** Tue Feb 25 20:58:31 UTC 2025
+## Previous Releases
 ### 0.180.0
 **Release Date:** Tue Feb 25 20:45:23 UTC 2025
-## Previous Releases
 * Feat: Druid Supervisor healthy metrics [Asana Task](https://app.asana.com/0/1207589773532684/1209443436843580)
 ### 0.179.0
 **Release Date:** Tue Feb 25 20:22:36 UTC 2025
