@@ -1,3 +1,4 @@
+* Fix: Druid Supervisor State metrics [Asana Task](https://app.asana.com/0/1207589773532684/1209536525639394)
 ## Current Release
 ### 0.181.0
 **Release Date:** Tue Feb 25 20:58:31 UTC 2025

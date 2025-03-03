@@ -18,7 +18,7 @@
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 0,
-    "id": 85,
+    "id": 60,
     "links": [],
     "panels": [
       {
@@ -427,6 +427,107 @@
               "axisColorMode": "text",
               "axisLabel": "",
               "axisPlacement": "auto",
+              "axisSoftMin": 0,
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 16
+        },
+        "id": 7,
+        "options": {
+          "legend": {
+            "calcs": [
+              "last"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.5.0",
+        "targets": [
+          {
+            "datasource": "Prometheus",
+            "editorMode": "code",
+            "expr": "count(druid_supervisor{state!=\"RUNNING\"}) by (id, state)",
+            "instant": false,
+            "legendFormat": "{{id}}-{{state}}",
+            "range": true,
+            "refId": "A"
+          },
+          {
+            "datasource": "Prometheus",
+            "editorMode": "code",
+            "expr": "count(druid_supervisor{state=\"RUNNING\"})",
+            "hide": false,
+            "instant": false,
+            "legendFormat": "Total Running Supervisors",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "title": "Druid Supervisor State",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
               "barAlignment": 0,
               "barWidthFactor": 0.6,
               "drawStyle": "line",
@@ -474,13 +575,13 @@
           "h": 10,
           "w": 24,
           "x": 0,
-          "y": 16
+          "y": 24
         },
         "id": 6,
         "options": {
           "legend": {
             "calcs": [
-              "lastNotNull"
+              "last"
             ],
             "displayMode": "table",
             "placement": "bottom",
@@ -497,9 +598,9 @@
           {
             "datasource": "Prometheus",
             "disableTextWrap": false,
-            "editorMode": "builder",
+            "editorMode": "code",
             "exemplar": false,
-            "expr": "druid_supervisor_healthy",
+            "expr": "count(druid_supervisor) by (id, healthy)",
             "format": "time_series",
             "fullMetaSearch": false,
             "includeNullMetadata": true,
@@ -529,6 +630,6 @@
     "timezone": "",
     "title": "Sky-Topo",
     "uid": "bcc2ca7f-629b-4356-a303-2f6f509769c8",
-    "version": 1,
+    "version": 6,
     "weekStart": ""
   }
