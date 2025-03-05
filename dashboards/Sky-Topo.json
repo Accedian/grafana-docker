@@ -114,7 +114,7 @@
           {
             "datasource": "Prometheus",
             "editorMode": "code",
-            "expr": "sky_topo_current_nodes",
+            "expr": "sky_topo_current_nodes{state=~\"ACTIVE|ARCHIVED\"}",
             "hide": false,
             "instant": false,
             "legendFormat": "{{tenant_id}} - Nodes ({{state}})",
