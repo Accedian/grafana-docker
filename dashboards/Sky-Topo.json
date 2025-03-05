@@ -70,10 +70,6 @@
                 {
                   "color": "green",
                   "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
                 }
               ]
             }
@@ -91,7 +87,7 @@
           "legend": {
             "calcs": [
               "max",
-              "lastNotNull"
+              "last"
             ],
             "displayMode": "table",
             "placement": "bottom",
@@ -99,7 +95,7 @@
           },
           "tooltip": {
             "hideZeros": false,
-            "mode": "single",
+            "mode": "multi",
             "sort": "none"
           }
         },
@@ -111,7 +107,7 @@
             "expr": "sky_topo_max_nodes",
             "format": "time_series",
             "instant": false,
-            "legendFormat": "{{tenant_id}} - Max Nodes",
+            "legendFormat": "Max Nodes Per Tenant",
             "range": true,
             "refId": "A"
           },
@@ -623,13 +619,13 @@
       "list": []
     },
     "time": {
-      "from": "now-3h",
+      "from": "now-30m",
       "to": "now"
     },
     "timepicker": {},
     "timezone": "",
     "title": "Sky-Topo",
     "uid": "bcc2ca7f-629b-4356-a303-2f6f509769c8",
-    "version": 6,
+    "version": 7,
     "weekStart": ""
   }
