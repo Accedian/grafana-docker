@@ -126,7 +126,7 @@
             "refId": "C"
           }
         ],
-        "title": "Node: Current",
+        "title": "Nodes: Current",
         "type": "bargauge"
       },
       {
@@ -230,7 +230,7 @@
             "refId": "B"
           }
         ],
-        "title": "Nodes",
+        "title": "Nodes: Historical",
         "type": "timeseries"
       },
       {
