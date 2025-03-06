@@ -1,8 +1,11 @@
 * Feat: RA Collector new metrics [Asana](https://app.asana.com/0/1207589770978424/1209422869430676)
 ## Current Release
+### 0.182.0
+**Release Date:** Thu Mar  6 14:22:45 UTC 2025
+## Previous Releases
+* Feat - Update gather dashboard to include Dgraph [Asana](https://app.asana.com/0/1209448326140601/1209354053207590)
 ### 0.181.0
 **Release Date:** Tue Feb 25 20:58:31 UTC 2025
-## Previous Releases
 ### 0.180.0
 **Release Date:** Tue Feb 25 20:45:23 UTC 2025
 * Feat: Druid Supervisor healthy metrics [Asana Task](https://app.asana.com/0/1207589773532684/1209443436843580)
