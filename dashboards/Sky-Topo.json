@@ -18,9 +18,117 @@
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 0,
-    "id": 60,
+    "id": 57,
     "links": [],
     "panels": [
+      {
+        "datasource": "Prometheus",
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "noValue": "0",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 100
+                },
+                {
+                  "color": "red",
+                  "value": 145
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 8,
+        "options": {
+          "displayMode": "gradient",
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "maxVizHeight": 300,
+          "minVizHeight": 16,
+          "minVizWidth": 8,
+          "namePlacement": "left",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showUnfilled": true,
+          "sizing": "auto",
+          "text": {
+            "percentSize": 1
+          },
+          "valueMode": "color"
+        },
+        "pluginVersion": "11.5.0",
+        "targets": [
+          {
+            "datasource": "Prometheus",
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "sky_topo_max_nodes",
+            "format": "time_series",
+            "hide": false,
+            "instant": true,
+            "legendFormat": "Max Nodes Per Tenant",
+            "range": false,
+            "refId": "A"
+          },
+          {
+            "datasource": "Prometheus",
+            "disableTextWrap": false,
+            "editorMode": "builder",
+            "exemplar": false,
+            "expr": "sum by(tenant_id) (sky_topo_current_nodes)",
+            "fullMetaSearch": false,
+            "hide": false,
+            "includeNullMetadata": true,
+            "instant": true,
+            "legendFormat": "{{tenant_id}}_numNode",
+            "range": false,
+            "refId": "B",
+            "useBackend": false
+          },
+          {
+            "datasource": "Prometheus",
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "sky_topo_current_nodes{state=~\"ACTIVE|ARCHIVED\"}",
+            "hide": false,
+            "instant": true,
+            "legendFormat": "{{tenant_id}}_({{state}})",
+            "range": false,
+            "refId": "C"
+          }
+        ],
+        "title": "Node: Current",
+        "type": "bargauge"
+      },
       {
         "datasource": "Prometheus",
         "description": "",
@@ -80,7 +188,7 @@
           "h": 8,
           "w": 12,
           "x": 0,
-          "y": 0
+          "y": 8
         },
         "id": 2,
         "options": {
@@ -186,7 +294,7 @@
           "h": 8,
           "w": 12,
           "x": 12,
-          "y": 0
+          "y": 8
         },
         "id": 4,
         "options": {
@@ -282,7 +390,7 @@
           "h": 8,
           "w": 12,
           "x": 0,
-          "y": 8
+          "y": 16
         },
         "id": 1,
         "options": {
@@ -374,7 +482,7 @@
           "h": 8,
           "w": 12,
           "x": 12,
-          "y": 8
+          "y": 16
         },
         "id": 5,
         "options": {
@@ -468,7 +576,7 @@
           "h": 8,
           "w": 24,
           "x": 0,
-          "y": 16
+          "y": 24
         },
         "id": 7,
         "options": {
@@ -571,7 +679,7 @@
           "h": 10,
           "w": 24,
           "x": 0,
-          "y": 24
+          "y": 32
         },
         "id": 6,
         "options": {
