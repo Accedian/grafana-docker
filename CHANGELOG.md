@@ -1,3 +1,4 @@
+* Feat - Update gather dashboard to include Dgraph [Asana](https://app.asana.com/0/1209448326140601/1209354053207590)
 ## Current Release
 ### 0.181.0
 **Release Date:** Tue Feb 25 20:58:31 UTC 2025
