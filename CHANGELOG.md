@@ -1,8 +1,25 @@
-* Feat - Add Forecasting job metrics to Spark Batch Job Monitoring [Asana](https://app.asana.com/0/1207589910511516/1208916642906571/f)
+* Fix: Druid Supervisor State metrics [Asana Task](https://app.asana.com/0/1207589773532684/1209536525639394)
+* Fix: Prometheus Node Value Reporting [Asana Task](https://app.asana.com/0/1207589773532684/1209536525639399)
 ## Current Release
+### 0.182.0
+**Release Date:** Thu Mar  6 14:22:45 UTC 2025
+## Previous Releases
+* Feat - Update gather dashboard to include Dgraph [Asana](https://app.asana.com/0/1209448326140601/1209354053207590)
+### 0.181.0
+**Release Date:** Tue Feb 25 20:58:31 UTC 2025
+### 0.180.0
+**Release Date:** Tue Feb 25 20:45:23 UTC 2025
+* Feat: Druid Supervisor healthy metrics [Asana Task](https://app.asana.com/0/1207589773532684/1209443436843580)
+### 0.179.0
+**Release Date:** Tue Feb 25 20:22:36 UTC 2025
+### 0.178.0
+**Release Date:** Fri Feb 21 15:08:30 UTC 2025
+* Fix: Sky-Topo Dashboard not loading [Asana Task](https://app.asana.com/0/1207589773532684/1208845582538486)
+### 0.177.0
+**Release Date:** Tue Feb 18 21:01:49 UTC 2025
+* Feat: Sky-Topo Dashboard [Asana Task](https://app.asana.com/0/1207589773532684/1208845582538486)
 ### 0.176.0
 **Release Date:** Fri Jan 31 20:34:35 UTC 2025
-## Previous Releases
 ### 0.175.0
 **Release Date:** Fri Jan 31 20:15:41 UTC 2025
 ### 0.174.0
