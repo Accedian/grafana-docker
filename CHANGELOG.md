@@ -1,3 +1,5 @@
+* Fix: Druid Supervisor State metrics [Asana Task](https://app.asana.com/0/1207589773532684/1209536525639394)
+* Fix: Prometheus Node Value Reporting [Asana Task](https://app.asana.com/0/1207589773532684/1209536525639399)
 ## Current Release
 ### 0.182.0
 **Release Date:** Thu Mar  6 14:22:45 UTC 2025
