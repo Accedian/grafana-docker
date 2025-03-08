@@ -3,7 +3,7 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": "Prometheus",
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -13,167 +13,86 @@
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 30,
+  "id": 48,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
-      "cacheTimeout": null,
       "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 3600000
+              }
+            ]
+          },
+          "unit": "dtdurationms"
+        },
+        "overrides": []
+      },
       "gridPos": {
-        "h": 10,
+        "h": 17,
         "w": 24,
         "x": 0,
         "y": 0
       },
-      "id": 4,
-      "interval": "",
-      "links": [],
+      "id": 12,
       "options": {
-        "displayMode": "lcd",
-        "fieldOptions": {
+        "displayMode": "gradient",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
           "calcs": [
-            "mean"
+            "lastNotNull"
           ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "s"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "orientation": "vertical",
-        "showUnfilled": true
+        "showUnfilled": true,
+        "valueMode": "color"
       },
-      "pluginVersion": "6.7.3",
+      "pluginVersion": "10.2.2",
       "targets": [
         {
-          "expr": "avg(batch_job_processing_time{job=\"spark_aggregationpt15m\",granularity=\"PT15M\"})",
-          "interval": "",
-          "legendFormat": "spark_aggregation_PT15M",
-          "refId": "A"
-        },
-        {
-          "expr": "avg(batch_job_processing_time{job=\"spark_aggregationpt1m\"})",
-          "interval": "",
-          "legendFormat": "spark_aggregation_PT1M",
-          "refId": "B"
-        },
-        {
-          "expr": "avg(batch_job_processing_time{job=\"spark_aggregationpt1h\"})",
-          "interval": "",
-          "legendFormat": "spark_aggregation_PT1H",
-          "refId": "C"
-        },
-        {
-          "expr": "avg(batch_job_processing_time{job=\"spark_tablefinalizer\"})",
-          "interval": "",
-          "legendFormat": "spark_tablefinalizer",
-          "refId": "D"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Average Batch Jobs Duration/tenant/objectType",
-      "type": "bargauge"
-    },
-    {
-      "aliasColors": {},
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 10
-      },
-      "hiddenSeries": false,
-      "id": 12,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "batch_jobs_execution_time/10",
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "batch_job_execution_time * 1000",
+          "hide": false,
           "interval": "",
           "legendFormat": "{{job}}",
+          "range": true,
           "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Batch Jobs Execution Time",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "dtdurationms",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
         },
         {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "batch_jobs_execution_time",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{job}}",
+          "range": true,
+          "refId": "B"
         }
       ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
+      "title": "Batch Jobs Execution Time",
+      "transparent": true,
+      "type": "bargauge"
     },
     {
       "aliasColors": {},
@@ -181,13 +100,19 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 10
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 17
       },
       "hiddenSeries": false,
       "id": 6,
@@ -206,9 +131,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "10.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -218,34 +144,48 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": "Prometheus",
           "expr": "batch_job_processing_time{job=\"spark_aggregationpt15m\"}",
           "interval": "",
           "legendFormat": "{{job}}--{{tenant}}--{{objectType}}",
           "refId": "A"
         },
         {
+          "datasource": "Prometheus",
           "expr": "batch_job_processing_time{job=\"spark_aggregationpt1m\"}",
+          "hide": false,
           "interval": "",
           "legendFormat": "{{job}}--{{tenant}}--{{objectType}}",
           "refId": "B"
         },
         {
+          "datasource": "Prometheus",
           "expr": "batch_job_processing_time{job=\"spark_aggregationpt1h\"}",
+          "hide": false,
           "interval": "",
           "legendFormat": "{{job}}--{{tenant}}--{{objectType}}",
           "refId": "C"
         },
         {
-          "expr": "batch_job_processing_time{job=\"spark_tablefinalizer\"}",
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "prediction_method_processing_time",
+          "interval": "",
+          "legendFormat": "{{job}}--{{tenantId}}--{{objectType}}",
+          "range": true,
+          "refId": "D"
+        },
+        {
+          "datasource": "Prometheus",
+          "expr": "batch_job_processing_time{job=\"spark_aggregationpt15m\"}",
+          "hide": false,
           "interval": "",
           "legendFormat": "{{job}}--{{tenant}}--{{objectType}}",
-          "refId": "D"
+          "refId": "E"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Batch Jobs Processing Time/tenant/objectType",
       "tooltip": {
         "shared": true,
@@ -254,140 +194,177 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
+          "$$hashKey": "object:45",
           "format": "s",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
+          "$$hashKey": "object:46",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": "Prometheus",
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 18
+        "y": 29
       },
-      "hiddenSeries": false,
-      "id": 2,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
+      "id": 13,
       "options": {
-        "dataLinks": []
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
       },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
+      "pluginVersion": "10.2.2",
       "targets": [
         {
-          "expr": "avg(job_scheduling_delay{job=\"spark_tablefinalizer\",tableName=\"raw\"})",
-          "interval": "",
-          "legendFormat": "",
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "spark_AccedianProcessedMonitoredObjectsCount",
+          "instant": false,
+          "legendFormat": "{{tenant_id}}--{{object_type}}",
+          "range": true,
           "refId": "A"
-        },
-        {
-          "expr": "avg(job_scheduling_delay{job=\"spark_tablefinalizer\",tableName=\"agg-PT1M\"})",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "B"
-        },
-        {
-          "expr": "avg(job_scheduling_delay{job=\"spark_tablefinalizer\",tableName=\"agg-PT1H\"})",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "C"
-        },
-        {
-          "expr": "avg(job_scheduling_delay{job=\"spark_tablefinalizer\",tableName=\"agg-PT15M\"})",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "D"
         }
       ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Compactions Scheduling Delay",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
+      "title": "Forecasting job Number of processed objects",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
         },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 29
+      },
+      "id": 14,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "10.2.2",
+      "targets": [
         {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "prediction_method_metrics_count",
+          "instant": false,
+          "legendFormat": "{{tenant_id}}--{{object}}",
+          "range": true,
+          "refId": "A"
         }
       ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
+      "title": "Forecasting job Number of provisioned metrics for prediction",
+      "type": "gauge"
     },
     {
       "aliasColors": {},
@@ -395,13 +372,19 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 18
+        "y": 37
       },
       "hiddenSeries": false,
       "id": 8,
@@ -418,9 +401,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "10.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -430,6 +414,7 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": "Prometheus",
           "expr": "batch_job_records_written",
           "interval": "",
           "legendFormat": "",
@@ -437,9 +422,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Number of Records Written per job",
       "tooltip": {
         "shared": true,
@@ -448,44 +431,35 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     }
   ],
-  "schemaVersion": 22,
-  "style": "dark",
+  "refresh": "",
+  "schemaVersion": 38,
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
@@ -505,8 +479,6 @@
   "timezone": "",
   "title": "Spark Batch Jobs Monitoring",
   "uid": "d26AACL7k",
-  "variables": {
-    "list": []
-  },
-  "version": 3
+  "version": 13,
+  "weekStart": ""
 }
