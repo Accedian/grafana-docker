@@ -1,9 +1,11 @@
+## Current Release
+### 0.183.0
+**Release Date:** Tue Mar 11 15:57:56 UTC 2025
+## Previous Releases
 * Fix: Druid Supervisor State metrics [Asana Task](https://app.asana.com/0/1207589773532684/1209536525639394)
 * Fix: Prometheus Node Value Reporting [Asana Task](https://app.asana.com/0/1207589773532684/1209536525639399)
-## Current Release
 ### 0.182.0
 **Release Date:** Thu Mar  6 14:22:45 UTC 2025
-## Previous Releases
 * Feat - Update gather dashboard to include Dgraph [Asana](https://app.asana.com/0/1209448326140601/1209354053207590)
 ### 0.181.0
 **Release Date:** Tue Feb 25 20:58:31 UTC 2025
