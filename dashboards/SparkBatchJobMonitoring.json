@@ -90,7 +90,7 @@
           "refId": "B"
         }
       ],
-      "title": "Batch Jobs Execution Time",
+      "title": "Batch Jobs Average Execution Time",
       "transparent": true,
       "type": "bargauge"
     },
