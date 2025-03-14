@@ -1,3 +1,4 @@
+* Feat - Add StitchitMetrics dashboard [Asana Task](https://app.asana.com/1/5557457880942/project/1209448326140601/task/1209354053207590)
 ## Current Release
 ### 0.183.0
 **Release Date:** Tue Mar 11 15:57:56 UTC 2025
