@@ -19,9 +19,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 51,
+  "id": 71,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
       "collapsed": false,
@@ -31,13 +30,17 @@
         "x": 0,
         "y": 0
       },
-      "id": 15,
+      "id": 22,
       "panels": [],
-      "title": "Telemetry Agent",
+      "title": "Telemetry Sessions",
       "type": "row"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": {
+        "type": "prometheus",
+        "uid": "000000001"
+      },
+      "description": "Data per dial-in session",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -50,6 +53,145 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "{__name__=\"message_agentHealth_telemetryAgent_telemetry_bytes_rx_from_telegraf_in_session_12f2f341_1637_43fa_8250_f81e735a7366\", agentId=\"967b359e-3136-419f-a67f-982a993c8790\", hostname=\"united.medley.npav.accedian.net\", instance=\"fedex:9191\", job=\"fedex\", tenant=\"9ca4447b-e32a-4dc2-af71-2a1219cc3373\", zone=\"mwilk-zone-mac\"}"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
+      "id": 21,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.5.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "000000001"
+          },
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "expr": "{__name__=~\"message_agentHealth_telemetryAgent_telemetry_bytes_rx_from_telegraf_in_session_.*\"}",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Telemetry Dial-In Sessions",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "id": 15,
+      "panels": [],
+      "title": "Telemetry Agent",
+      "type": "row"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 6,
             "gradientMode": "none",
@@ -96,7 +238,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 1
+        "y": 10
       },
       "id": 8,
       "options": {
@@ -109,13 +251,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_metrics_rx_from_telegraf_cisco_telemetry_xr_environment",
@@ -128,7 +272,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_metrics_rx_from_telegraf_cisco_telemetry_xr_interface",
@@ -142,7 +286,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_metrics_rx_from_telegraf_cisco_telemetry_xr_policy",
@@ -160,7 +304,7 @@
       "type": "timeseries"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -173,6 +317,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 5,
             "gradientMode": "none",
@@ -219,7 +364,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 1
+        "y": 10
       },
       "id": 9,
       "options": {
@@ -232,13 +377,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_data_gateway_published_metrics_cisco_telemetry_xr_environment",
@@ -251,7 +398,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_data_gateway_published_metrics_cisco_telemetry_xr_interface",
@@ -265,7 +412,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_data_gateway_published_metrics_cisco_telemetry_xr_policy",
@@ -283,7 +430,7 @@
       "type": "timeseries"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -296,6 +443,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 5,
             "gradientMode": "none",
@@ -342,7 +490,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 18
       },
       "id": 6,
       "options": {
@@ -355,13 +503,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_object_type_count_cisco_telemetry_xr_environment",
@@ -374,7 +524,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_object_type_count_cisco_telemetry_xr_interface",
@@ -388,7 +538,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_object_type_count_cisco_telemetry_xr_policy",
@@ -406,7 +556,7 @@
       "type": "timeseries"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -419,6 +569,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -465,7 +616,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 17
+        "y": 26
       },
       "id": 17,
       "options": {
@@ -478,13 +629,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_error_stream_update_cisco_telemetry_xr_environment",
@@ -497,7 +650,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_error_stream_update_cisco_telemetry_xr_interface",
@@ -511,7 +664,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_error_stream_update_cisco_telemetry_xr_policy",
@@ -529,7 +682,7 @@
       "type": "timeseries"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -543,6 +696,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 5,
             "gradientMode": "none",
@@ -589,7 +743,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 17
+        "y": 26
       },
       "id": 18,
       "options": {
@@ -602,13 +756,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_dropped_data_gateway_update_fail",
@@ -621,7 +777,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_dropped_missing_object_type",
@@ -635,7 +791,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_dropped_missing_value",
@@ -658,7 +814,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 34
       },
       "id": 14,
       "panels": [],
@@ -666,7 +822,7 @@
       "type": "row"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -679,6 +835,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "bars",
             "fillOpacity": 10,
             "gradientMode": "none",
@@ -741,7 +898,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 35
       },
       "id": 19,
       "options": {
@@ -752,13 +909,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telemetry_telegraf_health_state",
@@ -775,7 +934,7 @@
       "type": "timeseries"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "description": "Tracks the count of metrics written to the internal web socket between the embedded Telegraf instance and the agent application.",
       "fieldConfig": {
         "defaults": {
@@ -789,6 +948,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 5,
             "gradientMode": "none",
@@ -819,7 +979,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -859,7 +1020,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 34
+        "y": 43
       },
       "id": 4,
       "options": {
@@ -872,13 +1033,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_write_metrics_written_output_websocket",
@@ -891,7 +1054,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "expr": "",
           "hide": false,
           "instant": false,
@@ -899,7 +1062,7 @@
           "refId": "B"
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "expr": "",
           "hide": false,
           "instant": false,
@@ -911,7 +1074,7 @@
       "type": "timeseries"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -924,6 +1087,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -954,7 +1118,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -969,7 +1134,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 43
+        "y": 52
       },
       "id": 5,
       "options": {
@@ -980,13 +1145,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_write_metrics_filtered_output_websocket",
@@ -1003,7 +1170,7 @@
       "type": "timeseries"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1016,6 +1183,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -1046,7 +1214,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1061,7 +1230,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 43
+        "y": 52
       },
       "id": 3,
       "options": {
@@ -1072,13 +1241,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_agent_metrics_dropped",
@@ -1091,7 +1262,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_write_metrics_dropped_output_websocket",
@@ -1105,7 +1276,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "expr": "",
           "hide": false,
           "instant": false,
@@ -1117,7 +1288,7 @@
       "type": "timeseries"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1130,6 +1301,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 6,
             "gradientMode": "none",
@@ -1160,7 +1332,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1175,7 +1348,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 52
+        "y": 61
       },
       "id": 2,
       "options": {
@@ -1188,13 +1361,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_agent_metrics_gathered",
@@ -1207,7 +1382,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_gather_metrics_gathered_input_cisco_telemetry_mdt",
@@ -1221,7 +1396,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_gather_metrics_gathered_input_internal",
@@ -1239,7 +1414,7 @@
       "type": "timeseries"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1253,6 +1428,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -1283,7 +1459,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1298,7 +1475,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 52
+        "y": 61
       },
       "id": 1,
       "options": {
@@ -1311,13 +1488,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_agent_gather_errors",
@@ -1330,7 +1509,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_gather_errors_input_internal",
@@ -1344,7 +1523,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_telemetryAgent_telegraf_internal_gather_errors_input_cisco_telemetry_mdt",
@@ -1367,7 +1546,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 60
+        "y": 69
       },
       "id": 16,
       "panels": [],
@@ -1375,7 +1554,7 @@
       "type": "row"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1388,6 +1567,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -1434,7 +1614,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           }
@@ -1445,7 +1626,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 61
+        "y": 70
       },
       "id": 12,
       "options": {
@@ -1458,13 +1639,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "exemplar": false,
@@ -1482,7 +1665,7 @@
       "type": "timeseries"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1495,6 +1678,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -1525,7 +1709,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1540,7 +1725,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 61
+        "y": 70
       },
       "id": 13,
       "options": {
@@ -1553,13 +1738,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_management_stats_authenticationError",
@@ -1572,7 +1759,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_management_stats_authenticationSuccessful",
@@ -1590,7 +1777,7 @@
       "type": "timeseries"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1603,6 +1790,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "bars",
             "fillOpacity": 7,
             "gradientMode": "none",
@@ -1649,7 +1837,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           }
@@ -1660,7 +1849,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 69
+        "y": 78
       },
       "id": 11,
       "options": {
@@ -1671,13 +1860,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "exemplar": false,
@@ -1695,7 +1886,7 @@
       "type": "timeseries"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1708,6 +1899,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -1738,7 +1930,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1753,7 +1946,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 69
+        "y": 78
       },
       "id": 7,
       "options": {
@@ -1766,13 +1959,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_data_stats_authenticationError",
@@ -1785,7 +1980,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_data_stats_authenticationFailure",
@@ -1799,7 +1994,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_data_stats_authenticationSuccessful",
@@ -1817,7 +2012,7 @@
       "type": "timeseries"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1830,6 +2025,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 9,
             "gradientMode": "none",
@@ -1860,7 +2056,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1875,7 +2072,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 77
+        "y": 86
       },
       "id": 10,
       "options": {
@@ -1889,13 +2086,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_data_stats_batchesInFlight",
@@ -1908,7 +2107,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_data_stats_batchesInQueue",
@@ -1926,7 +2125,7 @@
       "type": "timeseries"
     },
     {
-      "datasource":"Prometheus", 
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1939,6 +2138,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 7,
             "gradientMode": "none",
@@ -1969,7 +2169,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1984,7 +2185,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 88
+        "y": 97
       },
       "id": 20,
       "options": {
@@ -1997,13 +2198,15 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_data_stats_rxFromGenerator",
@@ -2016,7 +2219,7 @@
           "useBackend": false
         },
         {
-          "datasource":"Prometheus", 
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "message_agentHealth_data_stats_txToBroker",
@@ -2034,8 +2237,9 @@
       "type": "timeseries"
     }
   ],
+  "preload": false,
   "refresh": "5s",
-  "schemaVersion": 38,
+  "schemaVersion": 40,
   "tags": [],
   "templating": {
     "list": []
@@ -2048,6 +2252,6 @@
   "timezone": "",
   "title": "Telemetry Collector",
   "uid": "d566c8ec-1fe0-40eb-af66-1b2dfba72919",
-  "version": 19,
+  "version": 3,
   "weekStart": ""
 }
