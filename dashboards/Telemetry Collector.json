@@ -36,10 +36,7 @@
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "description": "Data per dial-in session",
       "fieldConfig": {
         "defaults": {
@@ -145,10 +142,7 @@
       "pluginVersion": "11.5.0",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "code",
           "expr": "{__name__=~\"message_agentHealth_telemetryAgent_telemetry_bytes_rx_from_telegraf_in_session_.*\"}",
