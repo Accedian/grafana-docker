@@ -1,3 +1,4 @@
+* Feat: RA Collector new metrics [Asana](https://app.asana.com/0/1207589770978424/1209422869430676)
 ## Current Release
 ### 0.185.0
 **Release Date:** Tue Apr  1 10:15:13 UTC 2025
