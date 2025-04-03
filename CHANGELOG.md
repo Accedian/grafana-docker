@@ -1,8 +1,11 @@
 * Feat - Telemetry collector gNMI Dial-InSessions [Asana Task](https://app.asana.com/0/1208710430783776/1209596611997486/f)
 ## Current Release
+### 0.185.0
+**Release Date:** Tue Apr  1 10:15:13 UTC 2025
+## Previous Releases
+* Chore - Remove deprecated MOSummary Consolidator dashboard [Asana](https://app.asana.com/0/1207589688527784/1207591434688730/f)
 ### 0.184.0
 **Release Date:** Fri Mar 14 18:36:31 UTC 2025
-## Previous Releases
 * Feat - Add StitchitMetrics dashboard [Asana Task](https://app.asana.com/1/5557457880942/project/1209448326140601/task/1209354053207590)
 ### 0.183.0
 **Release Date:** Tue Mar 11 15:57:56 UTC 2025
