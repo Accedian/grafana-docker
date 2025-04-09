@@ -1,8 +1,10 @@
-* Feat: RA Collector new metrics [Asana](https://app.asana.com/0/1207589770978424/1209422869430676)
 ## Current Release
+### 0.187.0
+**Release Date:** Wed Apr  9 05:53:11 UTC 2025
+## Previous Releases
+* Feat: RA Collector new metrics [Asana](https://app.asana.com/0/1207589770978424/1209422869430676)
 ### 0.186.0
 **Release Date:** Wed Apr  9 05:46:33 UTC 2025
-## Previous Releases
 * Feat - Telemetry collector gNMI Dial-InSessions [Asana Task](https://app.asana.com/0/1208710430783776/1209596611997486/f)
 ### 0.185.0
 **Release Date:** Tue Apr  1 10:15:13 UTC 2025
