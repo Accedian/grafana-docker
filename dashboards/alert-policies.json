@@ -288,7 +288,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", \"$policyType\"=\"micro-tca\"}",
+          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", \"policyType\"=\"micro-tca\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
