@@ -130,6 +130,74 @@
         "x": 6,
         "y": 1
       },
+      "id": 31,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", enabled=\"false\"}",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Disabled",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 12,
+        "y": 1
+      },
       "id": 6,
       "options": {
         "colorMode": "value",
@@ -195,7 +263,7 @@
       "gridPos": {
         "h": 6,
         "w": 6,
-        "x": 12,
+        "x": 18,
         "y": 1
       },
       "id": 27,
@@ -261,7 +329,7 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 6,
+        "w": 8,
         "x": 0,
         "y": 7
       },
@@ -287,7 +355,7 @@
       "targets": [
         {
           "disableTextWrap": false,
-          "editorMode": "builder",
+          "editorMode": "code",
           "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", \"policyType\"=\"micro-tca\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
@@ -326,8 +394,8 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 6,
-        "x": 6,
+        "w": 8,
+        "x": 8,
         "y": 7
       },
       "id": 21,
@@ -391,8 +459,8 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 6,
-        "x": 12,
+        "w": 8,
+        "x": 16,
         "y": 7
       },
       "id": 22,
@@ -467,7 +535,7 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 6,
+        "w": 8,
         "x": 0,
         "y": 14
       },
@@ -535,8 +603,8 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 6,
-        "x": 6,
+        "w": 8,
+        "x": 8,
         "y": 14
       },
       "id": 9,
@@ -603,8 +671,8 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 6,
-        "x": 12,
+        "w": 8,
+        "x": 16,
         "y": 14
       },
       "id": 10,
@@ -670,7 +738,7 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 6,
+        "w": 8,
         "x": 0,
         "y": 20
       },
@@ -738,8 +806,8 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 6,
-        "x": 6,
+        "w": 8,
+        "x": 8,
         "y": 20
       },
       "id": 12,
@@ -806,8 +874,8 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 6,
-        "x": 12,
+        "w": 8,
+        "x": 16,
         "y": 20
       },
       "id": 13,
@@ -918,7 +986,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"create\"}",
+          "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"alerts_create\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -985,7 +1053,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"update\"}",
+          "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"alerts_update\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -1052,7 +1120,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"delete\"}",
+          "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"alerts_delete\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -1092,7 +1160,74 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 18,
+        "w": 6,
+        "x": 18,
+        "y": 27
+      },
+      "id": 32,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.0",
+      "targets": [
+        {
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"alert_policy_bulk_delete\"}",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Operation: Bulk Delete (error)",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "min": 0,
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
         "x": 0,
         "y": 33
       },
@@ -1208,5 +1343,5 @@
   "timezone": "browser",
   "title": "Alert Policies",
   "uid": "954e61d6-1841-45ad-8f17-2f352970db8d",
-  "version": 22
+  "version": 27
 }
