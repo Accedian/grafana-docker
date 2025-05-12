@@ -85,8 +85,8 @@
         {
           "datasource": "Prometheus",
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\"}",
+          "editorMode": "code",
+          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", enabled=\"true\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -288,7 +288,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\"}",
+          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", \"$policyType\"=\"micro-tca\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -353,7 +353,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\"}",
+          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", policyType=\"capture\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -417,8 +417,8 @@
       "targets": [
         {
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\"}",
+          "editorMode": "code",
+          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", policyType=\"security\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -565,8 +565,8 @@
         {
           "datasource": "Prometheus",
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "gather_enabled_alert_policies_by_tenant{policyType=\"micro-tca\"}",
+          "editorMode": "code",
+          "expr": "gather_enabled_alert_policies_by_tenant{policyType=\"capture\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -918,6 +918,207 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
+          "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"create\"}",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Operation: Create (error)",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "min": 0,
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 6,
+        "y": 27
+      },
+      "id": 29,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.0",
+      "targets": [
+        {
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"update\"}",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Operation: Update (error)",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "min": 0,
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 12,
+        "y": 27
+      },
+      "id": 30,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.0",
+      "targets": [
+        {
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"delete\"}",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Operation: Delete (error)",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "min": 0,
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 18,
+        "x": 0,
+        "y": 33
+      },
+      "id": 28,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.0",
+      "targets": [
+        {
+          "disableTextWrap": false,
+          "editorMode": "builder",
           "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", errorType=\"$errorType\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
@@ -927,7 +1128,7 @@
           "useBackend": false
         }
       ],
-      "title": "Error: $errorType",
+      "title": "Error per type: $errorType",
       "type": "stat"
     }
   ],
@@ -978,18 +1179,13 @@
       {
         "allValue": "All",
         "current": {
-          "text": [
-            "conflict"
-          ],
-          "value": [
-            "conflict"
-          ]
+          "text": "conflict",
+          "value": "conflict"
         },
         "definition": "label_values(gather_alert_policy_operation_failure,errorType)",
         "description": "",
-        "includeAll": true,
+        "includeAll": false,
         "label": "ErrorType",
-        "multi": true,
         "name": "errorType",
         "options": [],
         "query": {
@@ -1012,5 +1208,5 @@
   "timezone": "browser",
   "title": "Alert Policies",
   "uid": "954e61d6-1841-45ad-8f17-2f352970db8d",
-  "version": 20
+  "version": 22
 }
