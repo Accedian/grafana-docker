@@ -15,7 +15,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 52,
   "links": [],
   "panels": [
     {
@@ -45,7 +45,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -80,7 +81,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "targets": [
         {
           "datasource": "Prometheus",
@@ -113,7 +114,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -148,7 +150,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "targets": [
         {
           "datasource": "Prometheus",
@@ -181,7 +183,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -216,7 +219,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "targets": [
         {
           "datasource": "Prometheus",
@@ -249,7 +252,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -284,7 +288,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "targets": [
         {
           "datasource": "Prometheus",
@@ -316,7 +320,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -351,7 +356,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "targets": [
         {
           "disableTextWrap": false,
@@ -381,7 +386,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -416,7 +422,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "targets": [
         {
           "disableTextWrap": false,
@@ -446,7 +452,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -481,7 +488,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "targets": [
         {
           "disableTextWrap": false,
@@ -525,7 +532,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -558,7 +566,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "repeat": "policyType",
       "repeatDirection": "h",
       "targets": [
@@ -566,7 +574,7 @@
           "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "gather_enabled_alert_policies_by_tenant{policyType=\"micro-tca\"}",
+          "expr": "gather_enabled_alert_policies_by_tenant{policyType=\"micro-tca\", tenantId=\"$tenantId\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -593,7 +601,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -626,7 +635,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "repeat": "policyType",
       "repeatDirection": "h",
       "targets": [
@@ -634,7 +643,7 @@
           "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "gather_enabled_alert_policies_by_tenant{policyType=\"capture\"}",
+          "expr": "gather_enabled_alert_policies_by_tenant{tenantId=\"$tenantId\", policyType=\"capture\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -661,7 +670,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -694,15 +704,15 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "repeat": "policyType",
       "repeatDirection": "h",
       "targets": [
         {
           "datasource": "Prometheus",
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "gather_enabled_alert_policies_by_tenant{policyType=\"security\"}",
+          "editorMode": "code",
+          "expr": "gather_enabled_alert_policies_by_tenant{tenantId=\"$tenantId\",policyType=\"security\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -728,7 +738,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -761,15 +772,15 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "repeat": "policyType",
       "repeatDirection": "h",
       "targets": [
         {
           "datasource": "Prometheus",
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "gather_max_number_of_alert_policies_by_tenant{policyType=\"micro-tca\"}",
+          "editorMode": "code",
+          "expr": "gather_max_number_of_alert_policies_by_tenant{tenantId=\"$tenantId\",policyType=\"micro-tca\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -796,7 +807,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -829,15 +841,15 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "repeat": "policyType",
       "repeatDirection": "h",
       "targets": [
         {
           "datasource": "Prometheus",
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "gather_max_number_of_alert_policies_by_tenant{policyType=\"capture\"}",
+          "editorMode": "code",
+          "expr": "gather_max_number_of_alert_policies_by_tenant{tenantId=\"$tenantId\",policyType=\"capture\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -864,7 +876,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -897,15 +910,15 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "repeat": "policyType",
       "repeatDirection": "h",
       "targets": [
         {
           "datasource": "Prometheus",
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "gather_max_number_of_alert_policies_by_tenant{policyType=\"security\"}",
+          "editorMode": "code",
+          "expr": "gather_max_number_of_alert_policies_by_tenant{tenantId=\"$tenantId\", policyType=\"security\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -945,7 +958,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -981,7 +995,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "targets": [
         {
           "disableTextWrap": false,
@@ -1012,7 +1026,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1048,7 +1063,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "targets": [
         {
           "disableTextWrap": false,
@@ -1079,7 +1094,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1115,7 +1131,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "targets": [
         {
           "disableTextWrap": false,
@@ -1146,7 +1162,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1182,7 +1199,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "targets": [
         {
           "disableTextWrap": false,
@@ -1213,7 +1230,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1249,7 +1267,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.0",
+      "pluginVersion": "11.5.0",
       "targets": [
         {
           "disableTextWrap": false,
@@ -1269,14 +1287,14 @@
   ],
   "preload": false,
   "refresh": "30s",
-  "schemaVersion": 41,
+  "schemaVersion": 40,
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {
-          "text": "1135adb2-3a41-4e96-b6c8-c12b106b13cc",
-          "value": "1135adb2-3a41-4e96-b6c8-c12b106b13cc"
+          "text": "",
+          "value": ""
         },
         "definition": "label_values(gather_alert_policies_counter_by_tenant,tenantId)",
         "label": "Tenant ID",
@@ -1293,8 +1311,8 @@
       },
       {
         "current": {
-          "text": "capture",
-          "value": "capture"
+          "text": "All",
+          "value": "$__all"
         },
         "definition": "label_values(gather_enabled_alert_policies_by_tenant,policyType)",
         "hide": 2,
@@ -1314,8 +1332,8 @@
       {
         "allValue": "All",
         "current": {
-          "text": "conflict",
-          "value": "conflict"
+          "text": "",
+          "value": ""
         },
         "definition": "label_values(gather_alert_policy_operation_failure,errorType)",
         "description": "",
@@ -1343,5 +1361,6 @@
   "timezone": "browser",
   "title": "Alert Policies",
   "uid": "954e61d6-1841-45ad-8f17-2f352970db8d",
-  "version": 27
+  "version": 2,
+  "weekStart": ""
 }
