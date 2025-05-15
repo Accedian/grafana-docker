@@ -1,3 +1,4 @@
+* Feat: alert policies dashboard [Asana Task](https://app.asana.com/1/5557457880942/project/1209680023328208/task/1209680031105494)
 ## Current Release
 ### 0.187.0
 **Release Date:** Wed Apr  9 05:53:11 UTC 2025
