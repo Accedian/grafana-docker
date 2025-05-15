@@ -28,284 +28,8 @@
       },
       "id": 14,
       "panels": [],
-      "title": "Alert Policies",
+      "title": "Alert Policies (total)",
       "type": "row"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 0,
-          "mappings": [],
-          "noValue": "0",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 0,
-        "y": 1
-      },
-      "id": 26,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.5.0",
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "disableTextWrap": false,
-          "editorMode": "code",
-          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", enabled=\"true\"}",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Enabled",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 0,
-          "mappings": [],
-          "noValue": "0",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 6,
-        "y": 1
-      },
-      "id": 31,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.5.0",
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "disableTextWrap": false,
-          "editorMode": "code",
-          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", enabled=\"false\"}",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Disabled",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 0,
-          "mappings": [],
-          "noValue": "0",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 12,
-        "y": 1
-      },
-      "id": 6,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.5.0",
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", deleted=\"true\"}",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Deleted",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 0,
-          "mappings": [],
-          "noValue": "0",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 18,
-        "y": 1
-      },
-      "id": 27,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.5.0",
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "disableTextWrap": false,
-          "editorMode": "code",
-          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", enabled=\"false\", deleted=\"true\"}",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Archived",
-      "transparent": true,
-      "type": "stat"
     },
     {
       "datasource": "Prometheus",
@@ -336,7 +60,7 @@
         "h": 6,
         "w": 8,
         "x": 0,
-        "y": 7
+        "y": 1
       },
       "id": 15,
       "options": {
@@ -361,7 +85,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", \"policyType\"=\"micro-tca\"}",
+          "expr": "sum by (policyType)(gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", \"policyType\"=\"micro-tca\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -394,7 +118,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "none"
         },
         "overrides": []
       },
@@ -402,7 +127,7 @@
         "h": 6,
         "w": 8,
         "x": 8,
-        "y": 7
+        "y": 1
       },
       "id": 21,
       "options": {
@@ -426,8 +151,8 @@
       "targets": [
         {
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", policyType=\"capture\"}",
+          "editorMode": "code",
+          "expr": "sum by (policyType)(gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", policyType=\"capture\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -468,7 +193,7 @@
         "h": 6,
         "w": 8,
         "x": 16,
-        "y": 7
+        "y": 1
       },
       "id": 22,
       "options": {
@@ -493,7 +218,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", policyType=\"security\"}",
+          "expr": "sum by (policyType)(gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\", policyType=\"security\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -506,12 +231,87 @@
       "type": "stat"
     },
     {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
+      "id": 33,
+      "options": {
+        "displayLabels": [
+          "value"
+        ],
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.5.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum by (enabled, deleted) (gather_alert_policies_counter_by_tenant{tenantId=\"$tenantId\"})",
+          "format": "time_series",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Group by status",
+      "type": "piechart"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 14
       },
       "id": 3,
       "panels": [],
@@ -545,9 +345,9 @@
         "h": 6,
         "w": 8,
         "x": 0,
-        "y": 14
+        "y": 15
       },
-      "id": 1,
+      "id": 34,
       "maxPerRow": 3,
       "options": {
         "colorMode": "value",
@@ -557,7 +357,7 @@
         "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "last"
           ],
           "fields": "",
           "values": false
@@ -573,8 +373,8 @@
         {
           "datasource": "Prometheus",
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "gather_enabled_alert_policies_by_tenant{policyType=\"micro-tca\", tenantId=\"$tenantId\"}",
+          "editorMode": "code",
+          "expr": "sum by (policyType,tenantId)(gather_enabled_alert_policies_by_tenant{policyType=\"micro-tca\", tenantId=\"$tenantId\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -614,7 +414,7 @@
         "h": 6,
         "w": 8,
         "x": 8,
-        "y": 14
+        "y": 15
       },
       "id": 9,
       "maxPerRow": 3,
@@ -643,7 +443,7 @@
           "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "gather_enabled_alert_policies_by_tenant{tenantId=\"$tenantId\", policyType=\"capture\"}",
+          "expr": "sum by (policyType,tenantId)(gather_enabled_alert_policies_by_tenant{tenantId=\"$tenantId\", policyType=\"capture\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -683,7 +483,7 @@
         "h": 6,
         "w": 8,
         "x": 16,
-        "y": 14
+        "y": 15
       },
       "id": 10,
       "maxPerRow": 3,
@@ -712,7 +512,7 @@
           "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "gather_enabled_alert_policies_by_tenant{tenantId=\"$tenantId\",policyType=\"security\"}",
+          "expr": "sum by (policyType,tenantId)(gather_enabled_alert_policies_by_tenant{tenantId=\"$tenantId\",policyType=\"security\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -751,7 +551,7 @@
         "h": 6,
         "w": 8,
         "x": 0,
-        "y": 20
+        "y": 21
       },
       "id": 11,
       "maxPerRow": 3,
@@ -780,7 +580,7 @@
           "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "gather_max_number_of_alert_policies_by_tenant{tenantId=\"$tenantId\",policyType=\"micro-tca\"}",
+          "expr": "sum by (policyType,tenantId)(gather_max_number_of_alert_policies_by_tenant{tenantId=\"$tenantId\",policyType=\"micro-tca\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -820,7 +620,7 @@
         "h": 6,
         "w": 8,
         "x": 8,
-        "y": 20
+        "y": 21
       },
       "id": 12,
       "maxPerRow": 3,
@@ -849,7 +649,7 @@
           "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "gather_max_number_of_alert_policies_by_tenant{tenantId=\"$tenantId\",policyType=\"capture\"}",
+          "expr": "sum by (policyType,tenantId)(gather_max_number_of_alert_policies_by_tenant{tenantId=\"$tenantId\",policyType=\"capture\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -889,7 +689,7 @@
         "h": 6,
         "w": 8,
         "x": 16,
-        "y": 20
+        "y": 21
       },
       "id": 13,
       "maxPerRow": 3,
@@ -918,7 +718,7 @@
           "datasource": "Prometheus",
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "gather_max_number_of_alert_policies_by_tenant{tenantId=\"$tenantId\", policyType=\"security\"}",
+          "expr": "sum by (policyType,tenantId)(gather_max_number_of_alert_policies_by_tenant{tenantId=\"$tenantId\", policyType=\"security\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -937,7 +737,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 27
       },
       "id": 16,
       "panels": [],
@@ -975,7 +775,7 @@
         "h": 6,
         "w": 6,
         "x": 0,
-        "y": 27
+        "y": 28
       },
       "id": 25,
       "options": {
@@ -999,8 +799,8 @@
       "targets": [
         {
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"alerts_create\"}",
+          "editorMode": "code",
+          "expr": "sum by (tenantId, operation)(gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"alerts_create\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -1043,7 +843,7 @@
         "h": 6,
         "w": 6,
         "x": 6,
-        "y": 27
+        "y": 28
       },
       "id": 29,
       "options": {
@@ -1067,8 +867,8 @@
       "targets": [
         {
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"alerts_update\"}",
+          "editorMode": "code",
+          "expr": "sum by (tenantId, operation)(gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"alerts_update\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -1111,7 +911,7 @@
         "h": 6,
         "w": 6,
         "x": 12,
-        "y": 27
+        "y": 28
       },
       "id": 30,
       "options": {
@@ -1135,8 +935,8 @@
       "targets": [
         {
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"alerts_delete\"}",
+          "editorMode": "code",
+          "expr": "sum by (tenantId, operation)(gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"alerts_delete\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -1179,7 +979,7 @@
         "h": 6,
         "w": 6,
         "x": 18,
-        "y": 27
+        "y": 28
       },
       "id": 32,
       "options": {
@@ -1203,8 +1003,8 @@
       "targets": [
         {
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"alert_policy_bulk_delete\"}",
+          "editorMode": "code",
+          "expr": "sum by (tenantId, operation)(gather_alert_policy_operation_failure{tenantId=\"$tenantId\", operation=\"alert_policy_bulk_delete\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -1221,24 +1021,18 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
           },
           "mappings": [],
           "min": 0,
           "noValue": "0",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
           "unit": "none"
         },
         "overrides": []
@@ -1247,15 +1041,19 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 34
       },
       "id": 28,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -1263,16 +1061,18 @@
           "fields": "",
           "values": false
         },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
       },
       "pluginVersion": "11.5.0",
       "targets": [
         {
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "gather_alert_policy_operation_failure{tenantId=\"$tenantId\", errorType=\"$errorType\"}",
+          "editorMode": "code",
+          "expr": "sum by (tenantId, errorType)(gather_alert_policy_operation_failure{tenantId=\"$tenantId\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -1281,8 +1081,8 @@
           "useBackend": false
         }
       ],
-      "title": "Error per type: $errorType",
-      "type": "stat"
+      "title": "Errors per type",
+      "type": "piechart"
     }
   ],
   "preload": false,
@@ -1296,7 +1096,9 @@
           "text": "",
           "value": ""
         },
+        "datasource": "Prometheus",
         "definition": "label_values(gather_alert_policies_counter_by_tenant,tenantId)",
+        "includeAll": false,
         "label": "Tenant ID",
         "name": "tenantId",
         "options": [],
@@ -1308,59 +1110,17 @@
         "refresh": 1,
         "regex": "",
         "type": "query"
-      },
-      {
-        "current": {
-          "text": "All",
-          "value": "$__all"
-        },
-        "definition": "label_values(gather_enabled_alert_policies_by_tenant,policyType)",
-        "hide": 2,
-        "includeAll": true,
-        "label": "Policy Type",
-        "name": "policyType",
-        "options": [],
-        "query": {
-          "qryType": 1,
-          "query": "label_values(gather_enabled_alert_policies_by_tenant,policyType)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "type": "query"
-      },
-      {
-        "allValue": "All",
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "definition": "label_values(gather_alert_policy_operation_failure,errorType)",
-        "description": "",
-        "includeAll": false,
-        "label": "ErrorType",
-        "name": "errorType",
-        "options": [],
-        "query": {
-          "qryType": 1,
-          "query": "label_values(gather_alert_policy_operation_failure,errorType)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "sort": 1,
-        "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Alert Policies",
   "uid": "954e61d6-1841-45ad-8f17-2f352970db8d",
-  "version": 2,
+  "version": 10,
   "weekStart": ""
 }
