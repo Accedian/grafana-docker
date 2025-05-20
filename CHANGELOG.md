@@ -1,8 +1,10 @@
-* Feat: alert policies dashboard [Asana Task](https://app.asana.com/1/5557457880942/project/1209680023328208/task/1209680031105494)
 ## Current Release
+### 0.188.0
+**Release Date:** Tue May 20 14:51:32 UTC 2025
+## Previous Releases
+* Feat: alert policies dashboard [Asana Task](https://app.asana.com/1/5557457880942/project/1209680023328208/task/1209680031105494)
 ### 0.187.0
 **Release Date:** Wed Apr  9 05:53:11 UTC 2025
-## Previous Releases
 * Feat: RA Collector new metrics [Asana](https://app.asana.com/0/1207589770978424/1209422869430676)
 ### 0.186.0
 **Release Date:** Wed Apr  9 05:46:33 UTC 2025
