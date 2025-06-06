@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  labels:
+    {{- include "grafana.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.grafana.service.type }}
+  ports:
+    - port: {{ .Values.grafana.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "grafana.selectorLabels" . | nindent 4 }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: blackbox-exporter
+  labels:
+    app: blackbox-exporter
+spec:
+  selector:
+    app: blackbox-exporter
+  type: ClusterIP
+  ports:
+  - name: blackbox
+    port: 9115
+    targetPort: 9115
+    protocol: TCP
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-exporter
+  labels:
+    app: grafana-exporter
+spec:
+  selector:
+    app: grafana-exporter
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP

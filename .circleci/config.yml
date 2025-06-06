@@ -35,11 +35,11 @@ commands:
             echo "Checking out project repo name : $CIRCLE_PROJECT_REPONAME"
             echo "Checking out project username : $CIRCLE_PROJECT_USERNAME"
             
-            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
-              echo "Checking out PR branch $CIRCLE_PULL_REQUEST"
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+              echo "Checking out PR branch $CIRCLE_PR_NUMBER"
               gh repo clone github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} .
               gh repo set-default ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
-              gh pr checkout $CIRCLE_PULL_REQUEST
+              gh pr checkout $CIRCLE_PR_NUMBER
             else
               echo "Checking out branch: $CIRCLE_BRANCH"
               gh repo clone github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} . -- "--branch=$CIRCLE_BRANCH"
@@ -74,6 +74,16 @@ jobs:
           name: Building Docker Container
           command: make build
 
+      - run:
+          name: "install helm"
+          command: |
+            wget -LO helm.tar.gz https://get.helm.sh/helm-v3.17.2-linux-amd64.tar.gz  # legit:ignore-pipeline
+            tar xf helm.tar.gz linux-amd64/helm
+            sudo mv linux-amd64/helm /usr/local/bin
+      - run:
+          name: "make chart"
+          command: |
+            make helm 
 
   release:
     working_directory: ~/repo
@@ -138,6 +148,21 @@ jobs:
 
             docker buildx rm circleBuilder
 
+      - run:
+          name: "install helm"
+          command: |
+            wget -LO helm.tar.gz https://get.helm.sh/helm-v3.17.2-linux-amd64.tar.gz  # legit:ignore-pipeline
+            tar xf helm.tar.gz linux-amd64/helm
+            sudo mv linux-amd64/helm /usr/local/bin
+      - run:
+          name: "login helm"
+          command: |
+            echo ${GCR_DOCKER_RW_PASSWORD} | base64 -d | docker login -u ${GCR_DOCKER_RW_USERNAME} --password-stdin https://us-docker.pkg.dev
+      - run:
+          name: "make chart"
+          command: |
+            export DOCKER_VER=$(git semver get)
+            make helm-push DOCKER_VER=$DOCKER_VER 
 
 workflows:
   version: 2.1

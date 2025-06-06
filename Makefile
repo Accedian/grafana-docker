@@ -22,6 +22,11 @@ GRAFANA_VERSION ?= 11.5.0
 GRAFANA_URL ?= https://dl.grafana.com/oss/release/grafana_$(GRAFANA_VERSION)
 GOSU_URL ?= https://github.com/tianon/gosu/releases/download/1.17/gosu
 
+# Add the following for helm chart
+SEMVER_PATTERN := ^[0-9]+\.[0-9]+\.[0-9]+
+HELM_VER ?= $(shell if echo "$(DOCKER_VER)" | grep -Eq '$(SEMVER_PATTERN)'; then echo "$(DOCKER_VER)"; else echo "0.0.0-$(DOCKER_VER)"; fi)
+HELM_REPO := oci://us-docker.pkg.dev/npav-172917/helm-package
+
 .PHONY: all
 all: build
 
@@ -39,3 +44,20 @@ push:
 	@echo "Using Grafana URL $(GRAFANA_URL)"
 	@echo "Using GOSU URL $(GOSU_URL)"
 	docker buildx build --build-arg GRAFANA_VERSION=$(GRAFANA_VERSION) --build-arg VERSION=$(DOCKER_VER) --platform $(BUILD_PLATFORMS) -t $(DOCKER_REPO_NAME)$(DOCKER_IMAGE_NAME):$(DOCKER_VER) --push .
+
+.FORCE: 
+
+
+helm/%.yaml: helm/%.yaml.in .FORCE
+	@echo "# /!\ This file is generated, do not edit!" > $@
+	sed -e "s/@HELM_VER@/$(HELM_VER)/" $< >> $@
+
+helm-lint: helm/Chart.yaml helm/values.yaml
+	helm lint helm
+
+helm $(DOCKER_IMAGE_NAME)-$(HELM_VER).tgz: .FORCE helm-lint helm/Chart.yaml helm/values.yaml
+	@echo "Using 'version: $(HELM_VER)'"
+	helm package helm
+
+helm-push: $(DOCKER_IMAGE_NAME)-$(HELM_VER).tgz
+	helm push $< $(HELM_REPO)

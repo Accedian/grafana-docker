@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  name: {{ include "grafana.fullname" . }}
+  labels:
+    {{- include "grafana.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.grafana.autoscaling.enabled }}
+  replicas: {{ .Values.grafana.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "grafana.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "grafana.fullname" . }}
+  template:
+    metadata:
+      {{- with .Values.grafana.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "grafana.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "grafana.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.grafana.podSecurityContext | nindent 8 }}
+      imagePullSecrets: {{ toYaml .Values.global.images.pullSecrets | nindent 14 }}
+    {{- if eq .Values.global.deployment_type "dev" }}
+      nodeSelector:
+        size: dev-pool
+      tolerations:
+      - effect: NoSchedule
+        key: dedicated
+        operator: Equal
+        value: devpool
+    {{- end }}        
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.grafana.securityContext | nindent 12 }}
+          image: {{ .Values.grafana.image.registry }}/{{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.grafana.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.grafana.resources | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "grafana.fullname" . }}-config
+          volumeMounts:
+            - name: {{ include "grafana.fullname" . }}-data
+              mountPath: /var/lib/grafana
+            - name: prometheus-datasource
+              mountPath: /tmp/provisioning/datasources/prometheus-datasource.yaml
+              subPath: prometheus-datasource.yaml
+            - name: k8s-dashboards
+              mountPath: /config-tmp
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                - "/bin/sh"
+                - "-c"
+                - cd /config-tmp/..data/ && cp -r *.json /tmp/dashboards/
+      volumes:
+        - name: prometheus-datasource
+          configMap:
+            name: prometheus-datasource
+        - name: k8s-dashboards
+          configMap:
+            name: k8s-dashboards
+        
+
+      {{- with .Values.grafana.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.grafana.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.grafana.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+        - metadata:
+            name: {{ include "grafana.fullname" . }}-data
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: {{ .Values.grafana.data_volume_size | default "50Gi"}}
