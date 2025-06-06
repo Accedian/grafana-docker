@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  name: blackbox-exporter
+  labels:
+    app: blackbox-exporter
+spec:
+  selector:
+    matchLabels:
+      app: blackbox-exporter
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: blackbox-exporter
+    spec:
+      imagePullSecrets: {{ toYaml .Values.global.images.pullSecrets | nindent 14 }}
+    {{- if eq .Values.global.deployment_type "dev" }}
+      nodeSelector:
+        size: dev-pool
+      tolerations:
+      - effect: NoSchedule
+        key: dedicated
+        operator: Equal
+        value: devpool
+    {{- end }}    
+      containers:
+      - name: blackbox-exporter
+        image: {{ .Values.blackbox_exporter.image.registry }}/{{ .Values.blackbox_exporter.image.repository }}:{{ .Values.blackbox_exporter.image.tag }}
+        imagePullPolicy: {{ .Values.blackbox_exporter.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.blackbox_exporter.resources | nindent 12 }}
+        ports:
+        - containerPort: 9115
+          name: blackbox
+      restartPolicy: Always
+
+
+

@@ -1,0 +1,48 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ include "grafana.fullname" . }}-config
+data:
+    GF_SERVER_ROOT_URL: "https://{{ .Values.global.analytics.deployment.name }}.{{ .Values.global.analytics.deployment.domain }}/grafana"
+    GF_SERVER_DOMAIN: "{{ .Values.global.analytics.deployment.name }}.{{ .Values.global.analytics.deployment.domain }}"
+    GF_AUTH_ANONYMOUS_ENABLED: "true"
+    GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+    GF_INSTALL_PLUGINS: "xginn8-pagerduty-datasource,grafana-image-renderer 3.7.2,grafana-clock-panel,grafana-piechart-panel,grafana-clickhouse-datasource"
+    GF_LOG_LEVEL: "{{ .Values.grafana.env.LOG_LEVEL }}"
+
+---
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: k8s-dashboards
+data:
+  apiserver.json: |
+   {{ .Files.Get "files/apiserver.json" | nindent 4 }}
+  cluster.json: |
+   {{  .Files.Get "files/cluster.json" | nindent 4 }}
+  compute_resource_namespace_pods.json: |
+   {{  .Files.Get "files/compute_resource_namespace_pods.json" | nindent 4 }}
+  compute_resource_namespace_workloads.json: |
+   {{  .Files.Get "files/compute_resource_namespace_workloads.json" | nindent 4 }}
+  compute_resource_node_pods.json: |
+   {{  .Files.Get "files/compute_resource_node_pods.json" | nindent 4 }}
+  compute_resource_node.json: |
+   {{  .Files.Get "files/compute_resource_node.json" | nindent 4 }}
+  compute_resource_pods.json: |
+   {{  .Files.Get "files/compute_resource_pods.json" | nindent 4 }}
+  kubelet.json: |
+   {{  .Files.Get "files/kubelet.json" | nindent 4 }}
+  networking_cluster.json: |
+   {{  .Files.Get "files/networking_cluster.json"  | nindent 4 }}
+  networking_namespace_pods.json: |
+   {{  .Files.Get "files/networking_namespace_pods.json"  | nindent 4 }}
+  networking_pods.json: |
+   {{  .Files.Get "files/networking_pods.json"  | nindent 4 }}
+  persistent_volumes.json: |
+   {{  .Files.Get "files/persistent_volumes.json" | nindent 4 }}
+  k8s_dashboars_overview.json: |
+   {{  .Files.Get "files/k8s_dashboars_overview.json" | nindent 4 }}
+
+
+

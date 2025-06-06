@@ -1,3 +1,4 @@
+* helm chart transition
 ## Current Release
 ### 0.188.0
 **Release Date:** Tue May 20 14:51:32 UTC 2025
