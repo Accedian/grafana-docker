@@ -1,8 +1,10 @@
-* helm chart transition
 ## Current Release
+### 0.189.0
+**Release Date:** Fri Jun  6 19:37:18 UTC 2025
+## Previous Releases
+* helm chart transition
 ### 0.188.0
 **Release Date:** Tue May 20 14:51:32 UTC 2025
-## Previous Releases
 * Feat: alert policies dashboard [Asana Task](https://app.asana.com/1/5557457880942/project/1209680023328208/task/1209680031105494)
 ### 0.187.0
 **Release Date:** Wed Apr  9 05:53:11 UTC 2025
