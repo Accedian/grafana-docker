@@ -1,8 +1,10 @@
-* Add k8s dashboards
 ## Current Release
+### 0.190.0
+**Release Date:** Mon Jun  9 20:33:07 UTC 2025
+## Previous Releases
+* Add k8s dashboards
 ### 0.189.0
 **Release Date:** Fri Jun  6 19:37:18 UTC 2025
-## Previous Releases
 * helm chart transition
 ### 0.188.0
 **Release Date:** Tue May 20 14:51:32 UTC 2025
