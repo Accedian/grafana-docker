@@ -1,3 +1,4 @@
+* Add k8s dashboards
 ## Current Release
 ### 0.189.0
 **Release Date:** Fri Jun  6 19:37:18 UTC 2025
