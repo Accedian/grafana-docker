@@ -24,7 +24,7 @@ GOSU_URL ?= https://github.com/tianon/gosu/releases/download/1.17/gosu
 
 # Add the following for helm chart
 SEMVER_PATTERN := ^[0-9]+\.[0-9]+\.[0-9]+
-HELM_VER ?= $(shell if echo "$(DOCKER_VER)" | grep -Eq '$(SEMVER_PATTERN)'; then echo "$(DOCKER_VER)"; else echo "0.0.1-$(DOCKER_VER)"; fi)
+HELM_VER ?= $(shell if echo "$(DOCKER_VER)" | grep -Eq '$(SEMVER_PATTERN)'; then echo "$(DOCKER_VER)"; else echo "0.0.0-$(DOCKER_VER)"; fi)
 HELM_REPO := oci://us-docker.pkg.dev/npav-172917/helm-package
 
 .PHONY: all
