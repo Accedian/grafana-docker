@@ -41,8 +41,8 @@ data:
    {{  .Files.Get "files/networking_pods.json"  | nindent 4 }}
   persistent_volumes.json: |
    {{  .Files.Get "files/persistent_volumes.json" | nindent 4 }}
-  k8s_dashboars_overview.json: |
-   {{  .Files.Get "files/k8s_dashboars_overview.json" | nindent 4 }}
+  k8s_dashboards_overview.json: |
+   {{  .Files.Get "files/k8s_dashboards_overview.json" | nindent 4 }}
 
 
 

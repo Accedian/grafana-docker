@@ -94,7 +94,7 @@ grafana:
 blackbox_exporter:
   image:
     registry: gcr.io
-    repository: npav-172917/rdparty/quay.io/prometheus/blackbox-exporter
+    repository: npav-172917/3rdparty/quay.io/prometheus/blackbox-exporter
     tag: "20231205"
     pullPolicy: IfNotPresent 
   resources: {}
