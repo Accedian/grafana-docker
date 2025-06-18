@@ -31,20 +31,3 @@ spec:
     port: 9115
     targetPort: 9115
     protocol: TCP
-
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: grafana-exporter
-  labels:
-    app: grafana-exporter
-spec:
-  selector:
-    app: grafana-exporter
-  type: ClusterIP
-  ports:
-  - port: 8080
-    targetPort: 8080
-    protocol: TCP
