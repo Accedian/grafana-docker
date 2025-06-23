@@ -1,7 +1,9 @@
 ## Current Release
+### 0.192.0
+**Release Date:** Mon Jun 23 12:08:23 UTC 2025
+## Previous Releases
 ### 0.191.0
 **Release Date:** Wed Jun 11 17:07:24 UTC 2025
-## Previous Releases
 ### 0.190.0
 **Release Date:** Mon Jun  9 20:33:07 UTC 2025
 * Add k8s dashboards
