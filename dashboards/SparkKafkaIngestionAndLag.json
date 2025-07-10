@@ -166,7 +166,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"ignite.contemporary.*\"}[2m])",
+          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"streamingapp\", job=\"kafka-topic-metrics\", topic=~\"ignite.contemporary.*\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -175,7 +175,7 @@
           "refId": "A"
         },
         {
-          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=\"alert-events\"}[2m])",
+          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"alert-parquet-streaming\", job=\"kafka-topic-metrics\", topic=\"alert-events\"}",
           "interval": "",
           "legendFormat": "{{topic}}",
           "refId": "C"
@@ -343,7 +343,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"ignite.latent.*|spark-latent.*\"}[2m])",
+          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"latentapp\", job=\"kafka-topic-metrics\", topic=~\"ignite.latent.*\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
