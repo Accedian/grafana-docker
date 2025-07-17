@@ -129,10 +129,7 @@
           "refId": "B"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount_total{job=\"spark_alertstreamingapp\"}[1m])",
           "hide": false,
@@ -703,10 +700,7 @@
           "refId": "B"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "spark_queryBatchDuration{job=\"spark_alertstreamingapp\"}",
           "hide": false,
