@@ -1,8 +1,10 @@
-* Feat: Update spark ingestion and lag dashboard with fm-alert metrics [Asana Task](https://app.asana.com/1/5557457880942/project/1210039614117048/task/1210823760990026?focus=true)
 ## Current Release
+### 0.193.0
+**Release Date:** Fri Jul 18 18:33:54 UTC 2025
+## Previous Releases
+* Feat: Update spark ingestion and lag dashboard with fm-alert metrics [Asana Task](https://app.asana.com/1/5557457880942/project/1210039614117048/task/1210823760990026?focus=true)
 ### 0.192.0
 **Release Date:** Mon Jun 23 12:08:23 UTC 2025
-## Previous Releases
 ### 0.191.0
 **Release Date:** Wed Jun 11 17:07:24 UTC 2025
 ### 0.190.0
