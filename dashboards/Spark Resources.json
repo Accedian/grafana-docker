@@ -282,7 +282,7 @@
           "refId": "A"
         },
         {
-          "expr": "spark_jvm_total_max{job=\"spark_$AppName\", role=\"driver\"}",
+          "expr": "spark_jvm_heap_max{job=\"spark_$AppName\", role=\"driver\"}",
           "interval": "",
           "legendFormat": "max",
           "refId": "B"

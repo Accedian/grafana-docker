@@ -1,3 +1,4 @@
+* Fix: replaced spark_jvm_total_max metric by spark_jvm_heap_max [Asana](https://app.asana.com/1/5557457880942/project/1209436862688301/task/1210628331206354)
 ## Current Release
 ### 0.193.0
 **Release Date:** Fri Jul 18 18:33:54 UTC 2025
