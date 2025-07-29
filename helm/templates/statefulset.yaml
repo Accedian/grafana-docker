@@ -65,7 +65,7 @@ spec:
                 command:
                 - "/bin/sh"
                 - "-c"
-                - cd /config-tmp/..data/ && cp -r *.json /tmp/dashboards/
+                - cd /config-tmp/ && cp -r *.json /tmp/dashboards/
       volumes:
         - name: prometheus-datasource
           configMap:
