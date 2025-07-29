@@ -1,3 +1,4 @@
+* Fix - install plugins in docker image [Asana](https://app.asana.com/1/5557457880942/project/1209953122701122/task/1210916325455858?focus=true)
 ## Current Release
 ### 0.194.0
 **Release Date:** Fri Jul 25 18:18:51 UTC 2025
