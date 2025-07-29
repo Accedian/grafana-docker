@@ -7,7 +7,6 @@ data:
     GF_SERVER_DOMAIN: "{{ .Values.global.analytics.deployment.name }}.{{ .Values.global.analytics.deployment.domain }}"
     GF_AUTH_ANONYMOUS_ENABLED: "true"
     GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
-    GF_INSTALL_PLUGINS: "xginn8-pagerduty-datasource,grafana-image-renderer 3.7.2,grafana-clock-panel,grafana-piechart-panel,grafana-clickhouse-datasource"
     GF_LOG_LEVEL: "{{ .Values.grafana.env.LOG_LEVEL }}"
 
 ---
