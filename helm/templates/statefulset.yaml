@@ -36,6 +36,37 @@ spec:
         operator: Equal
         value: devpool
     {{- end }}        
+      initContainers:
+        - name: dashboard-setup
+          image: {{ .Values.grafana.image.registry }}/{{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.grafana.image.pullPolicy }}
+          command:
+          - "/bin/sh"
+          - "-c"
+          - |
+            # 1. Copy existing dashboards to temp location
+            mkdir -p /temp-dashboards
+            if [ -d "/tmp/dashboards" ] && [ "$(ls -A /tmp/dashboards 2>/dev/null)" ]; then
+              cp -r /tmp/dashboards/* /temp-dashboards/ || echo "Warning: Some files might not have copied"
+            fi
+            
+            # 2. Copy dashboards from config-data to the scratch disk
+            mkdir -p /scratch-disk/dashboards
+            if [ -d "/config-tmp/..data/" ] && [ "$(ls -A /config-tmp/..data/*.json 2>/dev/null)" ]; then
+              cp -r /config-tmp/..data/*.json /scratch-disk/dashboards/ || echo "Warning: Some JSON files might not have copied"
+            fi
+            
+            # 3. Copy temp dashboards to scratch disk as well
+            if [ -d "/temp-dashboards" ] && [ "$(ls -A /temp-dashboards 2>/dev/null)" ]; then
+              cp -r /temp-dashboards/* /scratch-disk/dashboards/ || echo "Warning: Some files from temp might not have copied"
+            fi
+            
+            echo "Dashboard setup complete"
+          volumeMounts:
+            - name: dashboard-scratch
+              mountPath: /scratch-disk
+            - name: k8s-dashboards
+              mountPath: /config-tmp
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -59,13 +90,8 @@ spec:
               subPath: prometheus-datasource.yaml
             - name: k8s-dashboards
               mountPath: /config-tmp
-          lifecycle:
-            postStart:
-              exec:
-                command:
-                - "/bin/sh"
-                - "-c"
-                - cd /config-tmp/ && cp -r *.json /tmp/dashboards/
+            - name: dashboard-scratch
+              mountPath: /tmp/dashboards
       volumes:
         - name: prometheus-datasource
           configMap:
@@ -73,6 +99,8 @@ spec:
         - name: k8s-dashboards
           configMap:
             name: k8s-dashboards
+        - name: dashboard-scratch
+          emptyDir: {}
         
 
       {{- with .Values.grafana.nodeSelector }}
