@@ -18,7 +18,7 @@ ifeq ($(UNAME),arm64)
 endif
 BUILD_PLATFORMS ?= linux/amd64 #linux/arm64/v8 remove arm64 from list because plugin not supported
 
-GRAFANA_VERSION ?= 11.5.0
+GRAFANA_VERSION ?= 12.1.0
 GRAFANA_URL ?= https://dl.grafana.com/oss/release/grafana_$(GRAFANA_VERSION)
 GOSU_URL ?= https://github.com/tianon/gosu/releases/download/1.17/gosu
 GF_INSTALL_PLUGINS ?= "xginn8-pagerduty-datasource,grafana-image-renderer 3.7.2,grafana-clock-panel,grafana-piechart-panel,grafana-clickhouse-datasource"
