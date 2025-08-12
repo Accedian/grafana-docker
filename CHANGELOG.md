@@ -1,3 +1,4 @@
+* Feat: Added couchdb open files visualization [Asana](https://app.asana.com/1/5557457880942/project/1209995884249985/task/1208812558422718)
 ## Current Release
 ### 0.196.0
 **Release Date:** Tue Jul 29 22:34:09 UTC 2025
