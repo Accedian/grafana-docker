@@ -114,7 +114,7 @@ jobs:
             
             action=minor
             
-            if [[ ${CIRCLE_BRANCH} =~ release/* ]]; then
+            if [[ ${CIRCLE_BRANCH} =~ feature/* ]]; then
               echo "Triggering a patch"
               action=patch
             else
