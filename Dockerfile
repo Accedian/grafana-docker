@@ -35,6 +35,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 
 ENV GRAFANA_PLUGINS_DIR=/var/lib/grafana/plugins
 RUN mkdir -p $GRAFANA_PLUGINS_DIR && chown -R grafana:grafana $GRAFANA_PLUGINS_DIR
+RUN mkdir -p /data/grafana/plugins && chown -R grafana:grafana /data/grafana/plugins
 
 RUN echo "Installing plugins: $GF_INSTALL_PLUGINS" && \
     IFS=','; for plugin_entry in $GF_INSTALL_PLUGINS; do \
@@ -50,7 +51,8 @@ RUN echo "Installing plugins: $GF_INSTALL_PLUGINS" && \
         echo "❌ Failed to install plugin: $plugin (version: ${version:-latest})"; \
         exit $status; \
       fi; \
-    done
+    done && \
+    cp -r /var/lib/grafana/plugins/* /data/grafana/plugins/
 
 VOLUME ["/var/lib/grafana", "/var/log/grafana", "/etc/grafana"]
 

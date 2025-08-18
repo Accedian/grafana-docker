@@ -1,3 +1,5 @@
+* Fix : Upgrade Grafana to 12.1 [Asana](https://app.asana.com/1/5557457880942/project/1205788273681601/task/1211033711104698)
+
 ## Current Release
 ### 0.197.0
 **Release Date:** Tue Aug 12 19:53:18 UTC 2025
