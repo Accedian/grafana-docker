@@ -1,8 +1,10 @@
-* Bellhop - add grafana metrics [Asana](https://app.asana.com/1/5557457880942/project/1208396415867905/task/1210917120745193?focus=true)
 ## Current Release
+### 0.199.0
+**Release Date:** Mon Aug 25 13:46:38 UTC 2025
+## Previous Releases
+* Bellhop - add grafana metrics [Asana](https://app.asana.com/1/5557457880942/project/1208396415867905/task/1210917120745193?focus=true)
 ### 0.198.0
 **Release Date:** Mon Aug 18 14:39:05 UTC 2025
-## Previous Releases
 * Fix : Upgrade Grafana to 12.1 [Asana](https://app.asana.com/1/5557457880942/project/1205788273681601/task/1211033711104698)
 
 ### 0.197.0
