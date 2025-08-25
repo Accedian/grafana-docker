@@ -309,10 +309,7 @@
           "type": "time"
         }
       ],
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "description": "Tenant names are manually populated by editing the Tenant column in Column Styles tab",
       "fontSize": "100%",
       "gridPos": {
@@ -482,10 +479,7 @@
       ],
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum by(tenant,objectType) (spark_AccedianStreamingMetrics_streaming_minTimestamp{job=\"spark_$AppName\"}!=9223372036854776000)",
           "format": "table",
@@ -496,10 +490,7 @@
           "refId": "A"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum by(tenant,objectType) (spark_AccedianStreamingMetrics_streaming_maxTimestamp{job=\"spark_$AppName\"}!=-9223372036854776000)",
           "format": "table",
@@ -510,10 +501,7 @@
           "refId": "B"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum by(tenant,objectType) (spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_$AppName\"}!=0)",
           "format": "table",
@@ -524,10 +512,7 @@
           "refId": "C"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_$AppName\"}[5m])>0",
           "format": "table",
@@ -547,10 +532,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -596,10 +578,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_$AppName\"}[5m])",
           "format": "time_series",
@@ -685,10 +664,7 @@
           "text": "streamingapp",
           "value": "streamingapp"
         },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "000000001"
-        },
+        "datasource": "Prometheus",
         "definition": "label_values(job)",
         "hide": 0,
         "includeAll": false,
@@ -706,10 +682,7 @@
         "type": "query"
       },
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "000000001"
-        },
+        "datasource": "Prometheus",
         "filters": [],
         "hide": 0,
         "label": "",

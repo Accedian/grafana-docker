@@ -1,8 +1,15 @@
 * Bellhop - add grafana metrics [Asana](https://app.asana.com/1/5557457880942/project/1208396415867905/task/1210917120745193?focus=true)
 ## Current Release
+### 0.198.0
+**Release Date:** Mon Aug 18 14:39:05 UTC 2025
+## Previous Releases
+* Fix : Upgrade Grafana to 12.1 [Asana](https://app.asana.com/1/5557457880942/project/1205788273681601/task/1211033711104698)
+
+### 0.197.0
+**Release Date:** Tue Aug 12 19:53:18 UTC 2025
+* Feat: Added couchdb open files visualization [Asana](https://app.asana.com/1/5557457880942/project/1209995884249985/task/1208812558422718)
 ### 0.196.0
 **Release Date:** Tue Jul 29 22:34:09 UTC 2025
-## Previous Releases
 ### 0.195.0
 **Release Date:** Tue Jul 29 20:17:32 UTC 2025
 * Fix - install plugins in docker image [Asana](https://app.asana.com/1/5557457880942/project/1209953122701122/task/1210916325455858?focus=true)
