@@ -4,50 +4,9 @@
 version: 2.1
 orbs:
   gh: circleci/github-cli@2.5
+  pca-bes: accedian/pca-bes@1.18.0
 
-commands:
-  workspacesetup:
-    steps:
-      - run:
-          name: "Export secrets from vault and create context"
-          command: |
-            # export all secret
-            export $(grep -v '^#' /tmp/.envvault | xargs)
-            export_secrets() {
-              while read -r line; do
-                key=$(echo $line | cut -d: -f1 | xargs)
-                value=$(echo $line | cut -d: -f2 | xargs)
-                #echo "Parsed key-value pair: $key=$value"
-                echo "export $key=\"$value\"" >> $BASH_ENV
-              done
-            }
-            vault login --no-print -method=github token=${GITHUB_TOKEN}
-            vault kv get -format=yaml -field=data -mount=kv besbuilder | export_secrets
-
-      - gh/setup
-
-      - run: 
-          name: "Github Clone"
-          command: |
-            echo "Checking out branch: $CIRCLE_BRANCH"
-            echo "Checking out CIRCLE_PR_NUMBER branch $CIRCLE_PR_NUMBER"
-            echo "Checking out CIRCLE_PULL_REQUEST branch $CIRCLE_PULL_REQUEST"
-            echo "Checking out project repo name : $CIRCLE_PROJECT_REPONAME"
-            echo "Checking out project username : $CIRCLE_PROJECT_USERNAME"
-            
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              echo "Checking out PR branch $CIRCLE_PR_NUMBER"
-              gh repo clone github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} .
-              gh repo set-default ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
-              gh pr checkout $CIRCLE_PR_NUMBER
-            else
-              echo "Checking out branch: $CIRCLE_BRANCH"
-              gh repo clone github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} . -- "--branch=$CIRCLE_BRANCH"
-              gh repo set-default ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
-            fi 
-            # what if it's a TAG
 # Jobs
-  
 jobs:
   build:
     working_directory: ~/repo
@@ -58,13 +17,8 @@ jobs:
       CGO_ENABLED: 1
 
     steps:
-      - workspacesetup
+      - pca-bes/workspacesetup
 
-      - run:
-          name: "Login to Docker"
-          command: |
-            echo ${GCR_DOCKER_RO_PASSWORD} | base64 -d  | docker login -u ${GCR_DOCKER_RO_USERNAME} --password-stdin https://us-central1-docker.pkg.dev
-      
       - run:
           name: "Create a temp directory for artifacts"
           command: |
@@ -90,9 +44,14 @@ jobs:
     machine: true
     resource_class: accedian/prod_bes-ubuntu-medium
     steps:
-      - workspacesetup
+      - pca-bes/workspacesetup
       - run:
           name: "Push image to GCR"
+          env:
+            C_BRANCH: "$CIRCLE_BRANCH"
+            GC_SERVICE_KEY: "$GCLOUD_SERVICE_KEY"
+            C_USERNAME: "$CIRCLE_USERNAME"
+            GCR_KEY: "$GCR_DOCKER_RW_PASSWORD"
           command: |
             # SemVer Setup
             mkdir semver
@@ -104,17 +63,17 @@ jobs:
             cd ~/repo
 
             # Docker Login
-            echo $GCLOUD_SERVICE_KEY | base64 -d  > ${HOME}/gcloud-service-key.json
-            docker login -u _json_key -p "$(echo $GCR_DOCKER_RW_PASSWORD | base64 -d)" https://gcr.io
+            echo "$GC_SERVICE_KEY" | base64 -d  > ${HOME}/gcloud-service-key.json
+            docker login -u _json_key -p "$(echo $GCR_KEY)" https://gcr.io
             
             # Determine tagging strategy
             echo "Now Tagging"
-            git config --global user.email "${CIRCLE_USERNAME}@accedian.com"
+            git config --global user.email "${C_USERNAME}@accedian.com"
             git config --global user.name "CircleCI"
             
             action=minor
             
-            if [[ ${CIRCLE_BRANCH} =~ release/* ]]; then
+            if [[ "${C_BRANCH}" =~ release/* ]]; then
               echo "Triggering a patch"
               action=patch
             else
@@ -132,7 +91,7 @@ jobs:
 
             # Update master/release Accedian Repo tag & branch
             git push origin ${DOCKER_VER}
-            git push origin ${CIRCLE_BRANCH}
+            git push origin ${C_BRANCH}
 
             # Run multi-platform builder & push to gcr.io
             export DOCKER_CLI_EXPERIMENTAL=enabled
@@ -209,18 +168,13 @@ workflows:
                 - main
                 - master       
                 - /release\/.*/
-
-
-# workflows:
-#   build_and_release:
-#     jobs:
-#       - build:
-#           context: org-gcp-npavprod
-
-#       - release:
-#           context: org-gcp-npav
-#           requires:
-#             - build
-#           filters:
-#             branches:
-#               only: master       
+      - pca-bes/image_signing:
+          context: bes-builder-gcp-skybuilder-prd-51843
+          requires:
+            - release
+          filters:
+            branches:
+              only:
+                - main
+                - master
+                - /release\/.*/

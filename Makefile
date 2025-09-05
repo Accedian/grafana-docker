@@ -28,6 +28,9 @@ SEMVER_PATTERN := ^[0-9]+\.[0-9]+\.[0-9]+
 HELM_VER ?= $(shell if echo "$(DOCKER_VER)" | grep -Eq '$(SEMVER_PATTERN)'; then echo "$(DOCKER_VER)"; else echo "0.0.0-$(DOCKER_VER)"; fi)
 HELM_REPO := oci://us-docker.pkg.dev/npav-172917/helm-package
 
+url-file:
+	echo $(DOCKER_REPO_NAME)$(DOCKER_IMAGE_NAME):$(shell cat current-version) > urlname.txt
+
 .PHONY: all
 all: build
 
