@@ -1,3 +1,4 @@
+* Fix - fix  recCount metric in object type dashboard [Asana](https://app.asana.com/1/5557457880942/project/1207093596205090/task/1209718397287266?focus=true)
 * Fix - Fix Micro Batch Duration Panel [Asana](https://app.asana.com/1/5557457880942/project/1207093596205090/task/1211293213793482?focus=true)
 * Fix - Remove spark-latent.* from Latent Lag board [Asana](https://app.asana.com/1/5557457880942/project/1207093596205090/task/1211211264951639?focus=true)
 * Feat - Add Disk Spill, Executor Heap and Storage Heap Metric Panels to the Spark Resource Board [Asana](https://app.asana.com/1/5557457880942/project/1207093596205090/task/1211140224141531?focus=true)
