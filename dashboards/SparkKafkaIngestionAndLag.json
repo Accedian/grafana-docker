@@ -598,7 +598,7 @@
         {
           "expr": "spark_AccedianLatentBatchPartitionsCount",
           "interval": "",
-          "legendFormat": "{{jobName}}",
+          "legendFormat": "{{job}}",
           "refId": "A"
         }
       ],

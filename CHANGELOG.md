@@ -1,3 +1,4 @@
+* Fix - Fix latentlag widget labels on spark ingestion and lag dashboard [Asana](https://app.asana.com/1/5557457880942/project/1211248085470096/task/1209459846414109?focus=true)
 * Fix - fix  recCount metric in object type dashboard [Asana](https://app.asana.com/1/5557457880942/project/1207093596205090/task/1209718397287266?focus=true)
 * Fix - Fix Micro Batch Duration Panel [Asana](https://app.asana.com/1/5557457880942/project/1207093596205090/task/1211293213793482?focus=true)
 * Fix - Remove spark-latent.* from Latent Lag board [Asana](https://app.asana.com/1/5557457880942/project/1207093596205090/task/1211211264951639?focus=true)
