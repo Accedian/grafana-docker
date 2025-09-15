@@ -1,53 +1,38 @@
-FROM debian:stable-slim
+FROM debian:stretch-slim
 
-ARG TARGETARCH
-ARG GRAFANA_VERSION
-ARG GRAFANA_URL="https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION}_${TARGETARCH}.deb"
-ARG GOSU_URL="https://github.com/tianon/gosu/releases/download/1.17/gosu-${TARGETARCH}"
+ARG GRAFANA_URL="https://s3-us-west-2.amazonaws.com/grafana-releases/master/grafana-latest.linux-x64.tar.gz"
+ARG GF_UID="472"
+ARG GF_GID="472"
 
+ENV PATH=/usr/share/grafana/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+    GF_PATHS_CONFIG="/etc/grafana/grafana.ini" \
+    GF_PATHS_DATA="/var/lib/grafana" \
+    GF_PATHS_HOME="/usr/share/grafana" \
+    GF_PATHS_LOGS="/var/log/grafana" \
+    GF_PATHS_PLUGINS="/var/lib/grafana/plugins" \
+    GF_PATHS_PROVISIONING="/etc/grafana/provisioning"
 
-RUN export DEBIAN_FRONTEND=noninteractive \
-    && apt-get update \
-    && apt-get --yes --no-install-recommends install \
-        adduser \
-        ca-certificates \
-        curl \
-        libfontconfig \
-        musl \
-    && curl \
-        --no-progress-meter \
-        --write-out "curl: %{filename_effective} %{size_download}B %{speed_download}B/s\n" \
-        --location \
-        --output "/tmp/${GRAFANA_URL##*/}" \
-        "${GRAFANA_URL}" \
-    && dpkg --install "/tmp/${GRAFANA_URL##*/}" \
-    && rm "/tmp/${GRAFANA_URL##*/}" \
-    && curl \
-        --no-progress-meter \
-        --write-out "curl: %{filename_effective} %{size_download}B %{speed_download}B/s\n" \
-        --location \
-        --output /usr/sbin/gosu \
-        "${GOSU_URL}" \
-    && chmod 0775 /usr/sbin/gosu \
-    && apt-get autoremove --yes \
-    && apt-get clean \
-    && rm --recursive --force /var/lib/apt/lists/*
-
-RUN mkdir -p /data/grafana/plugins && chown -R grafana:grafana /data/grafana/plugins
-RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install xginn8-pagerduty-datasource
-RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install grafana-image-renderer
-RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install grafana-clock-panel
-RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install grafana-piechart-panel
-RUN grafana-cli --pluginsDir "/data/grafana/plugins" plugins install grafana-clickhouse-datasource
-
-VOLUME ["/var/lib/grafana", "/var/log/grafana", "/etc/grafana"]
+RUN apt-get update && apt-get install -qq -y tar libfontconfig curl ca-certificates && \
+    mkdir -p "$GF_PATHS_HOME/.aws" && \
+    curl "$GRAFANA_URL" | tar xfvz - --strip-components=1 -C "$GF_PATHS_HOME" && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/* && \
+    groupadd -r -g $GF_GID grafana && \
+    useradd -r -u $GF_UID -g grafana grafana && \
+    mkdir -p "$GF_PATHS_PROVISIONING/datasources" \
+             "$GF_PATHS_PROVISIONING/dashboards" \
+             "$GF_PATHS_LOGS" \
+             "$GF_PATHS_PLUGINS" \
+             "$GF_PATHS_DATA" && \
+    cp "$GF_PATHS_HOME/conf/sample.ini" "$GF_PATHS_CONFIG" && \
+    cp "$GF_PATHS_HOME/conf/ldap.toml" /etc/grafana/ldap.toml && \
+    chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_HOME/.aws" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS" && \
+    chmod 777 "$GF_PATHS_DATA" "$GF_PATHS_HOME/.aws" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS"
 
 EXPOSE 3000
 
 COPY ./run.sh /run.sh
 
-COPY provisioning /tmp/provisioning
-
-COPY dashboards /tmp/dashboards
-
-ENTRYPOINT ["/run.sh"]
+USER grafana
+WORKDIR /
+ENTRYPOINT [ "/run.sh" ]
