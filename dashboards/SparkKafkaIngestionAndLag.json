@@ -21,7 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 36,
+  "id": 9,
   "links": [],
   "panels": [
     {
@@ -70,7 +70,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -106,7 +106,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "datasource": "Prometheus",
@@ -188,7 +188,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -224,7 +224,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"ignite.contemporary.*\"}[2m])",
@@ -291,7 +291,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -327,7 +327,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "expr": "kafka_server_brokertopicmetrics_oneminuterate{name=\"MessagesInPerSec\", topic=~\"ignite.*|parquet-notif|spark-latent.*\"}",
@@ -388,7 +388,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -424,12 +424,12 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"ignite.latent.*|spark-latent.*\"}[2m])",
+          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"ignite.latent.*\"}[2m])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -458,7 +458,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -488,7 +488,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.5.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "datasource": "Prometheus",
@@ -561,7 +561,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -593,12 +593,12 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "expr": "spark_AccedianLatentBatchPartitionsCount",
           "interval": "",
-          "legendFormat": "{{jobName}}",
+          "legendFormat": "{{job}}",
           "refId": "A"
         }
       ],
@@ -620,7 +620,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
-            "drawStyle": "line",
+            "drawStyle": "bars",
             "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
@@ -631,7 +631,7 @@
             "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
-            "pointSize": 5,
+            "pointSize": 1,
             "scaleDistribution": {
               "type": "linear"
             },
@@ -651,14 +651,15 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
-                "value": 80
+                "value": 60000.0003
               }
             ]
-          }
+          },
+          "unit": "ms"
         },
         "overrides": []
       },
@@ -672,8 +673,12 @@
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
@@ -683,7 +688,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "expr": "spark_queryBatchDuration{job=\"spark_streamingapp\"}",
@@ -753,14 +758,13 @@
               "mode": "off"
             }
           },
-          "links": [],
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -777,14 +781,18 @@
         "x": 11,
         "y": 33
       },
-      "id": 12,
+      "id": 20,
+      "interval": "2m",
       "options": {
-        "alertThreshold": true,
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": true
         },
         "tooltip": {
           "hideZeros": false,
@@ -792,19 +800,19 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "100.0 - 100 * (node_filesystem_avail_bytes{instance=~'.*sparkworker.*|.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"} / node_filesystem_size_bytes{instance=~'.*sparkworker.*|.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"})",
+          "expr": "avg_over_time(spark_AccedianMonitoredObjectsCount[2m])",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Spark Local Disk Utilization",
+      "title": "Forecasting: Number of Monitored Objects",
       "type": "timeseries"
     },
     {
@@ -847,13 +855,14 @@
               "mode": "off"
             }
           },
+          "links": [],
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -865,23 +874,19 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 14,
+        "h": 13,
         "w": 11,
         "x": 11,
         "y": 46
       },
-      "id": 20,
-      "interval": "2m",
+      "id": 12,
       "options": {
+        "alertThreshold": true,
         "legend": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true,
-          "sortBy": "Last *",
-          "sortDesc": true
+          "showLegend": true
         },
         "tooltip": {
           "hideZeros": false,
@@ -889,25 +894,25 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "avg_over_time(spark_AccedianMonitoredObjectsCount[2m])",
+          "expr": "100.0 - 100 * (node_filesystem_avail_bytes{instance=~'.*sparkworker.*|.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"} / node_filesystem_size_bytes{instance=~'.*sparkworker.*|.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"})",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Forecasting: Number of Monitored Objects",
+      "title": "Spark Local Disk Utilization",
       "type": "timeseries"
     }
   ],
   "preload": false,
   "refresh": "",
-  "schemaVersion": 40,
+  "schemaVersion": 41,
   "tags": [
     "spark"
   ],
@@ -922,6 +927,5 @@
   "timezone": "",
   "title": "Spark Ingestion and Lag",
   "uid": "oaePhsqGz",
-  "version": 7,
-  "weekStart": ""
+  "version": 15
 }
