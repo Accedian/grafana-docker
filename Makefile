@@ -20,7 +20,6 @@ BUILD_PLATFORMS ?= linux/amd64 #linux/arm64/v8 remove arm64 from list because pl
 
 GRAFANA_VERSION ?= 12.1.0
 GRAFANA_URL ?= https://dl.grafana.com/oss/release/grafana_$(GRAFANA_VERSION)
-GOSU_URL ?= https://github.com/tianon/gosu/releases/download/1.17/gosu
 GF_INSTALL_PLUGINS ?= "xginn8-pagerduty-datasource,grafana-image-renderer,grafana-clock-panel,grafana-piechart-panel,grafana-clickhouse-datasource"
 
 # Add the following for helm chart
@@ -39,14 +38,12 @@ all: build
 docker:
 	@echo "Building Grafana image: $(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)"
 	@echo "Using Grafana URL $(GRAFANA_URL)"
-	@echo "Using GOSU URL $(GOSU_URL)"
 	docker buildx build --no-cache --build-arg GRAFANA_VERSION=$(GRAFANA_VERSION) --build-arg VERSION=$(DOCKER_VER) --build-arg GF_INSTALL_PLUGINS=$(GF_INSTALL_PLUGINS) --platform $(LOCAL_BUILD_PLATFORM) -t $(DOCKER_REPO_NAME)$(DOCKER_IMAGE_NAME):$(DOCKER_VER) --load .
 
 push: 
 	@echo "building with $(BUILD_PLATFORMS)"
 	@echo "Building Grafana image: $(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)"
 	@echo "Using Grafana URL $(GRAFANA_URL)"
-	@echo "Using GOSU URL $(GOSU_URL)"
 	docker buildx build --build-arg GRAFANA_VERSION=$(GRAFANA_VERSION) --build-arg VERSION=$(DOCKER_VER) --build-arg GF_INSTALL_PLUGINS=$(GF_INSTALL_PLUGINS) --platform $(BUILD_PLATFORMS) -t $(DOCKER_REPO_NAME)$(DOCKER_IMAGE_NAME):$(DOCKER_VER) --push .
 
 .FORCE: 
