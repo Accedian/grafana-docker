@@ -9,7 +9,6 @@ export GF_USERS_DEFAULT_THEME=light
 : "${GF_PATHS_PROVISIONING:=/etc/grafana/provisioning}"
 : "${DS_PROMETHEUS:=http://localhost:9090}"
 
-chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_LOGS"
 
 if [ -f /var/run/secrets/gce_oauth_key ]; then
  export GF_AUTH_GOOGLE_CLIENT_ID=$(cat /var/run/secrets/gce_oauth_key)
@@ -38,7 +37,6 @@ if [ ! -z ${GF_AWS_PROFILES+x} ]; then
         fi
     done
 
-    chown grafana:grafana -R ~grafana/.aws
     chmod 600 ~grafana/.aws/credentials
 fi
 
@@ -56,7 +54,7 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
   cp -R /tmp/dashboards/ /var/lib/grafana/
 fi
 
-exec gosu grafana /usr/sbin/grafana-server              \
+exec /usr/sbin/grafana-server              \
   --homepath=/usr/share/grafana                         \
   --config="$GF_PATHS_CONFIG"                           \
   cfg:default.log.mode="console"                        \
