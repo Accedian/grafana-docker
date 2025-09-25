@@ -503,7 +503,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum by(tenant,objectType) (spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_$AppName\"}!=0)",
+          "expr": "sum by(tenant,objectType) (spark_AccedianStreamingMetrics_streaming_recCount_total{job=\"spark_$AppName\"}!=0)",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -514,7 +514,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_$AppName\"}[5m])>0",
+          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount_total{job=\"spark_$AppName\"}[5m])>0",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -580,11 +580,11 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount{job=\"spark_$AppName\"}[5m])",
+          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount_total{job=\"spark_$AppName\"}[5m])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "",
+          "legendFormat": "{{tenant}}-{{objectType}}",
           "range": true,
           "refId": "A"
         }
