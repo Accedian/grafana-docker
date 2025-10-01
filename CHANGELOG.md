@@ -1,8 +1,16 @@
 * Alert Service - add MQTT metrics [Asana](https://app.asana.com/1/5557457880942/project/1207589908338262/task/1211097394491836?focus=true)
 ## Current Release
+### 0.200.0
+**Release Date:** Wed Sep 17 19:25:11 UTC 2025
+## Previous Releases
+* Feat - Add spark_executor_runTime metric to spark resources dashboard [Asana](https://app.asana.com/1/5557457880942/project/1211248085470096/task/1211362440163023?focus=true)
+* Fix - Fix latentlag widget labels on spark ingestion and lag dashboard [Asana](https://app.asana.com/1/5557457880942/project/1211248085470096/task/1209459846414109?focus=true)
+* Fix - fix  recCount metric in object type dashboard [Asana](https://app.asana.com/1/5557457880942/project/1207093596205090/task/1209718397287266?focus=true)
+* Fix - Fix Micro Batch Duration Panel [Asana](https://app.asana.com/1/5557457880942/project/1207093596205090/task/1211293213793482?focus=true)
+* Fix - Remove spark-latent.* from Latent Lag board [Asana](https://app.asana.com/1/5557457880942/project/1207093596205090/task/1211211264951639?focus=true)
+* Feat - Add Disk Spill, Executor Heap and Storage Heap Metric Panels to the Spark Resource Board [Asana](https://app.asana.com/1/5557457880942/project/1207093596205090/task/1211140224141531?focus=true)
 ### 0.199.0
 **Release Date:** Mon Aug 25 13:46:38 UTC 2025
-## Previous Releases
 * Bellhop - add grafana metrics [Asana](https://app.asana.com/1/5557457880942/project/1208396415867905/task/1210917120745193?focus=true)
 ### 0.198.0
 **Release Date:** Mon Aug 18 14:39:05 UTC 2025
