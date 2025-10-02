@@ -228,7 +228,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"streamingapp\", job=\"kafka-topic-metrics\", topic=~\"ignite.contemporary.*\"}",
+          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"streamingapp\", topic=~\"ignite.contemporary.*\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -238,7 +238,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"alertStreaming\", job=\"kafka-topic-metrics\", topic=\"alert-events\"}",
+          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"alertStreaming\", topic=\"alert-events\"}",
           "interval": "",
           "format": "time_series",
           "legendFormat": "{{topic}}",
@@ -251,7 +251,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"alertStreaming\", job=\"kafka-topic-metrics\", topic=~\"ignite.contemporary.*\"}",
+          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"alertStreaming\", topic=~\"ignite.contemporary.*\"}",
           "hide": false,
           "interval": "",
           "legendFormat": "{{topic}}",
@@ -471,7 +471,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"latentapp\", job=\"kafka-topic-metrics\", topic=~\"ignite.latent.*\"}",
+          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"latentapp\", topic=~\"ignite.latent.*\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -485,7 +485,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"alertStreaming\", job=\"kafka-topic-metrics\", topic=~\"ignite.latent.*\"}",
+          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"alertStreaming\", topic=~\"ignite.latent.*\"}",
           "hide": false,
           "interval": "",
           "format": "time_series",
