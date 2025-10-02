@@ -1,3 +1,4 @@
+* Alert Service - add MQTT metrics [Asana](https://app.asana.com/1/5557457880942/project/1207589908338262/task/1211097394491836?focus=true)
 ## Current Release
 ### 0.200.0
 **Release Date:** Wed Sep 17 19:25:11 UTC 2025
