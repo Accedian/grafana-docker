@@ -4,7 +4,7 @@
 version: 2.1
 orbs:
   gh: circleci/github-cli@2.5
-  pca-bes: accedian/pca-bes@1.20.0
+  pca-bes: accedian/pca-bes@1.21.0
 
 # Jobs
 jobs:
@@ -49,6 +49,8 @@ jobs:
       - run:
           name: "Push image to GCR"
           command: |
+            DOCKER_VER=$(cat current-version)
+            export DOCKER_VER
             make push
             
             # echo "devhub docker login"
