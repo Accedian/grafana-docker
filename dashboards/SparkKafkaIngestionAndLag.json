@@ -206,7 +206,7 @@
         "x": 11,
         "y": 0
       },
-      "id": 4,
+      "id": 21,
       "options": {
         "alertThreshold": true,
         "legend": {
@@ -227,7 +227,8 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
-          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"ignite.contemporary.*\"}[2m])",
+          "editorMode": "code",
+          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"streamingapp\", topic=~\"ignite.contemporary.*\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -236,10 +237,52 @@
           "refId": "A"
         },
         {
-          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=\"alert-events\"}[2m])",
+          "editorMode": "code",
+          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"alertStreaming\", topic=\"alert-events\"}",
+          "interval": "",
+          "format": "time_series",
+          "legendFormat": "{{topic}}",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"alertStreaming\", topic=~\"ignite.contemporary.*\"}",
+          "hide": false,
           "interval": "",
           "legendFormat": "{{topic}}",
-          "refId": "C"
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"ignite.contemporary.*\"}[2m])",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "PreUpgrade-{{topic}}",
+          "range": true,
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=\"alert-events\"}[2m])",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "PreUpgrade-{{topic}}",
+          "range": true,
+          "refId": "E"
         }
       ],
       "title": "Contemporary Lag",
@@ -401,12 +444,12 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
+        "h": 14,
         "w": 11,
         "x": 11,
         "y": 14
       },
-      "id": 17,
+      "id": 22,
       "options": {
         "alertThreshold": true,
         "legend": {
@@ -427,15 +470,41 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
-          "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"ignite.latent.*\"}[2m])",
+          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"latentapp\", topic=~\"ignite.latent.*\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{topic}}",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"alertStreaming\", topic=~\"ignite.latent.*\"}",
+          "hide": false,
+          "interval": "",
+          "format": "time_series",
+          "legendFormat": "{{topic}}",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"ignite.latent.*\"}[2m])",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "PreUpgrade-{{topic}}",
+          "range": true,
+          "refId": "C"
         }
       ],
       "title": "Latent Lag",
@@ -576,7 +645,7 @@
         "h": 9,
         "w": 11,
         "x": 11,
-        "y": 24
+        "y": 28
       },
       "id": 19,
       "options": {
@@ -779,7 +848,7 @@
         "h": 13,
         "w": 11,
         "x": 11,
-        "y": 33
+        "y": 37
       },
       "id": 20,
       "interval": "2m",
@@ -877,7 +946,7 @@
         "h": 13,
         "w": 11,
         "x": 11,
-        "y": 46
+        "y": 50
       },
       "id": 12,
       "options": {
@@ -927,5 +996,5 @@
   "timezone": "",
   "title": "Spark Ingestion and Lag",
   "uid": "oaePhsqGz",
-  "version": 15
+  "version": 19
 }
