@@ -918,10 +918,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -965,10 +962,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "expr": "roadrunner_filewatcher_files_in_dir",
           "interval": "",
           "legendFormat": "",
@@ -1008,10 +1002,7 @@
       }
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1085,10 +1076,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "builder",
           "expr": "roadrunner_sa_data_time_in_raw_chan",
           "interval": "",
@@ -1101,10 +1089,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1178,10 +1163,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "builder",
           "expr": "roadrunner_sa_data_time_to_parse",
           "legendFormat": "__auto",
@@ -1193,10 +1175,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1270,10 +1249,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "builder",
           "expr": "roadrunner_sa_data_time_to_persist",
           "legendFormat": "__auto",
@@ -1285,10 +1261,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1401,10 +1374,7 @@
       "pluginVersion": "9.1.3",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "builder",
           "exemplar": false,
           "expr": "roadrunner_sensor_agent_admin_connections",
@@ -1419,10 +1389,7 @@
       "type": "table"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1540,10 +1507,7 @@
       "pluginVersion": "9.1.3",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "builder",
           "exemplar": false,
           "expr": "roadrunner_sensor_agent_data_connections",
@@ -1558,10 +1522,7 @@
       "type": "table"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1646,10 +1607,7 @@
       "pluginVersion": "9.1.3",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "builder",
           "exemplar": false,
           "expr": "roadrunner_sensor_agent_admin_duplicate_connection_requests",
@@ -1664,10 +1622,7 @@
       "type": "table"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1752,10 +1707,7 @@
       "pluginVersion": "9.1.3",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "builder",
           "exemplar": false,
           "expr": "roadrunner_sensor_agent_data_duplicate_connection_requests",
@@ -1770,10 +1722,7 @@
       "type": "table"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1847,10 +1796,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "builder",
           "expr": "roadrunner_persistence_service_cached_files",
           "legendFormat": "__auto",
@@ -1862,10 +1808,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1939,10 +1882,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "builder",
           "expr": "roadrunner_persistence_service_cache_size_bytes",
           "legendFormat": "__auto",
@@ -1954,10 +1894,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2031,10 +1968,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "builder",
           "expr": "roadrunner_persistence_service_outstanding_requests",
           "legendFormat": "__auto",
@@ -2050,10 +1984,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -2097,10 +2028,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "expr": "roadrunner_persistence_service_batch_size",
           "interval": "",
           "legendFormat": "",
@@ -2140,10 +2068,7 @@
       }
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2253,10 +2178,7 @@
       "pluginVersion": "9.1.3",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "builder",
           "exemplar": false,
           "expr": "roadrunner_persistence_service_failed_files",
@@ -2271,10 +2193,7 @@
       "type": "table"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "000000001"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2348,10 +2267,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000001"
-          },
+          "datasource": "Prometheus",
           "editorMode": "builder",
           "expr": "roadrunner_persistence_service_persist_errors",
           "legendFormat": "__auto",
