@@ -3,6 +3,7 @@ FROM debian:stable-slim
 ARG TARGETARCH
 ARG GRAFANA_VERSION
 ARG GRAFANA_URL="https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION}_${TARGETARCH}.deb"
+ARG GOSU_URL="https://github.com/tianon/gosu/releases/download/1.17/gosu-${TARGETARCH}"
 ARG GF_INSTALL_PLUGINS
 
 RUN export DEBIAN_FRONTEND=noninteractive \
@@ -19,6 +20,13 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         --location \
         --output "/tmp/${GRAFANA_URL##*/}" \
         "${GRAFANA_URL}" \
+    && curl \
+        --no-progress-meter \
+        --write-out "curl: %{filename_effective} %{size_download}B %{speed_download}B/s\n" \
+        --location \
+        --output /usr/sbin/gosu \
+        "${GOSU_URL}" \
+    && chmod 0775 /usr/sbin/gosu \
     && dpkg --install "/tmp/${GRAFANA_URL##*/}" \
     && rm "/tmp/${GRAFANA_URL##*/}" \
     && apt-get autoremove --yes \
@@ -27,7 +35,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 
 ENV GRAFANA_PLUGINS_DIR=/var/lib/grafana/plugins
 RUN mkdir -p $GRAFANA_PLUGINS_DIR /data/grafana/plugins /var/lib/grafana/dashboards /var/log/grafana /etc/grafana /etc/grafana/provisioning \
-    && chgrp -R 0 $GRAFANA_PLUGINS_DIR /data/grafana/plugins /var/lib/grafana /var/log/grafana /etc/grafana \
+    && chown grafana:root 0 $GRAFANA_PLUGINS_DIR /data/grafana/plugins /var/lib/grafana /var/log/grafana /etc/grafana \
     && chmod -R g+rwX $GRAFANA_PLUGINS_DIR /data/grafana/plugins /var/lib/grafana /var/log/grafana /etc/grafana
 
 RUN echo "Installing plugins: $GF_INSTALL_PLUGINS" && \
