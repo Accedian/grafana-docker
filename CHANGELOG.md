@@ -1,8 +1,10 @@
-* SBE - remove datasource ids for SNMP related widgets from RR dashboard in Grafana (Asana)[https://app.asana.com/1/5557457880942/project/1208396396222905/task/1211316934856267?focus=true]
 ## Current Release
+### 0.206.0
+**Release Date:** Tue Oct 28 15:11:38 UTC 2025
+## Previous Releases
+* SBE - remove datasource ids for SNMP related widgets from RR dashboard in Grafana (Asana)[https://app.asana.com/1/5557457880942/project/1208396396222905/task/1211316934856267?focus=true]
 ### 0.202.0
 **Release Date:** Wed Oct  8 15:32:33 UTC 2025
-## Previous Releases
 ### 0.201.0
 **Release Date:** Thu Oct  2 12:37:30 UTC 2025
 * Alert Service - add MQTT metrics [Asana](https://app.asana.com/1/5557457880942/project/1207589908338262/task/1211097394491836?focus=true)
