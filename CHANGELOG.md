@@ -1,7 +1,9 @@
 ## Current Release
+### 0.208.0
+**Release Date:** Thu Dec 11 20:11:28 UTC 2025
+## Previous Releases
 ### 0.207.0
 **Release Date:** Tue Oct 28 17:53:15 UTC 2025
-## Previous Releases
 * SBE - Replaced Kafka lag for latent, alert, and streamingApp to use Kafka consumer group [Asana](https://app.asana.com/1/5557457880942/project/1210730962903478/task/1210416581699531)
 ### 0.206.0
 **Release Date:** Tue Oct 28 15:11:38 UTC 2025
