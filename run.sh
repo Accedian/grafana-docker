@@ -68,17 +68,10 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
     cp -R /tmp/dashboards/. "$GF_PATHS_DATA/dashboards/"
 fi
 
-if [ "$#" -eq 0 ] || [ "${1#-}" != "$1" ]; then
-    if command -v grafana >/dev/null 2>&1; then
-        set -- grafana server "$@"
-    elif command -v grafana-server >/dev/null 2>&1; then
-        set -- grafana-server "$@"
-    else
-        echo "Grafana server binary not found"
-        exit 1
-    fi
-
-    set -- "$@" \
+if [ "$(id -u)" = "0" ]; then
+    exec gosu grafana "$@"
+else
+    exec grafana "$@" \
         --homepath=/usr/share/grafana \
         --config="$GF_PATHS_CONFIG" \
         cfg:default.log.mode=console \
@@ -87,9 +80,3 @@ if [ "$#" -eq 0 ] || [ "${1#-}" != "$1" ]; then
         cfg:default.paths.plugins="$GF_PATHS_PLUGINS" \
         cfg:default.paths.provisioning="$GF_PATHS_PROVISIONING"
 fi
-
-if [ "$(id -u)" = "0" ]; then
-    exec gosu grafana "$@"
-fi
-
-exec "$@"
