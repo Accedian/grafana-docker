@@ -44,23 +44,18 @@ spec:
           - "/bin/sh"
           - "-c"
           - |
-            # 1. Copy existing dashboards to temp location
-            mkdir -p /temp-dashboards
-            if [ -d "/tmp/dashboards" ] && [ "$(ls -A /tmp/dashboards 2>/dev/null)" ]; then
-              cp -r /tmp/dashboards/* /temp-dashboards/ || echo "Warning: Some files might not have copied"
-            fi
-            
-            # 2. Copy dashboards from config-data to the scratch disk
             mkdir -p /scratch-disk/dashboards
-            if [ -d "/config-tmp/..data/" ] && [ "$(ls -A /config-tmp/..data/*.json 2>/dev/null)" ]; then
+
+            # 1. Copy stock dashboards bundled in the image to the writable scratch disk.
+            if [ -d "/tmp/dashboards" ] && [ "$(find /tmp/dashboards -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]; then
+              cp -r /tmp/dashboards/. /scratch-disk/dashboards/ || echo "Warning: Some files might not have copied"
+            fi
+
+            # 2. Copy dashboards from the ConfigMap to the scratch disk.
+            if [ -d "/config-tmp/..data/" ] && find /config-tmp/..data -maxdepth 1 -name '*.json' -print -quit | grep -q .; then
               cp -r /config-tmp/..data/*.json /scratch-disk/dashboards/ || echo "Warning: Some JSON files might not have copied"
             fi
-            
-            # 3. Copy temp dashboards to scratch disk as well
-            if [ -d "/temp-dashboards" ] && [ "$(ls -A /temp-dashboards 2>/dev/null)" ]; then
-              cp -r /temp-dashboards/* /scratch-disk/dashboards/ || echo "Warning: Some files from temp might not have copied"
-            fi
-            
+
             echo "Dashboard setup complete"
           volumeMounts:
             - name: dashboard-scratch

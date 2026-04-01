@@ -35,7 +35,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 
 ENV GRAFANA_PLUGINS_DIR=/var/lib/grafana/plugins
 RUN mkdir -p $GRAFANA_PLUGINS_DIR /data/grafana/plugins /var/lib/grafana/dashboards /var/log/grafana /etc/grafana /etc/grafana/provisioning \
-    && chown grafana:root 0 $GRAFANA_PLUGINS_DIR /data/grafana/plugins /var/lib/grafana /var/log/grafana /etc/grafana \
+    && chown grafana:root $GRAFANA_PLUGINS_DIR /data/grafana/plugins /var/lib/grafana /var/log/grafana /etc/grafana \
     && chmod -R g+rwX $GRAFANA_PLUGINS_DIR /data/grafana/plugins /var/lib/grafana /var/log/grafana /etc/grafana
 
 RUN echo "Installing plugins: $GF_INSTALL_PLUGINS" && \
