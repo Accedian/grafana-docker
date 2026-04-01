@@ -2,14 +2,23 @@
 
 export GF_USERS_DEFAULT_THEME=light
 
-: "${GF_PATHS_CONFIG:=/etc/grafana/grafana.ini}"
 : "${GF_PATHS_DATA:=/var/lib/grafana}"
 : "${GF_PATHS_LOGS:=${GF_PATHS_DATA}/logs}"
 : "${GF_PATHS_PLUGINS:=${GF_PATHS_DATA}/plugins}"
 : "${GF_PATHS_PROVISIONING:=${GF_PATHS_DATA}/provisioning}"
+: "${GF_PATHS_CONFIG:=${GF_PATHS_DATA}/grafana.ini}"
 : "${DS_PROMETHEUS:=http://localhost:9090}"
 
 mkdir -p "$GF_PATHS_DATA" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS" "$GF_PATHS_PROVISIONING" "$GF_PATHS_DATA/dashboards" || true
+
+# Prefer a writable config file on data volume for restricted OpenShift UIDs.
+if [ ! -f "$GF_PATHS_CONFIG" ]; then
+    if [ -r /etc/grafana/grafana.ini ]; then
+        cp /etc/grafana/grafana.ini "$GF_PATHS_CONFIG"
+    else
+        : > "$GF_PATHS_CONFIG"
+    fi
+fi
 
 if [ "$(id -u)" = "0" ]; then
     chown -R grafana:root "$GF_PATHS_DATA" "$GF_PATHS_LOGS" || true
