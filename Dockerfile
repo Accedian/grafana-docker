@@ -20,8 +20,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         --location \
         --output "/tmp/${GRAFANA_URL##*/}" \
         "${GRAFANA_URL}" \
-    && dpkg --install "/tmp/${GRAFANA_URL##*/}" \
-    && rm "/tmp/${GRAFANA_URL##*/}" \
     && curl \
         --no-progress-meter \
         --write-out "curl: %{filename_effective} %{size_download}B %{speed_download}B/s\n" \
@@ -29,13 +27,16 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         --output /usr/sbin/gosu \
         "${GOSU_URL}" \
     && chmod 0775 /usr/sbin/gosu \
+    && dpkg --install "/tmp/${GRAFANA_URL##*/}" \
+    && rm "/tmp/${GRAFANA_URL##*/}" \
     && apt-get autoremove --yes \
     && apt-get clean \
     && rm --recursive --force /var/lib/apt/lists/*
 
 ENV GRAFANA_PLUGINS_DIR=/var/lib/grafana/plugins
-RUN mkdir -p $GRAFANA_PLUGINS_DIR && chown -R grafana:grafana $GRAFANA_PLUGINS_DIR
-RUN mkdir -p /data/grafana/plugins && chown -R grafana:grafana /data/grafana/plugins
+RUN mkdir -p $GRAFANA_PLUGINS_DIR /data/grafana/plugins /var/lib/grafana/dashboards /var/log/grafana /etc/grafana /etc/grafana/provisioning \
+    && chown grafana:root $GRAFANA_PLUGINS_DIR /data/grafana/plugins /var/lib/grafana /var/log/grafana /etc/grafana \
+    && chmod -R g+rwX $GRAFANA_PLUGINS_DIR /data/grafana/plugins /var/lib/grafana /var/log/grafana /etc/grafana
 
 RUN echo "Installing plugins: $GF_INSTALL_PLUGINS" && \
     IFS=','; for plugin_entry in $GF_INSTALL_PLUGINS; do \

@@ -2,14 +2,27 @@
 
 export GF_USERS_DEFAULT_THEME=light
 
-: "${GF_PATHS_CONFIG:=/etc/grafana/grafana.ini}"
 : "${GF_PATHS_DATA:=/var/lib/grafana}"
-: "${GF_PATHS_LOGS:=/var/log/grafana}"
-: "${GF_PATHS_PLUGINS:=/var/lib/grafana/plugins}"
-: "${GF_PATHS_PROVISIONING:=/etc/grafana/provisioning}"
+: "${GF_PATHS_LOGS:=${GF_PATHS_DATA}/logs}"
+: "${GF_PATHS_PLUGINS:=${GF_PATHS_DATA}/plugins}"
+: "${GF_PATHS_PROVISIONING:=${GF_PATHS_DATA}/provisioning}"
+: "${GF_PATHS_CONFIG:=${GF_PATHS_DATA}/grafana.ini}"
 : "${DS_PROMETHEUS:=http://localhost:9090}"
 
-chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_LOGS"
+mkdir -p "$GF_PATHS_DATA" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS" "$GF_PATHS_PROVISIONING" "$GF_PATHS_DATA/dashboards" || true
+
+# Prefer a writable config file on data volume for restricted OpenShift UIDs.
+if [ ! -f "$GF_PATHS_CONFIG" ]; then
+    if [ -r /etc/grafana/grafana.ini ]; then
+        cp /etc/grafana/grafana.ini "$GF_PATHS_CONFIG"
+    else
+        : > "$GF_PATHS_CONFIG"
+    fi
+fi
+
+if [ "$(id -u)" = "0" ]; then
+    chown -R grafana:root "$GF_PATHS_DATA" "$GF_PATHS_LOGS" || true
+fi
 
 if [ -f /var/run/secrets/gce_oauth_key ]; then
  export GF_AUTH_GOOGLE_CLIENT_ID=$(cat /var/run/secrets/gce_oauth_key)
@@ -38,30 +51,32 @@ if [ ! -z ${GF_AWS_PROFILES+x} ]; then
         fi
     done
 
-    chown grafana:grafana -R ~grafana/.aws
     chmod 600 ~grafana/.aws/credentials
 fi
 
 if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
   echo "Deleting existing provisioning"
-  rm -rf /etc/grafana/provisioning/*
+    rm -rf "$GF_PATHS_PROVISIONING"/* || true
 
   echo "Deleting existing dashboards"
-  rm -rf /var/lib/grafana/dashboards/*
+    rm -rf "$GF_PATHS_DATA/dashboards"/* || true
 
   echo "Copying stock provisioning"
-  cp -R /tmp/provisioning/ /etc/grafana/
+    cp -R /tmp/provisioning/. "$GF_PATHS_PROVISIONING/"
 
   echo "Copying stock dashboars"
-  cp -R /tmp/dashboards/ /var/lib/grafana/
+    cp -R /tmp/dashboards/. "$GF_PATHS_DATA/dashboards/"
 fi
 
-exec gosu grafana /usr/sbin/grafana-server              \
-  --homepath=/usr/share/grafana                         \
-  --config="$GF_PATHS_CONFIG"                           \
-  cfg:default.log.mode="console"                        \
-  cfg:default.paths.data="$GF_PATHS_DATA"               \
-  cfg:default.paths.logs="$GF_PATHS_LOGS"               \
-  cfg:default.paths.plugins="$GF_PATHS_PLUGINS"         \
-  cfg:default.paths.provisioning=$GF_PATHS_PROVISIONING \
-  "$@"
+if [ "$(id -u)" = "0" ]; then
+    exec gosu grafana "$@"
+else
+    exec grafana "$@" \
+        --homepath=/usr/share/grafana \
+        --config="$GF_PATHS_CONFIG" \
+        cfg:default.log.mode=console \
+        cfg:default.paths.data="$GF_PATHS_DATA" \
+        cfg:default.paths.logs="$GF_PATHS_LOGS" \
+        cfg:default.paths.plugins="$GF_PATHS_PLUGINS" \
+        cfg:default.paths.provisioning="$GF_PATHS_PROVISIONING"
+fi
