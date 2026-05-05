@@ -1,5 +1,6 @@
 #!/bin/bash -e
 
+umask 0002
 export GF_USERS_DEFAULT_THEME=light
 
 : "${GF_PATHS_DATA:=/var/lib/grafana}"
@@ -20,9 +21,8 @@ if [ ! -f "$GF_PATHS_CONFIG" ]; then
     fi
 fi
 
-if [ "$(id -u)" = "0" ]; then
-    chown -R grafana:root "$GF_PATHS_DATA" "$GF_PATHS_LOGS" || true
-fi
+# Ensure existing PVC data is group-writable for OpenShift random UIDs (GID 0).
+chmod -R g+rwX "$GF_PATHS_DATA" "$GF_PATHS_LOGS" 2>/dev/null || true
 
 if [ -f /var/run/secrets/gce_oauth_key ]; then
  export GF_AUTH_GOOGLE_CLIENT_ID=$(cat /var/run/secrets/gce_oauth_key)
@@ -71,7 +71,7 @@ fi
 if [ "$(id -u)" = "0" ]; then
     exec gosu grafana "$@"
 else
-    exec grafana "$@" \
+    exec /usr/share/grafana/bin/grafana-server \
         --homepath=/usr/share/grafana \
         --config="$GF_PATHS_CONFIG" \
         cfg:default.log.mode=console \
