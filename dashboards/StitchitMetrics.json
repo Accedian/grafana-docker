@@ -78,7 +78,7 @@
                 }
               ]
             },
-            "unit": "short"
+            "unit": "s"
           },
           "overrides": []
         },
@@ -108,10 +108,10 @@
           {
             "datasource": "Prometheus",
             "editorMode": "code",
-            "expr": "stitchit_api_call_duration",
+            "expr": "(sum(rate(stitchit_stitchit_api_call_duration_sum[$__rate_interval])) by (name)) / (sum(rate(stitchit_stitchit_api_call_duration_count[$__rate_interval])) by (name))",
             "format": "time_series",
             "intervalFactor": 1,
-            "legendFormat": "{{name}}:{{quantile}}",
+            "legendFormat": "{{name}}",
             "range": true,
             "refId": "A"
           }
@@ -173,7 +173,7 @@
                 }
               ]
             },
-            "unit": "short"
+            "unit": "s"
           },
           "overrides": []
         },
