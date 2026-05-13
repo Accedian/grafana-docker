@@ -24,6 +24,7 @@ fi
 # Ensure existing PVC data is group-writable for OpenShift random UIDs (GID 0).
 chmod -R g+rwX "$GF_PATHS_DATA" "$GF_PATHS_LOGS" 2>/dev/null || true
 
+
 if [ -f /var/run/secrets/gce_oauth_key ]; then
  export GF_AUTH_GOOGLE_CLIENT_ID=$(cat /var/run/secrets/gce_oauth_key)
 fi
@@ -64,19 +65,25 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
   echo "Copying stock provisioning"
     cp -R /tmp/provisioning/. "$GF_PATHS_PROVISIONING/"
 
-  echo "Copying stock dashboars"
+  echo "Copying stock dashboards"
     cp -R /tmp/dashboards/. "$GF_PATHS_DATA/dashboards/"
 fi
 
+grafana_args=(
+    --homepath=/usr/share/grafana
+    --config="$GF_PATHS_CONFIG"
+    cfg:default.log.mode="console"
+    cfg:default.paths.data="$GF_PATHS_DATA"
+    cfg:default.paths.logs="$GF_PATHS_LOGS"
+    cfg:default.paths.plugins="$GF_PATHS_PLUGINS"
+    cfg:default.paths.provisioning="$GF_PATHS_PROVISIONING"
+    "$@"
+)
+
 if [ "$(id -u)" = "0" ]; then
-    exec gosu grafana "$@"
+    # Fix ownership of files created as root before dropping to grafana user
+    chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_LOGS" 2>/dev/null || true
+    exec gosu grafana /usr/share/grafana/bin/grafana-server "${grafana_args[@]}"
 else
-    exec /usr/share/grafana/bin/grafana-server \
-        --homepath=/usr/share/grafana \
-        --config="$GF_PATHS_CONFIG" \
-        cfg:default.log.mode=console \
-        cfg:default.paths.data="$GF_PATHS_DATA" \
-        cfg:default.paths.logs="$GF_PATHS_LOGS" \
-        cfg:default.paths.plugins="$GF_PATHS_PLUGINS" \
-        cfg:default.paths.provisioning="$GF_PATHS_PROVISIONING"
+    exec /usr/share/grafana/bin/grafana-server "${grafana_args[@]}"
 fi
