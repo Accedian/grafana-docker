@@ -68,15 +68,19 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
     cp -R /tmp/dashboards/. "$GF_PATHS_DATA/dashboards/"
 fi
 
-if [ "$(id -u)" = "0" ]; then
-    exec gosu grafana "$@"
-else
-    exec /usr/share/grafana/bin/grafana-server \
-        --homepath=/usr/share/grafana \
-        --config="$GF_PATHS_CONFIG" \
-        cfg:default.log.mode=console \
-        cfg:default.paths.data="$GF_PATHS_DATA" \
-        cfg:default.paths.logs="$GF_PATHS_LOGS" \
-        cfg:default.paths.plugins="$GF_PATHS_PLUGINS" \
-        cfg:default.paths.provisioning="$GF_PATHS_PROVISIONING"
-fi
+ grafana_args=(
+      --homepath=/usr/share/grafana
+      --config="$GF_PATHS_CONFIG"
+      cfg:default.log.mode="console"
+      cfg:default.paths.data="$GF_PATHS_DATA"
+      cfg:default.paths.logs="$GF_PATHS_LOGS"
+      cfg:default.paths.plugins="$GF_PATHS_PLUGINS"
+      cfg:default.paths.provisioning="$GF_PATHS_PROVISIONING"
+      "$@"
+  )
+
+  if [ "$(id -u)" = "0" ]; then
+      exec gosu grafana /usr/share/grafana/bin/grafana-server "${grafana_args[@]}"
+  else
+      exec /usr/share/grafana/bin/grafana-server "${grafana_args[@]}"
+  fi
