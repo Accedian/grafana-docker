@@ -1,0 +1,3044 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: "1 Day Cert Expiry"
+    folder: "General Alerting"
+    interval: "14400s"
+    rules:
+      - uid: "cloudops-1-day-cert-expiry"
+        title: "1 Day Cert Expiry"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "(probe_ssl_earliest_cert_expiry - time())/60/60/24"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B < 1"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "4h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B < 1"
+          xops-alerting-class: "Certs"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "1 Day Cert Expiry"
+          description: ""
+        isPaused: false
+
+  - orgId: 1
+    name: "5 Day Cert Expiry"
+    folder: "General Alerting"
+    interval: "14400s"
+    rules:
+      - uid: "cloudops-5-day-cert-expiry"
+        title: "5 Day Cert Expiry"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "(probe_ssl_earliest_cert_expiry - time())/60/60/24"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B < 5"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "4h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B < 5"
+          xops-alerting-class: "Certs"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "5 Day Cert Expiry"
+          description: ""
+        isPaused: false
+
+  - orgId: 1
+    name: "Airflow DAG Failed"
+    folder: Ingestion
+    interval: "600s"
+    rules:
+      - uid: "cloudops-airflow-dag-failed"
+        title: "Airflow DAG Failed"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "deriv(airflow_dag_status{status='failed', owner!='custom-reports', owner!='dhl'}[4h])"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 0"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "20m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 0"
+          xops-alerting-class: "Ingestion Statistics"
+          xops-alerting-docs: "https://www.notion.so/accedian/Airflow-Batch-Ingestions-a7749ab4ec384c96829490dfad63240c?pvs=4"
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P5"
+        annotations:
+          summary: "Airflow DAG Failed"
+          description: "The indicated Airflow DAG failed and has failed one or more times in last 4 hours. https://www.notion.so/accedian/Fixing-A-Broken-Spark-Job-47a732c287f047d5bf7ba99e6b35c93f?pvs=4"
+        isPaused: false
+
+  - orgId: 1
+    name: "Airflow DAG Failed - custom reports"
+    folder: Ingestion
+    interval: "600s"
+    rules:
+      - uid: "cloudops-af-dag-failed-custom-reports"
+        title: "Airflow DAG Failed - custom reports"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "deriv(airflow_dag_status{status='failed',owner='custom-reports'}[4h])"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 0"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "20m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: "custom-reports-slack"
+          validator: "B > 0"
+          xops-alerting-class: "Airflow"
+          xops-alerting-docs: "https://www.notion.so/accedian/Fixing-A-Broken-Spark-Job-47a732c287f047d5bf7ba99e6b35c93f?pvs=4"
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P5"
+        annotations:
+          summary: "Airflow DAG Failed - custom reports"
+          description: "The indicated Airflow DAG failed and has failed one or more times in last 4 hours. https://grafana.npavxops.accedian.net/d/IUhlWpDVz/airflow-job-status?orgId=1"
+        isPaused: false
+
+  - orgId: 1
+    name: "Airflow DAG Failed - dhl_get_configs"
+    folder: Ingestion
+    interval: "300s"
+    rules:
+      - uid: "cloudops-af-dag-failed-dhl-get-configs"
+        title: "Airflow DAG Failed - dhl_get_configs"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "deriv(airflow_dag_status{status='failed',dag_id='dhl_get_configs'}[15m])"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 0"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "20m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 0"
+          xops-alerting-class: "Airflow"
+          xops-alerting-docs: "https://www.notion.so/accedian/Fixing-A-Broken-Spark-Job-47a732c287f047d5bf7ba99e6b35c93f?pvs=4"
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P5"
+        annotations:
+          summary: "Airflow DAG Failed - dhl_get_configs"
+          description: "The Airflow dhl_get_configs job has failed repeatedly. https://grafana.npavxops.accedian.net/d/IUhlWpDVz/airflow-job-status?orgId=1"
+        isPaused: false
+
+  - orgId: 1
+    name: "Airflow DAG Failed - DHL Jobs"
+    folder: Ingestion
+    interval: "600s"
+    rules:
+      - uid: "cloudops-airflow-dag-failed-dhl-jobs"
+        title: "Airflow DAG Failed - DHL Jobs"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "deriv(airflow_dag_status{status='failed',dag_id!='dhl_get_configs',owner='dhl'}[4h])"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 0"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "20m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: "custom-reports-slack"
+          validator: "B > 0"
+          xops-alerting-class: "Airflow"
+          xops-alerting-docs: "https://www.notion.so/accedian/Airflow-Batch-Ingestions-a7749ab4ec384c96829490dfad63240c?pvs=4"
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P5"
+        annotations:
+          summary: "Airflow DAG Failed - DHL Jobs"
+          description: "The indicated Airflow DAG failed and has not run successfully in last 6 hours.  https://grafana.npavxops.accedian.net/d/IUhlWpDVz/airflow-job-status?orgId=1"
+        isPaused: false
+
+  - orgId: 1
+    name: "Airflow Health Status"
+    folder: Ingestion
+    interval: "30s"
+    rules:
+      - uid: "cloudops-airflow-health-status"
+        title: "Airflow Health Status"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "rate(airflow_scheduler_health_status{status='healthy'}[10m])"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 1"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "15m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 1"
+          xops-alerting-class: "Ingestion Statistics"
+          xops-alerting-docs: "https://www.notion.so/accedian/Airflow-Batch-Ingestions-a7749ab4ec384c96829490dfad63240c?pvs=4"
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "Airflow Health Status"
+          description: "Airflow is not in a healthy state.  Most likely scheduler is down or communication between other services are broken. https://grafana.npavxops.accedian.net/d/IUhlWpDVz/airflow-job-status?orgId=1"
+        isPaused: false
+
+  - orgId: 1
+    name: "Airflow job duration"
+    folder: Ingestion
+    interval: "900s"
+    rules:
+      - uid: "cloudops-airflow-job-duration"
+        title: "Airflow job duration"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "airflow_dag_run_duration{}"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 43200"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "30m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 43200"
+          xops-alerting-class: "Ingestion Statistics"
+          xops-alerting-docs: "https://www.notion.so/accedian/Airflow-Batch-Ingestions-a7749ab4ec384c96829490dfad63240c?pvs=4"
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P5"
+        annotations:
+          summary: "Airflow job duration"
+          description: "Validate if job duration < 12H long.  https://grafana.npavxops.accedian.net/d/IUhlWpDVz/airflow-job-status?orgId=1"
+        isPaused: false
+
+  - orgId: 1
+    name: "Airflow Jobs Stopped"
+    folder: Ingestion
+    interval: "30s"
+    rules:
+      - uid: "cloudops-airflow-jobs-stopped"
+        title: "Airflow Jobs Stopped"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "max(airflow_dag_last_status{status='running'})"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B < 1"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "Alerting"
+        execErrState: "Alerting"
+        for: "1h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B < 1"
+          xops-alerting-class: "Ingestion Statistics"
+          xops-alerting-docs: "https://www.notion.so/accedian/Airflow-Batch-Ingestions-a7749ab4ec384c96829490dfad63240c?pvs=4"
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P5"
+        annotations:
+          summary: "Airflow Jobs Stopped"
+          description: "Airflow is not in a healthy state.  Most likely scheduler is down and Airflow may need to be restarted to get it going again.  https://grafana.npavxops.accedian.net/d/IUhlWpDVz/airflow-job-status?orgId=1"
+        isPaused: false
+
+  - orgId: 1
+    name: "All Druid Task Slots Full for 2H"
+    folder: Ingestion
+    interval: "300s"
+    rules:
+      - uid: "cloudops-druid-task-slots-full-2h"
+        title: "All Druid Task Slots Full for 2H"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "druid_overall_mm_worker_gage{type=~'free'}"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B == 0"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "2h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B == 0"
+          xops-alerting-class: "Metrics Health"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P5"
+        annotations:
+          summary: "All Druid Task Slots Full for 2H"
+          description: "All Druid Task Slots Full for 2H.  Check to see if there are stuck tasks - if so they may need to be deleted manually.  Otherwise it may just be a matter of needing more task slots (middlemanagers)"
+        isPaused: false
+
+  - orgId: 1
+    name: "Clickhouse nodes up"
+    folder: "General Alerting"
+    interval: "120s"
+    rules:
+      - uid: "cloudops-clickhouse-nodes-up"
+        title: "Clickhouse nodes up"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "(count (ClickHouseAsyncMetrics_Uptime))"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B < 4"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "30m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B < 4"
+          xops-alerting-class: "Capture Flows"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P5"
+        annotations:
+          summary: "Clickhouse nodes up"
+          description: "Clickhouse nodes up. Need tips on what to do if we get this alert.  Maybe a Notion page we could link here..."
+        isPaused: false
+
+  - orgId: 1
+    name: "CPU usage high over half hour"
+    folder: "General Alerting"
+    interval: "300s"
+    rules:
+      - uid: "cloudops-cpu-usage-high-over-half-hour"
+        title: "CPU usage high over half hour"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "sum by(instance)  (irate(node_cpu{mode!='idle'}[5m]))/(count(count(node_cpu) without (mode)) by (instance)) or sum by (instance)  (irate(node_cpu_seconds_total{mode!='idle'}[5m]))/(count(count(node_cpu_seconds_total) without (mode)) by (instance))"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 1"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "30m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 1"
+          xops-alerting-class: "Ingestion Statistics"
+          xops-alerting-docs: "https://google.com"
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "CPU usage high over half hour"
+          description: "Validate if avg over 2 hours of failed status is bigger then 2"
+        isPaused: false
+
+  - orgId: 1
+    name: "DataSource Availability alert"
+    folder: "General Alerting"
+    interval: "600s"
+    rules:
+      - uid: "cloudops-datasource-availability-alert"
+        title: "DataSource Availability alert"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "druid_coordinator_datasourceLoadStatus"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B < 90"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "1h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B < 90"
+          xops-alerting-class: "Metrics Health"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "DataSource Availability alert"
+          description: "Deployment is missing some data that should be loaded. This is likely due to a Druid historical node failure. Check the disk space on historical nodes, and ensure that the Druid historicals, brokers, overlord and coordinators are healthy by inspecting the logs. The Druid router's server console will likely shed some light :  https://<deployment>.<deployment>.analytics.accedian.io/router/unified-console.html#services"
+        isPaused: false
+
+  - orgId: 1
+    name: "Dgraph Alpha Availability"
+    folder: "General Alerting"
+    interval: "600s"
+    rules:
+      - uid: "cloudops-dgraph-alpha-availability"
+        title: "Dgraph Alpha Availability"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "sum(stitchit_dgraph_alpha_availability)"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 1"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "1h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 1"
+          xops-alerting-class: ""
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P5"
+        annotations:
+          summary: "Dgraph Alpha Availability"
+          description: "Need tips on what to do if we get this alert.  Maybe a Notion page we could link here..."
+        isPaused: false
+
+  - orgId: 1
+    name: "Disk usage"
+    folder: "General Alerting"
+    interval: "300s"
+    rules:
+      - uid: "cloudops-disk-usage"
+        title: "Disk usage"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "avg by (instance, device)(1 - (node_filesystem_avail{device !~'tmpfs',device!~'by-uuid|lxcfs|sunrpc'}) / (node_filesystem_size{device !~'tmpfs',device!~'by-uuid|lxcfs|sunrpc'}) or 1 - (node_filesystem_free_bytes / node_filesystem_size_bytes))"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 0.95"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "1h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 0.95"
+          xops-alerting-class: "Memory and Disks"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "Disk usage"
+          description: "Disk usage for deployment is too high.  https://www.notion.so/accedian/How-To-s-a24b04f4e0b84e45987cbbd5a6bb2e34?pvs=4#670f677c17a84fb5aae0bc40f79ca24b"
+        isPaused: false
+
+  - orgId: 1
+    name: "Docker Pending Task 30m"
+    folder: Ingestion
+    interval: "300s"
+    rules:
+      - uid: "cloudops-docker-pending-task-30m"
+        title: "Docker Pending Task 30m"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "min(swarm_manager_tasks_total{state='pending'})"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 0"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "30m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 0"
+          xops-alerting-class: "Server Statistics"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P5"
+        annotations:
+          summary: "Docker Pending Task 30m"
+          description: "A Docker task(s) have been pending for more than 30 minutes.  This may indicate an issue with resource availability on the node, labels missing, or other underlying problems preventing the task from starting."
+        isPaused: false
+
+  - orgId: 1
+    name: "Druid Status check"
+    folder: Ingestion
+    interval: "300s"
+    rules:
+      - uid: "cloudops-druid-status-check"
+        title: "Druid Status check"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "druid_status_gauge{result='success'}"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B < 1"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "30m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B < 1"
+          xops-alerting-class: "Metrics Health"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "Druid Status check"
+          description: "Need tips on what to do if we get this alert.  Maybe a Notion page we could link here..."
+        isPaused: false
+
+  - orgId: 1
+    name: "Druid's overlord view of the cluster"
+    folder: Ingestion
+    interval: "60s"
+    rules:
+      - uid: "cloudops-druid-overlord-cluster-view"
+        title: "Druid's overlord view of the cluster"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "druid_status_gauge{ server_type=~'historical|middle_manager', result='success'} - ignoring(result) group_left druid_server_gauge{server_type=~'historical|middle_manager'}"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 0"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "15m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 0"
+          xops-alerting-class: "Metrics Health"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "Druid's overlord view of the cluster"
+          description: "When this is not 0, it means that either the coordinator / overlord think that some node is connected while it isn't, or some of the nodes think they are connected but coordinator or overlord don't know about it."
+        isPaused: false
+
+  - orgId: 1
+    name: "ElasticSearch Heap"
+    folder: "General Alerting"
+    interval: "300s"
+    rules:
+      - uid: "cloudops-elasticsearch-heap"
+        title: "ElasticSearch Heap"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "sum (elasticsearch_jvm_memory_used_bytes{}) / sum (elasticsearch_jvm_memory_max_bytes{}) * 100"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 85"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "30m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 85"
+          xops-alerting-class: "ElasticSearch Metrics"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "ElasticSearch Heap"
+          description: "The heap size is the amount of RAM allocated to the Java Virtual Machine of an Elasticsearch node"
+        isPaused: false
+
+  - orgId: 1
+    name: "Hadoop dead nodes"
+    folder: Ingestion
+    interval: "300s"
+    rules:
+      - uid: "cloudops-hadoop-dead-nodes"
+        title: "Hadoop dead nodes"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "hadoop_namenode_num_dead_data_nodes"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 0"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "30m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 0"
+          xops-alerting-class: ""
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "Hadoop dead nodes"
+          description: "Need tips on what to do if we get this alert.  Maybe a Notion page we could link here..."
+        isPaused: false
+
+  - orgId: 1
+    name: "HDFS Corrupt Blocks"
+    folder: Ingestion
+    interval: "60s"
+    rules:
+      - uid: "cloudops-hdfs-corrupt-blocks"
+        title: "HDFS Corrupt Blocks"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "hadoop_namenode_corrupt_blocks"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 0"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "5m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 0"
+          xops-alerting-class: "Hadoop"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P5"
+        annotations:
+          summary: "HDFS Corrupt Blocks"
+          description: "HDFS has reported corrupt blocks. Data integrity issue that requires investigation."
+        isPaused: false
+
+  - orgId: 1
+    name: "HDFS - Under-Replicated Blocks"
+    folder: Ingestion
+    interval: "600s"
+    rules:
+      - uid: "cloudops-hdfs-under-replicated-blocks"
+        title: "HDFS - Under-Replicated Blocks"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "hadoop_namenode_under_replicated_blocks{kind='FSNamesystem'}"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 400000"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "1h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 400000"
+          xops-alerting-class: "Ingestion Statistics"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "HDFS - Under-Replicated Blocks"
+          description: "This means Deployment namenode potentially has issues. Check Grafana/HDFS and see if the Under-replicated blocks are going through the roof. Check the namenode to make sure HDFS is healthy Check namenode logs, might have to restart aod_namenode."
+        isPaused: false
+
+  - orgId: 1
+    name: "HDFS Time Since Last CheckPoint"
+    folder: Ingestion
+    interval: "300s"
+    rules:
+      - uid: "cloudops-hdfs-time-since-last-checkpoint"
+        title: "HDFS Time Since Last CheckPoint"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "(time() - hadoop_namenode_last_checkpoint_time/1000)"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 7200"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "1h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 7200"
+          xops-alerting-class: "Metrics Health"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "HDFS Time Since Last CheckPoint"
+          description: "It has been more than 2 hours since last checkpoint of HDFS (usually occurs every hour or less). Check to see if namenode and secondary namenode are both healthy."
+        isPaused: false
+
+  - orgId: 1
+    name: "High IO Wait"
+    folder: "General Alerting"
+    interval: "300s"
+    rules:
+      - uid: "cloudops-high-io-wait"
+        title: "High IO Wait"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "avg by (instance) (irate(node_cpu_seconds_total{mode='iowait'}[5m]))"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 50"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "30m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 50"
+          xops-alerting-class: "Server Statistics"
+          xops-alerting-docs: "https://google.com"
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "High IO Wait"
+          description: "Validate if iowait is running over 50% for 30m"
+        isPaused: false
+
+  - orgId: 1
+    name: "Historical usage"
+    folder: "General Alerting"
+    interval: "300s"
+    rules:
+      - uid: "cloudops-historical-usage"
+        title: "Historical usage"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "avg by (host, tier) (historical_usage_curr_gauge/historical_usage_max_gauge)"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 0.95"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "1h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 0.95"
+          xops-alerting-class: "Memory and Disks"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "Historical usage"
+          description: "Historical usage for druid is too high."
+        isPaused: false
+
+  - orgId: 1
+    name: "Kafka Consumergroup Lag"
+    folder: Ingestion
+    interval: "300s"
+    rules:
+      - uid: "cloudops-kafka-consumergroup-lag"
+        title: "Kafka Consumergroup Lag"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "min_over_time((sum by (topic) (kafka_consumergroup_lag{topic=~'mo-summary.+'}))[1h:])"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 0"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "15m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 0"
+          xops-alerting-class: "Ingestion Statistics"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "Kafka Consumergroup Lag"
+          description: "Detecting when there is lag in mo-summary and the lagging topic(s) haven't decreased in the last hour"
+        isPaused: false
+
+  - orgId: 1
+    name: "Streamingapp Lag Growing"
+    folder: Ingestion
+    interval: "300s"
+    rules:
+      - uid: "cloudops-streamingapp-lag-growing"
+        title: "Streamingapp Lag Growing"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "min_over_time(deriv(kafka_consumergroup_lag_sum{consumergroup='streamingapp', topic=~'ignite.contemporary.*'}[30m])[1h:]) OR min_over_time(deriv(spark_kafkaProcessingLag{job='SparkKafkaLagMonitor', topic=~'ignite.contemporary.*'}[30m])[1h:])"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 0"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "15m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 0"
+          xops-alerting-class: "Ingestion Statistics"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "Streamingapp Lag Growing"
+          description: "Detecting when streamingapp consumer lag on ignite.contemporary topics is consistently growing over 1 hour. This indicates the streaming application is falling behind and not catching up. Check streamingapp logs and ensure the application is healthy."
+        isPaused: false
+
+  - orgId: 1
+    name: "Kafka Ingestion Rate"
+    folder: Ingestion
+    interval: "900s"
+    rules:
+      - uid: "cloudops-kafka-ingestion-rate"
+        title: "Kafka Ingestion Rate"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "sum(avg_over_time(kafka_server_brokertopicmetrics_oneminuterate{topic=~'spark_raw_in.*|pvx.*', name='MessagesInPerSec'}[10m]))"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B < 0.1"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "30m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B < 0.1"
+          xops-alerting-class: "Ingestion Statistics"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "Kafka Ingestion Rate"
+          description: "The ingestion rate for session and capture data (spark_raw_in.* and pvx.* topics) is below expected threshold. This means that we have stopped receiving traffic from all session and capture data sources.  Check Roadrunner Grafana Dashboard and Fedex logs to confirm data is no longer being received from the customer, and if so get the CSM team to follow up with the customer."
+        isPaused: false
+
+  - orgId: 1
+    name: "Latent Data Lag Growing"
+    folder: Ingestion
+    interval: "600s"
+    rules:
+      - uid: "cloudops-latent-data-lag-growing"
+        title: "Latent Data Lag Growing"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "min_over_time(deriv(kafka_consumergroup_lag_sum{consumergroup='latentapp', topic=~'ignite.latent.*'}[30m])[2h:]) OR min_over_time(deriv(spark_kafkaProcessingLag{job='SparkKafkaLagMonitor', topic=~'ignite.latent.*|spark-latent.*'}[30m])[2h:])"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 0"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "15m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 0"
+          xops-alerting-class: "Ingestion Statistics"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P5"
+        annotations:
+          summary: "Latent Data Lag Growing"
+          description: "Latent data lag is consistently growing without being processed. The lag has been increasing for 2+ hours with no decreases. Verify the Latentstreamingapp logs and check if the consumer is stuck."
+        isPaused: false
+
+  - orgId: 1
+    name: "Metrics Service Reachability"
+    folder: "General Alerting"
+    interval: "300s"
+    rules:
+      - uid: "cloudops-metrics-service-reachability"
+        title: "Metrics Service Reachability"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "metricsService_health_status"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B < 1"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "1h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B < 1"
+          xops-alerting-class: "Metrics Health"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "Metrics Service Reachability"
+          description: "The Druid metrics service (for active data) can only be partially reached, or not reached at all. This is likely due to a Druid historical node failure. Check the disk space on historical node, and ensure that the Druid historicals, brokers, overlord and coordinators are healthy by inspecting the logs"
+        isPaused: false
+
+  - orgId: 1
+    name: "NTP Time Sync"
+    folder: "General Alerting"
+    interval: "300s"
+    rules:
+      - uid: "cloudops-ntp-time-sync"
+        title: "NTP Time Sync"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "node_timex_sync_status"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B < 1"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "60m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B < 1"
+          xops-alerting-class: "Server Statistics"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "NTP Time Sync"
+          description: "NTP time is not synced amongst all VMs in the swarm (onprem)."
+        isPaused: false
+
+  - orgId: 1
+    name: "Prometheus NODATA"
+    folder: "General Alerting"
+    interval: "120s"
+    rules:
+      - uid: "cloudops-prometheus-nodata"
+        title: "Prometheus NODATA"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "up"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B < 0"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "Alerting"
+        execErrState: "Alerting"
+        for: "5m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B < 0"
+          xops-alerting-class: ""
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P5"
+        annotations:
+          summary: "Prometheus NODATA"
+          description: "Grafana has been unable to query Prometheus for over 5 minutes.  Validate Prometheus datasource availability"
+        isPaused: false
+
+  - orgId: 1
+    name: "PVStorage Inserted Rows"
+    folder: Ingestion
+    interval: "300s"
+    rules:
+      - uid: "cloudops-pvstorage-inserted-rows"
+        title: "PVStorage Inserted Rows"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "sum(60*rate(pvstorage_inserted_rows_total[10m])) by (job)"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B <= 0"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "1h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B <= 0"
+          xops-alerting-class: "PVStorage"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "PVStorage Inserted Rows"
+          description: "One or more PVStorage instances have stopped inserting for over 1 hour.  Make sure the associated Clickhouse node is online and functioning properly."
+        isPaused: false
+
+  - orgId: 1
+    name: "Query Node Count"
+    folder: "General Alerting"
+    interval: "300s"
+    rules:
+      - uid: "cloudops-query-node-count"
+        title: "Query Node Count"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "metricsService_datasource_query_nodes"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B < 1"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "30m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B < 1"
+          xops-alerting-class: "Metrics Health"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "Query Node Count"
+          description: "Deployment is missing metric query nodes. Need tips on what to do if we get this alert.  Maybe a Notion page we could link here..."
+        isPaused: false
+
+  - orgId: 1
+    name: "RoadRunner Persistence_service_cached_files"
+    folder: Ingestion
+    interval: "300s"
+    rules:
+      - uid: "cloudops-rr-persistence-cached-files"
+        title: "RoadRunner Persistence_service_cached_files"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "roadrunner_persistence_service_cached_files{zone!~'overlord|test|dummy'}"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "max"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "max"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 500"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "OK"
+        for: "1h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 500"
+          xops-alerting-class: "Roadrunner"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P5"
+        annotations:
+          summary: "RoadRunner Persistence_service_cached_files"
+          description: "Roadrunner persistence service cached files > 500 files, need investigation"
+        isPaused: false
+
+  - orgId: 1
+    name: "Streamingapp alert-events Topic Ingestion"
+    folder: Ingestion
+    interval: "300s"
+    rules:
+      - uid: "cloudops-sa-alert-events-ingestion"
+        title: "Streamingapp alert-events Topic Ingestion"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "avg_over_time(spark_kafkaProcessingLag{job='SparkKafkaLagMonitor', topic=~'alert-events.*'}[2m])"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 200"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "1h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 200"
+          xops-alerting-class: "Ingestion Statistics"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "Streamingapp alert-events Topic Ingestion"
+          description: "Streamingapp is falling behind on ingesting the alert-events topic.  Check Streamingapp logs to see if there is a problem.  A restart of the Streamingapp service may be required."
+        isPaused: false
+
+  - orgId: 1
+    name: "Streamingapp mo-summary Topic Ingestion"
+    folder: Ingestion
+    interval: "300s"
+    rules:
+      - uid: "cloudops-sa-mo-summary-ingestion"
+        title: "Streamingapp mo-summary Topic Ingestion"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "avg_over_time(kafka_consumergroup_lag_sum{topic=~'mo-summary.*'}[2m])"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 1000"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "3h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 1000"
+          xops-alerting-class: "Ingestion Statistics"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "Streamingapp mo-summary Topic Ingestion"
+          description: "Streamingapp is falling behind on ingesting the mo-summary topic.  Check Streamingapp logs to see if there is a problem.  A restart of the Streamingapp service may be required."
+        isPaused: false
+
+  - orgId: 1
+    name: "Streamingapp Raw Topic Ingestion"
+    folder: Ingestion
+    interval: "30s"
+    rules:
+      - uid: "cloudops-sa-raw-topic-ingestion"
+        title: "Streamingapp Raw Topic Ingestion"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "deriv(kafka_consumergroup_lag_sum{consumergroup='streamingapp'}[10m]) OR deriv(spark_kafkaProcessingLag{job='SparkKafkaLagMonitor', topic=~'ignite.contemporary.*'}[10m])"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 5"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "30m"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 5"
+          xops-alerting-class: "Ingestion Statistics"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P3"
+        annotations:
+          summary: "Streamingapp Raw Topic Ingestion"
+          description: "Streamingapp is falling behind on ingesting raw session metrics.  Check Streamingapp logs to see if there is a problem.  A restart of the Streamingapp service may be required."
+        isPaused: false
+
+  - orgId: 1
+    name: "Time since last backup"
+    folder: "General Alerting"
+    interval: "3600s"
+    rules:
+      - uid: "cloudops-time-since-last-backup"
+        title: "Time since last backup"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "skylight_backups_time_since_last_backup"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: "last"
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: "$B > 172800"
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: math
+        noDataState: "Alerting"
+        execErrState: "OK"
+        for: "2h"
+        labels:
+          managed-by: grafana-docker
+          source: cloudops
+          notification: ""
+          validator: "B > 172800"
+          xops-alerting-class: "Backup"
+          xops-alerting-docs: ""
+          xops-alerting-impact: "infra"
+          xops-alerting-priority: "P5"
+        annotations:
+          summary: "Time since last backup"
+          description: "The time since the last backup has exceeded 1 day ago. The backup may have failed.  See here for troubleshooting steps: https://www.notion.so/accedian/CouchDB-Postgres-Backups-Fail-10e22cc75ec649b9a5572db2136f629f"
+        isPaused: false

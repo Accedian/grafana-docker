@@ -64,14 +64,23 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
   echo "Copying stock provisioning"
     cp -R /tmp/provisioning/. "$GF_PATHS_PROVISIONING/"
 
-  echo "Copying stock dashboars"
+  echo "Copying stock dashboards"
     cp -R /tmp/dashboards/. "$GF_PATHS_DATA/dashboards/"
 fi
 
+# Root: drop to grafana user via gosu. $@ omitted — nothing provides args.
+# Non-root (OpenShift): keeps $@ for optional pod-spec arg overrides.
 if [ "$(id -u)" = "0" ]; then
-    exec gosu grafana "$@"
+    exec gosu grafana grafana-server \
+        --homepath=/usr/share/grafana \
+        --config="$GF_PATHS_CONFIG" \
+        cfg:default.log.mode=console \
+        cfg:default.paths.data="$GF_PATHS_DATA" \
+        cfg:default.paths.logs="$GF_PATHS_LOGS" \
+        cfg:default.paths.plugins="$GF_PATHS_PLUGINS" \
+        cfg:default.paths.provisioning="$GF_PATHS_PROVISIONING"
 else
-    exec grafana "$@" \
+    exec grafana-server "$@" \
         --homepath=/usr/share/grafana \
         --config="$GF_PATHS_CONFIG" \
         cfg:default.log.mode=console \

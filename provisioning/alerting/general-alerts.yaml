@@ -1,0 +1,552 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: GeneralAlerts
+    folder: General Alerting
+    interval: 1m
+    rules:
+      - uid: available-memory
+        title: AvailableMemory
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: 'sum(container_memory_rss{name=~".+"})'
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 4e+09
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: avg
+              datasource:
+                type: __expr__
+                uid: __expr__
+              refId: B
+              type: classic_conditions
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        labels:
+          managed-by: grafana-docker
+        annotations:
+          summary: "Total container RSS memory is below 4GB — system may be under-provisioned or containers are failing"
+        isPaused: false
+
+      - uid: batch-processing-duration
+        title: BatchProcessingDuration
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: 'spark_CustomMetricSource_batch_processingTimeMs{job="cyberapp"}'
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: diff_abs
+              datasource:
+                type: __expr__
+                uid: __expr__
+              refId: B
+              type: classic_conditions
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        labels:
+          managed-by: grafana-docker
+        annotations:
+          summary: "Cyberapp batch processing duration is not advancing"
+        isPaused: false
+
+      - uid: couchdb-client-changes
+        title: CouchDBClientRequestingChanges
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "couchdb_httpd_clients_requesting_changes"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 200
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: avg
+              datasource:
+                type: __expr__
+                uid: __expr__
+              refId: B
+              type: classic_conditions
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        labels:
+          managed-by: grafana-docker
+        annotations:
+          summary: "CouchDB clients requesting changes count exceeds 200"
+        isPaused: false
+
+      - uid: gather-alert-parsing-errors
+        title: GatherAlertParsingErrors
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    type: last
+              datasource:
+                type: __expr__
+                uid: __expr__
+              refId: A
+              type: classic_conditions
+          - refId: B
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "gather_metric_alerts_service_errors_since_startup"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        labels:
+          managed-by: grafana-docker
+        annotations:
+          summary: "Gather alert service has parsing errors"
+        isPaused: false
+
+      - uid: kafka-ingestion-rate
+        title: KafkaIngestionRate
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: 'avg_over_time(kafka_server_brokertopicmetrics_oneminuterate{topic="npav-ts-metrics", name="MessagesInPerSec"}[3m])'
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: 'avg_over_time(kafka_server_brokertopicmetrics_oneminuterate{topic="spark_raw_in", name="MessagesInPerSec"}[3m])'
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0.0001
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: avg
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    type: avg
+              datasource:
+                type: __expr__
+                uid: __expr__
+              refId: C
+              type: classic_conditions
+        noDataState: NoData
+        execErrState: Error
+        for: 10m
+        labels:
+          managed-by: grafana-docker
+        annotations:
+          summary: "Kafka ingestion rate for npav-ts-metrics is near zero while spark_raw_in is active"
+        isPaused: false
+
+      - uid: kafka-mqtt-divergence
+        title: KafkaMQTTDivergence
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: "abs(rate(gather_metric_alerts_service_consumed_kafka_mgs_since_startup[1m]) - rate(gather_metric_alerts_service_produced_mqtt_mgs_since_startup[1m]))"
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 10
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: avg
+              datasource:
+                type: __expr__
+                uid: __expr__
+              refId: B
+              type: classic_conditions
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        labels:
+          managed-by: grafana-docker
+        annotations:
+          summary: "Kafka to MQTT message rate divergence exceeds 10 messages/sec"
+        isPaused: false
+
+      # NOTE: Original "Panel Title alert" used dashboard template variable $server in PromQL.
+      # Dashboard variables are not available in file-provisioned alerts.
+      # The instance filter has been removed to match all instances.
+      - uid: processing-ratio
+        title: ProcessingRatio
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: avg
+              datasource:
+                type: __expr__
+                uid: __expr__
+              refId: A
+              type: classic_conditions
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: 'spark_CustomMetricSource_batch_processingRate{job="cyberapp"} / spark_CustomMetricSource_batch_inputRate{job="cyberapp"}'
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+        noDataState: Alerting
+        execErrState: Error
+        for: 10m
+        labels:
+          managed-by: grafana-docker
+        annotations:
+          summary: "Cyberapp processing ratio is below 1 — performing inadequately"
+        isPaused: false
+
+      - uid: spark-batch-start-delay
+        title: SparkBatchStartDelay
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    type: diff_abs
+              datasource:
+                type: __expr__
+                uid: __expr__
+              refId: A
+              type: classic_conditions
+          - refId: B
+            relativeTimeRange:
+              from: 1200
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: 'spark_CustomMetricSource_batch_timestamp{job="cyberapp", role="driver"} / 1000'
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+        noDataState: Alerting
+        execErrState: Error
+        for: 5m
+        labels:
+          managed-by: grafana-docker
+        annotations:
+          summary: "Spark batch start is delayed for cyberapp"
+        isPaused: false
+
+      - uid: incident-builder-throughput
+        title: IncidentBuilderThroughput
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: avg
+              datasource:
+                type: __expr__
+                uid: __expr__
+              refId: A
+              type: classic_conditions
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: 'spark_CustomMetricSource_streaming_processedRowsPerSecond{job="incident_builder"} / spark_CustomMetricSource_streaming_inputRowsPerSecond{job="incident_builder"}'
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        labels:
+          managed-by: grafana-docker
+        annotations:
+          summary: "IncidentBuilder throughput ratio is below 1 — processing is slow"
+        isPaused: false
+
+      - uid: incident-builder-heartbeat
+        title: IncidentBuilderHeartbeat
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    type: diff_abs
+                - evaluator:
+                    params: []
+                    type: no_value
+                  operator:
+                    type: or
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    type: last
+              datasource:
+                type: __expr__
+                uid: __expr__
+              refId: A
+              type: classic_conditions
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: 'spark_CustomMetricSource_streaming_timestamp{job="incident_builder"}'
+              instant: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+        noDataState: Alerting
+        execErrState: Error
+        for: 5m
+        labels:
+          managed-by: grafana-docker
+        annotations:
+          summary: "IncidentBuilder is down — no streaming timestamp changes detected"
+        isPaused: false
+
+  # NOTE: The "SSH Logins NOT using Vault" alert is not included here because it uses
+  # the Elasticsearch datasource (legacy UID "000000002"). To migrate it, a stable UID
+  # must first be configured for the Elasticsearch datasource in the provisioning files,
+  # similar to how prometheus-datasource-uid is configured for Prometheus.
+  #
+  # NOTE: Certificate expiry alerts (1-day and 5-day) are provisioned via cloudops-alerts.yaml.

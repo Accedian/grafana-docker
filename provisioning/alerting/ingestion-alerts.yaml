@@ -1,0 +1,231 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: IngestionAlerts
+    folder: Ingestion
+    interval: 1m
+    rules:
+      - uid: streamingapp-topic-ingestion
+        title: StreamingappTopicIngestion
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: 'min_over_time(spark_kafkaProcessingLag{topic!~".*latent.*|parquet.notif"}[5m])'
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: B
+              type: threshold
+        noDataState: NoData
+        execErrState: Error
+        for: 1h
+        labels:
+          severity: P3
+          class: Ingestion Statistics
+          impact: devops
+          managed-by: grafana-docker
+        annotations:
+          summary: "Streamingapp is falling behind on ingesting topic: {{ $labels.topic }}"
+          description: "Streamingapp is falling behind on ingesting the indicated topic(s). Check Streamingapp logs to see if there is a problem. A restart of the Streamingapp service may be required."
+        isPaused: false
+
+      - uid: spark-ingestion-rate
+        title: SparkIngestionRate
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: 'sum(increase(spark_executor_recordsRead{job="spark_streamingapp"}[5m])) or vector(0)'
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Error
+        for: 20m
+        labels:
+          severity: P1
+          class: Ingestion Statistics
+          impact: devops
+          managed-by: grafana-docker
+        annotations:
+          summary: "Spark Ingestion Rate has dropped to zero for Streamingapp"
+          description: "The volume of records Streamingapp has read from Kafka has dropped significantly for the last 20m. Check Streamingapp to make sure it is in a healthy state, and Roadrunner is still connected and receiving data."
+        isPaused: false
+
+      - uid: roadrunner-disconnected
+        title: RoadrunnerDisconnected
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: 'roadrunner_connection{zone!~"test|dummy"}'
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: B
+              type: threshold
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        labels:
+          severity: P2
+          class: Ingestion Statistics
+          impact: devops
+          managed-by: grafana-docker
+        annotations:
+          summary: "Roadrunner disconnected: {{ $labels.hostname }} (zone: {{ $labels.zone }})"
+          description: "Roadrunner {{ $labels.hostname }} in zone {{ $labels.zone }} has been disconnected for more than 5 minutes. Data collection and streaming to Analytics has stopped for this collector. Check the Roadrunner service and network connectivity."
+        isPaused: false
+
+      - uid: airflow-batch-dag-failed
+        title: AirflowBatchDAGFailed
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 7200
+              to: 0
+            datasourceUid: prometheus-datasource-uid
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus-datasource-uid
+              expr: 'increase(airflow_dag_status{status="failed", dag_id=~"Batch_Ingestion.*"}[2h])'
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: B
+              type: threshold
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        labels:
+          severity: P5
+          class: Ingestion Statistics
+          impact: devops
+          managed-by: grafana-docker
+        annotations:
+          summary: "Airflow Batch DAG Failed: {{ $labels.dag_id }}"
+          description: "A Batch Airflow DAG has failed recently and needs to be re-run manually."
+        isPaused: false
