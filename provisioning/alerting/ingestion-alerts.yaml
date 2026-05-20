@@ -14,11 +14,11 @@ groups:
             relativeTimeRange:
               from: 300
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: 'min_over_time(spark_kafkaProcessingLag{topic!~".*latent.*|parquet.notif"}[5m])'
               instant: true
               intervalMs: 1000
@@ -70,11 +70,11 @@ groups:
             relativeTimeRange:
               from: 300
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: 'sum(increase(spark_executor_recordsRead{job="spark_streamingapp"}[5m])) or vector(0)'
               instant: true
               intervalMs: 1000
@@ -126,11 +126,11 @@ groups:
             relativeTimeRange:
               from: 300
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: 'roadrunner_connection{zone!~"test|dummy"}'
               instant: true
               intervalMs: 1000
@@ -182,11 +182,11 @@ groups:
             relativeTimeRange:
               from: 7200
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: 'increase(airflow_dag_status{status="failed", dag_id=~"Batch_Ingestion.*"}[2h])'
               instant: true
               intervalMs: 1000

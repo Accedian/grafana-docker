@@ -8,8 +8,8 @@ datasources:
   - name: Prometheus
     # <string, required> datasource type. Required
     type: prometheus
-    # <string> stable UID for alert rule references
-    uid: prometheus-datasource-uid
+    # <string> stable UID matching alert rule references
+    uid: "000000001"
     # <string, required> access mode. direct or proxy. Required
     access: proxy
     # <int> org id. will default to orgId 1 if not specified

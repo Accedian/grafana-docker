@@ -14,6 +14,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         curl \
         libfontconfig \
         musl \
+        python3-minimal \
+        python3-yaml \
     && curl \
         --no-progress-meter \
         --write-out "curl: %{filename_effective} %{size_download}B %{speed_download}B/s\n" \
@@ -60,6 +62,8 @@ VOLUME ["/var/lib/grafana", "/var/log/grafana", "/etc/grafana"]
 EXPOSE 3000
 
 COPY ./run.sh /run.sh
+COPY ./seed-alerts.py /usr/local/bin/seed-alerts.py
+RUN chmod +x /usr/local/bin/seed-alerts.py
 
 COPY provisioning /tmp/provisioning
 

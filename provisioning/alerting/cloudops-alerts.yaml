@@ -14,11 +14,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "(probe_ssl_earliest_cert_expiry - time())/60/60/24"
               instant: false
               intervalMs: 1000
@@ -92,11 +92,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "(probe_ssl_earliest_cert_expiry - time())/60/60/24"
               instant: false
               intervalMs: 1000
@@ -170,11 +170,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "deriv(airflow_dag_status{status='failed', owner!='custom-reports', owner!='dhl'}[4h])"
               instant: false
               intervalMs: 1000
@@ -248,11 +248,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "deriv(airflow_dag_status{status='failed',owner='custom-reports'}[4h])"
               instant: false
               intervalMs: 1000
@@ -326,11 +326,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "deriv(airflow_dag_status{status='failed',dag_id='dhl_get_configs'}[15m])"
               instant: false
               intervalMs: 1000
@@ -404,11 +404,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "deriv(airflow_dag_status{status='failed',dag_id!='dhl_get_configs',owner='dhl'}[4h])"
               instant: false
               intervalMs: 1000
@@ -482,11 +482,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "rate(airflow_scheduler_health_status{status='healthy'}[10m])"
               instant: false
               intervalMs: 1000
@@ -560,11 +560,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "airflow_dag_run_duration{}"
               instant: false
               intervalMs: 1000
@@ -638,11 +638,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "max(airflow_dag_last_status{status='running'})"
               instant: false
               intervalMs: 1000
@@ -716,11 +716,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "druid_overall_mm_worker_gage{type=~'free'}"
               instant: false
               intervalMs: 1000
@@ -794,11 +794,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "(count (ClickHouseAsyncMetrics_Uptime))"
               instant: false
               intervalMs: 1000
@@ -872,11 +872,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "sum by(instance)  (irate(node_cpu{mode!='idle'}[5m]))/(count(count(node_cpu) without (mode)) by (instance)) or sum by (instance)  (irate(node_cpu_seconds_total{mode!='idle'}[5m]))/(count(count(node_cpu_seconds_total) without (mode)) by (instance))"
               instant: false
               intervalMs: 1000
@@ -950,11 +950,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "druid_coordinator_datasourceLoadStatus"
               instant: false
               intervalMs: 1000
@@ -1028,11 +1028,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "sum(stitchit_dgraph_alpha_availability)"
               instant: false
               intervalMs: 1000
@@ -1106,11 +1106,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "avg by (instance, device)(1 - (node_filesystem_avail{device !~'tmpfs',device!~'by-uuid|lxcfs|sunrpc'}) / (node_filesystem_size{device !~'tmpfs',device!~'by-uuid|lxcfs|sunrpc'}) or 1 - (node_filesystem_free_bytes / node_filesystem_size_bytes))"
               instant: false
               intervalMs: 1000
@@ -1184,11 +1184,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "min(swarm_manager_tasks_total{state='pending'})"
               instant: false
               intervalMs: 1000
@@ -1262,11 +1262,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "druid_status_gauge{result='success'}"
               instant: false
               intervalMs: 1000
@@ -1340,11 +1340,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "druid_status_gauge{ server_type=~'historical|middle_manager', result='success'} - ignoring(result) group_left druid_server_gauge{server_type=~'historical|middle_manager'}"
               instant: false
               intervalMs: 1000
@@ -1418,11 +1418,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "sum (elasticsearch_jvm_memory_used_bytes{}) / sum (elasticsearch_jvm_memory_max_bytes{}) * 100"
               instant: false
               intervalMs: 1000
@@ -1496,11 +1496,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "hadoop_namenode_num_dead_data_nodes"
               instant: false
               intervalMs: 1000
@@ -1574,11 +1574,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "hadoop_namenode_corrupt_blocks"
               instant: false
               intervalMs: 1000
@@ -1652,11 +1652,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "hadoop_namenode_under_replicated_blocks{kind='FSNamesystem'}"
               instant: false
               intervalMs: 1000
@@ -1730,11 +1730,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "(time() - hadoop_namenode_last_checkpoint_time/1000)"
               instant: false
               intervalMs: 1000
@@ -1808,11 +1808,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "avg by (instance) (irate(node_cpu_seconds_total{mode='iowait'}[5m]))"
               instant: false
               intervalMs: 1000
@@ -1886,11 +1886,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "avg by (host, tier) (historical_usage_curr_gauge/historical_usage_max_gauge)"
               instant: false
               intervalMs: 1000
@@ -1964,11 +1964,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "min_over_time((sum by (topic) (kafka_consumergroup_lag{topic=~'mo-summary.+'}))[1h:])"
               instant: false
               intervalMs: 1000
@@ -2042,11 +2042,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "min_over_time(deriv(kafka_consumergroup_lag_sum{consumergroup='streamingapp', topic=~'ignite.contemporary.*'}[30m])[1h:]) OR min_over_time(deriv(spark_kafkaProcessingLag{job='SparkKafkaLagMonitor', topic=~'ignite.contemporary.*'}[30m])[1h:])"
               instant: false
               intervalMs: 1000
@@ -2120,11 +2120,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "sum(avg_over_time(kafka_server_brokertopicmetrics_oneminuterate{topic=~'spark_raw_in.*|pvx.*', name='MessagesInPerSec'}[10m]))"
               instant: false
               intervalMs: 1000
@@ -2198,11 +2198,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "min_over_time(deriv(kafka_consumergroup_lag_sum{consumergroup='latentapp', topic=~'ignite.latent.*'}[30m])[2h:]) OR min_over_time(deriv(spark_kafkaProcessingLag{job='SparkKafkaLagMonitor', topic=~'ignite.latent.*|spark-latent.*'}[30m])[2h:])"
               instant: false
               intervalMs: 1000
@@ -2276,11 +2276,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "metricsService_health_status"
               instant: false
               intervalMs: 1000
@@ -2354,11 +2354,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "node_timex_sync_status"
               instant: false
               intervalMs: 1000
@@ -2432,11 +2432,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "up"
               instant: false
               intervalMs: 1000
@@ -2510,11 +2510,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "sum(60*rate(pvstorage_inserted_rows_total[10m])) by (job)"
               instant: false
               intervalMs: 1000
@@ -2588,11 +2588,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "metricsService_datasource_query_nodes"
               instant: false
               intervalMs: 1000
@@ -2666,11 +2666,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "roadrunner_persistence_service_cached_files{zone!~'overlord|test|dummy'}"
               instant: false
               intervalMs: 1000
@@ -2744,11 +2744,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "avg_over_time(spark_kafkaProcessingLag{job='SparkKafkaLagMonitor', topic=~'alert-events.*'}[2m])"
               instant: false
               intervalMs: 1000
@@ -2822,11 +2822,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "avg_over_time(kafka_consumergroup_lag_sum{topic=~'mo-summary.*'}[2m])"
               instant: false
               intervalMs: 1000
@@ -2900,11 +2900,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "deriv(kafka_consumergroup_lag_sum{consumergroup='streamingapp'}[10m]) OR deriv(spark_kafkaProcessingLag{job='SparkKafkaLagMonitor', topic=~'ignite.contemporary.*'}[10m])"
               instant: false
               intervalMs: 1000
@@ -2978,11 +2978,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: prometheus-datasource-uid
+            datasourceUid: "000000001"
             model:
               datasource:
                 type: prometheus
-                uid: prometheus-datasource-uid
+                uid: "000000001"
               expr: "skylight_backups_time_since_last_backup"
               instant: false
               intervalMs: 1000

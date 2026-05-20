@@ -64,9 +64,18 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
   echo "Copying stock provisioning"
     cp -R /tmp/provisioning/. "$GF_PATHS_PROVISIONING/"
 
+  # Alerts are seeded via API (not file-provisioned) so customers can edit them.
+  # Factory defaults remain at /tmp/provisioning/alerting/ for the seed script.
+  echo "Clearing file-provisioned alerts (will be API-seeded instead)"
+    rm -f "$GF_PATHS_PROVISIONING"/alerting/*.yaml || true
+
   echo "Copying stock dashboards"
     cp -R /tmp/dashboards/. "$GF_PATHS_DATA/dashboards/"
 fi
+
+# Seed alert rules via API in the background once Grafana is ready.
+# Uses X-Disable-Provenance so customers can freely edit rules in the UI.
+/usr/local/bin/seed-alerts.py &
 
 # Root: drop to grafana user via gosu. $@ omitted — nothing provides args.
 # Non-root (OpenShift): keeps $@ for optional pod-spec arg overrides.
