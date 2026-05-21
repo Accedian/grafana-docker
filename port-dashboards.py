@@ -19,7 +19,7 @@ import copy
 import sys
 
 SRC_DIR = os.path.join(os.path.dirname(__file__), "..", "tf_grafana_deployment_config", "dashboards")
-DST_DIR = os.path.join(os.path.dirname(__file__), "dashboards")
+DST_DIR = os.path.join(os.path.dirname(__file__), "dashboards", "ops")
 
 LOCAL_PROM_NAME = "Prometheus"
 

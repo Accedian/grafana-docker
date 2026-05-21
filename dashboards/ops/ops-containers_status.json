@@ -116,7 +116,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "count(container_last_seen{job=\"cadvisor\"} >= 0)",
+          "expr": "count(container_last_seen{job=\"kubelet\"} >= 0)",
           "legendFormat": "Online",
           "range": true,
           "refId": "Online"
@@ -124,7 +124,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "count(container_last_seen{job=\"cadvisor\"} == 0)",
+          "expr": "count(container_last_seen{job=\"kubelet\"} == 0)",
           "hide": false,
           "legendFormat": "Offline",
           "range": true,
@@ -237,7 +237,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "count(container_last_seen{container_label_com_docker_stack_namespace=\"aod\",job=\"cadvisor\"}) >= 0",
+          "expr": "count(container_last_seen{namespace=\"pca\",job=\"kubelet\"}) >= 0",
           "legendFormat": "Online",
           "range": true,
           "refId": "Online"
@@ -246,7 +246,7 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count(container_last_seen{container_label_com_docker_stack_namespace=\"aod\",job=\"cadvisor\"}) == 0",
+          "expr": "count(container_last_seen{namespace=\"pca\",job=\"kubelet\"}) == 0",
           "hide": false,
           "instant": false,
           "legendFormat": "Offline",

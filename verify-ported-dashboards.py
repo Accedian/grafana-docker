@@ -7,7 +7,7 @@ import sys
 import os
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DASHBOARD_DIR = os.path.join(SCRIPT_DIR, "dashboards")
+DASHBOARD_DIR = os.path.join(SCRIPT_DIR, "dashboards", "ops")
 
 BAD_UIDS = [
     "${deployment}",
