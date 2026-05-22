@@ -1,5 +1,6 @@
 #!/bin/bash -e
 
+umask 0002
 export GF_USERS_DEFAULT_THEME=light
 
 : "${GF_PATHS_DATA:=/var/lib/grafana}"
@@ -20,9 +21,9 @@ if [ ! -f "$GF_PATHS_CONFIG" ]; then
     fi
 fi
 
-if [ "$(id -u)" = "0" ]; then
-    chown -R grafana:root "$GF_PATHS_DATA" "$GF_PATHS_LOGS" || true
-fi
+# Ensure existing PVC data is group-writable for OpenShift random UIDs (GID 0).
+chmod -R g+rwX "$GF_PATHS_DATA" "$GF_PATHS_LOGS" 2>/dev/null || true
+
 
 if [ -f /var/run/secrets/gce_oauth_key ]; then
  export GF_AUTH_GOOGLE_CLIENT_ID=$(cat /var/run/secrets/gce_oauth_key)
@@ -67,11 +68,6 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
   echo "Copying stock provisioning"
     cp -R /tmp/provisioning/. "$GF_PATHS_PROVISIONING/"
 
-  # Alerts are seeded via API (not file-provisioned) so customers can edit them.
-  # Factory defaults remain at /tmp/provisioning/alerting/ for the seed script.
-  echo "Clearing file-provisioned alerts (will be API-seeded instead)"
-    rm -f "$GF_PATHS_PROVISIONING"/alerting/*.yaml || true
-
   echo "Copying stock dashboards"
     # Resolve Docker COPY nesting (/tmp/dashboards/ may contain a dashboards/ subdir)
     _DASH_SRC=/tmp/dashboards
@@ -88,24 +84,21 @@ fi
 # Uses X-Disable-Provenance so customers can freely edit rules in the UI.
 /usr/local/bin/seed-alerts.py &
 
-# Root: drop to grafana user via gosu. $@ omitted — nothing provides args.
-# Non-root (OpenShift): keeps $@ for optional pod-spec arg overrides.
+grafana_args=(
+    --homepath=/usr/share/grafana
+    --config="$GF_PATHS_CONFIG"
+    cfg:default.log.mode="console"
+    cfg:default.paths.data="$GF_PATHS_DATA"
+    cfg:default.paths.logs="$GF_PATHS_LOGS"
+    cfg:default.paths.plugins="$GF_PATHS_PLUGINS"
+    cfg:default.paths.provisioning="$GF_PATHS_PROVISIONING"
+    "$@"
+)
+
 if [ "$(id -u)" = "0" ]; then
-    exec gosu grafana grafana-server \
-        --homepath=/usr/share/grafana \
-        --config="$GF_PATHS_CONFIG" \
-        cfg:default.log.mode=console \
-        cfg:default.paths.data="$GF_PATHS_DATA" \
-        cfg:default.paths.logs="$GF_PATHS_LOGS" \
-        cfg:default.paths.plugins="$GF_PATHS_PLUGINS" \
-        cfg:default.paths.provisioning="$GF_PATHS_PROVISIONING"
+    # Fix ownership of files created as root before dropping to grafana user
+    chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_LOGS" 2>/dev/null || true
+    exec gosu grafana /usr/share/grafana/bin/grafana-server "${grafana_args[@]}"
 else
-    exec grafana-server "$@" \
-        --homepath=/usr/share/grafana \
-        --config="$GF_PATHS_CONFIG" \
-        cfg:default.log.mode=console \
-        cfg:default.paths.data="$GF_PATHS_DATA" \
-        cfg:default.paths.logs="$GF_PATHS_LOGS" \
-        cfg:default.paths.plugins="$GF_PATHS_PLUGINS" \
-        cfg:default.paths.provisioning="$GF_PATHS_PROVISIONING"
+    exec /usr/share/grafana/bin/grafana-server "${grafana_args[@]}"
 fi

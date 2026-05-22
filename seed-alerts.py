@@ -104,6 +104,20 @@ def get_existing_rules():
     return []
 
 
+def get_file_provisioned_rules():
+    """Return a dict of {title: rule} for rules with file provenance."""
+    rules = get_existing_rules()
+    fp = {}
+    for r in rules:
+        provenance = r.get("provenance", "")
+        if provenance == "file":
+            fp[r.get("title", "")] = r
+    if fp:
+        _log(f"Found {len(fp)} file-provisioned rule(s): "
+             f"{', '.join(sorted(fp.keys()))}")
+    return fp
+
+
 def ensure_folder(name):
     """Create a Grafana folder if it doesn't exist; return its UID."""
     uid = FOLDER_UIDS.get(name, name.lower().replace(" ", "-"))
@@ -160,8 +174,14 @@ def _fix_yaml_types(obj):
             _fix_yaml_types(item)
 
 
-def seed_from_yaml(yaml_path):
-    """Read a provisioning YAML file and seed its rule groups via API."""
+def seed_from_yaml(yaml_path, file_provisioned_titles=None):
+    """Read a provisioning YAML file and seed its rule groups via API.
+
+    If *file_provisioned_titles* is provided, rules whose titles collide
+    with file-provisioned rules are skipped and a warning is logged.
+    """
+    if file_provisioned_titles is None:
+        file_provisioned_titles = set()
     with open(yaml_path) as f:
         doc = yaml.safe_load(f)
 
@@ -180,11 +200,16 @@ def seed_from_yaml(yaml_path):
             _fix_yaml_types(r)
 
         api_rules = []
+        skipped = []
         for rule in rules_raw:
+            title = rule["title"]
+            if title in file_provisioned_titles:
+                skipped.append(title)
+                continue
             api_rules.append(
                 {
                     "uid": rule.get("uid", ""),
-                    "title": rule["title"],
+                    "title": title,
                     "condition": rule["condition"],
                     "data": rule["data"],
                     "noDataState": rule.get("noDataState", "NoData"),
@@ -195,6 +220,16 @@ def seed_from_yaml(yaml_path):
                     "isPaused": rule.get("isPaused", False),
                 }
             )
+
+        if skipped:
+            _log(f"COLLISION: skipped {len(skipped)} rule(s) in group "
+                 f"'{group_name}' — already file-provisioned: "
+                 f"{', '.join(skipped)}")
+
+        if not api_rules:
+            _log(f"Group '{group_name}' has no rules to seed after "
+                 "collision filtering — skipping")
+            continue
 
         payload = {
             "name": group_name,
@@ -243,6 +278,10 @@ def main():
         _log(f"Factory reset: deleting {len(existing)} existing rules")
         delete_all_rules()
 
+    # Detect file-provisioned rules so we don't seed duplicates
+    fp_rules = get_file_provisioned_rules()
+    fp_titles = set(fp_rules.keys())
+
     yaml_files = sorted(glob.glob(os.path.join(ALERT_DEFAULTS_DIR, "*.yaml")))
     if not yaml_files:
         _log(f"No YAML files found in {ALERT_DEFAULTS_DIR}")
@@ -251,7 +290,7 @@ def main():
     total = 0
     for yf in yaml_files:
         _log(f"Processing {os.path.basename(yf)}")
-        total += seed_from_yaml(yf)
+        total += seed_from_yaml(yf, file_provisioned_titles=fp_titles)
 
     _log(f"Done — seeded {total} alert rules")
 
