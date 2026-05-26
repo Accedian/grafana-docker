@@ -9,7 +9,16 @@ global:
     deployment:
       name: "deployment"
       domain: "accedian.local"
-      
+
+persistence:
+  # StorageClass used by the Grafana PVC.
+  # Empty string means use the cluster's default StorageClass.
+  # Per-role override is supported via grafana.persistence.storageClassName.
+  storageClassName: ""
+  # Fallback key, kept for compatibility with deployers that pass
+  # `persistence.storageClass` instead of `persistence.storageClassName`.
+  storageClass: ""
+
 grafana:
   replicaCount: 1
   image:

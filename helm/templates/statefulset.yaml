@@ -114,6 +114,11 @@ spec:
         - metadata:
             name: {{ include "grafana.fullname" . }}-data
           spec:
+            {{- $rolePersistence := default (dict) .Values.grafana.persistence }}
+            {{- $storageClassName := default (default .Values.persistence.storageClass .Values.persistence.storageClassName) $rolePersistence.storageClassName }}
+            {{- if $storageClassName }}
+            storageClassName: {{ $storageClassName | quote }}
+            {{- end }}
             accessModes: ["ReadWriteOnce"]
             resources:
               requests:
