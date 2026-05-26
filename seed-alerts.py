@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Seed Grafana alert rules via API from factory-default YAML files.
 
-On first boot (no existing rules), pushes all alert definitions from
-/tmp/provisioning/alerting/*.yaml into Grafana via the Provisioning API
-with X-Disable-Provenance so customers can edit them in the UI.
+Pushes alert definitions from /tmp/provisioning/alerting/*.yaml into Grafana
+via the Provisioning API with X-Disable-Provenance so customers can edit them
+in the UI. Existing editable rules are preserved on restart.
 
 Usage:
-  seed-alerts.py          # Seed only if no rules exist (first-boot)
+  seed-alerts.py          # Seed missing defaults; preserve editable rules
   seed-alerts.py --force  # Factory reset: delete existing rules and re-seed
 """
 
@@ -25,6 +25,7 @@ GRAFANA_URL = os.environ.get("GRAFANA_URL", "http://localhost:3000")
 ALERT_DEFAULTS_DIR = "/tmp/provisioning/alerting"
 MAX_WAIT_SECONDS = 120
 POLL_INTERVAL = 2
+EDITABLE_HEADERS = {"X-Disable-Provenance": "true"}
 
 # Map folder display names to stable UIDs for the API
 FOLDER_UIDS = {
@@ -71,7 +72,10 @@ def grafana_request(path, method="GET", data=None, headers=None):
     req = urllib.request.Request(url, data=body, headers=hdrs, method=method)
     try:
         with urllib.request.urlopen(req) as resp:
-            return json.loads(resp.read().decode())
+            resp_body = resp.read().decode()
+            if not resp_body:
+                return {}
+            return json.loads(resp_body)
     except urllib.error.HTTPError as e:
         resp_body = e.read().decode() if e.fp else ""
         return {"error": resp_body, "status": e.code}
@@ -104,18 +108,65 @@ def get_existing_rules():
     return []
 
 
-def get_file_provisioned_rules():
-    """Return a dict of {title: rule} for rules with file provenance."""
-    rules = get_existing_rules()
-    fp = {}
-    for r in rules:
-        provenance = r.get("provenance", "")
-        if provenance == "file":
-            fp[r.get("title", "")] = r
-    if fp:
-        _log(f"Found {len(fp)} file-provisioned rule(s): "
-             f"{', '.join(sorted(fp.keys()))}")
-    return fp
+def is_file_provisioned(rule):
+    """Return true when Grafana says a rule came from file provisioning."""
+    return str(rule.get("provenance", "")).lower() == "file"
+
+
+def rule_uid(rule):
+    """Return a normalized rule UID."""
+    uid = rule.get("uid", "")
+    return str(uid) if uid is not None else ""
+
+
+def rule_title(rule):
+    """Return a normalized rule title."""
+    title = rule.get("title", "")
+    return str(title) if title is not None else ""
+
+
+def rule_folder_uid(rule):
+    """Return the folder UID field from Grafana's API response."""
+    return rule.get("folderUID") or rule.get("folderUid") or ""
+
+
+def rule_group_name(rule):
+    """Return the rule group field from Grafana's API response."""
+    return rule.get("ruleGroup") or rule.get("ruleGroupName") or ""
+
+
+def index_rules(rules):
+    """Build lookup tables for existing alert rules."""
+    by_uid = {}
+    by_title = {}
+    for rule in rules:
+        uid = rule_uid(rule)
+        title = rule_title(rule)
+        if uid:
+            by_uid[uid] = rule
+        if title and title not in by_title:
+            by_title[title] = rule
+    return by_uid, by_title
+
+
+def find_existing_rule(default_rule, by_uid, by_title):
+    """Find an existing rule by stable UID, falling back to title."""
+    uid = rule_uid(default_rule)
+    if uid and uid in by_uid:
+        return by_uid[uid]
+    title = rule_title(default_rule)
+    if title:
+        return by_title.get(title)
+    return None
+
+
+def get_group_rules(existing_rules, folder_uid, group_name):
+    """Return existing rules that Grafana reports in a folder/rule group."""
+    return [
+        rule for rule in existing_rules
+        if rule_folder_uid(rule) == folder_uid
+        and rule_group_name(rule) == group_name
+    ]
 
 
 def ensure_folder(name):
@@ -138,13 +189,20 @@ def ensure_folder(name):
 def delete_all_rules():
     """Delete all existing alert rules for factory reset."""
     rules = get_existing_rules()
+    deleted = 0
     for rule in rules:
         uid = rule.get("uid")
         if uid:
-            grafana_request(
-                f"/api/v1/provisioning/alert-rules/{uid}", method="DELETE"
+            result = grafana_request(
+                f"/api/v1/provisioning/alert-rules/{uid}",
+                method="DELETE",
+                headers=EDITABLE_HEADERS,
             )
-    _log(f"Deleted {len(rules)} existing rules")
+            if isinstance(result, dict) and "error" in result:
+                _err(f"Deleting rule '{uid}': {result}")
+            else:
+                deleted += 1
+    _log(f"Deleted {deleted} existing rules")
 
 
 def _fix_yaml_types(obj):
@@ -174,87 +232,162 @@ def _fix_yaml_types(obj):
             _fix_yaml_types(item)
 
 
-def seed_from_yaml(yaml_path, file_provisioned_titles=None):
-    """Read a provisioning YAML file and seed its rule groups via API.
+def rule_payload(rule):
+    """Convert a YAML rule into the payload shape Grafana's API accepts."""
+    payload = {
+        "uid": rule.get("uid", ""),
+        "title": rule["title"],
+        "condition": rule["condition"],
+        "data": rule["data"],
+        "noDataState": rule.get("noDataState", "NoData"),
+        "execErrState": rule.get("execErrState", "Error"),
+        "for": rule.get("for", "5m"),
+        "labels": rule.get("labels", {}),
+        "annotations": rule.get("annotations", {}),
+        "isPaused": rule.get("isPaused", False),
+    }
+    if "keepFiringFor" in rule:
+        payload["keepFiringFor"] = rule["keepFiringFor"]
+    return payload
 
-    If *file_provisioned_titles* is provided, rules whose titles collide
-    with file-provisioned rules are skipped and a warning is logged.
-    """
-    if file_provisioned_titles is None:
-        file_provisioned_titles = set()
+
+def single_rule_payload(rule, folder_uid, group_name, org_id):
+    """Build a payload for POST/PUT /api/v1/provisioning/alert-rules."""
+    payload = rule_payload(rule)
+    payload.update({
+        "folderUID": folder_uid,
+        "ruleGroup": group_name,
+        "orgId": org_id,
+    })
+    return payload
+
+
+def put_rule_group(folder_uid, group_name, interval, rules):
+    """Create or replace a rule group with editable API-provisioned rules."""
+    payload = {
+        "folderUid": folder_uid,
+        "title": group_name,
+        "interval": interval,
+        "rules": [rule_payload(rule) for rule in rules],
+    }
+    encoded_group = urllib.parse.quote(group_name, safe="")
+    result = grafana_request(
+        f"/api/v1/provisioning/folder/{folder_uid}/rule-groups/{encoded_group}",
+        method="PUT",
+        data=payload,
+        headers=EDITABLE_HEADERS,
+    )
+    if isinstance(result, dict) and "error" in result:
+        _err(f"Seeding group '{group_name}': {result}")
+        if result.get("status") == 400:
+            _err(f"  Payload sent: {json.dumps(payload, indent=2)[:2000]}")
+        return False
+    return True
+
+
+def post_rule(rule, folder_uid, group_name, org_id):
+    """Create one editable alert rule without overwriting the whole group."""
+    payload = single_rule_payload(rule, folder_uid, group_name, org_id)
+    result = grafana_request(
+        "/api/v1/provisioning/alert-rules",
+        method="POST",
+        data=payload,
+        headers=EDITABLE_HEADERS,
+    )
+    if isinstance(result, dict) and "error" in result:
+        _err(f"Seeding rule '{rule_title(rule)}': {result}")
+        if result.get("status") == 400:
+            _err(f"  Payload sent: {json.dumps(payload, indent=2)[:2000]}")
+        return False
+    return True
+
+
+def seed_from_yaml(yaml_path, existing_rules):
+    """Read a provisioning YAML file and seed its rule groups via API."""
     with open(yaml_path) as f:
         doc = yaml.safe_load(f)
 
     if not doc or "groups" not in doc:
         return 0
 
+    existing_by_uid, existing_by_title = index_rules(existing_rules)
     total = 0
     for group in doc["groups"]:
         folder_name = group.get("folder", "General Alerting")
         folder_uid = ensure_folder(folder_name)
         group_name = group["name"]
+        org_id = group.get("orgId", 1)
         interval = parse_duration(group.get("interval", "1m"))
 
         rules_raw = group.get("rules", [])
         for r in rules_raw:
             _fix_yaml_types(r)
 
-        api_rules = []
-        skipped = []
+        default_uids = {rule_uid(rule) for rule in rules_raw if rule_uid(rule)}
+        default_titles = {
+            rule_title(rule) for rule in rules_raw if rule_title(rule)
+        }
+        group_existing = get_group_rules(existing_rules, folder_uid, group_name)
+        non_default_group_rules = [
+            rule for rule in group_existing
+            if rule_uid(rule) not in default_uids
+            and rule_title(rule) not in default_titles
+        ]
+
+        file_provisioned = []
+        missing = []
+        editable_existing = []
         for rule in rules_raw:
-            title = rule["title"]
-            if title in file_provisioned_titles:
-                skipped.append(title)
+            existing = find_existing_rule(rule, existing_by_uid,
+                                          existing_by_title)
+            if not existing:
+                missing.append(rule)
+            elif is_file_provisioned(existing):
+                file_provisioned.append(rule)
+            else:
+                editable_existing.append(rule)
+
+        if file_provisioned:
+            if editable_existing or non_default_group_rules:
+                _err(
+                    f"Group '{group_name}' has file-provisioned defaults "
+                    "mixed with existing editable or non-default rules; "
+                    "not overwriting the group"
+                )
                 continue
-            api_rules.append(
-                {
-                    "uid": rule.get("uid", ""),
-                    "title": title,
-                    "condition": rule["condition"],
-                    "data": rule["data"],
-                    "noDataState": rule.get("noDataState", "NoData"),
-                    "execErrState": rule.get("execErrState", "Error"),
-                    "for": rule.get("for", "5m"),
-                    "labels": rule.get("labels", {}),
-                    "annotations": rule.get("annotations", {}),
-                    "isPaused": rule.get("isPaused", False),
-                }
-            )
-
-        if skipped:
-            _log(f"COLLISION: skipped {len(skipped)} rule(s) in group "
-                 f"'{group_name}' — already file-provisioned: "
-                 f"{', '.join(skipped)}")
-
-        if not api_rules:
-            _log(f"Group '{group_name}' has no rules to seed after "
-                 "collision filtering — skipping")
+            if put_rule_group(folder_uid, group_name, interval, rules_raw):
+                total += len(rules_raw)
+                _log(
+                    f"Converted file-provisioned group '{group_name}' "
+                    f"({len(rules_raw)} rules) -> {folder_name}"
+                )
             continue
 
-        payload = {
-            "name": group_name,
-            "interval": interval,
-            "rules": api_rules,
-        }
-
-        # X-Disable-Provenance makes the rules editable in the UI
-        encoded_group = urllib.parse.quote(group_name, safe="")
-        result = grafana_request(
-            f"/api/v1/provisioning/folder/{folder_uid}/rule-groups/{encoded_group}",
-            method="PUT",
-            data=payload,
-            headers={"X-Disable-Provenance": "true"},
-        )
-
-        if isinstance(result, dict) and "error" in result:
-            _err(f"Seeding group '{group_name}': {result}")
-            if result.get("status") == 400:
-                _err(f"  Payload sent: {json.dumps(payload, indent=2)[:2000]}")
-        else:
-            total += len(api_rules)
+        if not missing:
             _log(
-                f"Seeded group '{group_name}' "
-                f"({len(api_rules)} rules) -> {folder_name}"
+                f"Group '{group_name}' already has editable defaults; "
+                "preserving existing rules"
+            )
+            continue
+
+        if len(missing) == len(rules_raw) and not group_existing:
+            if put_rule_group(folder_uid, group_name, interval, rules_raw):
+                total += len(rules_raw)
+                _log(
+                    f"Seeded group '{group_name}' "
+                    f"({len(rules_raw)} rules) -> {folder_name}"
+                )
+            continue
+
+        seeded = 0
+        for rule in missing:
+            if post_rule(rule, folder_uid, group_name, org_id):
+                seeded += 1
+        total += seeded
+        if seeded:
+            _log(
+                f"Seeded {seeded} missing rule(s) in group '{group_name}' "
+                f"-> {folder_name}"
             )
 
     return total
@@ -267,20 +400,11 @@ def main():
         sys.exit(1)
 
     existing = get_existing_rules()
-    if existing and not force:
-        _log(
-            f"{len(existing)} alert rules already exist — skipping seed "
-            "(use --force to factory-reset)"
-        )
-        return
 
     if force and existing:
         _log(f"Factory reset: deleting {len(existing)} existing rules")
         delete_all_rules()
-
-    # Detect file-provisioned rules so we don't seed duplicates
-    fp_rules = get_file_provisioned_rules()
-    fp_titles = set(fp_rules.keys())
+        existing = []
 
     yaml_files = sorted(glob.glob(os.path.join(ALERT_DEFAULTS_DIR, "*.yaml")))
     if not yaml_files:
@@ -290,9 +414,9 @@ def main():
     total = 0
     for yf in yaml_files:
         _log(f"Processing {os.path.basename(yf)}")
-        total += seed_from_yaml(yf, file_provisioned_titles=fp_titles)
+        total += seed_from_yaml(yf, existing)
 
-    _log(f"Done — seeded {total} alert rules")
+    _log(f"Done — seeded or converted {total} alert rules")
 
 
 if __name__ == "__main__":

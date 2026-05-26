@@ -62,11 +62,20 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
   echo "Deleting existing dashboards"
     rm -rf "$GF_PATHS_DATA/dashboards"/* || true
 
+  echo "Deleting existing ops dashboards"
+    rm -rf "$GF_PATHS_DATA/dashboards-ops"/* || true
+
   echo "Restoring plugins from image"
     cp -Rn /data/grafana/plugins/. "$GF_PATHS_PLUGINS/" 2>/dev/null || true
 
   echo "Copying stock provisioning"
     cp -R /tmp/provisioning/. "$GF_PATHS_PROVISIONING/"
+
+  # Alerts are seeded through the API from /tmp/provisioning/alerting so they
+  # can be edited in the UI. Do not leave them in Grafana's live file
+  # provisioning directory.
+  echo "Removing live alert provisioning files"
+    rm -rf "$GF_PATHS_PROVISIONING/alerting" || true
 
   echo "Copying stock dashboards"
     # Resolve Docker COPY nesting (/tmp/dashboards/ may contain a dashboards/ subdir)
