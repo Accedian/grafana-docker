@@ -26,6 +26,7 @@ ALERT_DEFAULTS_DIR = "/tmp/provisioning/alerting"
 MAX_WAIT_SECONDS = 120
 POLL_INTERVAL = 2
 EDITABLE_HEADERS = {"X-Disable-Provenance": "true"}
+FOLDER_PAGE_LIMIT = 1000
 
 # Map folder display names to stable UIDs for the API
 FOLDER_UIDS = {
@@ -169,21 +170,75 @@ def get_group_rules(existing_rules, folder_uid, group_name):
     ]
 
 
+def find_folder_uid_by_title(name):
+    """Return the UID for an existing Grafana folder title, if present."""
+    page = 1
+    while True:
+        query = urllib.parse.urlencode({
+            "limit": FOLDER_PAGE_LIMIT,
+            "page": page,
+        })
+        result = grafana_request(f"/api/folders?{query}")
+        if not isinstance(result, list):
+            _err(f"Looking up folder '{name}' by title: {result}")
+            return ""
+
+        for folder in result:
+            if str(folder.get("title", "")) == name:
+                uid = folder.get("uid")
+                if uid:
+                    return str(uid)
+
+        if len(result) < FOLDER_PAGE_LIMIT:
+            return ""
+        page += 1
+
+
 def ensure_folder(name):
     """Create a Grafana folder if it doesn't exist; return its UID."""
-    uid = FOLDER_UIDS.get(name, name.lower().replace(" ", "-"))
-    result = grafana_request(f"/api/folders/{uid}")
-    if isinstance(result, dict) and result.get("uid") == uid:
-        return uid
+    requested_uid = FOLDER_UIDS.get(name, name.lower().replace(" ", "-"))
+    result = grafana_request(f"/api/folders/{requested_uid}")
+    if isinstance(result, dict) and result.get("uid") == requested_uid:
+        if str(result.get("title", "")) == name:
+            return requested_uid
+        _err(
+            f"Folder uid={requested_uid} already exists with title "
+            f"'{result.get('title', '')}', looking up '{name}' by title"
+        )
+
+    existing_uid = find_folder_uid_by_title(name)
+    if existing_uid:
+        if existing_uid != requested_uid:
+            _log(
+                f"Using existing folder: {name} "
+                f"(uid={existing_uid}, requested uid={requested_uid})"
+            )
+        return existing_uid
+
     result = grafana_request(
-        "/api/folders", method="POST", data={"uid": uid, "title": name}
+        "/api/folders",
+        method="POST",
+        data={"uid": requested_uid, "title": name},
     )
     if isinstance(result, dict) and result.get("uid"):
-        _log(f"Created folder: {name} (uid={uid})")
-        return result["uid"]
-    # Folder may already exist with a different UID — try by title
-    _err(f"Could not create folder '{name}': {result}")
-    return uid
+        created_uid = str(result["uid"])
+        _log(f"Created folder: {name} (uid={created_uid})")
+        return created_uid
+
+    existing_uid = find_folder_uid_by_title(name)
+    if existing_uid:
+        _log(
+            f"Using existing folder after create failed: {name} "
+            f"(uid={existing_uid}, requested uid={requested_uid})"
+        )
+        return existing_uid
+
+    msg = (
+        f"Could not find or create folder '{name}' "
+        f"(requested uid={requested_uid}): {result}"
+    )
+    _err(msg)
+    raise RuntimeError(msg)
 
 
 def delete_all_rules():
