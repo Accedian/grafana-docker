@@ -59,7 +59,8 @@ groups:
           managed-by: grafana-docker
         annotations:
           summary: "Streamingapp is falling behind on ingesting topic: {{ $labels.topic }}"
-          description: "The streaming application is falling behind on ingesting the indicated topic(s). For troubleshooting steps see /public/help/streaming-ingestion.html"
+          description: "The streaming application is falling behind on ingesting the indicated topic(s)."
+          runbook_url: "/public/help/streaming-ingestion.html"
         isPaused: false
 
       - uid: spark-ingestion-rate
@@ -115,7 +116,8 @@ groups:
           managed-by: grafana-docker
         annotations:
           summary: "Spark Ingestion Rate has dropped to zero for Streamingapp"
-          description: "The volume of records read by the streaming application has dropped significantly. Data ingestion may have stopped. For troubleshooting steps see /public/help/streaming-ingestion.html"
+          description: "The volume of records read by the streaming application has dropped significantly. Data ingestion may have stopped."
+          runbook_url: "/public/help/streaming-ingestion.html"
         isPaused: false
 
       - uid: roadrunner-disconnected
@@ -171,7 +173,8 @@ groups:
           managed-by: grafana-docker
         annotations:
           summary: "Roadrunner disconnected: {{ $labels.hostname }} (zone: {{ $labels.zone }})"
-          description: "Data collector {{ $labels.hostname }} in zone {{ $labels.zone }} has been disconnected for more than 5 minutes. Data collection has stopped for this collector. For troubleshooting steps see /public/help/streaming-ingestion.html"
+          description: "Data collector {{ $labels.hostname }} in zone {{ $labels.zone }} has been disconnected for more than 5 minutes. Data collection has stopped for this collector."
+          runbook_url: "/public/help/streaming-ingestion.html"
         isPaused: false
 
       - uid: airflow-batch-dag-failed
@@ -227,5 +230,6 @@ groups:
           managed-by: grafana-docker
         annotations:
           summary: "Airflow Batch DAG Failed: {{ $labels.dag_id }}"
-          description: "A Batch Airflow DAG has failed recently. For troubleshooting steps see /public/help/airflow-ingestion.html"
+          description: "A Batch Airflow DAG has failed recently."
+          runbook_url: "/public/help/airflow-ingestion.html"
         isPaused: false

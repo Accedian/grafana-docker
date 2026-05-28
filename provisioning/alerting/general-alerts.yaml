@@ -53,7 +53,8 @@ groups:
         labels:
           managed-by: grafana-docker
         annotations:
-          summary: "Total container memory utilization is below expected levels. For troubleshooting steps see /public/help/infrastructure-health.html"
+          summary: "Total container memory utilization is below expected levels."
+          runbook_url: "/public/help/infrastructure-health.html"
         isPaused: false
 
       - uid: batch-processing-duration
@@ -103,7 +104,8 @@ groups:
         labels:
           managed-by: grafana-docker
         annotations:
-          summary: "Batch analytics processing has stalled — processing timestamps are not advancing. For troubleshooting steps see /public/help/service-health.html"
+          summary: "Batch analytics processing has stalled — processing timestamps are not advancing."
+          runbook_url: "/public/help/service-health.html"
         isPaused: false
 
       - uid: couchdb-client-changes
@@ -153,7 +155,8 @@ groups:
         labels:
           managed-by: grafana-docker
         annotations:
-          summary: "Configuration database change-feed request count is abnormally high. For troubleshooting steps see /public/help/service-health.html"
+          summary: "Configuration database change-feed request count is abnormally high."
+          runbook_url: "/public/help/service-health.html"
         isPaused: false
 
       - uid: gather-alert-parsing-errors
@@ -203,7 +206,8 @@ groups:
         labels:
           managed-by: grafana-docker
         annotations:
-          summary: "The alert processing service has encountered parsing errors. For troubleshooting steps see /public/help/service-health.html"
+          summary: "The alert processing service has encountered parsing errors."
+          runbook_url: "/public/help/service-health.html"
         isPaused: false
 
       - uid: kafka-ingestion-rate
@@ -278,7 +282,8 @@ groups:
         labels:
           managed-by: grafana-docker
         annotations:
-          summary: "Data ingestion rate has dropped to near zero while upstream sources are active. For troubleshooting steps see /public/help/streaming-ingestion.html"
+          summary: "Data ingestion rate has dropped to near zero while upstream sources are active."
+          runbook_url: "/public/help/streaming-ingestion.html"
         isPaused: false
 
       - uid: kafka-mqtt-divergence
@@ -328,7 +333,8 @@ groups:
         labels:
           managed-by: grafana-docker
         annotations:
-          summary: "Message delivery rate divergence detected between the message bus and notification channel. For troubleshooting steps see /public/help/service-health.html"
+          summary: "Message delivery rate divergence detected between the message bus and notification channel."
+          runbook_url: "/public/help/service-health.html"
         isPaused: false
 
       # NOTE: Original "Panel Title alert" used dashboard template variable $server in PromQL.
@@ -381,7 +387,8 @@ groups:
         labels:
           managed-by: grafana-docker
         annotations:
-          summary: "Analytics processing ratio is below 1, indicating the service is not keeping pace with incoming data. For troubleshooting steps see /public/help/service-health.html"
+          summary: "Analytics processing ratio is below 1, indicating the service is not keeping pace with incoming data."
+          runbook_url: "/public/help/service-health.html"
         isPaused: false
 
       - uid: spark-batch-start-delay
@@ -431,7 +438,8 @@ groups:
         labels:
           managed-by: grafana-docker
         annotations:
-          summary: "Batch analytics processing start is delayed. For troubleshooting steps see /public/help/service-health.html"
+          summary: "Batch analytics processing start is delayed."
+          runbook_url: "/public/help/service-health.html"
         isPaused: false
 
       - uid: incident-builder-throughput
@@ -481,7 +489,8 @@ groups:
         labels:
           managed-by: grafana-docker
         annotations:
-          summary: "Incident processing throughput has dropped below expected levels. For troubleshooting steps see /public/help/service-health.html"
+          summary: "Incident processing throughput has dropped below expected levels."
+          runbook_url: "/public/help/service-health.html"
         isPaused: false
 
       - uid: incident-builder-heartbeat
@@ -541,7 +550,8 @@ groups:
         labels:
           managed-by: grafana-docker
         annotations:
-          summary: "Incident processing service appears to have stalled — no activity detected. For troubleshooting steps see /public/help/service-health.html"
+          summary: "Incident processing service appears to have stalled — no activity detected."
+          runbook_url: "/public/help/service-health.html"
         isPaused: false
 
   # NOTE: The "SSH Logins NOT using Vault" alert is not included here because it uses

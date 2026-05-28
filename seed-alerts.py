@@ -34,6 +34,8 @@ FOLDER_UIDS = {
     "Ingestion": "ingestion",
 }
 
+HELP_PATH_PREFIX = "/public/help/"
+
 
 def parse_duration(val):
     """Convert a duration value to integer seconds.
@@ -61,6 +63,37 @@ def _log(msg):
 
 def _err(msg):
     print(f"[seed-alerts] ERROR: {msg}", file=sys.stderr, flush=True)
+
+
+def get_runbook_base_url():
+    """Return the full base URL for constructing runbook links.
+
+    Uses GF_SERVER_ROOT_URL (the externally-reachable Grafana URL) when set,
+    falls back to GRAFANA_URL.
+
+    Examples:
+        GF_SERVER_ROOT_URL=https://host/grafana/  -> https://host/grafana/
+        GF_SERVER_ROOT_URL=https://host/grafana    -> https://host/grafana/
+        GF_SERVER_ROOT_URL unset, GRAFANA_URL=http://localhost:3000
+                                                   -> http://localhost:3000/
+    """
+    root_url = os.environ.get("GF_SERVER_ROOT_URL", "") or GRAFANA_URL
+    if not root_url.endswith("/"):
+        root_url += "/"
+    return root_url
+
+
+def resolve_runbook_urls(rules, base_url):
+    """Rewrite runbook_url annotations to full, clickable URLs.
+
+    Bare paths like /public/help/foo.html become
+    https://host/grafana/public/help/foo.html.
+    """
+    for rule in rules:
+        annotations = rule.get("annotations") or {}
+        url = annotations.get("runbook_url", "")
+        if url.startswith(HELP_PATH_PREFIX):
+            annotations["runbook_url"] = base_url + url.lstrip("/")
 
 
 def grafana_request(path, method="GET", data=None, headers=None):
@@ -357,7 +390,7 @@ def post_rule(rule, folder_uid, group_name, org_id):
     return True
 
 
-def seed_from_yaml(yaml_path, existing_rules):
+def seed_from_yaml(yaml_path, existing_rules, base_url):
     """Read a provisioning YAML file and seed its rule groups via API."""
     with open(yaml_path) as f:
         doc = yaml.safe_load(f)
@@ -377,6 +410,7 @@ def seed_from_yaml(yaml_path, existing_rules):
         rules_raw = group.get("rules", [])
         for r in rules_raw:
             _fix_yaml_types(r)
+        resolve_runbook_urls(rules_raw, base_url)
 
         default_uids = {rule_uid(rule) for rule in rules_raw if rule_uid(rule)}
         default_titles = {
@@ -454,6 +488,9 @@ def main():
     if not wait_for_grafana():
         sys.exit(1)
 
+    base_url = get_runbook_base_url()
+    _log(f"Runbook base URL: {base_url}")
+
     existing = get_existing_rules()
 
     if force and existing:
@@ -469,7 +506,7 @@ def main():
     total = 0
     for yf in yaml_files:
         _log(f"Processing {os.path.basename(yf)}")
-        total += seed_from_yaml(yf, existing)
+        total += seed_from_yaml(yf, existing, base_url)
 
     _log(f"Done — seeded or converted {total} alert rules")
 

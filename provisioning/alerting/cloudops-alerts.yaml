@@ -232,7 +232,8 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Airflow DAG Failed"
-          description: "The indicated Airflow DAG failed and has failed one or more times in last 4 hours. For troubleshooting steps see /public/help/airflow-ingestion.html"
+          description: "The indicated Airflow DAG failed and has failed one or more times in last 4 hours."
+          runbook_url: "/public/help/airflow-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -310,7 +311,8 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Airflow DAG Failed - custom reports"
-          description: "The indicated Airflow DAG failed and has failed one or more times in last 4 hours. For troubleshooting steps see /public/help/airflow-ingestion.html"
+          description: "The indicated Airflow DAG failed and has failed one or more times in last 4 hours."
+          runbook_url: "/public/help/airflow-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -388,7 +390,8 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Airflow DAG Failed - dhl_get_configs"
-          description: "The Airflow dhl_get_configs job has failed repeatedly. For troubleshooting steps see /public/help/airflow-ingestion.html"
+          description: "The Airflow dhl_get_configs job has failed repeatedly."
+          runbook_url: "/public/help/airflow-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -466,7 +469,8 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Airflow DAG Failed - DHL Jobs"
-          description: "The indicated Airflow DAG failed and has not run successfully in last 6 hours. For troubleshooting steps see /public/help/airflow-ingestion.html"
+          description: "The indicated Airflow DAG failed and has not run successfully in last 6 hours."
+          runbook_url: "/public/help/airflow-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -544,7 +548,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Airflow Health Status"
-          description: "Airflow is not in a healthy state. The scheduler may be down or inter-service communication is broken. For troubleshooting steps see /public/help/airflow-ingestion.html"
+          description: "Airflow is not in a healthy state. The scheduler may be down or inter-service communication is broken."
+          runbook_url: "/public/help/airflow-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -622,7 +627,8 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Airflow job duration"
-          description: "An Airflow DAG run has exceeded the expected duration threshold. For troubleshooting steps see /public/help/airflow-ingestion.html"
+          description: "An Airflow DAG run has exceeded the expected duration threshold."
+          runbook_url: "/public/help/airflow-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -700,7 +706,8 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Airflow Jobs Stopped"
-          description: "Airflow is not in a healthy state. The scheduler may be down and jobs have stopped running. For troubleshooting steps see /public/help/airflow-ingestion.html"
+          description: "Airflow is not in a healthy state. The scheduler may be down and jobs have stopped running."
+          runbook_url: "/public/help/airflow-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -778,7 +785,8 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "All Druid Task Slots Full for 2H"
-          description: "All ingestion task slots have been occupied for over 2 hours. New data ingestion tasks are queued. For troubleshooting steps see /public/help/druid-health.html"
+          description: "All ingestion task slots have been occupied for over 2 hours. New data ingestion tasks are queued."
+          runbook_url: "/public/help/druid-health.html"
         isPaused: false
 
   - orgId: 1
@@ -856,7 +864,8 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Clickhouse nodes up"
-          description: "One or more ClickHouse database nodes are not responding. For troubleshooting steps see /public/help/infrastructure-health.html"
+          description: "One or more ClickHouse database nodes are not responding."
+          runbook_url: "/public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -934,7 +943,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "CPU usage high over half hour"
-          description: "CPU utilization has been elevated for a sustained period, which may impact service performance. For troubleshooting steps see /public/help/infrastructure-health.html"
+          description: "CPU utilization has been elevated for a sustained period, which may impact service performance."
+          runbook_url: "/public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1012,7 +1022,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "DataSource Availability alert"
-          description: "Some data segments are not fully loaded and may be unavailable for queries. For troubleshooting steps see /public/help/druid-health.html"
+          description: "Some data segments are not fully loaded and may be unavailable for queries."
+          runbook_url: "/public/help/druid-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1090,7 +1101,8 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Dgraph Alpha Availability"
-          description: "One or more Dgraph database nodes are unavailable. For troubleshooting steps see /public/help/infrastructure-health.html"
+          description: "One or more Dgraph database nodes are unavailable."
+          runbook_url: "/public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1168,7 +1180,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Disk usage"
-          description: "Disk usage for the deployment has exceeded the configured threshold. For troubleshooting steps see /public/help/disk-usage.html"
+          description: "Disk usage for the deployment has exceeded the configured threshold."
+          runbook_url: "/public/help/disk-usage.html"
         isPaused: false
 
   - orgId: 1
@@ -1246,7 +1259,8 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Docker Pending Task 30m"
-          description: "Container tasks have been pending for an extended period, indicating resource constraints or scheduling issues. For troubleshooting steps see /public/help/infrastructure-health.html"
+          description: "Container tasks have been pending for an extended period, indicating resource constraints or scheduling issues."
+          runbook_url: "/public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1324,7 +1338,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Druid Status check"
-          description: "The query engine status check has failed, indicating one or more nodes may be unreachable. For troubleshooting steps see /public/help/druid-health.html"
+          description: "The query engine status check has failed, indicating one or more nodes may be unreachable."
+          runbook_url: "/public/help/druid-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1402,7 +1417,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Druid's overlord view of the cluster"
-          description: "The cluster coordinator's view of connected nodes disagrees with what nodes report, indicating a connectivity or registration issue. For troubleshooting steps see /public/help/druid-health.html"
+          description: "The cluster coordinator's view of connected nodes disagrees with what nodes report, indicating a connectivity or registration issue."
+          runbook_url: "/public/help/druid-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1480,7 +1496,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "ElasticSearch Heap"
-          description: "ElasticSearch JVM heap utilization has exceeded the safe threshold and may lead to out-of-memory conditions. For troubleshooting steps see /public/help/infrastructure-health.html"
+          description: "ElasticSearch JVM heap utilization has exceeded the safe threshold and may lead to out-of-memory conditions."
+          runbook_url: "/public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1558,7 +1575,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Hadoop dead nodes"
-          description: "One or more Hadoop DataNodes are no longer responding. Data availability may be impacted. For troubleshooting steps see /public/help/hdfs-health.html"
+          description: "One or more Hadoop DataNodes are no longer responding. Data availability may be impacted."
+          runbook_url: "/public/help/hdfs-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1636,7 +1654,8 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "HDFS Corrupt Blocks"
-          description: "HDFS has reported corrupt blocks indicating a data integrity issue. For troubleshooting steps see /public/help/hdfs-health.html"
+          description: "HDFS has reported corrupt blocks indicating a data integrity issue."
+          runbook_url: "/public/help/hdfs-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1714,7 +1733,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "HDFS - Under-Replicated Blocks"
-          description: "HDFS has a significant number of under-replicated blocks, indicating potential node failures or capacity issues. For troubleshooting steps see /public/help/hdfs-health.html"
+          description: "HDFS has a significant number of under-replicated blocks, indicating potential node failures or capacity issues."
+          runbook_url: "/public/help/hdfs-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1792,7 +1812,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "HDFS Time Since Last CheckPoint"
-          description: "The HDFS filesystem checkpoint is overdue, which increases recovery risk in the event of a failure. For troubleshooting steps see /public/help/hdfs-health.html"
+          description: "The HDFS filesystem checkpoint is overdue, which increases recovery risk in the event of a failure."
+          runbook_url: "/public/help/hdfs-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1870,7 +1891,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "High IO Wait"
-          description: "Disk I/O wait time has been elevated for a sustained period, indicating storage bottlenecks. For troubleshooting steps see /public/help/infrastructure-health.html"
+          description: "Disk I/O wait time has been elevated for a sustained period, indicating storage bottlenecks."
+          runbook_url: "/public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1948,7 +1970,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Historical usage"
-          description: "Storage utilization on query-serving nodes is approaching capacity. For troubleshooting steps see /public/help/druid-health.html"
+          description: "Storage utilization on query-serving nodes is approaching capacity."
+          runbook_url: "/public/help/druid-health.html"
         isPaused: false
 
   - orgId: 1
@@ -2026,7 +2049,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Kafka Consumergroup Lag"
-          description: "Consumer lag on summary data topics has not decreased in the last hour, indicating a sustained processing backlog. For troubleshooting steps see /public/help/streaming-ingestion.html"
+          description: "Consumer lag on summary data topics has not decreased in the last hour, indicating a sustained processing backlog."
+          runbook_url: "/public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2104,7 +2128,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Streamingapp Lag Growing"
-          description: "The streaming application's consumer lag is consistently growing, indicating it is falling behind on data processing. For troubleshooting steps see /public/help/streaming-ingestion.html"
+          description: "The streaming application's consumer lag is consistently growing, indicating it is falling behind on data processing."
+          runbook_url: "/public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2182,7 +2207,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Kafka Ingestion Rate"
-          description: "The ingestion rate for session and capture data has dropped below the expected threshold. Data collection may have stopped. For troubleshooting steps see /public/help/streaming-ingestion.html"
+          description: "The ingestion rate for session and capture data has dropped below the expected threshold. Data collection may have stopped."
+          runbook_url: "/public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2260,7 +2286,8 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Latent Data Lag Growing"
-          description: "Latent data processing lag is consistently growing, indicating the consumer may be stuck or under-resourced. For troubleshooting steps see /public/help/streaming-ingestion.html"
+          description: "Latent data processing lag is consistently growing, indicating the consumer may be stuck or under-resourced."
+          runbook_url: "/public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2338,7 +2365,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Metrics Service Reachability"
-          description: "The metrics query service cannot fully reach all query-serving nodes. Data availability for dashboards may be impacted. For troubleshooting steps see /public/help/druid-health.html"
+          description: "The metrics query service cannot fully reach all query-serving nodes. Data availability for dashboards may be impacted."
+          runbook_url: "/public/help/druid-health.html"
         isPaused: false
 
   - orgId: 1
@@ -2416,7 +2444,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "NTP Time Sync"
-          description: "System time is not synchronized across all hosts. Time drift can cause data ordering issues and certificate validation failures. For troubleshooting steps see /public/help/infrastructure-health.html"
+          description: "System time is not synchronized across all hosts. Time drift can cause data ordering issues and certificate validation failures."
+          runbook_url: "/public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -2494,7 +2523,8 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Prometheus NODATA"
-          description: "Grafana cannot reach the Prometheus metrics data source. Other alert rules may not evaluate correctly while this persists. For troubleshooting steps see /public/help/infrastructure-health.html"
+          description: "Grafana cannot reach the Prometheus metrics data source. Other alert rules may not evaluate correctly while this persists."
+          runbook_url: "/public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -2572,7 +2602,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "PVStorage Inserted Rows"
-          description: "One or more storage writer instances have stopped inserting data. Downstream data freshness is affected. For troubleshooting steps see /public/help/streaming-ingestion.html"
+          description: "One or more storage writer instances have stopped inserting data. Downstream data freshness is affected."
+          runbook_url: "/public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2650,7 +2681,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Query Node Count"
-          description: "The deployment has fewer query nodes than expected, which may degrade query performance. For troubleshooting steps see /public/help/druid-health.html"
+          description: "The deployment has fewer query nodes than expected, which may degrade query performance."
+          runbook_url: "/public/help/druid-health.html"
         isPaused: false
 
   - orgId: 1
@@ -2728,7 +2760,8 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "RoadRunner Persistence_service_cached_files"
-          description: "The data collector is caching a large number of files locally, indicating delivery delays. For troubleshooting steps see /public/help/streaming-ingestion.html"
+          description: "The data collector is caching a large number of files locally, indicating delivery delays."
+          runbook_url: "/public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2806,7 +2839,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Streamingapp alert-events Topic Ingestion"
-          description: "The streaming application is falling behind on processing alert event data. For troubleshooting steps see /public/help/streaming-ingestion.html"
+          description: "The streaming application is falling behind on processing alert event data."
+          runbook_url: "/public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2884,7 +2918,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Streamingapp mo-summary Topic Ingestion"
-          description: "The streaming application is falling behind on processing summary data. For troubleshooting steps see /public/help/streaming-ingestion.html"
+          description: "The streaming application is falling behind on processing summary data."
+          runbook_url: "/public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2962,7 +2997,8 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Streamingapp Raw Topic Ingestion"
-          description: "The streaming application is falling behind on processing raw session metrics. For troubleshooting steps see /public/help/streaming-ingestion.html"
+          description: "The streaming application is falling behind on processing raw session metrics."
+          runbook_url: "/public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -3040,5 +3076,6 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Time since last backup"
-          description: "The time since the last backup has exceeded the target interval. The backup may have failed. For troubleshooting steps see /public/help/backup-recency.html"
+          description: "The time since the last backup has exceeded the target interval. The backup may have failed."
+          runbook_url: "/public/help/backup-recency.html"
         isPaused: false

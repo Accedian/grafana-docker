@@ -135,5 +135,91 @@ class EnsureFolderTests(unittest.TestCase):
         self.assertEqual(responses, [])
 
 
+class BaseUrlTests(unittest.TestCase):
+    """Tests for get_runbook_base_url()."""
+
+    def _set_env(self, value):
+        import os
+        self._old = os.environ.pop("GF_SERVER_ROOT_URL", None)
+        if value is not None:
+            os.environ["GF_SERVER_ROOT_URL"] = value
+
+    def _restore_env(self):
+        import os
+        os.environ.pop("GF_SERVER_ROOT_URL", None)
+        if self._old is not None:
+            os.environ["GF_SERVER_ROOT_URL"] = self._old
+
+    def tearDown(self):
+        self._restore_env()
+
+    def test_no_env_falls_back_to_grafana_url(self):
+        self._set_env(None)
+        self.assertEqual(
+            seed_alerts.get_runbook_base_url(),
+            seed_alerts.GRAFANA_URL + "/",
+        )
+
+    def test_empty_env_falls_back_to_grafana_url(self):
+        self._set_env("")
+        self.assertEqual(
+            seed_alerts.get_runbook_base_url(),
+            seed_alerts.GRAFANA_URL + "/",
+        )
+
+    def test_plain_localhost(self):
+        self._set_env("http://localhost:3000")
+        self.assertEqual(seed_alerts.get_runbook_base_url(), "http://localhost:3000/")
+
+    def test_subpath_with_trailing_slash(self):
+        self._set_env("https://host/grafana/")
+        self.assertEqual(seed_alerts.get_runbook_base_url(), "https://host/grafana/")
+
+    def test_subpath_without_trailing_slash(self):
+        self._set_env("https://host/grafana")
+        self.assertEqual(seed_alerts.get_runbook_base_url(), "https://host/grafana/")
+
+    def test_deep_subpath(self):
+        self._set_env("https://host/org/grafana/")
+        self.assertEqual(seed_alerts.get_runbook_base_url(), "https://host/org/grafana/")
+
+
+class ResolveRunbookUrlsTests(unittest.TestCase):
+    """Tests for resolve_runbook_urls()."""
+
+    def test_rewrites_to_full_url(self):
+        rules = [{"annotations": {"runbook_url": "/public/help/foo.html"}}]
+        seed_alerts.resolve_runbook_urls(rules, "https://host/grafana/")
+        self.assertEqual(
+            rules[0]["annotations"]["runbook_url"],
+            "https://host/grafana/public/help/foo.html",
+        )
+
+    def test_rewrites_with_root_base_url(self):
+        rules = [{"annotations": {"runbook_url": "/public/help/foo.html"}}]
+        seed_alerts.resolve_runbook_urls(rules, "http://localhost:3000/")
+        self.assertEqual(
+            rules[0]["annotations"]["runbook_url"],
+            "http://localhost:3000/public/help/foo.html",
+        )
+
+    def test_skips_rules_without_runbook_url(self):
+        rules = [{"annotations": {"summary": "test"}}]
+        seed_alerts.resolve_runbook_urls(rules, "https://host/grafana/")
+        self.assertNotIn("runbook_url", rules[0]["annotations"])
+
+    def test_skips_rules_without_annotations(self):
+        rules = [{"labels": {"foo": "bar"}}]
+        seed_alerts.resolve_runbook_urls(rules, "https://host/grafana/")
+
+    def test_preserves_absolute_urls(self):
+        rules = [{"annotations": {"runbook_url": "https://example.com/docs"}}]
+        seed_alerts.resolve_runbook_urls(rules, "https://host/grafana/")
+        self.assertEqual(
+            rules[0]["annotations"]["runbook_url"],
+            "https://example.com/docs",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
