@@ -1,3 +1,4 @@
+* Feat - Add Cerbos Authorization Metrics dashboard [Asana](https://app.asana.com/1/5557457880942/project/1212700598162622/task/1211002245600706?focus=true)
 ## Current Release
 ### 0.216.0
 **Release Date:** Wed May 13 13:14:35 UTC 2026

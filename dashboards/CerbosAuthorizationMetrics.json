@@ -1,0 +1,585 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "Grafana",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "links": [],
+    "panels": [
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "reqps"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "id": 1,
+        "options": {
+          "alertThreshold": true,
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.5.0",
+        "targets": [
+          {
+            "datasource": "Prometheus",
+            "editorMode": "code",
+            "expr": "sum(rate(stitchit_cerbos_check_requests_total{tenant_id=\"$tenant_id\"}[$__rate_interval]))",
+            "format": "time_series",
+            "intervalFactor": 1,
+            "legendFormat": "stitchIt",
+            "range": true,
+            "refId": "A"
+          },
+          {
+            "datasource": "Prometheus",
+            "editorMode": "code",
+            "expr": "sum(rate(gather_cerbos_check_requests_total{tenant_id=\"$tenant_id\"}[$__rate_interval]))",
+            "format": "time_series",
+            "intervalFactor": 1,
+            "legendFormat": "gather",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "title": "Request Rate by Service",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "reqps"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "id": 2,
+        "options": {
+          "alertThreshold": true,
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.5.0",
+        "targets": [
+          {
+            "datasource": "Prometheus",
+            "editorMode": "code",
+            "expr": "sum by (tenant_id) (rate(stitchit_cerbos_check_requests_total[$__rate_interval]))",
+            "format": "time_series",
+            "intervalFactor": 1,
+            "legendFormat": "stitchIt - {{tenant_id}}",
+            "range": true,
+            "refId": "A"
+          },
+          {
+            "datasource": "Prometheus",
+            "editorMode": "code",
+            "expr": "sum by (tenant_id) (rate(gather_cerbos_check_requests_total[$__rate_interval]))",
+            "format": "time_series",
+            "intervalFactor": 1,
+            "legendFormat": "gather - {{tenant_id}}",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "title": "By Tenant",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "normal"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "reqps"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 0,
+          "y": 10
+        },
+        "id": 3,
+        "options": {
+          "alertThreshold": true,
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.5.0",
+        "targets": [
+          {
+            "datasource": "Prometheus",
+            "editorMode": "code",
+            "expr": "sum by (result) (rate(stitchit_cerbos_check_requests_total{tenant_id=\"$tenant_id\"}[$__rate_interval]))",
+            "format": "time_series",
+            "intervalFactor": 1,
+            "legendFormat": "stitchIt - {{result}}",
+            "range": true,
+            "refId": "A"
+          },
+          {
+            "datasource": "Prometheus",
+            "editorMode": "code",
+            "expr": "sum by (result) (rate(gather_cerbos_check_requests_total{tenant_id=\"$tenant_id\"}[$__rate_interval]))",
+            "format": "time_series",
+            "intervalFactor": 1,
+            "legendFormat": "gather - {{result}}",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "title": "ALLOW vs DENY",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "reqps"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 12,
+          "y": 10
+        },
+        "id": 4,
+        "options": {
+          "alertThreshold": true,
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.5.0",
+        "targets": [
+          {
+            "datasource": "Prometheus",
+            "editorMode": "code",
+            "expr": "sum(rate(stitchit_cerbos_check_requests_total{tenant_id=\"$tenant_id\", result=\"ERROR\"}[$__rate_interval]))",
+            "format": "time_series",
+            "intervalFactor": 1,
+            "legendFormat": "stitchIt errors",
+            "range": true,
+            "refId": "A"
+          },
+          {
+            "datasource": "Prometheus",
+            "editorMode": "code",
+            "expr": "sum(rate(gather_cerbos_check_requests_total{tenant_id=\"$tenant_id\", result=\"ERROR\"}[$__rate_interval]))",
+            "format": "time_series",
+            "intervalFactor": 1,
+            "legendFormat": "gather errors",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "title": "Error Rate",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "resource"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 400
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 10,
+          "w": 24,
+          "x": 0,
+          "y": 20
+        },
+        "id": 5,
+        "options": {
+          "cellHeight": "sm",
+          "footer": {
+            "countRows": false,
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": true,
+              "displayName": "Value"
+            }
+          ]
+        },
+        "pluginVersion": "11.5.0",
+        "targets": [
+          {
+            "datasource": "Prometheus",
+            "editorMode": "code",
+            "expr": "topk(10, sum by (resource) (increase(stitchit_cerbos_check_requests_total{tenant_id=\"$tenant_id\", result=\"DENY\"}[$__range])) + sum by (resource) (increase(gather_cerbos_check_requests_total{tenant_id=\"$tenant_id\", result=\"DENY\"}[$__range])))",
+            "format": "table",
+            "instant": true,
+            "intervalFactor": 1,
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Top Denied Resources",
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time": true
+              },
+              "renameByName": {
+                "Value": "Deny Count",
+                "resource": "Resource"
+              }
+            }
+          }
+        ],
+        "type": "table"
+      }
+    ],
+    "preload": false,
+    "refresh": "",
+    "schemaVersion": 40,
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "current": {},
+          "datasource": "Prometheus",
+          "definition": "label_values(stitchit_cerbos_check_requests_total, tenant_id)",
+          "hide": 0,
+          "includeAll": false,
+          "label": "Tenant ID",
+          "multi": false,
+          "name": "tenant_id",
+          "options": [],
+          "query": {
+            "qryType": 1,
+            "query": "label_values(stitchit_cerbos_check_requests_total, tenant_id)"
+          },
+          "refresh": 2,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "type": "query"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-30m",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Cerbos Authorization Metrics",
+    "uid": "cerbos-authz-metrics",
+    "version": 1,
+    "weekStart": ""
+  }
