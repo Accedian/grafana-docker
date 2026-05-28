@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infrastructure Health Alert Guide</title>
+  <style>
+    :root {
+      --bg: #181b1f;
+      --surface: #22252b;
+      --border: #2c2f36;
+      --text: #dce0e6;
+      --text-muted: #8e929a;
+      --accent: #6c9eff;
+      --accent-dim: #3b5998;
+      --success: #6ccf8e;
+      --warning: #f5c451;
+      --danger: #f2726f;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f4f5f7;
+        --surface: #ffffff;
+        --border: #dce0e6;
+        --text: #1e2128;
+        --text-muted: #6b7280;
+        --accent: #3871e0;
+        --accent-dim: #d0def5;
+        --success: #1a8a42;
+        --warning: #b8860b;
+        --danger: #cc3733;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 52rem;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.6rem; margin-bottom: .25rem; }
+    .subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: .95rem; }
+    h2 { font-size: 1.15rem; margin: 1.75rem 0 .75rem; border-bottom: 1px solid var(--border); padding-bottom: .35rem; }
+    h3 { font-size: 1rem; margin: 1.25rem 0 .5rem; }
+    p, li { font-size: .925rem; }
+    p { margin-bottom: .75rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: .75rem; }
+    li { margin-bottom: .35rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .badge {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 600;
+      padding: .15rem .55rem;
+      border-radius: 4px;
+      margin-right: .35rem;
+      margin-bottom: .35rem;
+      vertical-align: middle;
+    }
+    .badge-alert  { background: var(--danger); color: #fff; }
+    .badge-warn   { background: var(--warning); color: #1e2128; }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.5rem; height: 1.5rem;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 700;
+      margin-right: .5rem;
+      flex-shrink: 0;
+    }
+    .steps li { list-style: none; display: flex; align-items: flex-start; margin-bottom: .6rem; }
+    .steps { padding-left: 0; }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: .85rem;
+      background: var(--border);
+      padding: .1rem .35rem;
+      border-radius: 3px;
+    }
+    .tag-list { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
+    footer { margin-top: 2.5rem; font-size: .8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Infrastructure Health Alert Guide</h1>
+  <p class="subtitle">Troubleshooting CPU, memory, I/O, time synchronization, container scheduling, and database node availability</p>
+
+  <div class="card">
+    <h3>Affected alerts</h3>
+    <div class="tag-list">
+      <span class="badge badge-alert">CPU Usage High</span>
+      <span class="badge badge-alert">High IO Wait</span>
+      <span class="badge badge-alert">Available Memory</span>
+      <span class="badge badge-alert">Docker Pending Task</span>
+      <span class="badge badge-alert">NTP Time Sync</span>
+      <span class="badge badge-alert">ClickHouse Nodes Up</span>
+      <span class="badge badge-alert">Dgraph Alpha Availability</span>
+      <span class="badge badge-alert">ElasticSearch Heap</span>
+      <span class="badge badge-alert">Prometheus NODATA</span>
+    </div>
+  </div>
+
+  <h2>What do these alerts mean?</h2>
+
+  <div class="card">
+    <h3>CPU &amp; I/O</h3>
+    <p><strong>CPU Usage High</strong> fires when average CPU utilization exceeds the threshold for a
+    sustained period. <strong>High IO Wait</strong> fires when processes are spending an excessive
+    percentage of time waiting on disk I/O, indicating storage bottlenecks.</p>
+  </div>
+
+  <div class="card">
+    <h3>Memory</h3>
+    <p><strong>Available Memory</strong> fires when total container memory utilization drops below
+    expected levels, suggesting containers may be failing or the system is under-provisioned.
+    <strong>ElasticSearch Heap</strong> fires when the JVM heap on search nodes exceeds safe levels,
+    risking out-of-memory crashes.</p>
+  </div>
+
+  <div class="card">
+    <h3>Container scheduling</h3>
+    <p><strong>Docker Pending Task</strong> fires when container tasks have been in a pending state for
+    an extended period. This may indicate resource shortages, missing placement constraints, or
+    node failures preventing task scheduling.</p>
+  </div>
+
+  <div class="card">
+    <h3>Time synchronization</h3>
+    <p><strong>NTP Time Sync</strong> fires when hosts are not synchronized to a common time source.
+    Time drift can cause log correlation failures, certificate validation errors, and data
+    ordering issues across distributed services.</p>
+  </div>
+
+  <div class="card">
+    <h3>Database node availability</h3>
+    <p><strong>ClickHouse Nodes Up</strong> and <strong>Dgraph Alpha Availability</strong> fire when
+    the expected number of database nodes is not available. Missing nodes reduce query capacity
+    and may impact data availability.</p>
+  </div>
+
+  <div class="card">
+    <h3>Monitoring availability</h3>
+    <p><strong>Prometheus NODATA</strong> fires when Grafana cannot query the metrics data source.
+    While this alert is active, other alert rules may not evaluate correctly.</p>
+  </div>
+
+  <h2>Impact</h2>
+  <ul>
+    <li><strong>CPU / I/O saturation</strong> slows all workloads on the affected host, including
+    ingestion, query processing, and service health checks.</li>
+    <li><strong>Memory pressure</strong> can cause out-of-memory kills, service restarts, and data loss
+    for in-memory caches.</li>
+    <li><strong>Pending tasks</strong> mean services are not running at expected capacity.</li>
+    <li><strong>Time drift</strong> causes subtle data inconsistencies that are difficult to diagnose.</li>
+    <li><strong>Database node loss</strong> degrades query performance and may prevent writes.</li>
+    <li><strong>Monitoring outage</strong> means alerts may not fire, creating a blind spot.</li>
+  </ul>
+
+  <h2>Investigation steps</h2>
+  <ol class="steps">
+    <li>
+      <span class="step-num">1</span>
+      <span>Open the alert in Grafana and identify the affected <strong>instance</strong> or
+      <strong>node</strong> from the alert labels.</span>
+    </li>
+    <li>
+      <span class="step-num">2</span>
+      <span>For CPU/IO/memory alerts, log into the host and use system tools (<code>top</code>,
+      <code>iostat</code>, <code>free -h</code>) to identify the processes consuming the most resources.</span>
+    </li>
+    <li>
+      <span class="step-num">3</span>
+      <span>For pending tasks, check the container orchestrator logs for scheduling errors — look for
+      resource constraints, missing labels, or node affinity rules that cannot be satisfied.</span>
+    </li>
+    <li>
+      <span class="step-num">4</span>
+      <span>For NTP alerts, verify that NTP or chrony is configured and running on the affected host.
+      Check <code>timedatectl</code> or <code>chronyc tracking</code> for sync status.</span>
+    </li>
+    <li>
+      <span class="step-num">5</span>
+      <span>For database node alerts, check the service logs on the missing node(s) for crash messages,
+      connectivity errors, or disk space exhaustion.</span>
+    </li>
+    <li>
+      <span class="step-num">6</span>
+      <span>For Prometheus NODATA, verify that the Prometheus service is running and that Grafana's
+      data source configuration is correct.</span>
+    </li>
+  </ol>
+
+  <h2>Remediation</h2>
+  <div class="card">
+    <h3>Resource saturation (CPU, I/O, memory)</h3>
+    <ul>
+      <li>Identify and address runaway processes or workloads consuming excessive resources.</li>
+      <li>For I/O wait, check for failing disks, filesystem fragmentation, or excessive logging.</li>
+      <li>For ElasticSearch heap, consider increasing the JVM heap size or reducing the index load.</li>
+      <li>If the host is genuinely under-provisioned, scale up resources.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Container scheduling</h3>
+    <p>Resolve the underlying constraint preventing task placement. This may involve adding node
+    capacity, correcting labels, or clearing a failed node from the cluster.</p>
+  </div>
+  <div class="card">
+    <h3>Time synchronization</h3>
+    <p>Restart the NTP or chrony service. Ensure the NTP server is reachable and that firewall rules
+    allow UDP port 123.</p>
+  </div>
+  <div class="card">
+    <h3>Database nodes</h3>
+    <p>Restart the failed database service after resolving the root cause. Monitor the node to confirm
+    it rejoins the cluster and begins serving queries.</p>
+  </div>
+
+  <h2>Verification</h2>
+  <ul>
+    <li>Confirm resource utilization has returned to normal levels on affected hosts.</li>
+    <li>Verify all expected database nodes are online and serving traffic.</li>
+    <li>Check that all container tasks are running (no pending tasks).</li>
+    <li>Confirm NTP sync status shows synchronized on all hosts.</li>
+    <li>Wait for the next Grafana evaluation cycle and confirm alerts return to <strong>Normal</strong>.</li>
+  </ul>
+
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="https://grafana.com/docs/grafana/latest/alerting/" target="_blank" rel="noopener">Grafana Alerting documentation</a></li>
+    <li><a href="https://prometheus.io/docs/guides/node-exporter/" target="_blank" rel="noopener">Prometheus Node Exporter guide</a></li>
+    <li><a href="https://clickhouse.com/docs/en/operations/monitoring" target="_blank" rel="noopener">ClickHouse — Monitoring</a></li>
+  </ul>
+
+  <footer>
+    This page is bundled with your Grafana deployment and may be updated with new releases.
+  </footer>
+</body>
+</html>

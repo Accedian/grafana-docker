@@ -10,6 +10,7 @@ data:
     datasources:
     - name: Prometheus
       type: prometheus
+      uid: "000000001"
       access: proxy
       orgId: 1
       url: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090

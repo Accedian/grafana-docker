@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disk Usage Alert Guide</title>
+  <style>
+    :root {
+      --bg: #181b1f;
+      --surface: #22252b;
+      --border: #2c2f36;
+      --text: #dce0e6;
+      --text-muted: #8e929a;
+      --accent: #6c9eff;
+      --accent-dim: #3b5998;
+      --success: #6ccf8e;
+      --warning: #f5c451;
+      --danger: #f2726f;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f4f5f7;
+        --surface: #ffffff;
+        --border: #dce0e6;
+        --text: #1e2128;
+        --text-muted: #6b7280;
+        --accent: #3871e0;
+        --accent-dim: #d0def5;
+        --success: #1a8a42;
+        --warning: #b8860b;
+        --danger: #cc3733;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 52rem;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.6rem; margin-bottom: .25rem; }
+    .subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: .95rem; }
+    h2 { font-size: 1.15rem; margin: 1.75rem 0 .75rem; border-bottom: 1px solid var(--border); padding-bottom: .35rem; }
+    h3 { font-size: 1rem; margin: 1.25rem 0 .5rem; }
+    p, li { font-size: .925rem; }
+    p { margin-bottom: .75rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: .75rem; }
+    li { margin-bottom: .35rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .badge {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 600;
+      padding: .15rem .55rem;
+      border-radius: 4px;
+      margin-right: .35rem;
+      vertical-align: middle;
+    }
+    .badge-alert  { background: var(--danger); color: #fff; }
+    .badge-info   { background: var(--accent-dim); color: var(--accent); }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.5rem; height: 1.5rem;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 700;
+      margin-right: .5rem;
+      flex-shrink: 0;
+    }
+    .steps li { list-style: none; display: flex; align-items: flex-start; margin-bottom: .6rem; }
+    .steps { padding-left: 0; }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: .85rem;
+      background: var(--border);
+      padding: .1rem .35rem;
+      border-radius: 3px;
+    }
+    .tag-list { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
+    footer { margin-top: 2.5rem; font-size: .8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Disk Usage Alert Guide</h1>
+  <p class="subtitle">Troubleshooting high disk utilization</p>
+
+  <div class="card">
+    <h3>Affected alert</h3>
+    <div class="tag-list">
+      <span class="badge badge-alert">Disk usage</span>
+    </div>
+  </div>
+
+  <h2>What does this alert mean?</h2>
+  <p>
+    The disk usage alert fires when the filesystem utilization on one or more monitored volumes
+    exceeds the configured threshold. This is measured using standard host-level metrics
+    (e.g., <code>node_filesystem_avail_bytes</code>) collected by Prometheus.
+  </p>
+
+  <h2>Impact</h2>
+  <p>
+    Running out of disk space can cause cascading failures across the platform:
+  </p>
+  <ul>
+    <li><strong>Ingestion disruption</strong> — write operations fail when filesystems are full, stalling data pipelines.</li>
+    <li><strong>Backup failures</strong> — scheduled backups cannot complete if target volumes lack space.</li>
+    <li><strong>Query degradation</strong> — analytics services may become unresponsive if their working directories are exhausted.</li>
+    <li><strong>Log loss</strong> — application and system logs stop being written, hindering further troubleshooting.</li>
+  </ul>
+
+  <h2>Investigation steps</h2>
+  <ol class="steps">
+    <li>
+      <span class="step-num">1</span>
+      <span>Open the alert in Grafana and note the <strong>instance</strong> and <strong>mountpoint</strong>
+      labels to identify which host and filesystem are affected.</span>
+    </li>
+    <li>
+      <span class="step-num">2</span>
+      <span>Log into the affected host (or use your management console) and run
+      <code>df -h</code> to confirm current utilization across all mount points.</span>
+    </li>
+    <li>
+      <span class="step-num">3</span>
+      <span>Identify the largest consumers with <code>du -sh /*</code> (adjust the path to the
+      affected mount). Look for rapidly growing directories such as logs, temporary files,
+      or data staging areas.</span>
+    </li>
+    <li>
+      <span class="step-num">4</span>
+      <span>Check whether any log rotation or cleanup cron jobs have stopped running or
+      are misconfigured.</span>
+    </li>
+  </ol>
+
+  <h2>Remediation</h2>
+  <div class="card">
+    <h3>Immediate relief</h3>
+    <ul>
+      <li>Rotate or compress historical log files.</li>
+      <li>Remove temporary files, old package caches, or orphaned data that is no longer needed.</li>
+      <li>If a specific application's data directory is the culprit, check whether it has its own
+      cleanup or retention policy that can be adjusted.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Long-term capacity</h3>
+    <ul>
+      <li>Expand the filesystem or attach additional storage if usage reflects steady organic growth.</li>
+      <li>Review data retention policies and ensure automated cleanup is in place for all
+      significant write paths.</li>
+      <li>Set up trending alerts (rate-of-change) to catch rapid growth before it reaches critical levels.</li>
+    </ul>
+  </div>
+
+  <h2>Verification</h2>
+  <p>After freeing space or expanding the volume:</p>
+  <ul>
+    <li>Run <code>df -h</code> to confirm utilization is below the alert threshold.</li>
+    <li>Wait for the next Grafana alert evaluation cycle and verify the alert state returns to <strong>Normal</strong>.</li>
+  </ul>
+
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="https://grafana.com/docs/grafana/latest/alerting/" target="_blank" rel="noopener">Grafana Alerting documentation</a></li>
+    <li><a href="https://prometheus.io/docs/guides/node-exporter/" target="_blank" rel="noopener">Prometheus Node Exporter guide</a></li>
+  </ul>
+
+  <footer>
+    This page is bundled with your Grafana deployment and may be updated with new releases.
+  </footer>
+</body>
+</html>
