@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Airflow Ingestion Alert Guide</title>
+  <style>
+    :root {
+      --bg: #181b1f;
+      --surface: #22252b;
+      --border: #2c2f36;
+      --text: #dce0e6;
+      --text-muted: #8e929a;
+      --accent: #6c9eff;
+      --accent-dim: #3b5998;
+      --success: #6ccf8e;
+      --warning: #f5c451;
+      --danger: #f2726f;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f4f5f7;
+        --surface: #ffffff;
+        --border: #dce0e6;
+        --text: #1e2128;
+        --text-muted: #6b7280;
+        --accent: #3871e0;
+        --accent-dim: #d0def5;
+        --success: #1a8a42;
+        --warning: #b8860b;
+        --danger: #cc3733;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 52rem;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.6rem; margin-bottom: .25rem; }
+    .subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: .95rem; }
+    h2 { font-size: 1.15rem; margin: 1.75rem 0 .75rem; border-bottom: 1px solid var(--border); padding-bottom: .35rem; }
+    h3 { font-size: 1rem; margin: 1.25rem 0 .5rem; }
+    p, li { font-size: .925rem; }
+    p { margin-bottom: .75rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: .75rem; }
+    li { margin-bottom: .35rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .badge {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 600;
+      padding: .15rem .55rem;
+      border-radius: 4px;
+      margin-right: .35rem;
+      vertical-align: middle;
+    }
+    .badge-alert  { background: var(--danger); color: #fff; }
+    .badge-info   { background: var(--accent-dim); color: var(--accent); }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.5rem; height: 1.5rem;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 700;
+      margin-right: .5rem;
+      flex-shrink: 0;
+    }
+    .steps li { list-style: none; display: flex; align-items: flex-start; margin-bottom: .6rem; }
+    .steps { padding-left: 0; }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: .85rem;
+      background: var(--border);
+      padding: .1rem .35rem;
+      border-radius: 3px;
+    }
+    .tag-list { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
+    footer { margin-top: 2.5rem; font-size: .8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Airflow Ingestion Alert Guide</h1>
+  <p class="subtitle">Troubleshooting batch data-ingestion alerts</p>
+
+  <div class="card">
+    <h3>Affected alerts</h3>
+    <div class="tag-list">
+      <span class="badge badge-alert">Airflow DAG Failed</span>
+      <span class="badge badge-alert">Airflow DAG Failed – custom reports</span>
+      <span class="badge badge-alert">Airflow DAG Failed – DHL Jobs</span>
+      <span class="badge badge-alert">Airflow Health Status</span>
+      <span class="badge badge-alert">Airflow job duration</span>
+      <span class="badge badge-alert">Airflow Jobs Stopped</span>
+      <span class="badge badge-alert">Airflow Batch DAG Failed</span>
+    </div>
+  </div>
+
+  <h2>What does this alert mean?</h2>
+  <p>
+    These alerts monitor <strong>Apache Airflow</strong> DAG execution within the analytics platform.
+    They fire when one or more of the following conditions is detected:
+  </p>
+  <ul>
+    <li>A DAG run has failed repeatedly within its evaluation window.</li>
+    <li>The Airflow scheduler is not reporting a healthy state.</li>
+    <li>No Airflow jobs have completed recently (jobs stopped).</li>
+    <li>A DAG's runtime has exceeded the expected duration threshold.</li>
+  </ul>
+
+  <h2>Impact</h2>
+  <p>
+    Data ingestion tasks are not completing on schedule. Batch processing jobs that aggregate, transform, or
+    load data into the analytics platform are delayed. Dashboards and reports that depend on this data may
+    show stale or incomplete results until the issue is resolved.
+  </p>
+
+  <h2>Investigation steps</h2>
+  <ol class="steps">
+    <li>
+      <span class="step-num">1</span>
+      <span>Open the firing alert in Grafana and review the <strong>Labels</strong> section to identify the
+      specific DAG ID and owner. The alert's evaluation history shows when the condition first triggered.</span>
+    </li>
+    <li>
+      <span class="step-num">2</span>
+      <span>Navigate to the <strong>Airflow UI</strong> and locate the failed DAG. Inspect the most recent
+      DAG run and its individual task logs to identify the root cause (e.g., dependency timeout, resource
+      exhaustion, upstream data unavailability).</span>
+    </li>
+    <li>
+      <span class="step-num">3</span>
+      <span>Check the Airflow <strong>scheduler health</strong> page. A healthy scheduler should show recent
+      heartbeats and an active process. If the scheduler is down, other DAGs will also stop executing.</span>
+    </li>
+    <li>
+      <span class="step-num">4</span>
+      <span>Confirm that <strong>upstream data sources</strong> are delivering records. If ingestion depends
+      on external feeds, verify connectivity and recent data arrival timestamps.</span>
+    </li>
+  </ol>
+
+  <h2>Remediation</h2>
+  <div class="card">
+    <h3>Transient DAG failure</h3>
+    <p>If the root cause is resolved (e.g., a temporary network issue), clear the failed task instances
+    and trigger a re-run from the Airflow UI.</p>
+  </div>
+  <div class="card">
+    <h3>Scheduler unhealthy</h3>
+    <p>Restart the Airflow scheduler service. Monitor the heartbeat metric to confirm it recovers.
+    If the scheduler continues to fail, review its resource allocation and logs for errors.</p>
+  </div>
+  <div class="card">
+    <h3>Long-running DAGs</h3>
+    <p>If a DAG consistently exceeds its expected runtime, review task concurrency settings and consider
+    breaking large tasks into smaller units. Adjust the alert's duration threshold if the longer runtime
+    is expected (e.g., during backfill operations).</p>
+  </div>
+
+  <h2>Verification</h2>
+  <p>After remediation, confirm that:</p>
+  <ul>
+    <li>The alert returns to the <strong>Normal</strong> state in Grafana after its next evaluation cycle.</li>
+    <li>New DAG runs complete successfully in the Airflow UI.</li>
+    <li>Downstream dashboards reflect current data.</li>
+  </ul>
+
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="https://grafana.com/docs/grafana/latest/alerting/" target="_blank" rel="noopener">Grafana Alerting documentation</a></li>
+    <li><a href="https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/logging-monitoring/index.html" target="_blank" rel="noopener">Apache Airflow — Logging &amp; Monitoring</a></li>
+    <li><a href="https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/dag-run.html" target="_blank" rel="noopener">Apache Airflow — DAG Runs</a></li>
+  </ul>
+
+  <footer>
+    This page is bundled with your Grafana deployment and may be updated with new releases.
+  </footer>
+</body>
+</html>

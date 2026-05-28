@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HDFS &amp; Hadoop Health Alert Guide</title>
+  <style>
+    :root {
+      --bg: #181b1f;
+      --surface: #22252b;
+      --border: #2c2f36;
+      --text: #dce0e6;
+      --text-muted: #8e929a;
+      --accent: #6c9eff;
+      --accent-dim: #3b5998;
+      --success: #6ccf8e;
+      --warning: #f5c451;
+      --danger: #f2726f;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f4f5f7;
+        --surface: #ffffff;
+        --border: #dce0e6;
+        --text: #1e2128;
+        --text-muted: #6b7280;
+        --accent: #3871e0;
+        --accent-dim: #d0def5;
+        --success: #1a8a42;
+        --warning: #b8860b;
+        --danger: #cc3733;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 52rem;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.6rem; margin-bottom: .25rem; }
+    .subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: .95rem; }
+    h2 { font-size: 1.15rem; margin: 1.75rem 0 .75rem; border-bottom: 1px solid var(--border); padding-bottom: .35rem; }
+    h3 { font-size: 1rem; margin: 1.25rem 0 .5rem; }
+    p, li { font-size: .925rem; }
+    p { margin-bottom: .75rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: .75rem; }
+    li { margin-bottom: .35rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .badge {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 600;
+      padding: .15rem .55rem;
+      border-radius: 4px;
+      margin-right: .35rem;
+      margin-bottom: .35rem;
+      vertical-align: middle;
+    }
+    .badge-alert  { background: var(--danger); color: #fff; }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.5rem; height: 1.5rem;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 700;
+      margin-right: .5rem;
+      flex-shrink: 0;
+    }
+    .steps li { list-style: none; display: flex; align-items: flex-start; margin-bottom: .6rem; }
+    .steps { padding-left: 0; }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: .85rem;
+      background: var(--border);
+      padding: .1rem .35rem;
+      border-radius: 3px;
+    }
+    .tag-list { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
+    footer { margin-top: 2.5rem; font-size: .8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>HDFS &amp; Hadoop Health Alert Guide</h1>
+  <p class="subtitle">Troubleshooting distributed file system integrity and node health</p>
+
+  <div class="card">
+    <h3>Affected alerts</h3>
+    <div class="tag-list">
+      <span class="badge badge-alert">HDFS Corrupt Blocks</span>
+      <span class="badge badge-alert">HDFS Under-Replicated Blocks</span>
+      <span class="badge badge-alert">HDFS Time Since Last Checkpoint</span>
+      <span class="badge badge-alert">Hadoop Dead Nodes</span>
+    </div>
+  </div>
+
+  <h2>What do these alerts mean?</h2>
+  <p>
+    The platform uses HDFS (Hadoop Distributed File System) to store ingested data and intermediate
+    processing results. These alerts monitor the health of the HDFS cluster:
+  </p>
+  <ul>
+    <li><strong>Corrupt blocks</strong> — data blocks that cannot be read correctly, indicating potential
+    data integrity issues on one or more storage nodes.</li>
+    <li><strong>Under-replicated blocks</strong> — blocks that do not have the configured number of copies.
+    A sustained high count may signal node failures or capacity constraints.</li>
+    <li><strong>Checkpoint delay</strong> — the NameNode has not completed a filesystem checkpoint within
+    the expected interval. Checkpoints protect against data loss on NameNode failure.</li>
+    <li><strong>Dead nodes</strong> — one or more DataNodes are no longer responding. Data stored on dead
+    nodes becomes temporarily unavailable until the node recovers or blocks are re-replicated.</li>
+  </ul>
+
+  <h2>Impact</h2>
+  <p>
+    HDFS health issues can affect data availability and processing:
+  </p>
+  <ul>
+    <li>Ingestion jobs may fail if they cannot write to HDFS.</li>
+    <li>Queries and batch processing may return incomplete results if required blocks are
+    corrupt or unavailable.</li>
+    <li>Prolonged node failures reduce cluster capacity and increase the risk of data loss if
+    additional nodes fail before re-replication completes.</li>
+  </ul>
+
+  <h2>Investigation steps</h2>
+  <ol class="steps">
+    <li>
+      <span class="step-num">1</span>
+      <span>Open the alert in Grafana and review the metric values to assess severity — a small number
+      of under-replicated blocks may be transient, while a growing count indicates a real problem.</span>
+    </li>
+    <li>
+      <span class="step-num">2</span>
+      <span>Check the <strong>NameNode</strong> status and logs for errors related to block replication,
+      checkpoint failures, or unresponsive DataNodes.</span>
+    </li>
+    <li>
+      <span class="step-num">3</span>
+      <span>Identify any <strong>dead or decommissioning DataNodes</strong> and verify whether they are
+      experiencing hardware issues, disk failures, or network connectivity problems.</span>
+    </li>
+    <li>
+      <span class="step-num">4</span>
+      <span>Review <strong>disk utilization</strong> on all DataNodes — HDFS nodes running low on disk
+      space will stop accepting new blocks, which can cause replication and write failures.</span>
+    </li>
+  </ol>
+
+  <h2>Remediation</h2>
+  <div class="card">
+    <h3>Corrupt blocks</h3>
+    <p>Identify the affected files and check whether the data can be regenerated by re-running the
+    relevant ingestion or processing jobs. If the corruption is caused by failing disks, replace
+    the affected storage and let HDFS re-replicate.</p>
+  </div>
+  <div class="card">
+    <h3>Under-replicated blocks</h3>
+    <p>Under-replicated blocks usually self-heal once dead nodes are restored or new capacity is added.
+    Monitor the metric to confirm the count is decreasing. If it remains high, check whether
+    DataNode resources (disk, network) are constraining replication.</p>
+  </div>
+  <div class="card">
+    <h3>Checkpoint delay</h3>
+    <p>Verify that the secondary NameNode (or standby NameNode) is healthy and has sufficient disk
+    space and memory. Restart the checkpoint process if it has stalled. Extended checkpoint delays
+    increase the recovery time in the event of a NameNode failure.</p>
+  </div>
+  <div class="card">
+    <h3>Dead nodes</h3>
+    <p>Investigate the root cause (hardware failure, network partition, process crash) and bring the
+    node back online. HDFS will automatically begin re-replicating blocks once a node is confirmed dead,
+    but restoring the original node avoids unnecessary data movement.</p>
+  </div>
+
+  <h2>Verification</h2>
+  <ul>
+    <li>Confirm the corrupt block and under-replicated block counts are returning to zero.</li>
+    <li>Verify all DataNodes are reporting as live and healthy.</li>
+    <li>Check that the most recent checkpoint timestamp is within the expected interval.</li>
+    <li>Wait for the next Grafana evaluation cycle and confirm alerts return to <strong>Normal</strong>.</li>
+  </ul>
+
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="https://grafana.com/docs/grafana/latest/alerting/" target="_blank" rel="noopener">Grafana Alerting documentation</a></li>
+    <li><a href="https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsUserGuide.html" target="_blank" rel="noopener">Apache Hadoop — HDFS User Guide</a></li>
+  </ul>
+
+  <footer>
+    This page is bundled with your Grafana deployment and may be updated with new releases.
+  </footer>
+</body>
+</html>

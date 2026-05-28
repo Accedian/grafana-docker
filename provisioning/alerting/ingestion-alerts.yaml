@@ -59,7 +59,7 @@ groups:
           managed-by: grafana-docker
         annotations:
           summary: "Streamingapp is falling behind on ingesting topic: {{ $labels.topic }}"
-          description: "Streamingapp is falling behind on ingesting the indicated topic(s). Check Streamingapp logs to see if there is a problem. A restart of the Streamingapp service may be required."
+          description: "The streaming application is falling behind on ingesting the indicated topic(s). For troubleshooting steps see /public/help/streaming-ingestion.html"
         isPaused: false
 
       - uid: spark-ingestion-rate
@@ -115,7 +115,7 @@ groups:
           managed-by: grafana-docker
         annotations:
           summary: "Spark Ingestion Rate has dropped to zero for Streamingapp"
-          description: "The volume of records Streamingapp has read from Kafka has dropped significantly for the last 20m. Check Streamingapp to make sure it is in a healthy state, and Roadrunner is still connected and receiving data."
+          description: "The volume of records read by the streaming application has dropped significantly. Data ingestion may have stopped. For troubleshooting steps see /public/help/streaming-ingestion.html"
         isPaused: false
 
       - uid: roadrunner-disconnected
@@ -171,7 +171,7 @@ groups:
           managed-by: grafana-docker
         annotations:
           summary: "Roadrunner disconnected: {{ $labels.hostname }} (zone: {{ $labels.zone }})"
-          description: "Roadrunner {{ $labels.hostname }} in zone {{ $labels.zone }} has been disconnected for more than 5 minutes. Data collection and streaming to Analytics has stopped for this collector. Check the Roadrunner service and network connectivity."
+          description: "Data collector {{ $labels.hostname }} in zone {{ $labels.zone }} has been disconnected for more than 5 minutes. Data collection has stopped for this collector. For troubleshooting steps see /public/help/streaming-ingestion.html"
         isPaused: false
 
       - uid: airflow-batch-dag-failed
@@ -227,5 +227,5 @@ groups:
           managed-by: grafana-docker
         annotations:
           summary: "Airflow Batch DAG Failed: {{ $labels.dag_id }}"
-          description: "A Batch Airflow DAG has failed recently and needs to be re-run manually."
+          description: "A Batch Airflow DAG has failed recently. For troubleshooting steps see /public/help/airflow-ingestion.html"
         isPaused: false

@@ -69,4 +69,6 @@ COPY provisioning /tmp/provisioning
 
 COPY dashboards /tmp/dashboards
 
+COPY help /usr/share/grafana/public/help
+
 ENTRYPOINT ["/run.sh"]

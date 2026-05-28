@@ -227,12 +227,12 @@ groups:
           notification: ""
           validator: "B > 0"
           xops-alerting-class: "Ingestion Statistics"
-          xops-alerting-docs: "https://www.notion.so/accedian/Airflow-Batch-Ingestions-a7749ab4ec384c96829490dfad63240c?pvs=4"
+          xops-alerting-docs: "/public/help/airflow-ingestion.html"
           xops-alerting-impact: "infra"
           xops-alerting-priority: "P5"
         annotations:
           summary: "Airflow DAG Failed"
-          description: "The indicated Airflow DAG failed and has failed one or more times in last 4 hours. https://www.notion.so/accedian/Fixing-A-Broken-Spark-Job-47a732c287f047d5bf7ba99e6b35c93f?pvs=4"
+          description: "The indicated Airflow DAG failed and has failed one or more times in last 4 hours. For troubleshooting steps see /public/help/airflow-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -305,12 +305,12 @@ groups:
           notification: "custom-reports-slack"
           validator: "B > 0"
           xops-alerting-class: "Airflow"
-          xops-alerting-docs: "https://www.notion.so/accedian/Fixing-A-Broken-Spark-Job-47a732c287f047d5bf7ba99e6b35c93f?pvs=4"
+          xops-alerting-docs: "/public/help/airflow-ingestion.html"
           xops-alerting-impact: "infra"
           xops-alerting-priority: "P5"
         annotations:
           summary: "Airflow DAG Failed - custom reports"
-          description: "The indicated Airflow DAG failed and has failed one or more times in last 4 hours. https://grafana.npavxops.accedian.net/d/IUhlWpDVz/airflow-job-status?orgId=1"
+          description: "The indicated Airflow DAG failed and has failed one or more times in last 4 hours. For troubleshooting steps see /public/help/airflow-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -383,12 +383,12 @@ groups:
           notification: ""
           validator: "B > 0"
           xops-alerting-class: "Airflow"
-          xops-alerting-docs: "https://www.notion.so/accedian/Fixing-A-Broken-Spark-Job-47a732c287f047d5bf7ba99e6b35c93f?pvs=4"
+          xops-alerting-docs: "/public/help/airflow-ingestion.html"
           xops-alerting-impact: "infra"
           xops-alerting-priority: "P5"
         annotations:
           summary: "Airflow DAG Failed - dhl_get_configs"
-          description: "The Airflow dhl_get_configs job has failed repeatedly. https://grafana.npavxops.accedian.net/d/IUhlWpDVz/airflow-job-status?orgId=1"
+          description: "The Airflow dhl_get_configs job has failed repeatedly. For troubleshooting steps see /public/help/airflow-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -461,12 +461,12 @@ groups:
           notification: "custom-reports-slack"
           validator: "B > 0"
           xops-alerting-class: "Airflow"
-          xops-alerting-docs: "https://www.notion.so/accedian/Airflow-Batch-Ingestions-a7749ab4ec384c96829490dfad63240c?pvs=4"
+          xops-alerting-docs: "/public/help/airflow-ingestion.html"
           xops-alerting-impact: "infra"
           xops-alerting-priority: "P5"
         annotations:
           summary: "Airflow DAG Failed - DHL Jobs"
-          description: "The indicated Airflow DAG failed and has not run successfully in last 6 hours.  https://grafana.npavxops.accedian.net/d/IUhlWpDVz/airflow-job-status?orgId=1"
+          description: "The indicated Airflow DAG failed and has not run successfully in last 6 hours. For troubleshooting steps see /public/help/airflow-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -539,12 +539,12 @@ groups:
           notification: ""
           validator: "B > 1"
           xops-alerting-class: "Ingestion Statistics"
-          xops-alerting-docs: "https://www.notion.so/accedian/Airflow-Batch-Ingestions-a7749ab4ec384c96829490dfad63240c?pvs=4"
+          xops-alerting-docs: "/public/help/airflow-ingestion.html"
           xops-alerting-impact: "infra"
           xops-alerting-priority: "P3"
         annotations:
           summary: "Airflow Health Status"
-          description: "Airflow is not in a healthy state.  Most likely scheduler is down or communication between other services are broken. https://grafana.npavxops.accedian.net/d/IUhlWpDVz/airflow-job-status?orgId=1"
+          description: "Airflow is not in a healthy state. The scheduler may be down or inter-service communication is broken. For troubleshooting steps see /public/help/airflow-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -617,12 +617,12 @@ groups:
           notification: ""
           validator: "B > 43200"
           xops-alerting-class: "Ingestion Statistics"
-          xops-alerting-docs: "https://www.notion.so/accedian/Airflow-Batch-Ingestions-a7749ab4ec384c96829490dfad63240c?pvs=4"
+          xops-alerting-docs: "/public/help/airflow-ingestion.html"
           xops-alerting-impact: "infra"
           xops-alerting-priority: "P5"
         annotations:
           summary: "Airflow job duration"
-          description: "Validate if job duration < 12H long.  https://grafana.npavxops.accedian.net/d/IUhlWpDVz/airflow-job-status?orgId=1"
+          description: "An Airflow DAG run has exceeded the expected duration threshold. For troubleshooting steps see /public/help/airflow-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -695,12 +695,12 @@ groups:
           notification: ""
           validator: "B < 1"
           xops-alerting-class: "Ingestion Statistics"
-          xops-alerting-docs: "https://www.notion.so/accedian/Airflow-Batch-Ingestions-a7749ab4ec384c96829490dfad63240c?pvs=4"
+          xops-alerting-docs: "/public/help/airflow-ingestion.html"
           xops-alerting-impact: "infra"
           xops-alerting-priority: "P5"
         annotations:
           summary: "Airflow Jobs Stopped"
-          description: "Airflow is not in a healthy state.  Most likely scheduler is down and Airflow may need to be restarted to get it going again.  https://grafana.npavxops.accedian.net/d/IUhlWpDVz/airflow-job-status?orgId=1"
+          description: "Airflow is not in a healthy state. The scheduler may be down and jobs have stopped running. For troubleshooting steps see /public/help/airflow-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -778,7 +778,7 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "All Druid Task Slots Full for 2H"
-          description: "All Druid Task Slots Full for 2H.  Check to see if there are stuck tasks - if so they may need to be deleted manually.  Otherwise it may just be a matter of needing more task slots (middlemanagers)"
+          description: "All ingestion task slots have been occupied for over 2 hours. New data ingestion tasks are queued. For troubleshooting steps see /public/help/druid-health.html"
         isPaused: false
 
   - orgId: 1
@@ -856,7 +856,7 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Clickhouse nodes up"
-          description: "Clickhouse nodes up. Need tips on what to do if we get this alert.  Maybe a Notion page we could link here..."
+          description: "One or more ClickHouse database nodes are not responding. For troubleshooting steps see /public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -929,12 +929,12 @@ groups:
           notification: ""
           validator: "B > 1"
           xops-alerting-class: "Ingestion Statistics"
-          xops-alerting-docs: "https://google.com"
+          xops-alerting-docs: "/public/help/infrastructure-health.html"
           xops-alerting-impact: "infra"
           xops-alerting-priority: "P3"
         annotations:
           summary: "CPU usage high over half hour"
-          description: "Validate if avg over 2 hours of failed status is bigger then 2"
+          description: "CPU utilization has been elevated for a sustained period, which may impact service performance. For troubleshooting steps see /public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1012,7 +1012,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "DataSource Availability alert"
-          description: "Deployment is missing some data that should be loaded. This is likely due to a Druid historical node failure. Check the disk space on historical nodes, and ensure that the Druid historicals, brokers, overlord and coordinators are healthy by inspecting the logs. The Druid router's server console will likely shed some light :  https://<deployment>.<deployment>.analytics.accedian.io/router/unified-console.html#services"
+          description: "Some data segments are not fully loaded and may be unavailable for queries. For troubleshooting steps see /public/help/druid-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1090,7 +1090,7 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Dgraph Alpha Availability"
-          description: "Need tips on what to do if we get this alert.  Maybe a Notion page we could link here..."
+          description: "One or more Dgraph database nodes are unavailable. For troubleshooting steps see /public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1168,7 +1168,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Disk usage"
-          description: "Disk usage for deployment is too high.  https://www.notion.so/accedian/How-To-s-a24b04f4e0b84e45987cbbd5a6bb2e34?pvs=4#670f677c17a84fb5aae0bc40f79ca24b"
+          description: "Disk usage for the deployment has exceeded the configured threshold. For troubleshooting steps see /public/help/disk-usage.html"
         isPaused: false
 
   - orgId: 1
@@ -1246,7 +1246,7 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Docker Pending Task 30m"
-          description: "A Docker task(s) have been pending for more than 30 minutes.  This may indicate an issue with resource availability on the node, labels missing, or other underlying problems preventing the task from starting."
+          description: "Container tasks have been pending for an extended period, indicating resource constraints or scheduling issues. For troubleshooting steps see /public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1324,7 +1324,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Druid Status check"
-          description: "Need tips on what to do if we get this alert.  Maybe a Notion page we could link here..."
+          description: "The query engine status check has failed, indicating one or more nodes may be unreachable. For troubleshooting steps see /public/help/druid-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1402,7 +1402,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Druid's overlord view of the cluster"
-          description: "When this is not 0, it means that either the coordinator / overlord think that some node is connected while it isn't, or some of the nodes think they are connected but coordinator or overlord don't know about it."
+          description: "The cluster coordinator's view of connected nodes disagrees with what nodes report, indicating a connectivity or registration issue. For troubleshooting steps see /public/help/druid-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1480,7 +1480,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "ElasticSearch Heap"
-          description: "The heap size is the amount of RAM allocated to the Java Virtual Machine of an Elasticsearch node"
+          description: "ElasticSearch JVM heap utilization has exceeded the safe threshold and may lead to out-of-memory conditions. For troubleshooting steps see /public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1558,7 +1558,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Hadoop dead nodes"
-          description: "Need tips on what to do if we get this alert.  Maybe a Notion page we could link here..."
+          description: "One or more Hadoop DataNodes are no longer responding. Data availability may be impacted. For troubleshooting steps see /public/help/hdfs-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1636,7 +1636,7 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "HDFS Corrupt Blocks"
-          description: "HDFS has reported corrupt blocks. Data integrity issue that requires investigation."
+          description: "HDFS has reported corrupt blocks indicating a data integrity issue. For troubleshooting steps see /public/help/hdfs-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1714,7 +1714,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "HDFS - Under-Replicated Blocks"
-          description: "This means Deployment namenode potentially has issues. Check Grafana/HDFS and see if the Under-replicated blocks are going through the roof. Check the namenode to make sure HDFS is healthy Check namenode logs, might have to restart aod_namenode."
+          description: "HDFS has a significant number of under-replicated blocks, indicating potential node failures or capacity issues. For troubleshooting steps see /public/help/hdfs-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1792,7 +1792,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "HDFS Time Since Last CheckPoint"
-          description: "It has been more than 2 hours since last checkpoint of HDFS (usually occurs every hour or less). Check to see if namenode and secondary namenode are both healthy."
+          description: "The HDFS filesystem checkpoint is overdue, which increases recovery risk in the event of a failure. For troubleshooting steps see /public/help/hdfs-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1865,12 +1865,12 @@ groups:
           notification: ""
           validator: "B > 50"
           xops-alerting-class: "Server Statistics"
-          xops-alerting-docs: "https://google.com"
+          xops-alerting-docs: "/public/help/infrastructure-health.html"
           xops-alerting-impact: "infra"
           xops-alerting-priority: "P3"
         annotations:
           summary: "High IO Wait"
-          description: "Validate if iowait is running over 50% for 30m"
+          description: "Disk I/O wait time has been elevated for a sustained period, indicating storage bottlenecks. For troubleshooting steps see /public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -1948,7 +1948,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Historical usage"
-          description: "Historical usage for druid is too high."
+          description: "Storage utilization on query-serving nodes is approaching capacity. For troubleshooting steps see /public/help/druid-health.html"
         isPaused: false
 
   - orgId: 1
@@ -2026,7 +2026,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Kafka Consumergroup Lag"
-          description: "Detecting when there is lag in mo-summary and the lagging topic(s) haven't decreased in the last hour"
+          description: "Consumer lag on summary data topics has not decreased in the last hour, indicating a sustained processing backlog. For troubleshooting steps see /public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2104,7 +2104,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Streamingapp Lag Growing"
-          description: "Detecting when streamingapp consumer lag on ignite.contemporary topics is consistently growing over 1 hour. This indicates the streaming application is falling behind and not catching up. Check streamingapp logs and ensure the application is healthy."
+          description: "The streaming application's consumer lag is consistently growing, indicating it is falling behind on data processing. For troubleshooting steps see /public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2182,7 +2182,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Kafka Ingestion Rate"
-          description: "The ingestion rate for session and capture data (spark_raw_in.* and pvx.* topics) is below expected threshold. This means that we have stopped receiving traffic from all session and capture data sources.  Check Roadrunner Grafana Dashboard and Fedex logs to confirm data is no longer being received from the customer, and if so get the CSM team to follow up with the customer."
+          description: "The ingestion rate for session and capture data has dropped below the expected threshold. Data collection may have stopped. For troubleshooting steps see /public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2260,7 +2260,7 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Latent Data Lag Growing"
-          description: "Latent data lag is consistently growing without being processed. The lag has been increasing for 2+ hours with no decreases. Verify the Latentstreamingapp logs and check if the consumer is stuck."
+          description: "Latent data processing lag is consistently growing, indicating the consumer may be stuck or under-resourced. For troubleshooting steps see /public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2338,7 +2338,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Metrics Service Reachability"
-          description: "The Druid metrics service (for active data) can only be partially reached, or not reached at all. This is likely due to a Druid historical node failure. Check the disk space on historical node, and ensure that the Druid historicals, brokers, overlord and coordinators are healthy by inspecting the logs"
+          description: "The metrics query service cannot fully reach all query-serving nodes. Data availability for dashboards may be impacted. For troubleshooting steps see /public/help/druid-health.html"
         isPaused: false
 
   - orgId: 1
@@ -2416,7 +2416,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "NTP Time Sync"
-          description: "NTP time is not synced amongst all VMs in the swarm (onprem)."
+          description: "System time is not synchronized across all hosts. Time drift can cause data ordering issues and certificate validation failures. For troubleshooting steps see /public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -2494,7 +2494,7 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Prometheus NODATA"
-          description: "Grafana has been unable to query Prometheus for over 5 minutes.  Validate Prometheus datasource availability"
+          description: "Grafana cannot reach the Prometheus metrics data source. Other alert rules may not evaluate correctly while this persists. For troubleshooting steps see /public/help/infrastructure-health.html"
         isPaused: false
 
   - orgId: 1
@@ -2572,7 +2572,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "PVStorage Inserted Rows"
-          description: "One or more PVStorage instances have stopped inserting for over 1 hour.  Make sure the associated Clickhouse node is online and functioning properly."
+          description: "One or more storage writer instances have stopped inserting data. Downstream data freshness is affected. For troubleshooting steps see /public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2650,7 +2650,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Query Node Count"
-          description: "Deployment is missing metric query nodes. Need tips on what to do if we get this alert.  Maybe a Notion page we could link here..."
+          description: "The deployment has fewer query nodes than expected, which may degrade query performance. For troubleshooting steps see /public/help/druid-health.html"
         isPaused: false
 
   - orgId: 1
@@ -2728,7 +2728,7 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "RoadRunner Persistence_service_cached_files"
-          description: "Roadrunner persistence service cached files > 500 files, need investigation"
+          description: "The data collector is caching a large number of files locally, indicating delivery delays. For troubleshooting steps see /public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2806,7 +2806,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Streamingapp alert-events Topic Ingestion"
-          description: "Streamingapp is falling behind on ingesting the alert-events topic.  Check Streamingapp logs to see if there is a problem.  A restart of the Streamingapp service may be required."
+          description: "The streaming application is falling behind on processing alert event data. For troubleshooting steps see /public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2884,7 +2884,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Streamingapp mo-summary Topic Ingestion"
-          description: "Streamingapp is falling behind on ingesting the mo-summary topic.  Check Streamingapp logs to see if there is a problem.  A restart of the Streamingapp service may be required."
+          description: "The streaming application is falling behind on processing summary data. For troubleshooting steps see /public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -2962,7 +2962,7 @@ groups:
           xops-alerting-priority: "P3"
         annotations:
           summary: "Streamingapp Raw Topic Ingestion"
-          description: "Streamingapp is falling behind on ingesting raw session metrics.  Check Streamingapp logs to see if there is a problem.  A restart of the Streamingapp service may be required."
+          description: "The streaming application is falling behind on processing raw session metrics. For troubleshooting steps see /public/help/streaming-ingestion.html"
         isPaused: false
 
   - orgId: 1
@@ -3040,5 +3040,5 @@ groups:
           xops-alerting-priority: "P5"
         annotations:
           summary: "Time since last backup"
-          description: "The time since the last backup has exceeded 1 day ago. The backup may have failed.  See here for troubleshooting steps: https://www.notion.so/accedian/CouchDB-Postgres-Backups-Fail-10e22cc75ec649b9a5572db2136f629f"
+          description: "The time since the last backup has exceeded the target interval. The backup may have failed. For troubleshooting steps see /public/help/backup-recency.html"
         isPaused: false

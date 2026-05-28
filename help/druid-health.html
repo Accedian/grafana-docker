@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Druid &amp; Query Engine Alert Guide</title>
+  <style>
+    :root {
+      --bg: #181b1f;
+      --surface: #22252b;
+      --border: #2c2f36;
+      --text: #dce0e6;
+      --text-muted: #8e929a;
+      --accent: #6c9eff;
+      --accent-dim: #3b5998;
+      --success: #6ccf8e;
+      --warning: #f5c451;
+      --danger: #f2726f;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f4f5f7;
+        --surface: #ffffff;
+        --border: #dce0e6;
+        --text: #1e2128;
+        --text-muted: #6b7280;
+        --accent: #3871e0;
+        --accent-dim: #d0def5;
+        --success: #1a8a42;
+        --warning: #b8860b;
+        --danger: #cc3733;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 52rem;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.6rem; margin-bottom: .25rem; }
+    .subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: .95rem; }
+    h2 { font-size: 1.15rem; margin: 1.75rem 0 .75rem; border-bottom: 1px solid var(--border); padding-bottom: .35rem; }
+    h3 { font-size: 1rem; margin: 1.25rem 0 .5rem; }
+    p, li { font-size: .925rem; }
+    p { margin-bottom: .75rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: .75rem; }
+    li { margin-bottom: .35rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .badge {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 600;
+      padding: .15rem .55rem;
+      border-radius: 4px;
+      margin-right: .35rem;
+      margin-bottom: .35rem;
+      vertical-align: middle;
+    }
+    .badge-alert  { background: var(--danger); color: #fff; }
+    .badge-warn   { background: var(--warning); color: #1e2128; }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.5rem; height: 1.5rem;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 700;
+      margin-right: .5rem;
+      flex-shrink: 0;
+    }
+    .steps li { list-style: none; display: flex; align-items: flex-start; margin-bottom: .6rem; }
+    .steps { padding-left: 0; }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: .85rem;
+      background: var(--border);
+      padding: .1rem .35rem;
+      border-radius: 3px;
+    }
+    .tag-list { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
+    footer { margin-top: 2.5rem; font-size: .8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Druid &amp; Query Engine Alert Guide</h1>
+  <p class="subtitle">Troubleshooting the analytics query engine, data availability, and task scheduling</p>
+
+  <div class="card">
+    <h3>Affected alerts</h3>
+    <div class="tag-list">
+      <span class="badge badge-alert">Druid Status Check</span>
+      <span class="badge badge-alert">Druid Overlord Cluster View</span>
+      <span class="badge badge-alert">DataSource Availability</span>
+      <span class="badge badge-alert">All Druid Task Slots Full</span>
+      <span class="badge badge-alert">Historical Usage</span>
+      <span class="badge badge-alert">Metrics Service Reachability</span>
+      <span class="badge badge-alert">Query Node Count</span>
+    </div>
+  </div>
+
+  <h2>What do these alerts mean?</h2>
+  <p>
+    The analytics platform uses a distributed query engine to serve dashboards and real-time queries.
+    These alerts cover different failure modes:
+  </p>
+  <ul>
+    <li><strong>Status / availability</strong> — the query engine or its data sources are not fully
+    reachable. Some or all historical data may be unavailable for queries.</li>
+    <li><strong>Cluster view mismatch</strong> — the cluster coordinator's view of connected nodes
+    disagrees with what nodes report. This indicates a node connectivity or registration problem.</li>
+    <li><strong>Task slots full</strong> — all ingestion task slots are occupied, meaning new ingestion
+    tasks cannot start and will queue. Data freshness will degrade until slots free up.</li>
+    <li><strong>Historical usage high</strong> — storage utilization on query-serving nodes is approaching
+    capacity, which can cause eviction of data segments or query failures.</li>
+    <li><strong>Service reachability / query nodes</strong> — the metrics query service cannot reach
+    query-serving nodes, or the number of available query nodes has dropped below the minimum.</li>
+  </ul>
+
+  <h2>Impact</h2>
+  <ul>
+    <li>Dashboards may show gaps or fail to load if data segments are unavailable.</li>
+    <li>Queries may time out or return partial results.</li>
+    <li>New data ingestion stalls when all task slots are occupied.</li>
+    <li>High storage utilization on query nodes may trigger automatic segment eviction, causing
+    additional query failures.</li>
+  </ul>
+
+  <h2>Investigation steps</h2>
+  <ol class="steps">
+    <li>
+      <span class="step-num">1</span>
+      <span>Open the alert in Grafana and review the specific metric to determine which component is
+      affected (query nodes, coordinator, task scheduler).</span>
+    </li>
+    <li>
+      <span class="step-num">2</span>
+      <span>Check the <strong>query engine service logs</strong> on the affected nodes for errors related
+      to connectivity, out-of-memory conditions, or disk space.</span>
+    </li>
+    <li>
+      <span class="step-num">3</span>
+      <span>Verify <strong>disk utilization</strong> on query-serving nodes. Historical data segments are
+      cached on local disk — if the disk fills up, the node cannot load or serve segments.</span>
+    </li>
+    <li>
+      <span class="step-num">4</span>
+      <span>For task slot alerts, check whether long-running or stuck ingestion tasks are occupying all
+      available slots. Identify and address the root cause of any stuck tasks.</span>
+    </li>
+    <li>
+      <span class="step-num">5</span>
+      <span>For cluster view mismatches, check network connectivity between the coordinator and the
+      affected nodes. Nodes may need to be restarted to re-register with the cluster.</span>
+    </li>
+  </ol>
+
+  <h2>Remediation</h2>
+  <div class="card">
+    <h3>Data availability issues</h3>
+    <p>Verify that all query-serving nodes are running and have sufficient disk space. If nodes have
+    gone offline, restart them and monitor segment loading. The coordinator will automatically
+    rebalance segments across available nodes.</p>
+  </div>
+  <div class="card">
+    <h3>Task slots full</h3>
+    <p>Identify any stuck or long-running tasks and terminate them if appropriate. If the workload
+    has legitimately grown, consider adding more task capacity. Review task scheduling to spread
+    ingestion load more evenly.</p>
+  </div>
+  <div class="card">
+    <h3>High historical usage</h3>
+    <p>Free disk space on query-serving nodes by removing stale data, or expand storage capacity.
+    Review data retention rules to ensure old segments are being dropped on schedule.</p>
+  </div>
+  <div class="card">
+    <h3>Cluster view mismatch</h3>
+    <p>Restart the affected node to force it to re-register with the coordinator. If the problem
+    persists, investigate network connectivity between the node and the coordinator service.</p>
+  </div>
+
+  <h2>Verification</h2>
+  <ul>
+    <li>Confirm all query-serving nodes are online and data sources show 100% segment availability.</li>
+    <li>Verify task slots have available capacity for new ingestion tasks.</li>
+    <li>Check that dashboard queries return complete data.</li>
+    <li>Wait for the next Grafana evaluation cycle and confirm alerts return to <strong>Normal</strong>.</li>
+  </ul>
+
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="https://grafana.com/docs/grafana/latest/alerting/" target="_blank" rel="noopener">Grafana Alerting documentation</a></li>
+    <li><a href="https://druid.apache.org/docs/latest/operations/metrics/" target="_blank" rel="noopener">Apache Druid — Metrics</a></li>
+    <li><a href="https://druid.apache.org/docs/latest/operations/basic-cluster-tuning/" target="_blank" rel="noopener">Apache Druid — Cluster Tuning</a></li>
+  </ul>
+
+  <footer>
+    This page is bundled with your Grafana deployment and may be updated with new releases.
+  </footer>
+</body>
+</html>
