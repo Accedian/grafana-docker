@@ -12,6 +12,7 @@ data:
       type: prometheus
       access: proxy
       orgId: 1
+      uid: prometheus
       url: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
       basicAuth: false
       isDefault: true

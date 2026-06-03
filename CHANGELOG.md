@@ -1,3 +1,4 @@
+* feat - New Rodrunner alerts for HA [Asana](https://app.asana.com/1/5557457880942/project/1214509400944248/task/1214984182379293?focus=true)
 ## Current Release
 ### 0.216.0
 **Release Date:** Wed May 13 13:14:35 UTC 2026
