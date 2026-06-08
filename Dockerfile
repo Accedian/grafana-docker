@@ -14,6 +14,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         curl \
         libfontconfig \
         musl \
+        sqlite3 \
     && curl \
         --no-progress-meter \
         --write-out "curl: %{filename_effective} %{size_download}B %{speed_download}B/s\n" \
