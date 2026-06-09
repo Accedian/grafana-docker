@@ -1,8 +1,10 @@
-* Feat - Add Cerbos Authorization Metrics dashboard [Asana](https://app.asana.com/1/5557457880942/project/1212700598162622/task/1211002245600706?focus=true)
 ## Current Release
+### 0.218.0
+**Release Date:** Tue Jun  9 17:20:54 UTC 2026
+## Previous Releases
+* Feat - Add Cerbos Authorization Metrics dashboard [Asana](https://app.asana.com/1/5557457880942/project/1212700598162622/task/1211002245600706?focus=true)
 ### 0.217.0
 **Release Date:** Wed Jun  3 13:56:26 UTC 2026
-## Previous Releases
 * feat - New Rodrunner alerts for HA [Asana](https://app.asana.com/1/5557457880942/project/1214509400944248/task/1214984182379293?focus=true)
 ### 0.216.0
 **Release Date:** Wed May 13 13:14:35 UTC 2026
