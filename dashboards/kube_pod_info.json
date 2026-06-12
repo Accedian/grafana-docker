@@ -566,7 +566,7 @@
           "expr": "kube_persistentvolumeclaim_resource_requests_storage_bytes{persistentvolumeclaim=~\"$pvc\",namespace=~\"$namespace\"}\n* on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\",node=~\"$node\"}\n    )\n    * on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info",
           "format": "table",
           "hide": false,
-          "instant": true,
+          "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "D"
@@ -953,10 +953,12 @@
       "targets": [
         {
           "editorMode": "code",
+          "exemplar": false,
           "expr": "(\n  ( 100 * kubelet_volume_stats_used_bytes{persistentvolumeclaim=~\"$pvc\",namespace=~\"$namespace\"}\n      / kubelet_volume_stats_capacity_bytes)\n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\",node=~\"$node\"}\n    )\n)\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass!=\"openebs-hostpath\"}",
           "format": "table",
+          "instant": true,
           "legendFormat": "{{namespace}}/{{persistentvolumeclaim}}",
-          "range": true,
+          "range": false,
           "refId": "A"
         },
         {
@@ -1398,10 +1400,23 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "  # ---- hostpath PVCs: openebs used\n(\n    openebs_hostpath_volume_used_bytes\n    * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n      label_replace(kube_persistentvolumeclaim_info, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n)\n* on(namespace, persistentvolumeclaim) group_right()\n  max by(namespace, persistentvolumeclaim, pod, node) (\n    kube_pod_spec_volumes_persistentvolumeclaims_info\n      * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n  )\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass=\"openebs-hostpath\", persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n\nor\n\n# ---- non-hostpath PVCs: kubelet used \n(\n  kubelet_volume_stats_used_bytes{persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n      \n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n    )\n)\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass!=\"openebs-hostpath\"}",
+          "expr": "  # ---- hostpath PVCs: openebs used\n(\n    openebs_hostpath_volume_used_bytes\n    * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n      label_replace(kube_persistentvolumeclaim_info, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n)\n* on(namespace, persistentvolumeclaim) group_right()\n  max by(namespace, persistentvolumeclaim, pod, node) (\n    kube_pod_spec_volumes_persistentvolumeclaims_info\n      * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n  )\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass=\"openebs-hostpath\", persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n\n",
           "legendFormat": "Usage {{persistentvolumeclaim}}",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "# ---- non-hostpath PVCs: kubelet used \n(\n  kubelet_volume_stats_used_bytes{persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n      \n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n    )\n)\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass!=\"openebs-hostpath\"}",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Usage {{persistentvolumeclaim}}",
+          "range": true,
+          "refId": "B"
         },
         {
           "datasource": {
@@ -1414,7 +1429,7 @@
           "instant": false,
           "legendFormat": "Capacity {{persistentvolumeclaim}}",
           "range": true,
-          "refId": "B"
+          "refId": "C"
         }
       ],
       "title": "Disk usage",
@@ -1525,11 +1540,24 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "# ---- hostpath PVCs: openebs used / kubelet capacity ----\n(\n  100 *\n  (\n    openebs_hostpath_volume_used_bytes\n    * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n      label_replace(kube_persistentvolumeclaim_info, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n  )\n  / on(namespace, persistentvolumeclaim) group_left()\n    kubelet_volume_stats_capacity_bytes\n)\n* on(namespace, persistentvolumeclaim) group_right()\n  max by(namespace, persistentvolumeclaim, pod, node) (\n    kube_pod_spec_volumes_persistentvolumeclaims_info\n      * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n  )\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass=\"openebs-hostpath\", persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n\nor\n\n# ---- non-hostpath PVCs: kubelet used / kubelet capacity ----\n(\n  ( 100 * kubelet_volume_stats_used_bytes{persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n      / kubelet_volume_stats_capacity_bytes )\n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n    )\n)\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass!=\"openebs-hostpath\"}",
+          "expr": "# ---- hostpath PVCs: openebs used / kubelet capacity ----\n(\n  100 *\n  (\n    openebs_hostpath_volume_used_bytes\n    * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n      label_replace(kube_persistentvolumeclaim_info, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n  )\n  / on(namespace, persistentvolumeclaim) group_left()\n    kubelet_volume_stats_capacity_bytes\n)\n* on(namespace, persistentvolumeclaim) group_right()\n  max by(namespace, persistentvolumeclaim, pod, node) (\n    kube_pod_spec_volumes_persistentvolumeclaims_info\n      * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n  )\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass=\"openebs-hostpath\", persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}",
           "instant": false,
           "legendFormat": "{{namespace}}/{{persistentvolumeclaim}}",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "\n# ---- non-hostpath PVCs: kubelet used / kubelet capacity ----\n(\n  ( 100 * kubelet_volume_stats_used_bytes{persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n      / kubelet_volume_stats_capacity_bytes )\n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n    )\n)\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass!=\"openebs-hostpath\"}",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "{{namespace}}/{{persistentvolumeclaim}}",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "PVC Usage % over time",
@@ -1651,5 +1679,5 @@
   "timezone": "browser",
   "title": "Kubernetes Pod info",
   "uid": "4f10ba2d-8479-4e85-80d9-77e34a825379",
-  "version": 11
+  "version": 13
 }
