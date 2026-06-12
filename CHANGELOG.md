@@ -1,3 +1,4 @@
+* Fix - set Grafana prometheus datasource UID to prometheus to fix pod startup issue
 ## Current Release
 ### 0.218.0
 **Release Date:** Tue Jun  9 17:20:54 UTC 2026

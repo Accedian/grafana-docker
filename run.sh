@@ -69,6 +69,12 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
     cp -R /tmp/dashboards/. "$GF_PATHS_DATA/dashboards/"
 fi
 
+if [ -f "$GF_PATHS_DATA/grafana.db" ]; then
+    sqlite3 "$GF_PATHS_DATA/grafana.db" \
+        "UPDATE data_source SET uid='prometheus' WHERE name='Prometheus' AND uid != 'prometheus';" \
+        2>/dev/null || true
+fi
+
 grafana_args=(
     --homepath=/usr/share/grafana
     --config="$GF_PATHS_CONFIG"
