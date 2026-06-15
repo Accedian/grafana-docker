@@ -36,32 +36,6 @@ spec:
         operator: Equal
         value: devpool
     {{- end }}        
-      initContainers:
-        - name: dashboard-setup
-          image: {{ .Values.grafana.image.registry }}/{{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag | default .Chart.AppVersion }}
-          imagePullPolicy: {{ .Values.grafana.image.pullPolicy }}
-          command:
-          - "/bin/sh"
-          - "-c"
-          - |
-            mkdir -p /scratch-disk/dashboards
-
-            # 1. Copy stock dashboards bundled in the image to the writable scratch disk.
-            if [ -d "/tmp/dashboards" ] && [ "$(find /tmp/dashboards -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]; then
-              cp -r /tmp/dashboards/. /scratch-disk/dashboards/ || echo "Warning: Some files might not have copied"
-            fi
-
-            # 2. Copy dashboards from the ConfigMap to the scratch disk.
-            if [ -d "/config-tmp/..data/" ] && find /config-tmp/..data -maxdepth 1 -name '*.json' -print -quit | grep -q .; then
-              cp -r /config-tmp/..data/*.json /scratch-disk/dashboards/ || echo "Warning: Some JSON files might not have copied"
-            fi
-
-            echo "Dashboard setup complete"
-          volumeMounts:
-            - name: dashboard-scratch
-              mountPath: /scratch-disk
-            - name: k8s-dashboards
-              mountPath: /config-tmp
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -83,19 +57,10 @@ spec:
             - name: prometheus-datasource
               mountPath: /tmp/provisioning/datasources/prometheus-datasource.yaml
               subPath: prometheus-datasource.yaml
-            - name: k8s-dashboards
-              mountPath: /config-tmp
-            - name: dashboard-scratch
-              mountPath: /tmp/dashboards
       volumes:
         - name: prometheus-datasource
           configMap:
             name: prometheus-datasource
-        - name: k8s-dashboards
-          configMap:
-            name: k8s-dashboards
-        - name: dashboard-scratch
-          emptyDir: {}
         
 
       {{- with .Values.grafana.nodeSelector }}
