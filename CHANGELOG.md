@@ -1,3 +1,4 @@
+* Fix - Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced [Asana](https://app.asana.com/1/5557457880942/task/1215800855315574?focus=true)
 ## Current Release
 ### 0.220.0
 **Release Date:** Fri Jun 12 15:14:56 UTC 2026
