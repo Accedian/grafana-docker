@@ -1,4 +1,5 @@
 ## Current Release
+* Feat - Add OpenSearch index management dashboard
 ### 0.220.0
 **Release Date:** Fri Jun 12 15:14:56 UTC 2026
 ## Previous Releases
@@ -575,4 +576,3 @@ Fix - add panel to adh-fedex dashboard for RR websocket teardown/rejection count
 **Release Date:** Wed Feb 28 19:25:31 UTC 2018     
 ### 0.1.0
 **Release Date:** Wed Feb 28 19:17:58 UTC 2018
-
