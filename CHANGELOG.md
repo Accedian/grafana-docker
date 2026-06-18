@@ -1,8 +1,10 @@
-* Fix - Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced [Asana](https://app.asana.com/1/5557457880942/task/1215800855315574?focus=true)
 ## Current Release
+### 0.222.0
+**Release Date:** Thu Jun 18 09:41:46 UTC 2026
+## Previous Releases
+* Fix - Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced [Asana](https://app.asana.com/1/5557457880942/task/1215800855315574?focus=true)
 ### 0.221.0
 **Release Date:** Thu Jun 18 08:08:06 UTC 2026
-## Previous Releases
 #### Dashboards
 Fix - move kubernetes stock dashboards into image to eliminate ConfigMap projection race [Asana](https://app.asana.com/1/5557457880942/project/1211126781333541/task/1215717950548382?focus=true)
 ### 0.220.0
