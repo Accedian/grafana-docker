@@ -1,3 +1,4 @@
+* feat - New alerts for telemetry collector [Asana](https://app.asana.com/1/5557457880942/project/1214509400944248/task/1214984182674278?focus=true)
 ## Current Release
 ### 0.222.0
 **Release Date:** Thu Jun 18 09:41:46 UTC 2026
