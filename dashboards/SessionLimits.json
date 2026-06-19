@@ -458,13 +458,367 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "description": "Active monitored-object sessions and configured Gather limit per tenant. Gather and Ignite active counts are shown separately because each service owns its local enforcement cache.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "hiddenSeries": false,
+      "id": 12,
+      "legend": {
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "max by (tenantId) (gather_tenant_sessions_active{tenantId=~\"$tenant\"})",
+          "interval": "",
+          "legendFormat": "Gather {{tenantId}} active",
+          "refId": "A"
+        },
+        {
+          "expr": "max by (tenantId) (gather_tenant_session_limit{tenantId=~\"$tenant\"})",
+          "interval": "",
+          "legendFormat": "Gather {{tenantId}} limit",
+          "refId": "B"
+        },
+        {
+          "expr": "max by (tenantId) (ignite_tenant_sessions_active{tenantId=~\"$tenant\"})",
+          "interval": "",
+          "legendFormat": "Ignite {{tenantId}} active",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Session Limit - Active Sessions vs Limit",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "description": "Rate of session create attempts rejected by session-limit enforcement. Dropped counters represent rejected sessions, not rejected requests or messages.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "hiddenSeries": false,
+      "id": 14,
+      "legend": {
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum by (tenantId) (rate(gather_tenant_sessions_dropped{tenantId=~\"$tenant\"}[5m]))",
+          "interval": "",
+          "legendFormat": "Gather {{tenantId}}",
+          "refId": "A"
+        },
+        {
+          "expr": "sum by (tenantId) (rate(ignite_tenant_sessions_dropped{tenantId=~\"$tenant\"}[5m]))",
+          "interval": "",
+          "legendFormat": "Ignite {{tenantId}}",
+          "refId": "B"
+        },
+        {
+          "expr": "sum by (tenantId) (rate(stitchit_tenant_sessions_dropped{tenantId=~\"$tenant\"}[5m]))",
+          "interval": "",
+          "legendFormat": "StitchIt {{tenantId}}",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Session Limit - Drop Rate",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ops",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "description": "Commercial visibility panel for repeat cap-hit tenants over the selected 7d or 30d window.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 32
+      },
+      "hiddenSeries": false,
+      "id": 16,
+      "legend": {
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "topk(10, sum by (tenantId) (rate(gather_tenant_sessions_dropped{tenantId=~\"$tenant\"}[$cap_hit_window])))",
+          "interval": "",
+          "legendFormat": "Gather {{tenantId}}",
+          "refId": "A"
+        },
+        {
+          "expr": "topk(10, sum by (tenantId) (rate(ignite_tenant_sessions_dropped{tenantId=~\"$tenant\"}[$cap_hit_window])))",
+          "interval": "",
+          "legendFormat": "Ignite {{tenantId}}",
+          "refId": "B"
+        },
+        {
+          "expr": "topk(10, sum by (tenantId) (rate(stitchit_tenant_sessions_dropped{tenantId=~\"$tenant\"}[$cap_hit_window])))",
+          "interval": "",
+          "legendFormat": "StitchIt {{tenantId}}",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Session Limit - Top Tenants by Cap-Hit Rate",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ops",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
   "schemaVersion": 22,
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values({__name__=~\"gather_tenant_sessions_active|gather_tenant_session_limit|gather_tenant_sessions_dropped|ignite_tenant_sessions_active|ignite_tenant_sessions_dropped|stitchit_tenant_sessions_dropped\"}, tenantId)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Tenant ID",
+        "multi": true,
+        "name": "tenant",
+        "options": [],
+        "query": "label_values({__name__=~\"gather_tenant_sessions_active|gather_tenant_session_limit|gather_tenant_sessions_dropped|ignite_tenant_sessions_active|ignite_tenant_sessions_dropped|stitchit_tenant_sessions_dropped\"}, tenantId)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "7d",
+          "value": "7d"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Cap-Hit Window",
+        "multi": false,
+        "name": "cap_hit_window",
+        "options": [
+          {
+            "selected": true,
+            "text": "7d",
+            "value": "7d"
+          },
+          {
+            "selected": false,
+            "text": "30d",
+            "value": "30d"
+          }
+        ],
+        "query": "7d,30d",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
   },
   "time": {
     "from": "now-1h",
@@ -485,7 +839,7 @@
     ]
   },
   "timezone": "",
-  "title": "License Metrics",
+  "title": "Session Limits",
   "uid": "-zRnPtg7z",
   "variables": {
     "list": []

@@ -1,0 +1,163 @@
+# Grafana unified alerting provisioning - Session Limits
+#
+# Datasource: Prometheus (uid: prometheus)
+
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: session-limits
+    folder: Session Limits
+    interval: 1m
+    rules:
+      - uid: session-limit-approaching
+        title: SessionLimitApproaching
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              expr: |
+                (
+                  max by (tenantId) (
+                    gather_tenant_sessions_active
+                    and on (tenantId)
+                    gather_tenant_session_limit > 0
+                  )
+                  /
+                  max by (tenantId) (
+                    gather_tenant_session_limit > 0
+                  )
+                )
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0.85
+                    type: gte
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Tenant {{ $labels.tenantId }} is approaching its session limit"
+          description: >
+            Tenant {{ $labels.tenantId }} has been at or above 85% of its
+            configured session limit for more than 10 minutes.
+          runbook: "Review Session Limits -> Session Limit panels and confirm whether the tenant needs cleanup or a higher configured limit."
+
+      - uid: session-limit-sessions-dropped
+        title: SessionLimitSessionsDropped
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              expr: |
+                sum by (tenantId, service) (
+                  label_replace(
+                    rate(gather_tenant_sessions_dropped[5m]),
+                    "service",
+                    "gather",
+                    "tenantId",
+                    ".*"
+                  )
+                  or
+                  label_replace(
+                    rate(ignite_tenant_sessions_dropped[5m]),
+                    "service",
+                    "ignite",
+                    "tenantId",
+                    ".*"
+                  )
+                  or
+                  label_replace(
+                    rate(stitchit_tenant_sessions_dropped[5m]),
+                    "service",
+                    "stitchit",
+                    "tenantId",
+                    ".*"
+                  )
+                )
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Error
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.service }} is dropping sessions for tenant {{ $labels.tenantId }}"
+          description: >
+            Session-limit enforcement is rejecting creates for tenant
+            {{ $labels.tenantId }}.
+          runbook: "Review Session Limits -> Session Limit Drop Rate and Top Tenants by Cap-Hit Rate. Check service logs for current count, configured cap, and rejected batch details."
