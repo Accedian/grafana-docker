@@ -1,5 +1,5 @@
 ## Current Release
-* Feat - Add Grafana dashboard for Opensearch in grafana-docker [Asama](https://app.asana.com/1/5557457880942/home/task/1214363848516089)
+* Feat - Add Grafana dashboard for Opensearch in grafana-docker [Asana](https://app.asana.com/1/5557457880942/home/task/1214363848516089)
 ### 0.223.0
 **Release Date:** Fri Jun 19 13:33:20 UTC 2026
 ## Previous Releases
