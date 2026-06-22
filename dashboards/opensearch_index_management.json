@@ -314,7 +314,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "opensearch_cluster_health_number_of_data_nodes{cluster=~\"$cluster\"}",
+          "expr": "sum(opensearch_cluster_health_number_of_data_nodes{cluster=~\"$cluster\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
