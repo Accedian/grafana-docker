@@ -69,10 +69,34 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
     cp -R /tmp/dashboards/. "$GF_PATHS_DATA/dashboards/"
 fi
 
-if [ -f "$GF_PATHS_DATA/grafana.db" ]; then
-    sqlite3 "$GF_PATHS_DATA/grafana.db" \
-        "UPDATE data_source SET uid='prometheus' WHERE name='Prometheus' AND uid != 'prometheus';" \
-        2>/dev/null || true
+# Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced.
+if [ -f "$GF_PATHS_DATA/grafana.db" ] && command -v sqlite3 >/dev/null 2>&1; then
+    OLD_PROM_UID=$(sqlite3 "$GF_PATHS_DATA/grafana.db" \
+        "SELECT uid FROM data_source WHERE name='Prometheus' AND uid != 'prometheus' LIMIT 1;" \
+        2>/dev/null || true)
+
+    if [ -n "$OLD_PROM_UID" ]; then
+        echo "Migrating Prometheus datasource UID '$OLD_PROM_UID' -> 'prometheus'"
+        # Escape single quotes for safe embedding in the SQL literal.
+        OLD_PROM_UID_SQL=${OLD_PROM_UID//\'/\'\'}
+        sqlite3 "$GF_PATHS_DATA/grafana.db" <<SQL || true
+BEGIN;
+UPDATE alert_rule
+   SET data = REPLACE(data, '"datasourceUid":"${OLD_PROM_UID_SQL}"', '"datasourceUid":"prometheus"')
+ WHERE data LIKE '%"datasourceUid":"${OLD_PROM_UID_SQL}"%';
+UPDATE alert_rule_version
+   SET data = REPLACE(data, '"datasourceUid":"${OLD_PROM_UID_SQL}"', '"datasourceUid":"prometheus"')
+ WHERE data LIKE '%"datasourceUid":"${OLD_PROM_UID_SQL}"%';
+UPDATE dashboard
+   SET data = REPLACE(data, '"uid":"${OLD_PROM_UID_SQL}"', '"uid":"prometheus"')
+ WHERE data LIKE '%"uid":"${OLD_PROM_UID_SQL}"%';
+UPDATE library_element
+   SET model = REPLACE(model, '"uid":"${OLD_PROM_UID_SQL}"', '"uid":"prometheus"')
+ WHERE model LIKE '%"uid":"${OLD_PROM_UID_SQL}"%';
+UPDATE data_source SET uid='prometheus' WHERE uid='${OLD_PROM_UID_SQL}';
+COMMIT;
+SQL
+    fi
 fi
 
 grafana_args=(

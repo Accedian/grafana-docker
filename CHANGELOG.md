@@ -1,8 +1,18 @@
 ## Current Release
 * Feat - Add OpenSearch index management dashboard
+### 0.223.0
+**Release Date:** Fri Jun 19 13:33:20 UTC 2026
+## Previous Releases
+* feat - New alerts for telemetry collector [Asana](https://app.asana.com/1/5557457880942/project/1214509400944248/task/1214984182674278?focus=true)
+### 0.222.0
+**Release Date:** Thu Jun 18 09:41:46 UTC 2026
+* Fix - Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced [Asana](https://app.asana.com/1/5557457880942/task/1215800855315574?focus=true)
+### 0.221.0
+**Release Date:** Thu Jun 18 08:08:06 UTC 2026
+#### Dashboards
+Fix - move kubernetes stock dashboards into image to eliminate ConfigMap projection race [Asana](https://app.asana.com/1/5557457880942/project/1211126781333541/task/1215717950548382?focus=true)
 ### 0.220.0
 **Release Date:** Fri Jun 12 15:14:56 UTC 2026
-## Previous Releases
 ### 0.219.0
 **Release Date:** Fri Jun 12 13:09:44 UTC 2026
 * Fix - set Grafana prometheus datasource UID to prometheus to fix pod startup issue
