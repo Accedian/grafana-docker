@@ -131,7 +131,7 @@
       "tableColumn": "Value",
       "targets": [
         {
-          "expr": "scalar(opensearch_cluster_health_status{color=\"green\",cluster=~\"$cluster\"}) + scalar(opensearch_cluster_health_status{color=\"yellow\",cluster=~\"$cluster\"}) * 2 + scalar(opensearch_cluster_health_status{color=\"red\",cluster=~\"$cluster\"}) * 3",
+          "expr": "max(\n  opensearch_cluster_health_status{color=\"green\",cluster=~\"$cluster\"} * 1\n  or opensearch_cluster_health_status{color=\"yellow\",cluster=~\"$cluster\"} * 2\n  or opensearch_cluster_health_status{color=\"red\",cluster=~\"$cluster\"} * 3\n)",
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
