@@ -1,8 +1,10 @@
-* Feat - Add Grafana dashboard for Opensearch in grafana-docker [Asana](https://app.asana.com/1/5557457880942/home/task/1214363848516089)
 ## Current Release
+### 0.224.0
+**Release Date:** Tue Jun 23 12:54:25 UTC 2026
+## Previous Releases
+* Feat - Add Grafana dashboard for Opensearch in grafana-docker [Asana](https://app.asana.com/1/5557457880942/home/task/1214363848516089)
 ### 0.223.0
 **Release Date:** Fri Jun 19 13:33:20 UTC 2026
-## Previous Releases
 * feat - New alerts for telemetry collector [Asana](https://app.asana.com/1/5557457880942/project/1214509400944248/task/1214984182674278?focus=true)
 ### 0.222.0
 **Release Date:** Thu Jun 18 09:41:46 UTC 2026
@@ -586,3 +588,4 @@ Fix - add panel to adh-fedex dashboard for RR websocket teardown/rejection count
 **Release Date:** Wed Feb 28 19:25:31 UTC 2018     
 ### 0.1.0
 **Release Date:** Wed Feb 28 19:17:58 UTC 2018
+
