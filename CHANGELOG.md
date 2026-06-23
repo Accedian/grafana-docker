@@ -1,3 +1,9 @@
+## Base image updates - 2026-06-12
+
+### Changed
+- Update base images to approved versions:
+  - Bump image in `Dockerfile`: `debian:stable-slim` → `gcr.io/npav-172917/sto-ccc-cloud9/hardened_debian@sha256:08a4dbdd271ed3740a5a41ffcf6df118755272c0fec35aef2f61df174700c5c8`
+
 ## Current Release
 ### 0.224.0
 **Release Date:** Tue Jun 23 12:54:25 UTC 2026
