@@ -44,7 +44,6 @@ Medium — the exporter is already running. Needs config + scrape plumbing.
 
 ### Affected Dashboards/Widgets
 - `ops-datasource_availability` — "DataSource Availability alert" (`druid_coordinator_datasourceLoadStatus`)
-- `ops-druid_segments_reindex` — "Druid_segments>1000" (`druid_segment_count`)
 - `ops-deployment_all`:
   - "Druid Status check" (`druid_status_gauge`) — shows ERROR
   - "Druid's overlord view" (`druid_status_gauge` - `druid_server_gauge`)
@@ -78,7 +77,6 @@ High — requires understanding the ramen service functionality and building a K
 ## 3. Backup Metrics Exporter
 
 ### Affected Dashboards/Widgets
-- `ops-time_since_last_backup` — "Time since last backup" (`skylight_backups_time_since_last_backup`)
 - `ops-deployment_all`:
   - "Size of Last Registered backup" (`skylight_backups_size_of_last_backups`)
   - "Number of backups stored" (`skylight_backups_number_of_backups`)
@@ -116,5 +114,4 @@ Medium — well-defined scope, needs a simple exporter that checks backup state.
 
 The following dashboard query issues (Category A) have been fixed in this same change:
 
-1. **`ops-containers_status.json`** — Changed `job="cadvisor"` → `job="kubelet"` and replaced Docker Swarm `container_label_com_docker_stack_namespace="aod"` with K8s `namespace="pca"`
-2. **`ops-k8s_cluster_monitoring.json`** — Replaced all `kubernetes_io_hostname` → `node` (42 occurrences), `id="/"` → `container=""` for node-level aggregation, and updated template variable query to `label_values(kube_node_info, node)`
+1. **`ops-k8s_cluster_monitoring.json`** — Replaced all `kubernetes_io_hostname` → `node` (42 occurrences), `id="/"` → `container=""` for node-level aggregation, and updated template variable query to `label_values(kube_node_info, node)`

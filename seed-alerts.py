@@ -296,7 +296,7 @@ def delete_all_rules():
 def _fix_yaml_types(obj):
     """Recursively fix values that PyYAML may parse with wrong types.
 
-    - datasourceUid/uid: unquoted 000000001 → octal int 1 → back to "000000001"
+    - datasourceUid/uid: unquoted numeric strings → octal int → back to zero-padded string
     - evaluator.params: ensure values are numeric (Grafana expects float64)
     """
     if isinstance(obj, dict):

@@ -14,11 +14,11 @@ groups:
             relativeTimeRange:
               from: 300
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: 'min_over_time(spark_kafkaProcessingLag{topic!~".*latent.*|parquet.notif"}[5m])'
               instant: true
               intervalMs: 1000
@@ -71,11 +71,11 @@ groups:
             relativeTimeRange:
               from: 300
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: 'sum(increase(spark_executor_recordsRead{job="spark_streamingapp"}[5m])) or vector(0)'
               instant: true
               intervalMs: 1000
@@ -128,11 +128,11 @@ groups:
             relativeTimeRange:
               from: 300
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: 'roadrunner_connection{zone!~"test|dummy"}'
               instant: true
               intervalMs: 1000
@@ -185,11 +185,11 @@ groups:
             relativeTimeRange:
               from: 7200
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: 'increase(airflow_dag_status{status="failed", dag_id=~"Batch_Ingestion.*"}[2h])'
               instant: true
               intervalMs: 1000

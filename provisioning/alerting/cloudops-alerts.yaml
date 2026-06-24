@@ -14,11 +14,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "(probe_ssl_earliest_cert_expiry - time())/60/60/24"
               instant: false
               intervalMs: 1000
@@ -92,11 +92,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "(probe_ssl_earliest_cert_expiry - time())/60/60/24"
               instant: false
               intervalMs: 1000
@@ -170,11 +170,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "deriv(airflow_dag_status{status='failed', owner!='custom-reports', owner!='dhl'}[4h])"
               instant: false
               intervalMs: 1000
@@ -249,11 +249,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "deriv(airflow_dag_status{status='failed',owner='custom-reports'}[4h])"
               instant: false
               intervalMs: 1000
@@ -328,11 +328,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "deriv(airflow_dag_status{status='failed',dag_id='dhl_get_configs'}[15m])"
               instant: false
               intervalMs: 1000
@@ -407,11 +407,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "deriv(airflow_dag_status{status='failed',dag_id!='dhl_get_configs',owner='dhl'}[4h])"
               instant: false
               intervalMs: 1000
@@ -486,11 +486,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "rate(airflow_scheduler_health_status{status='healthy'}[10m])"
               instant: false
               intervalMs: 1000
@@ -565,11 +565,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "airflow_dag_run_duration{}"
               instant: false
               intervalMs: 1000
@@ -644,11 +644,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "max(airflow_dag_last_status{status='running'})"
               instant: false
               intervalMs: 1000
@@ -723,11 +723,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "druid_overall_mm_worker_gage{type=~'free'}"
               instant: false
               intervalMs: 1000
@@ -790,85 +790,6 @@ groups:
         isPaused: false
 
   - orgId: 1
-    name: "Clickhouse nodes up"
-    folder: "General Alerting"
-    interval: "120s"
-    rules:
-      - uid: "cloudops-clickhouse-nodes-up"
-        title: "Clickhouse nodes up"
-        condition: C
-        data:
-          - refId: A
-            relativeTimeRange:
-              from: 600
-              to: 0
-            datasourceUid: "000000001"
-            model:
-              datasource:
-                type: prometheus
-                uid: "000000001"
-              expr: "(count (ClickHouseAsyncMetrics_Uptime))"
-              instant: false
-              intervalMs: 1000
-              maxDataPoints: 43200
-              refId: A
-          - refId: B
-            relativeTimeRange:
-              from: 0
-              to: 0
-            datasourceUid: __expr__
-            model:
-              conditions:
-                - evaluator:
-                    params:
-                      - 3
-                    type: gt
-                  operator:
-                    type: and
-                  query:
-                    params:
-                      - A
-                  reducer:
-                    params: []
-                    type: "last"
-                  type: query
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: A
-              reducer: "last"
-              refId: B
-              type: reduce
-          - refId: C
-            relativeTimeRange:
-              from: 0
-              to: 0
-            datasourceUid: __expr__
-            model:
-              expression: "$B < 4"
-              intervalMs: 1000
-              maxDataPoints: 43200
-              refId: C
-              type: math
-        noDataState: "OK"
-        execErrState: "Alerting"
-        for: "30m"
-        labels:
-          managed-by: grafana-docker
-          source: cloudops
-          notification: ""
-          validator: "B < 4"
-          xops-alerting-class: "Capture Flows"
-          xops-alerting-docs: ""
-          xops-alerting-impact: "infra"
-          xops-alerting-priority: "P5"
-        annotations:
-          summary: "Clickhouse nodes up"
-          description: "One or more ClickHouse database nodes are not responding."
-          runbook_url: "/public/help/infrastructure-health.html"
-        isPaused: false
-
-  - orgId: 1
     name: "CPU usage high over half hour"
     folder: "General Alerting"
     interval: "300s"
@@ -881,11 +802,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "sum by(instance)  (irate(node_cpu{mode!='idle'}[5m]))/(count(count(node_cpu) without (mode)) by (instance)) or sum by (instance)  (irate(node_cpu_seconds_total{mode!='idle'}[5m]))/(count(count(node_cpu_seconds_total) without (mode)) by (instance))"
               instant: false
               intervalMs: 1000
@@ -960,11 +881,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "druid_coordinator_datasourceLoadStatus"
               instant: false
               intervalMs: 1000
@@ -1039,11 +960,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "sum(stitchit_dgraph_alpha_availability)"
               instant: false
               intervalMs: 1000
@@ -1118,11 +1039,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "avg by (instance, device)(1 - (node_filesystem_avail{device !~'tmpfs',device!~'by-uuid|lxcfs|sunrpc'}) / (node_filesystem_size{device !~'tmpfs',device!~'by-uuid|lxcfs|sunrpc'}) or 1 - (node_filesystem_free_bytes / node_filesystem_size_bytes))"
               instant: false
               intervalMs: 1000
@@ -1197,11 +1118,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "min(swarm_manager_tasks_total{state='pending'})"
               instant: false
               intervalMs: 1000
@@ -1276,11 +1197,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "druid_status_gauge{result='success'}"
               instant: false
               intervalMs: 1000
@@ -1355,11 +1276,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "druid_status_gauge{ server_type=~'historical|middle_manager', result='success'} - ignoring(result) group_left druid_server_gauge{server_type=~'historical|middle_manager'}"
               instant: false
               intervalMs: 1000
@@ -1422,85 +1343,6 @@ groups:
         isPaused: false
 
   - orgId: 1
-    name: "ElasticSearch Heap"
-    folder: "General Alerting"
-    interval: "300s"
-    rules:
-      - uid: "cloudops-elasticsearch-heap"
-        title: "ElasticSearch Heap"
-        condition: C
-        data:
-          - refId: A
-            relativeTimeRange:
-              from: 600
-              to: 0
-            datasourceUid: "000000001"
-            model:
-              datasource:
-                type: prometheus
-                uid: "000000001"
-              expr: "sum (elasticsearch_jvm_memory_used_bytes{}) / sum (elasticsearch_jvm_memory_max_bytes{}) * 100"
-              instant: false
-              intervalMs: 1000
-              maxDataPoints: 43200
-              refId: A
-          - refId: B
-            relativeTimeRange:
-              from: 0
-              to: 0
-            datasourceUid: __expr__
-            model:
-              conditions:
-                - evaluator:
-                    params:
-                      - 3
-                    type: gt
-                  operator:
-                    type: and
-                  query:
-                    params:
-                      - A
-                  reducer:
-                    params: []
-                    type: "last"
-                  type: query
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: A
-              reducer: "last"
-              refId: B
-              type: reduce
-          - refId: C
-            relativeTimeRange:
-              from: 0
-              to: 0
-            datasourceUid: __expr__
-            model:
-              expression: "$B > 85"
-              intervalMs: 1000
-              maxDataPoints: 43200
-              refId: C
-              type: math
-        noDataState: "OK"
-        execErrState: "OK"
-        for: "30m"
-        labels:
-          managed-by: grafana-docker
-          source: cloudops
-          notification: ""
-          validator: "B > 85"
-          xops-alerting-class: "ElasticSearch Metrics"
-          xops-alerting-docs: ""
-          xops-alerting-impact: "infra"
-          xops-alerting-priority: "P3"
-        annotations:
-          summary: "ElasticSearch Heap"
-          description: "ElasticSearch JVM heap utilization has exceeded the safe threshold and may lead to out-of-memory conditions."
-          runbook_url: "/public/help/infrastructure-health.html"
-        isPaused: false
-
-  - orgId: 1
     name: "Hadoop dead nodes"
     folder: Ingestion
     interval: "300s"
@@ -1513,11 +1355,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "hadoop_namenode_num_dead_data_nodes"
               instant: false
               intervalMs: 1000
@@ -1592,11 +1434,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "hadoop_namenode_corrupt_blocks"
               instant: false
               intervalMs: 1000
@@ -1671,11 +1513,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "hadoop_namenode_under_replicated_blocks{kind='FSNamesystem'}"
               instant: false
               intervalMs: 1000
@@ -1750,11 +1592,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "(time() - hadoop_namenode_last_checkpoint_time/1000)"
               instant: false
               intervalMs: 1000
@@ -1829,11 +1671,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "avg by (instance) (irate(node_cpu_seconds_total{mode='iowait'}[5m]))"
               instant: false
               intervalMs: 1000
@@ -1908,11 +1750,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "avg by (host, tier) (historical_usage_curr_gauge/historical_usage_max_gauge)"
               instant: false
               intervalMs: 1000
@@ -1987,11 +1829,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "min_over_time((sum by (topic) (kafka_consumergroup_lag{topic=~'mo-summary.+'}))[1h:])"
               instant: false
               intervalMs: 1000
@@ -2066,11 +1908,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "min_over_time(deriv(kafka_consumergroup_lag_sum{consumergroup='streamingapp', topic=~'ignite.contemporary.*'}[30m])[1h:]) OR min_over_time(deriv(spark_kafkaProcessingLag{job='SparkKafkaLagMonitor', topic=~'ignite.contemporary.*'}[30m])[1h:])"
               instant: false
               intervalMs: 1000
@@ -2145,11 +1987,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "sum(avg_over_time(kafka_server_brokertopicmetrics_oneminuterate{topic=~'spark_raw_in.*|pvx.*', name='MessagesInPerSec'}[10m]))"
               instant: false
               intervalMs: 1000
@@ -2224,11 +2066,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "min_over_time(deriv(kafka_consumergroup_lag_sum{consumergroup='latentapp', topic=~'ignite.latent.*'}[30m])[2h:]) OR min_over_time(deriv(spark_kafkaProcessingLag{job='SparkKafkaLagMonitor', topic=~'ignite.latent.*|spark-latent.*'}[30m])[2h:])"
               instant: false
               intervalMs: 1000
@@ -2303,11 +2145,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "metricsService_health_status"
               instant: false
               intervalMs: 1000
@@ -2382,11 +2224,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "node_timex_sync_status"
               instant: false
               intervalMs: 1000
@@ -2461,11 +2303,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "up"
               instant: false
               intervalMs: 1000
@@ -2528,85 +2370,6 @@ groups:
         isPaused: false
 
   - orgId: 1
-    name: "PVStorage Inserted Rows"
-    folder: Ingestion
-    interval: "300s"
-    rules:
-      - uid: "cloudops-pvstorage-inserted-rows"
-        title: "PVStorage Inserted Rows"
-        condition: C
-        data:
-          - refId: A
-            relativeTimeRange:
-              from: 600
-              to: 0
-            datasourceUid: "000000001"
-            model:
-              datasource:
-                type: prometheus
-                uid: "000000001"
-              expr: "sum(60*rate(pvstorage_inserted_rows_total[10m])) by (job)"
-              instant: false
-              intervalMs: 1000
-              maxDataPoints: 43200
-              refId: A
-          - refId: B
-            relativeTimeRange:
-              from: 0
-              to: 0
-            datasourceUid: __expr__
-            model:
-              conditions:
-                - evaluator:
-                    params:
-                      - 3
-                    type: gt
-                  operator:
-                    type: and
-                  query:
-                    params:
-                      - A
-                  reducer:
-                    params: []
-                    type: "last"
-                  type: query
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: A
-              reducer: "last"
-              refId: B
-              type: reduce
-          - refId: C
-            relativeTimeRange:
-              from: 0
-              to: 0
-            datasourceUid: __expr__
-            model:
-              expression: "$B <= 0"
-              intervalMs: 1000
-              maxDataPoints: 43200
-              refId: C
-              type: math
-        noDataState: "OK"
-        execErrState: "Alerting"
-        for: "1h"
-        labels:
-          managed-by: grafana-docker
-          source: cloudops
-          notification: ""
-          validator: "B <= 0"
-          xops-alerting-class: "PVStorage"
-          xops-alerting-docs: ""
-          xops-alerting-impact: "infra"
-          xops-alerting-priority: "P3"
-        annotations:
-          summary: "PVStorage Inserted Rows"
-          description: "One or more storage writer instances have stopped inserting data. Downstream data freshness is affected."
-          runbook_url: "/public/help/streaming-ingestion.html"
-        isPaused: false
-
-  - orgId: 1
     name: "Query Node Count"
     folder: "General Alerting"
     interval: "300s"
@@ -2619,11 +2382,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "metricsService_datasource_query_nodes"
               instant: false
               intervalMs: 1000
@@ -2698,11 +2461,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "roadrunner_persistence_service_cached_files{zone!~'overlord|test|dummy'}"
               instant: false
               intervalMs: 1000
@@ -2777,11 +2540,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "avg_over_time(spark_kafkaProcessingLag{job='SparkKafkaLagMonitor', topic=~'alert-events.*'}[2m])"
               instant: false
               intervalMs: 1000
@@ -2856,11 +2619,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "avg_over_time(kafka_consumergroup_lag_sum{topic=~'mo-summary.*'}[2m])"
               instant: false
               intervalMs: 1000
@@ -2935,11 +2698,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "deriv(kafka_consumergroup_lag_sum{consumergroup='streamingapp'}[10m]) OR deriv(spark_kafkaProcessingLag{job='SparkKafkaLagMonitor', topic=~'ignite.contemporary.*'}[10m])"
               instant: false
               intervalMs: 1000
@@ -3014,11 +2777,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "skylight_backups_time_since_last_backup"
               instant: false
               intervalMs: 1000

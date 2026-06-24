@@ -98,7 +98,7 @@
 </head>
 <body>
   <h1>Infrastructure Health Alert Guide</h1>
-  <p class="subtitle">Troubleshooting CPU, memory, I/O, time synchronization, container scheduling, and database node availability</p>
+  <p class="subtitle">Troubleshooting CPU, memory, I/O, time synchronization, container scheduling, and service availability</p>
 
   <div class="card">
     <h3>Affected alerts</h3>
@@ -108,9 +108,7 @@
       <span class="badge badge-alert">Available Memory</span>
       <span class="badge badge-alert">Docker Pending Task</span>
       <span class="badge badge-alert">NTP Time Sync</span>
-      <span class="badge badge-alert">ClickHouse Nodes Up</span>
       <span class="badge badge-alert">Dgraph Alpha Availability</span>
-      <span class="badge badge-alert">ElasticSearch Heap</span>
       <span class="badge badge-alert">Prometheus NODATA</span>
     </div>
   </div>
@@ -127,9 +125,7 @@
   <div class="card">
     <h3>Memory</h3>
     <p><strong>Available Memory</strong> fires when total container memory utilization drops below
-    expected levels, suggesting containers may be failing or the system is under-provisioned.
-    <strong>ElasticSearch Heap</strong> fires when the JVM heap on search nodes exceeds safe levels,
-    risking out-of-memory crashes.</p>
+    expected levels, suggesting containers may be failing or the system is under-provisioned.</p>
   </div>
 
   <div class="card">
@@ -147,10 +143,9 @@
   </div>
 
   <div class="card">
-    <h3>Database node availability</h3>
-    <p><strong>ClickHouse Nodes Up</strong> and <strong>Dgraph Alpha Availability</strong> fire when
-    the expected number of database nodes is not available. Missing nodes reduce query capacity
-    and may impact data availability.</p>
+    <h3>Service availability</h3>
+    <p><strong>Dgraph Alpha Availability</strong> fires when the expected number of Dgraph nodes is
+    not available. Missing nodes reduce service capacity and may impact data availability.</p>
   </div>
 
   <div class="card">
@@ -211,7 +206,6 @@
     <ul>
       <li>Identify and address runaway processes or workloads consuming excessive resources.</li>
       <li>For I/O wait, check for failing disks, filesystem fragmentation, or excessive logging.</li>
-      <li>For ElasticSearch heap, consider increasing the JVM heap size or reducing the index load.</li>
       <li>If the host is genuinely under-provisioned, scale up resources.</li>
     </ul>
   </div>

@@ -14,11 +14,11 @@ groups:
             relativeTimeRange:
               from: 300
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: 'sum(container_memory_rss{name=~".+"})'
               instant: false
               intervalMs: 1000
@@ -65,11 +65,11 @@ groups:
             relativeTimeRange:
               from: 300
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: 'spark_CustomMetricSource_batch_processingTimeMs{job="cyberapp"}'
               instant: false
               intervalMs: 1000
@@ -116,11 +116,11 @@ groups:
             relativeTimeRange:
               from: 300
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "couchdb_httpd_clients_requesting_changes"
               instant: false
               intervalMs: 1000
@@ -190,11 +190,11 @@ groups:
             relativeTimeRange:
               from: 60
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "gather_metric_alerts_service_errors_since_startup"
               instant: false
               intervalMs: 1000
@@ -218,11 +218,11 @@ groups:
             relativeTimeRange:
               from: 300
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: 'avg_over_time(kafka_server_brokertopicmetrics_oneminuterate{topic="npav-ts-metrics", name="MessagesInPerSec"}[3m])'
               instant: false
               intervalMs: 1000
@@ -232,11 +232,11 @@ groups:
             relativeTimeRange:
               from: 300
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: 'avg_over_time(kafka_server_brokertopicmetrics_oneminuterate{topic="spark_raw_in", name="MessagesInPerSec"}[3m])'
               instant: false
               intervalMs: 1000
@@ -294,11 +294,11 @@ groups:
             relativeTimeRange:
               from: 300
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: "abs(rate(gather_metric_alerts_service_consumed_kafka_mgs_since_startup[1m]) - rate(gather_metric_alerts_service_produced_mqtt_mgs_since_startup[1m]))"
               instant: false
               intervalMs: 1000
@@ -371,11 +371,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: 'spark_CustomMetricSource_batch_processingRate{job="cyberapp"} / spark_CustomMetricSource_batch_inputRate{job="cyberapp"}'
               instant: false
               intervalMs: 1000
@@ -422,11 +422,11 @@ groups:
             relativeTimeRange:
               from: 1200
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: 'spark_CustomMetricSource_batch_timestamp{job="cyberapp", role="driver"} / 1000'
               instant: false
               intervalMs: 1000
@@ -473,11 +473,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: 'spark_CustomMetricSource_streaming_processedRowsPerSecond{job="incident_builder"} / spark_CustomMetricSource_streaming_inputRowsPerSecond{job="incident_builder"}'
               instant: false
               intervalMs: 1000
@@ -534,11 +534,11 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: "000000001"
+            datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
-                uid: "000000001"
+                uid: prometheus
               expr: 'spark_CustomMetricSource_streaming_timestamp{job="incident_builder"}'
               instant: false
               intervalMs: 1000

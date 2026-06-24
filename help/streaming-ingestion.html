@@ -114,7 +114,6 @@
       <span class="badge badge-alert">Kafka Ingestion Rate</span>
       <span class="badge badge-alert">Kafka Consumergroup Lag</span>
       <span class="badge badge-warn">Kafka MQTT Divergence</span>
-      <span class="badge badge-alert">PVStorage Inserted Rows</span>
       <span class="badge badge-alert">RoadRunner Cached Files</span>
       <span class="badge badge-alert">Roadrunner Disconnected</span>
       <span class="badge badge-alert">Airflow Batch DAG Failed</span>
@@ -133,8 +132,6 @@
     Lag that grows continuously means the consumer is falling further behind over time.</li>
     <li><strong>Ingestion rate alerts</strong> fire when the volume of data entering the pipeline drops
     below expected levels, potentially indicating a collector outage or upstream data source issue.</li>
-    <li><strong>Storage insertion alerts</strong> mean downstream data stores have stopped receiving new records,
-    even though upstream stages may still be running.</li>
     <li><strong>Collector alerts</strong> fire when data collectors disconnect or accumulate a backlog of
     cached files waiting to be delivered.</li>
   </ul>
@@ -169,11 +166,6 @@
       <span>For collector-related alerts, verify the <strong>network path</strong> between the collector and
       the analytics platform. Check that the collector service is running and that cached files are not
       accumulating due to connectivity loss.</span>
-    </li>
-    <li>
-      <span class="step-num">5</span>
-      <span>For storage insertion alerts, confirm the <strong>downstream data store</strong> is online and
-      accepting writes. Check disk space and resource utilization on the storage nodes.</span>
     </li>
   </ol>
 

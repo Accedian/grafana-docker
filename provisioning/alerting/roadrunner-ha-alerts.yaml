@@ -1,0 +1,354 @@
+# Grafana unified alerting provisioning — Roadrunner HA Monitoring
+#
+# Datasource: Prometheus (uid: prometheus)
+# Each rule fires per unique {tenant, zone, hostname, connectorId} label set,
+# so alerts are scoped to individual Roadrunner instances automatically.
+
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: roadrunner-ha
+    folder: HA Monitoring
+    interval: 1m
+    rules:
+
+      # -----------------------------------------------------------------------
+      # 1. Liveness Degraded
+      # Fires when the liveness watchdog reports stale heartbeats.
+      # K8s should restart the pod via liveness probe; if this alert persists
+      # the probe may not be configured or is failing to trigger a restart.
+      # -----------------------------------------------------------------------
+      - uid: rr-liveness-degraded
+        title: RoadrunnerLivenessDegraded
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              # Multiply by roadrunner_connection so that when Fedex's data
+              # WebSocket drops (connection=0) the stale liveness value (1)
+              # is forced to 0 and the alert fires even though Fedex keeps
+              # the last received value from the disconnected RR pod.
+              expr: roadrunner_liveness_healthy * on(connectorId, hostname, zone, tenant) roadrunner_connection
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Roadrunner {{ $labels.connectorId }} liveness watchdog unhealthy"
+          description: >
+            One or more critical goroutines have stopped heartbeating on
+            {{ $labels.hostname }} (zone: {{ $labels.zone }}, tenant: {{ $labels.tenant }}).
+            K8s liveness probe should restart the pod shortly.
+            If this alert persists, check that the liveness probe is configured
+            and that the pod is not stuck in a crash loop.
+          runbook: "Check pod events for liveness probe failures. Review RR logs for goroutine panics or hangs."
+
+      # -----------------------------------------------------------------------
+      # 2. Readiness Not Ready
+      # Fires when the pod is not ready to serve traffic.
+      # K8s will not route traffic to this pod while it is not ready.
+      # -----------------------------------------------------------------------
+      - uid: rr-readiness-not-ready
+        title: RoadrunnerReadinessNotReady
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              # Same stale-value fix as liveness: multiply by connection.
+              expr: roadrunner_readiness_ready * on(connectorId, hostname, zone, tenant) roadrunner_connection
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Roadrunner {{ $labels.connectorId }} not ready"
+          description: >
+            {{ $labels.hostname }} (zone: {{ $labels.zone }}, tenant: {{ $labels.tenant }})
+            has been in a not-ready state for >5m.
+            Subsystems may be initializing, reconfiguring, or degraded.
+            K8s will not route traffic to this pod.
+          runbook: "Check pod readiness probe events. Inspect RR logs for subsystem initialization failures."
+
+      # -----------------------------------------------------------------------
+      # 3. Foxtrot Disconnected
+      # Fires when the meta WebSocket to Foxtrot is down.
+      # RR cannot receive config updates while disconnected.
+      # -----------------------------------------------------------------------
+      - uid: rr-foxtrot-disconnected
+        title: RoadrunnerFoxtrotDisconnected
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              # meta_connected is pushed by RR; Fedex keeps the stale value
+              # after disconnect. Multiply by connection to force 0 when the
+              # data WebSocket is down (which happens at the same time as the
+              # meta WebSocket goes down when the RR pod stops).
+              expr: roadrunner_meta_connected * on(connectorId, hostname, zone, tenant) roadrunner_connection
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Roadrunner {{ $labels.connectorId }} lost Foxtrot connection"
+          description: >
+            Meta WebSocket to Foxtrot has been down for >2m on
+            {{ $labels.hostname }} (zone: {{ $labels.zone }}, tenant: {{ $labels.tenant }}).
+            This RR cannot receive configuration updates.
+            Zone configuration changes will not propagate until connection is restored.
+          runbook: "Check Foxtrot pod health, network connectivity, and TLS certificate validity."
+
+      # -----------------------------------------------------------------------
+      # 4. Fedex Disconnected
+      # Uses the Fedex-side roadrunner_connection metric (set to 0 by Fedex
+      # when a previously-connected RR's WebSocket drops). This metric is
+      # reliable because it lives in Fedex's process, not in Roadrunner's —
+      # so it reaches Prometheus regardless of the RR's state
+      # -----------------------------------------------------------------------
+      - uid: rr-fedex-disconnected
+        title: RoadrunnerFedexDisconnected
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              expr: roadrunner_connection
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Roadrunner {{ $labels.connectorId }} lost Fedex connection"
+          description: >
+            The WebSocket connection from Fedex to {{ $labels.hostname }}
+            (zone: {{ $labels.zone }}, tenant: {{ $labels.tenant }}) has been down for >5m.
+            Data is accumulating in PersistenceService append logs on disk.
+            Prolonged disconnection increases risk of disk pressure.
+          runbook: "Check Fedex pod health and network connectivity. Monitor disk usage on the Roadrunner PVC."
+
+      # -----------------------------------------------------------------------
+      # 5. No Connected Agents
+      # Fires when no Telemetry Collectors are connected to this RR instance.
+      # The zone is not collecting any telemetry data.
+      # -----------------------------------------------------------------------
+      - uid: rr-no-agents
+        title: RoadrunnerNoConnectedAgents
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              expr: roadrunner_connected_agent_count
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Roadrunner {{ $labels.connectorId }} has no connected agents"
+          description: >
+            No Telemetry Collectors or sensor agents have been connected to
+            {{ $labels.hostname }} (zone: {{ $labels.zone }}, tenant: {{ $labels.tenant }}) for >10m.
+            The zone is not collecting any telemetry data.
+          runbook: >
+            Verify TC configuration points to the correct RR address.
+            Check AgentProxy port accessibility and network connectivity between TCs and this RR.
+

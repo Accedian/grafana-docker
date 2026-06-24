@@ -74,14 +74,12 @@ This will:
 | 5 Day Cert Expiry | Certificate expires within 5 days |
 | AvailableMemory | Total container RSS memory below threshold |
 | BatchProcessingDuration | Batch processing taking too long |
-| Clickhouse nodes up | Clickhouse node availability |
 | CPU usage high over half hour | Sustained high CPU usage |
 | DataSource Availability alert | Prometheus datasource reachability |
 | DatasourceError | Datasource returning errors |
 | DatasourceNoData | Datasource returning no data |
 | Dgraph Alpha Availability | Dgraph Alpha node health |
 | Disk usage | Disk utilization above threshold |
-| ElasticSearch Heap | Elasticsearch heap pressure |
 | High IO Wait | Sustained high I/O wait |
 | Historical usage | Historical data storage utilization |
 | Metrics Service Reachability | Metrics service endpoint health |
@@ -109,7 +107,6 @@ This will:
 | Kafka Consumergroup Lag | Kafka consumer group lag |
 | Kafka Ingestion Rate | Kafka message ingestion rate |
 | Latent Data Lag Growing | Latent data processing lag |
-| PVStorage Inserted Rows | PV storage insertion rate |
 | RoadRunner Persistence cached files | RoadRunner file cache health |
 | Streamingapp Lag Growing | Streaming application lag |
 | Streamingapp alert-events Topic Ingestion | Alert events topic processing |
