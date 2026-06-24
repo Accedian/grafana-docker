@@ -1,0 +1,489 @@
+# Grafana unified alerting provisioning — Telemetry Collector HA Monitoring
+#
+# Datasource: Prometheus (uid: prometheus)
+# Each rule fires per unique {tenant, zone, instance} label set so alerts
+# are scoped to individual TC instances automatically.
+#
+# Key difference from roadrunner-ha-alerts.yaml:
+#   TC metrics are scraped DIRECTLY by Prometheus via ServiceMonitor/static_configs.
+#   They do NOT flow through Fedex, so the roadrunner_connection multiplication
+#   hack is not needed.  noDataState: OK handles the pod-completely-down case.
+#
+
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: telemetry-collector-ha
+    folder: HA Monitoring
+    interval: 1m
+    rules:
+
+      # -----------------------------------------------------------------------
+      # 1. Telegraf Unhealthy (Critical)
+      # Fires when the embedded Telegraf health-check fails for >60s.
+      # telegrafObserver polls http://localhost:57001 every 30s and sets the
+      # gauge to 1 (healthy) or 0 (unhealthy).  The gauge is 0 for the first
+      # ~30s after TC starts even when healthy — for:1m absorbs that window.
+      # If this alert fires persistently, the TC pod is not collecting any data.
+      # K8s liveness probe should restart the pod; if it persists, the probe
+      # may not be configured or Telegraf is crash-looping.
+      # -----------------------------------------------------------------------
+      - uid: tc-telegraf-unhealthy
+        title: TelemetryCollectorTelegrafUnhealthy
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              expr: telegraf_status{job="telemetry-collector"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Telegraf unhealthy on TC {{ $labels.tenant }}/{{ $labels.zone }}"
+          description: >
+            The embedded Telegraf process on {{ $labels.instance }}
+            (tenant: {{ $labels.tenant }}, zone: {{ $labels.zone }}) is not
+            responding to health checks.  The TC is not collecting any data.
+            This condition has persisted for more than 1 minute.
+          runbook: >
+            Check TC pod logs for Telegraf startup errors.
+            Verify Telegraf configuration is valid.
+
+      # -----------------------------------------------------------------------
+      # 2. TC Config Not Received (Warning)
+      # Fires when tc_config_received stays 0 for >10m.
+      # The gauge is registered lazily (after GetAgentId() returns) and starts
+      # at 0.  Normal config delivery via SO→RR AgentProxy takes ~90-120s.
+      # If still 0 after 10 min, the SO→RR→TC config delivery chain is broken.
+      # noDataState: OK handles the pod-completely-down case (Prometheus scrape
+      # fails → metric absent → NoData → treated as OK by this rule; a separate
+      # alert on the Prometheus `up` metric covers the pod-down scenario).
+      # -----------------------------------------------------------------------
+      - uid: tc-config-not-received
+        title: TelemetryCollectorConfigNotReceived
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              expr: tc_config_received{job="telemetry-collector"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "TC {{ $labels.tenant }}/{{ $labels.zone }} has not received configuration"
+          description: >
+            The Telemetry Collector {{ $labels.instance }}
+            (tenant: {{ $labels.tenant }}, zone: {{ $labels.zone }}) has been
+            running for >10 minutes without receiving configuration from Sensor
+            Orchestrate.  It is idle and not collecting any data.
+          runbook: >
+            Check Sensor Orchestrate health and connectivity.
+            Verify the TC agent registration with Roadrunner.
+            Check RR AgentProxy logs for config delivery errors.
+
+      # -----------------------------------------------------------------------
+      # 3. TC No Data Flow (Warning)
+      # Fires when rate(received_data_total[5m]) == 0 for >10m.
+      # received_data_total counts bytes received from the embedded Telegraf
+      # over the internal WebSocket.  A zero rate means Telegraf has stopped
+      # sending data even though the health check (telegraf_status) may still
+      # be passing (the health endpoint and the data path are independent).
+      # -----------------------------------------------------------------------
+      - uid: tc-no-data-flow
+        title: TelemetryCollectorNoDataFlow
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              expr: rate(received_data_total{job="telemetry-collector"}[5m])
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0.001
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "TC {{ $labels.tenant }}/{{ $labels.zone }} has zero data throughput"
+          description: >
+            No data has been received from the embedded Telegraf for >10 minutes
+            on {{ $labels.instance }}
+            (tenant: {{ $labels.tenant }}, zone: {{ $labels.zone }}).
+            The Telegraf→TC data pipeline is stalled.
+          runbook: >
+            Check telegraf_status — if 0, Telegraf itself is unhealthy.
+            If telegraf_status is 1 but data flow is zero, Telegraf plugins may
+            have no reachable data sources (network devices, Kafka brokers).
+            Check TC logs for Telegraf collection errors.
+
+      # -----------------------------------------------------------------------
+      # 4. TC No Active Streams (Warning)
+      # Fires when tc_config_received==1 AND tc_active_streams==0 for >5m.
+      #
+      # SOURCE: Prometheus via TC ServiceMonitor (agent-metrics-tenant-X:2112).
+      # TC has received its configuration but the PerformanceDataGateway (PDG)
+      # has no active data streams to Roadrunner.  Data from Telegraf is not
+      # being forwarded to the DataGateway.
+      #
+      # tc_active_streams counts open PDG data streams:
+      #   0 = no data is flowing to Roadrunner
+      #   >0 = at least one stream is active
+      # The AND with tc_config_received==1 ensures we only fire after TC has
+      # received a valid configuration (i.e., agent is set up but not streaming).
+      # -----------------------------------------------------------------------
+      - uid: tc-no-active-streams
+        title: TelemetryCollectorNoActiveStreams
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              expr: >-
+                (tc_config_received{job="telemetry-collector"} == 1)
+                  and on(instance, tenant, zone)
+                (tc_active_streams{job="telemetry-collector"} == 0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "TC {{ $labels.tenant }}/{{ $labels.zone }} has config but no active PDG streams"
+          description: >
+            The Telemetry Collector {{ $labels.instance }}
+            (tenant: {{ $labels.tenant }}, zone: {{ $labels.zone }}) has received
+            its configuration (tc_config_received=1) but has no active
+            PerformanceDataGateway streams to Roadrunner (tc_active_streams=0).
+            Data from Telegraf is not being forwarded.
+          runbook: >
+            Check tc_active_streams in Prometheus. Verify Roadrunner is reachable
+            from the TC pod and check TC logs for PDG connection errors.
+            If dataCollection config is empty, push a valid config via SO.
+
+      # -----------------------------------------------------------------------
+      # 5. TC Agent Disconnected from Roadrunner (Warning)
+      # Fires when roadrunner_agent_connected drops to 0 for a known agent.
+      #
+      # SOURCE: Fedex Prometheus endpoint (fedex:9191/metrics).
+      # Pipeline: RR → GetMetricsProtoBinary → DataHub protobuf → Fedex → Prometheus.
+      # RR tracks ManagementGateway WebSocket connections from TC agents to its
+      # AgentProxy (port 55777). Gauge is 1.0 on connect, 0.0 on disconnect.
+      # This is a persistent gauge — retains last known value across Fedex intervals.
+      #
+      # This is the replacement for the removed TelemetryCollectorDataGatewayErrors
+      # alert: tc_data_gateway_error_total never increments (SAF SDK absorbs all
+      # connection failures internally), so roadrunner_agent_connected gives the
+      # only reliable RR-side visibility into TC→RR connectivity.
+      #
+      # Labels: tenant, zone, connectorId (RR instance), agentId (TC UUID)
+      # Detection latency: ~30s (RR metrics interval) + for: 2m window.
+      # -----------------------------------------------------------------------
+      - uid: tc-agent-disconnected
+        title: TelemetryCollectorAgentDisconnected
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              # roadrunner_agent_connected is 1 when TC's ManagementGateway WebSocket
+              # is connected to Roadrunner's AgentProxy. Returns 0 when disconnected.
+              #
+              # IMPORTANT: do NOT use "roadrunner_agent_connected == 0" here.
+              # PromQL "metric == 0" returns a series with VALUE 0 when the condition
+              # is met. The threshold expression "last(A) > 0" then evaluates
+              # "0 > 0 = false" and the alert NEVER fires — a silent logic bug.
+              # Use the plain query and a "lt 1" threshold instead (same pattern as
+              # TelemetryCollectorTelegrafUnhealthy which uses telegraf_status + lt 1).
+              expr: roadrunner_agent_connected
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: >-
+            TC agent {{ $labels.agentId }} disconnected from Roadrunner
+            {{ $labels.connectorId }} ({{ $labels.zone }})
+          description: >
+            Agent {{ $labels.agentId }} (tenant: {{ $labels.tenant }},
+            zone: {{ $labels.zone }}) lost its ManagementGateway connection to
+            Roadrunner {{ $labels.connectorId }}'s AgentProxy (port 55777).
+            The TC agent can no longer receive configurations from Sensor Orchestrate
+            and will stop forwarding performance data.
+          runbook: >
+            Check Roadrunner health and readiness.
+            Verify network connectivity between the TC agent and Roadrunner AgentProxy port 55777.
+            Check Roadrunner logs for ManagementGateway connection errors.
+
+
+      # -----------------------------------------------------------------------
+      # 6. Telegraf Misconfigured (Info)
+      # Fires immediately (for: 0s) when telegraf_misconfigured==1.
+      # Set once per TC process lifetime (sync.Once) when TC detects a Telegraf
+      # input is producing extra fields beyond "value" alongside a kpi tag —
+      # indicating a missing fieldpass = ["value"] in the input config.
+      # This causes phantom metrics where the kpi tag doesn't match the
+      # measurement name, corrupting PCA dashboards and alerting.
+      # Sticky: stays 1 until the config is fixed AND the TC pod is restarted.
+      # -----------------------------------------------------------------------
+      - uid: tc-telegraf-misconfigured
+        title: TelemetryCollectorTelegrafMisconfigured
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              expr: telegraf_misconfigured{job="telemetry-collector"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 0s
+        labels:
+          severity: info
+        annotations:
+          summary: "TC {{ $labels.tenant }}/{{ $labels.zone }} Telegraf configuration error"
+          description: >
+            The embedded Telegraf on {{ $labels.instance }}
+            (tenant: {{ $labels.tenant }}, zone: {{ $labels.zone }}) is sending
+            extra fields beyond 'value' alongside a kpi tag.  This indicates a
+            missing fieldpass = ["value"] in the Telegraf input configuration,
+            causing phantom metrics that corrupt KPI names in PCA dashboards.
+          runbook: >
+            Update the Telegraf configuration template in the Sensor Orchestrator to
+            include fieldpass = ["value"] in the [[inputs.kafka_consumer]] section
+            (or whichever input uses json_name_key = "kpi").
+
+

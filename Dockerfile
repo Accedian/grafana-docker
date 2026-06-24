@@ -16,6 +16,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         musl \
         python3-minimal \
         python3-yaml \
+        sqlite3 \
     && curl \
         --no-progress-meter \
         --write-out "curl: %{filename_effective} %{size_download}B %{speed_download}B/s\n" \

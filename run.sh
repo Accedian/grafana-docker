@@ -81,11 +81,41 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
     # Resolve Docker COPY nesting (/tmp/dashboards/ may contain a dashboards/ subdir)
     _DASH_SRC=/tmp/dashboards
     [ -d "$_DASH_SRC/dashboards" ] && _DASH_SRC="$_DASH_SRC/dashboards"
-    # Copy non-ops dashboards
-    find "$_DASH_SRC" -maxdepth 1 -name '*.json' -exec cp {} "$GF_PATHS_DATA/dashboards/" \;
+    # Copy non-ops dashboards, preserving nested dashboard folders from master.
+    find "$_DASH_SRC" -mindepth 1 -maxdepth 1 ! -name ops -exec cp -R {} "$GF_PATHS_DATA/dashboards/" \;
     # Copy ops dashboards to dedicated directory (avoids overlap with system-provider)
     if [ -d "$_DASH_SRC/ops" ]; then
-      cp "$_DASH_SRC/ops/"*.json "$GF_PATHS_DATA/dashboards-ops/"
+      find "$_DASH_SRC/ops" -maxdepth 1 -name '*.json' -exec cp {} "$GF_PATHS_DATA/dashboards-ops/" \;
+    fi
+fi
+
+# Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced.
+if [ -f "$GF_PATHS_DATA/grafana.db" ] && command -v sqlite3 >/dev/null 2>&1; then
+    OLD_PROM_UID=$(sqlite3 "$GF_PATHS_DATA/grafana.db" \
+        "SELECT uid FROM data_source WHERE name='Prometheus' AND uid != 'prometheus' LIMIT 1;" \
+        2>/dev/null || true)
+
+    if [ -n "$OLD_PROM_UID" ]; then
+        echo "Migrating Prometheus datasource UID '$OLD_PROM_UID' -> 'prometheus'"
+        # Escape single quotes for safe embedding in the SQL literal.
+        OLD_PROM_UID_SQL=${OLD_PROM_UID//\'/\'\'}
+        sqlite3 "$GF_PATHS_DATA/grafana.db" <<SQL || true
+BEGIN;
+UPDATE alert_rule
+   SET data = REPLACE(data, '"datasourceUid":"${OLD_PROM_UID_SQL}"', '"datasourceUid":"prometheus"')
+ WHERE data LIKE '%"datasourceUid":"${OLD_PROM_UID_SQL}"%';
+UPDATE alert_rule_version
+   SET data = REPLACE(data, '"datasourceUid":"${OLD_PROM_UID_SQL}"', '"datasourceUid":"prometheus"')
+ WHERE data LIKE '%"datasourceUid":"${OLD_PROM_UID_SQL}"%';
+UPDATE dashboard
+   SET data = REPLACE(data, '"uid":"${OLD_PROM_UID_SQL}"', '"uid":"prometheus"')
+ WHERE data LIKE '%"uid":"${OLD_PROM_UID_SQL}"%';
+UPDATE library_element
+   SET model = REPLACE(model, '"uid":"${OLD_PROM_UID_SQL}"', '"uid":"prometheus"')
+ WHERE model LIKE '%"uid":"${OLD_PROM_UID_SQL}"%';
+UPDATE data_source SET uid='prometheus' WHERE uid='${OLD_PROM_UID_SQL}';
+COMMIT;
+SQL
     fi
 fi
 

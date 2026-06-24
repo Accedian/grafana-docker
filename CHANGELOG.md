@@ -1,7 +1,25 @@
 ## Current Release
+### 0.224.0
+**Release Date:** Tue Jun 23 12:54:25 UTC 2026
+## Previous Releases
+* Feat - Add Grafana dashboard for Opensearch in grafana-docker [Asana](https://app.asana.com/1/5557457880942/home/task/1214363848516089)
+### 0.223.0
+**Release Date:** Fri Jun 19 13:33:20 UTC 2026
+* feat - New alerts for telemetry collector [Asana](https://app.asana.com/1/5557457880942/project/1214509400944248/task/1214984182674278?focus=true)
+### 0.222.0
+**Release Date:** Thu Jun 18 09:41:46 UTC 2026
+* Fix - Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced [Asana](https://app.asana.com/1/5557457880942/task/1215800855315574?focus=true)
+### 0.221.0
+**Release Date:** Thu Jun 18 08:08:06 UTC 2026
+#### Dashboards
+Fix - move kubernetes stock dashboards into image to eliminate ConfigMap projection race [Asana](https://app.asana.com/1/5557457880942/project/1211126781333541/task/1215717950548382?focus=true)
+### 0.220.0
+**Release Date:** Fri Jun 12 15:14:56 UTC 2026
+### 0.219.0
+**Release Date:** Fri Jun 12 13:09:44 UTC 2026
+* Fix - set Grafana prometheus datasource UID to prometheus to fix pod startup issue
 ### 0.218.0
 **Release Date:** Tue Jun  9 17:20:54 UTC 2026
-## Previous Releases
 * Feat - Add Cerbos Authorization Metrics dashboard [Asana](https://app.asana.com/1/5557457880942/project/1212700598162622/task/1211002245600706?focus=true)
 ### 0.217.0
 **Release Date:** Wed Jun  3 13:56:26 UTC 2026

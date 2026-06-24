@@ -1,0 +1,1683 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 60,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "CrashLoopBackOff": {
+                  "color": "orange",
+                  "index": 2,
+                  "text": "CrashLoopBackOff"
+                },
+                "Failed": {
+                  "color": "red",
+                  "index": 4,
+                  "text": "Failed"
+                },
+                "Pending": {
+                  "color": "yellow",
+                  "index": 3,
+                  "text": "Pending"
+                },
+                "Running": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "Running"
+                },
+                "Succeeded": {
+                  "color": "super-light-green",
+                  "index": 1,
+                  "text": "Succeeded"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "namespace"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "phase"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 83
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Age"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pod_ip"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 150
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "node"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 235
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "created_by_kind"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 164
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "created_by_name"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 277
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "service"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 376
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "phase"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 17,
+        "w": 16,
+        "x": 0,
+        "y": 0
+      },
+      "id": 9,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "kube_pod_info{node=~\"$node\", namespace=~\"$namespace\", pod=~\"$pod\"}\n# attach the phase (Running/Pending/Succeeded/Failed/Unknown)\n* on(namespace, pod) group_left(phase)\n  (kube_pod_status_phase{namespace=~\"$namespace\"} == 1)\n# attach age in seconds\n* on(namespace, pod) group_left()\n  (time() - kube_pod_start_time{namespace=~\"$namespace\"})",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Pods",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "created_by_kind",
+                "created_by_name",
+                "namespace",
+                "node",
+                "phase",
+                "pod",
+                "pod_ip",
+                "Value"
+              ]
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {
+              "Value": 3,
+              "created_by_kind": 7,
+              "created_by_name": 8,
+              "namespace": 0,
+              "node": 5,
+              "phase": 2,
+              "pod": 1,
+              "pod_ip": 4,
+              "service": 6
+            },
+            "renameByName": {
+              "Value": "Age"
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "pod"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "namespace"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 8,
+      "panels": [],
+      "title": "PVCs",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false,
+            "minWidth": 150
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "#EAB839",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value #A"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge"
+                }
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value #B"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value #C"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "namespace"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 111
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "node"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 253
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Used bytes"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 106
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Volume size"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 121
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value #D"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "PVC size"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 71
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 15,
+        "w": 16,
+        "x": 0,
+        "y": 18
+      },
+      "id": 2,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 2,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Usage %"
+          }
+        ]
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "(\n  ( 100 * kubelet_volume_stats_used_bytes{persistentvolumeclaim=~\"$pvc\",namespace=~\"$namespace\"}\n      / kubelet_volume_stats_capacity_bytes)\n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\",node=~\"$node\"}\n    )\n)\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "kubelet_volume_stats_used_bytes{persistentvolumeclaim=~\"$pvc\",namespace=~\"$namespace\"}\n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\",node=~\"$node\"}\n    )\n    * on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "kubelet_volume_stats_capacity_bytes{persistentvolumeclaim=~\"$pvc\",namespace=~\"$namespace\"}\n* on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\",node=~\"$node\"}\n    )\n    * on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "kube_persistentvolumeclaim_resource_requests_storage_bytes{persistentvolumeclaim=~\"$pvc\",namespace=~\"$namespace\"}\n* on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\",node=~\"$node\"}\n    )\n    * on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info",
+          "format": "table",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "PVC usage (aggregated openebs-hostpath)",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "namespace",
+                "node",
+                "persistentvolumeclaim",
+                "pod",
+                "storageclass",
+                "Value #A",
+                "Value #B",
+                "Value #C",
+                "Value #D"
+              ]
+            }
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {
+              "Value #A": 2,
+              "Value #B": 3,
+              "Value #C": 4,
+              "Value #D": 5,
+              "namespace": 0,
+              "node": 8,
+              "persistentvolumeclaim": 1,
+              "pod": 7,
+              "storageclass": 6
+            },
+            "renameByName": {
+              "Value #A": "Usage %",
+              "Value #B": "Used bytes",
+              "Value #C": "Volume size",
+              "Value #D": "PVC size"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false,
+            "minWidth": 150
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "#EAB839",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value #A"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge"
+                }
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value #B"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value #C"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "namespace"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 111
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "node"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 253
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Used bytes"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 106
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Volume size"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 121
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "storageclass"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 182
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 15,
+        "w": 16,
+        "x": 0,
+        "y": 33
+      },
+      "id": 12,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 2,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Usage %"
+          }
+        ]
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "# ---- hostpath PVCs: openebs used / kubelet capacity ----\n(\n  100 *\n  (\n    openebs_hostpath_volume_used_bytes\n    * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n      label_replace(kube_persistentvolumeclaim_info, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n  )\n  / on(namespace, persistentvolumeclaim) group_left()\n    kubelet_volume_stats_capacity_bytes\n)\n* on(namespace, persistentvolumeclaim) group_right()\n  max by(namespace, persistentvolumeclaim, pod, node) (\n    kube_pod_spec_volumes_persistentvolumeclaims_info\n      * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n  )\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass=\"openebs-hostpath\", persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n\nor\n\n# ---- non-hostpath PVCs: kubelet used / kubelet capacity ----\n(\n  ( 100 * kubelet_volume_stats_used_bytes{persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n      / kubelet_volume_stats_capacity_bytes )\n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n    )\n)\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass!=\"openebs-hostpath\"}",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "# ---- hostpath PVCs: openebs used\n(\n    openebs_hostpath_volume_used_bytes\n    * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n      label_replace(kube_persistentvolumeclaim_info, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n)\n* on(namespace, persistentvolumeclaim) group_right()\n  max by(namespace, persistentvolumeclaim, pod, node) (\n    kube_pod_spec_volumes_persistentvolumeclaims_info\n      * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n  )\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass=\"openebs-hostpath\", persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n\nor\n\n# ---- non-hostpath PVCs: kubelet used \n(\n  kubelet_volume_stats_used_bytes{persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n      \n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n    )\n)\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass!=\"openebs-hostpath\"}",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "# ---- hostpath PVCs: kubelet capacity ----\n(\n    kubelet_volume_stats_capacity_bytes\n)\n* on(namespace, persistentvolumeclaim) group_right()\n  max by(namespace, persistentvolumeclaim, pod, node) (\n    kube_pod_spec_volumes_persistentvolumeclaims_info\n      * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n  )\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{ persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "C"
+        }
+      ],
+      "title": "pvc usage (refined openebs-hostpath)",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "namespace",
+                "node",
+                "persistentvolumeclaim",
+                "storageclass",
+                "Value #A",
+                "Value #B",
+                "Value #C",
+                "pod"
+              ]
+            }
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {
+              "Value #A": 2,
+              "Value #B": 3,
+              "Value #C": 4,
+              "namespace": 0,
+              "node": 7,
+              "persistentvolumeclaim": 1,
+              "pod": 6,
+              "storageclass": 5
+            },
+            "renameByName": {
+              "Value #A": "Usage %",
+              "Value #B": "Used bytes",
+              "Value #C": "Volume size"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 48
+      },
+      "id": 6,
+      "maxPerRow": 12,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "(\n  ( 100 * kubelet_volume_stats_used_bytes{persistentvolumeclaim=~\"$pvc\",namespace=~\"$namespace\"}\n      / kubelet_volume_stats_capacity_bytes)\n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\",node=~\"$node\"}\n    )\n)\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass!=\"openebs-hostpath\"}",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "{{namespace}}/{{persistentvolumeclaim}}",
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "",
+          "hide": false,
+          "instant": false,
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "PVC usage (except openebs-hostpath)",
+      "transformations": [
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "persistentvolumeclaim"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "namespace"
+              }
+            ]
+          }
+        },
+        {
+          "id": "prepareTimeSeries",
+          "options": {
+            "format": "multi"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": ".*namespace=\"([^\"]+)\".*persistentvolumeclaim=\"([^\"]+)\".*",
+            "renamePattern": "$1/$2"
+          }
+        }
+      ],
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 59
+      },
+      "id": 14,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": true,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.1.0",
+      "repeat": "node",
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "quantile by(node) (0.5,\n  kubelet_volume_stats_used_bytes{persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n    )\n)",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "{{node}}",
+          "range": false,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "quantile by(node) (0.5,\n  kubelet_volume_stats_capacity_bytes{persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n    )\n)",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "{{node}}",
+          "range": false,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "quantile by(node) (0.5,\n100 * kubelet_volume_stats_used_bytes{persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"} /\n  kubelet_volume_stats_capacity_bytes{persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n    )\n)",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Openebs-hostpath disk usage - $node",
+      "transformations": [
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "configRefId": "C",
+            "mappings": [
+              {
+                "fieldName": "Value #C",
+                "handlerKey": "max"
+              },
+              {
+                "fieldName": "Value",
+                "handlerKey": "field.name"
+              }
+            ]
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "Time",
+                "Value #B"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 2,
+          "fieldMinMax": false,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 69
+      },
+      "id": 11,
+      "maxPerRow": 12,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "12.1.0",
+      "repeat": "node",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "(\n    openebs_hostpath_volume_used_bytes\n    * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n      label_replace(kube_persistentvolumeclaim_info, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n  )\n* on(namespace, persistentvolumeclaim) group_right()\n  max by(namespace, persistentvolumeclaim, pod, node) (\n    kube_pod_spec_volumes_persistentvolumeclaims_info{namespace=~\"$namespace\",persistentvolumeclaim=~\"$pvc\"}\n      * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n  )\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "{{namespace}}/{{persistentvolumeclaim}}",
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "avg without(node)\n(quantile by(node) (0.5,\n  kubelet_volume_stats_capacity_bytes{persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n    )\n))",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "B"
+        }
+      ],
+      "title": "$node openebs-hostpath disk usage",
+      "transformations": [
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "persistentvolumeclaim"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "namespace"
+              }
+            ]
+          }
+        },
+        {
+          "id": "prepareTimeSeries",
+          "options": {
+            "format": "multi"
+          }
+        },
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byName",
+              "options": "Value #A"
+            },
+            "configRefId": "B",
+            "mappings": [
+              {
+                "fieldName": "Value #B",
+                "handlerKey": "max"
+              }
+            ]
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": ".*namespace=\"([^\"]+)\".*persistentvolumeclaim=\"([^\"]+)\".*",
+            "renamePattern": "$1/$2"
+          }
+        }
+      ],
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 16,
+        "w": 12,
+        "x": 0,
+        "y": 102
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "  # ---- hostpath PVCs: openebs used\n(\n    openebs_hostpath_volume_used_bytes\n    * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n      label_replace(kube_persistentvolumeclaim_info, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n)\n* on(namespace, persistentvolumeclaim) group_right()\n  max by(namespace, persistentvolumeclaim, pod, node) (\n    kube_pod_spec_volumes_persistentvolumeclaims_info\n      * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n  )\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass=\"openebs-hostpath\", persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n\n",
+          "legendFormat": "Usage {{persistentvolumeclaim}}",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "# ---- non-hostpath PVCs: kubelet used \n(\n  kubelet_volume_stats_used_bytes{persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n      \n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n    )\n)\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass!=\"openebs-hostpath\"}",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Usage {{persistentvolumeclaim}}",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "\n(\n  kubelet_volume_stats_capacity_bytes{persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n      \n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n    )\n)\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass!=\"openebs-hostpath\"}",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Capacity {{persistentvolumeclaim}}",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Disk usage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Filesystem usage percentage for the selected PVC. Scoped by the namespace / pvc / pod variables passed from the PVC table drilldown.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Usage %",
+            "axisPlacement": "auto",
+            "axisSoftMax": 100,
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "dashed"
+            }
+          },
+          "decimals": 2,
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 75
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 16,
+        "w": 12,
+        "x": 12,
+        "y": 102
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "# ---- hostpath PVCs: openebs used / kubelet capacity ----\n(\n  100 *\n  (\n    openebs_hostpath_volume_used_bytes\n    * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n      label_replace(kube_persistentvolumeclaim_info, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n  )\n  / on(namespace, persistentvolumeclaim) group_left()\n    kubelet_volume_stats_capacity_bytes\n)\n* on(namespace, persistentvolumeclaim) group_right()\n  max by(namespace, persistentvolumeclaim, pod, node) (\n    kube_pod_spec_volumes_persistentvolumeclaims_info\n      * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n  )\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass=\"openebs-hostpath\", persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}",
+          "instant": false,
+          "legendFormat": "{{namespace}}/{{persistentvolumeclaim}}",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "\n# ---- non-hostpath PVCs: kubelet used / kubelet capacity ----\n(\n  ( 100 * kubelet_volume_stats_used_bytes{persistentvolumeclaim=~\"$pvc\", namespace=~\"$namespace\"}\n      / kubelet_volume_stats_capacity_bytes )\n  * on(namespace, persistentvolumeclaim) group_right()\n    max by(namespace, persistentvolumeclaim, pod, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info{pod=~\"$pod\", node=~\"$node\"}\n    )\n)\n* on(namespace, persistentvolumeclaim) group_left(storageclass)\n  kube_persistentvolumeclaim_info{storageclass!=\"openebs-hostpath\"}",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "{{namespace}}/{{persistentvolumeclaim}}",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "PVC Usage % over time",
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 41,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": ".*",
+        "current": {
+          "text": [
+            "pca"
+          ],
+          "value": [
+            "pca"
+          ]
+        },
+        "definition": "label_values(kube_pod_info,namespace)",
+        "includeAll": true,
+        "label": "namespace",
+        "multi": true,
+        "name": "namespace",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(kube_pod_info,namespace)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "definition": "label_values(kube_pod_info,node)",
+        "description": "",
+        "includeAll": true,
+        "label": "node",
+        "multi": true,
+        "name": "node",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(kube_pod_info,node)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "definition": "label_values(kube_pod_info{namespace=~\"$namespace\", node=~\"$node\"},pod)",
+        "includeAll": true,
+        "label": "pod",
+        "multi": true,
+        "name": "pod",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(kube_pod_info{namespace=~\"$namespace\", node=~\"$node\"},pod)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "allowCustomValue": false,
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "definition": "query_result(kube_pod_spec_volumes_persistentvolumeclaims_info{namespace=~\"$namespace\", pod=~\"$pod\"}    * on(namespace, pod) group_left(node)      kube_pod_info{namespace=~\"$namespace\", node=~\"$node\"})",
+        "description": "",
+        "includeAll": true,
+        "label": "pvc",
+        "multi": true,
+        "name": "pvc",
+        "options": [],
+        "query": {
+          "qryType": 3,
+          "query": "query_result(kube_pod_spec_volumes_persistentvolumeclaims_info{namespace=~\"$namespace\", pod=~\"$pod\"}    * on(namespace, pod) group_left(node)      kube_pod_info{namespace=~\"$namespace\", node=~\"$node\"})",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "/persistentvolumeclaim=\"([^\"]+)\"/",
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Kubernetes Pod info",
+  "uid": "4f10ba2d-8479-4e85-80d9-77e34a825379",
+  "version": 13
+}
