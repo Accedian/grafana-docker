@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alert Troubleshooting Guides</title>
+  <style>
+    :root {
+      --bg: #181b1f;
+      --surface: #22252b;
+      --border: #2c2f36;
+      --text: #dce0e6;
+      --text-muted: #8e929a;
+      --accent: #6c9eff;
+      --accent-dim: #3b5998;
+      --success: #6ccf8e;
+      --warning: #f5c451;
+      --danger: #f2726f;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f4f5f7;
+        --surface: #ffffff;
+        --border: #dce0e6;
+        --text: #1e2128;
+        --text-muted: #6b7280;
+        --accent: #3871e0;
+        --accent-dim: #d0def5;
+        --success: #1a8a42;
+        --warning: #b8860b;
+        --danger: #cc3733;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 52rem;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.6rem; margin-bottom: .25rem; }
+    .subtitle { color: var(--text-muted); margin-bottom: 2rem; font-size: .95rem; }
+    h2 { font-size: 1.15rem; margin: 1.75rem 0 .75rem; border-bottom: 1px solid var(--border); padding-bottom: .35rem; }
+    p, li { font-size: .925rem; }
+    p { margin-bottom: .75rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: .75rem;
+      display: block;
+      transition: border-color .15s;
+    }
+    a.card:hover { border-color: var(--accent); text-decoration: none; }
+    .card h3 {
+      font-size: 1rem;
+      margin-bottom: .35rem;
+      color: var(--text);
+    }
+    .card p {
+      color: var(--text-muted);
+      margin-bottom: .5rem;
+      font-size: .875rem;
+    }
+    .badge {
+      display: inline-block;
+      font-size: .7rem;
+      font-weight: 600;
+      padding: .1rem .45rem;
+      border-radius: 3px;
+      margin-right: .25rem;
+      background: var(--border);
+      color: var(--text-muted);
+    }
+    footer { margin-top: 2.5rem; font-size: .8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Alert Troubleshooting Guides</h1>
+  <p class="subtitle">Customer-facing help pages bundled with this Grafana deployment</p>
+
+  <h2>Data Ingestion</h2>
+
+  <a class="card" href="airflow-ingestion.html">
+    <h3>Airflow Ingestion</h3>
+    <p>DAG failure investigation, scheduler health, job duration, and batch ingestion troubleshooting.</p>
+    <span class="badge">Airflow DAG Failed</span>
+    <span class="badge">Airflow Health Status</span>
+    <span class="badge">Airflow Job Duration</span>
+    <span class="badge">Airflow Jobs Stopped</span>
+  </a>
+
+  <a class="card" href="streaming-ingestion.html">
+    <h3>Streaming &amp; Ingestion Pipeline</h3>
+    <p>Real-time data ingestion, Kafka throughput, consumer lag, and collector connectivity.</p>
+    <span class="badge">Streamingapp Lag</span>
+    <span class="badge">Streamingapp Topic Ingestion</span>
+    <span class="badge">Kafka Ingestion Rate</span>
+    <span class="badge">Kafka Consumer Lag</span>
+    <span class="badge">Latent Data Lag</span>
+    <span class="badge">RoadRunner</span>
+  </a>
+
+  <h2>Query &amp; Storage</h2>
+
+  <a class="card" href="druid-health.html">
+    <h3>Druid &amp; Query Engine</h3>
+    <p>Analytics query engine availability, data segment loading, task scheduling, and query node health.</p>
+    <span class="badge">Druid Status</span>
+    <span class="badge">Druid Overlord</span>
+    <span class="badge">DataSource Availability</span>
+    <span class="badge">Task Slots Full</span>
+    <span class="badge">Historical Usage</span>
+    <span class="badge">Metrics Service</span>
+    <span class="badge">Query Node Count</span>
+  </a>
+
+  <a class="card" href="hdfs-health.html">
+    <h3>HDFS &amp; Hadoop Health</h3>
+    <p>Distributed file system integrity, block replication, checkpoint health, and DataNode availability.</p>
+    <span class="badge">HDFS Corrupt Blocks</span>
+    <span class="badge">Under-Replicated Blocks</span>
+    <span class="badge">Checkpoint Delay</span>
+    <span class="badge">Hadoop Dead Nodes</span>
+  </a>
+
+  <h2>Infrastructure</h2>
+
+  <a class="card" href="infrastructure-health.html">
+    <h3>Infrastructure Health</h3>
+    <p>CPU, I/O, memory, time synchronization, container scheduling, and service availability.</p>
+    <span class="badge">CPU High</span>
+    <span class="badge">IO Wait</span>
+    <span class="badge">Memory</span>
+    <span class="badge">Docker Pending</span>
+    <span class="badge">NTP Sync</span>
+    <span class="badge">Dgraph</span>
+    <span class="badge">Prometheus</span>
+  </a>
+
+  <a class="card" href="disk-usage.html">
+    <h3>Disk Usage</h3>
+    <p>Disk utilization thresholds, identifying large directories, and capacity management.</p>
+    <span class="badge">Disk Usage</span>
+  </a>
+
+  <a class="card" href="backup-recency.html">
+    <h3>Backup Recency</h3>
+    <p>Backup schedule monitoring, failed backup investigation, and retention management.</p>
+    <span class="badge">Time Since Last Backup</span>
+  </a>
+
+  <h2>Application Services</h2>
+
+  <a class="card" href="service-health.html">
+    <h3>Application Service Health</h3>
+    <p>Processing throughput, heartbeat monitoring, alert pipeline errors, and message delivery.</p>
+    <span class="badge">IncidentBuilder</span>
+    <span class="badge">Batch Processing</span>
+    <span class="badge">Processing Ratio</span>
+    <span class="badge">CouchDB</span>
+    <span class="badge">Gather Alerts</span>
+    <span class="badge">MQTT Divergence</span>
+  </a>
+
+  <footer>
+    This page is bundled with your Grafana deployment and may be updated with new releases.<br>
+    Access any guide directly at <code>/public/help/&lt;topic&gt;.html</code>
+  </footer>
+</body>
+</html>

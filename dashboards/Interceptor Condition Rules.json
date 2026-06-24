@@ -31,7 +31,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -65,15 +65,11 @@
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true,
-          "values": [
-            "value"
-          ]
+          "values": ["value"]
         },
         "pieType": "pie",
         "reduceOptions": {
-          "calcs": [
-            "max"
-          ],
+          "calcs": ["max"],
           "fields": "",
           "values": false
         },
@@ -86,7 +82,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "builder",
           "expr": "gather_sim_conditions_accepted{tenantId=~\"$tenant\"}",
@@ -97,7 +93,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "builder",
           "expr": "gather_sim_conditions_declined{tenantId=~\"$tenant\"}",
@@ -113,7 +109,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -147,9 +143,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "max"
-          ],
+          "calcs": ["max"],
           "fields": "",
           "values": false
         },
@@ -160,7 +154,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "builder",
           "expr": "gather_sim_conditions_created{tenantId=~\"$tenant\"}",
@@ -175,7 +169,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -213,9 +207,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "max"
-          ],
+          "calcs": ["max"],
           "fields": "",
           "values": false
         },
@@ -226,7 +218,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "builder",
           "expr": "gather_sim_conditions_edited{tenantId=~\"$tenant\"}",
@@ -241,7 +233,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -275,9 +267,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "max"
-          ],
+          "calcs": ["max"],
           "fields": "",
           "values": false
         },
@@ -288,7 +278,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "builder",
           "expr": "gather_conditions_created{tenantId=~\"$tenant\"}",
@@ -304,7 +294,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -378,7 +368,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "builder",
           "expr": "gather_sim_conditions_created{tenantId=~\"$tenant\"}",
@@ -389,7 +379,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "builder",
           "expr": "gather_conditions_created{tenantId=~\"$tenant\"}",
@@ -418,7 +408,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "000000001"
+          "uid": "prometheus"
         },
         "definition": "label_values({__name__=~\".*gather_sim_.*|.*gather_conditions_.*\"}, tenantId)",
         "hide": 0,

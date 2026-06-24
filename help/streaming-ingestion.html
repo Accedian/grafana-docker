@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Streaming &amp; Ingestion Pipeline Alert Guide</title>
+  <style>
+    :root {
+      --bg: #181b1f;
+      --surface: #22252b;
+      --border: #2c2f36;
+      --text: #dce0e6;
+      --text-muted: #8e929a;
+      --accent: #6c9eff;
+      --accent-dim: #3b5998;
+      --success: #6ccf8e;
+      --warning: #f5c451;
+      --danger: #f2726f;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f4f5f7;
+        --surface: #ffffff;
+        --border: #dce0e6;
+        --text: #1e2128;
+        --text-muted: #6b7280;
+        --accent: #3871e0;
+        --accent-dim: #d0def5;
+        --success: #1a8a42;
+        --warning: #b8860b;
+        --danger: #cc3733;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 52rem;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.6rem; margin-bottom: .25rem; }
+    .subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: .95rem; }
+    h2 { font-size: 1.15rem; margin: 1.75rem 0 .75rem; border-bottom: 1px solid var(--border); padding-bottom: .35rem; }
+    h3 { font-size: 1rem; margin: 1.25rem 0 .5rem; }
+    p, li { font-size: .925rem; }
+    p { margin-bottom: .75rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: .75rem; }
+    li { margin-bottom: .35rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .badge {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 600;
+      padding: .15rem .55rem;
+      border-radius: 4px;
+      margin-right: .35rem;
+      margin-bottom: .35rem;
+      vertical-align: middle;
+    }
+    .badge-alert  { background: var(--danger); color: #fff; }
+    .badge-warn   { background: var(--warning); color: #1e2128; }
+    .badge-info   { background: var(--accent-dim); color: var(--accent); }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.5rem; height: 1.5rem;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 700;
+      margin-right: .5rem;
+      flex-shrink: 0;
+    }
+    .steps li { list-style: none; display: flex; align-items: flex-start; margin-bottom: .6rem; }
+    .steps { padding-left: 0; }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: .85rem;
+      background: var(--border);
+      padding: .1rem .35rem;
+      border-radius: 3px;
+    }
+    .tag-list { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
+    footer { margin-top: 2.5rem; font-size: .8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Streaming &amp; Ingestion Pipeline Alert Guide</h1>
+  <p class="subtitle">Troubleshooting real-time data ingestion, Kafka throughput, and consumer lag</p>
+
+  <div class="card">
+    <h3>Affected alerts</h3>
+    <div class="tag-list">
+      <span class="badge badge-alert">Streamingapp Topic Ingestion</span>
+      <span class="badge badge-alert">Streamingapp Lag Growing</span>
+      <span class="badge badge-alert">Streamingapp alert-events Topic Ingestion</span>
+      <span class="badge badge-alert">Streamingapp mo-summary Topic Ingestion</span>
+      <span class="badge badge-alert">Streamingapp Raw Topic Ingestion</span>
+      <span class="badge badge-alert">Latent Data Lag Growing</span>
+      <span class="badge badge-alert">Spark Ingestion Rate</span>
+      <span class="badge badge-alert">Kafka Ingestion Rate</span>
+      <span class="badge badge-alert">Kafka Consumergroup Lag</span>
+      <span class="badge badge-warn">Kafka MQTT Divergence</span>
+      <span class="badge badge-alert">RoadRunner Cached Files</span>
+      <span class="badge badge-alert">Roadrunner Disconnected</span>
+      <span class="badge badge-alert">Airflow Batch DAG Failed</span>
+    </div>
+  </div>
+
+  <h2>What do these alerts mean?</h2>
+  <p>
+    The analytics platform processes data through a multi-stage pipeline: collectors gather metrics and
+    forward them through a message bus, where streaming applications consume, transform, and store the
+    data. These alerts fire when any stage of this pipeline falls behind, stops, or shows signs of
+    degradation.
+  </p>
+  <ul>
+    <li><strong>Consumer lag alerts</strong> indicate that data consumers are not keeping pace with incoming data.
+    Lag that grows continuously means the consumer is falling further behind over time.</li>
+    <li><strong>Ingestion rate alerts</strong> fire when the volume of data entering the pipeline drops
+    below expected levels, potentially indicating a collector outage or upstream data source issue.</li>
+    <li><strong>Collector alerts</strong> fire when data collectors disconnect or accumulate a backlog of
+    cached files waiting to be delivered.</li>
+  </ul>
+
+  <h2>Impact</h2>
+  <p>
+    When any stage of the ingestion pipeline is disrupted, data freshness is affected. Dashboards and
+    reports may display stale information, and alerting rules that depend on recently ingested metrics
+    may not fire correctly. The longer the disruption persists, the larger the data backlog that must be
+    processed once the issue is resolved.
+  </p>
+
+  <h2>Investigation steps</h2>
+  <ol class="steps">
+    <li>
+      <span class="step-num">1</span>
+      <span>Open the firing alert in Grafana and review the <strong>labels</strong> to identify the affected
+      topic, consumer group, or collector instance.</span>
+    </li>
+    <li>
+      <span class="step-num">2</span>
+      <span>Check the <strong>streaming application logs</strong> for errors. Common issues include out-of-memory
+      conditions, serialization failures, or connectivity problems with the message bus or downstream stores.</span>
+    </li>
+    <li>
+      <span class="step-num">3</span>
+      <span>Verify the <strong>message bus</strong> is healthy. Confirm that brokers are online, partitions
+      are balanced, and no under-replicated partitions exist.</span>
+    </li>
+    <li>
+      <span class="step-num">4</span>
+      <span>For collector-related alerts, verify the <strong>network path</strong> between the collector and
+      the analytics platform. Check that the collector service is running and that cached files are not
+      accumulating due to connectivity loss.</span>
+    </li>
+  </ol>
+
+  <h2>Remediation</h2>
+  <div class="card">
+    <h3>Consumer lag / falling behind</h3>
+    <p>If the streaming application is unhealthy, restart it. Once restarted, monitor the lag metric to
+    confirm it begins decreasing. If lag continues to grow after a restart, the application may need
+    additional resources (memory, CPU) or the data volume may have exceeded the current capacity.</p>
+  </div>
+  <div class="card">
+    <h3>Ingestion rate drop</h3>
+    <p>A drop in ingestion rate typically points to an upstream issue: collectors may be offline, network
+    connectivity may be interrupted, or the data source itself may have stopped producing. Verify
+    collector health and network reachability before investigating the streaming application.</p>
+  </div>
+  <div class="card">
+    <h3>Storage insertion stopped</h3>
+    <p>Verify the target data store is online and has sufficient disk space. Check for authentication or
+    connectivity errors in the storage writer logs. A restart of the storage writer may be needed
+    once the underlying issue is resolved.</p>
+  </div>
+  <div class="card">
+    <h3>Collector disconnected or files cached</h3>
+    <p>A disconnected collector means data collection has stopped for that site. Verify the collector
+    service is running and has network access to the platform. If cached files are accumulating,
+    the collector is buffering data locally — once connectivity is restored, these files will be
+    delivered automatically.</p>
+  </div>
+
+  <h2>Verification</h2>
+  <ul>
+    <li>Confirm consumer lag is stable or decreasing after remediation.</li>
+    <li>Verify ingestion rate returns to expected levels.</li>
+    <li>Check that downstream data stores show recent inserts.</li>
+    <li>Wait for the next Grafana evaluation cycle and confirm affected alerts return to <strong>Normal</strong>.</li>
+  </ul>
+
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="https://grafana.com/docs/grafana/latest/alerting/" target="_blank" rel="noopener">Grafana Alerting documentation</a></li>
+    <li><a href="https://kafka.apache.org/documentation/#monitoring" target="_blank" rel="noopener">Apache Kafka — Monitoring</a></li>
+  </ul>
+
+  <footer>
+    This page is bundled with your Grafana deployment and may be updated with new releases.
+  </footer>
+</body>
+</html>
