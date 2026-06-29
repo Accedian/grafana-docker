@@ -345,19 +345,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum by (tenantId) (increase(gather_tenant_sessions_dropped{tenantId=~\"$tenant\"}[$__interval]))",
+          "expr": "sum by (tenantId) (increase(gather_tenant_sessions_dropped{tenantId=~\"$tenant\"}[$__rate_interval]))",
           "interval": "",
           "legendFormat": "Gather {{tenantId}} dropped",
           "refId": "A"
         },
         {
-          "expr": "sum by (tenantId) (increase(ignite_tenant_sessions_dropped{tenantId=~\"$tenant\"}[$__interval]))",
+          "expr": "sum by (tenantId) (increase(ignite_tenant_sessions_dropped{tenantId=~\"$tenant\"}[$__rate_interval]))",
           "interval": "",
           "legendFormat": "Ignite {{tenantId}} dropped",
           "refId": "B"
         },
         {
-          "expr": "sum by (tenantId) (increase(stitchit_tenant_sessions_dropped{tenantId=~\"$tenant\"}[$__interval]))",
+          "expr": "sum by (tenantId) (increase(stitchit_tenant_sessions_dropped{tenantId=~\"$tenant\"}[$__rate_interval]))",
           "interval": "",
           "legendFormat": "StitchIt {{tenantId}} dropped",
           "refId": "C"
