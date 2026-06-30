@@ -309,7 +309,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "description": "Rejected monitored-object session creates over a trailing 30 second window, grouped by tenant and service.",
+      "description": "Observed rejected monitored-object session creates over a trailing 1 minute window, grouped by tenant and service.",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -345,20 +345,20 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "clamp_min(round(sum by (tenantId) (increase(gather_tenant_sessions_dropped{tenantId=~\"${tenant:regex}\"}[30s]))), 0)",
-          "interval": "30s",
+          "expr": "round(sum by (tenantId) (clamp_min(max_over_time(gather_tenant_sessions_dropped{tenantId=~\"${tenant:regex}\"}[1m]) - min_over_time(gather_tenant_sessions_dropped{tenantId=~\"${tenant:regex}\"}[1m]), 0)))",
+          "interval": "",
           "legendFormat": "Gather {{tenantId}} dropped",
           "refId": "A"
         },
         {
-          "expr": "clamp_min(round(sum by (tenantId) (increase(ignite_tenant_sessions_dropped{tenantId=~\"${tenant:regex}\"}[30s]))), 0)",
-          "interval": "30s",
+          "expr": "round(sum by (tenantId) (clamp_min(max_over_time(ignite_tenant_sessions_dropped{tenantId=~\"${tenant:regex}\"}[1m]) - min_over_time(ignite_tenant_sessions_dropped{tenantId=~\"${tenant:regex}\"}[1m]), 0)))",
+          "interval": "",
           "legendFormat": "Ignite {{tenantId}} dropped",
           "refId": "B"
         },
         {
-          "expr": "clamp_min(round(sum by (tenantId) (increase(stitchit_tenant_sessions_dropped{tenantId=~\"${tenant:regex}\"}[30s]))), 0)",
-          "interval": "30s",
+          "expr": "round(sum by (tenantId) (clamp_min(max_over_time(stitchit_tenant_sessions_dropped{tenantId=~\"${tenant:regex}\"}[1m]) - min_over_time(stitchit_tenant_sessions_dropped{tenantId=~\"${tenant:regex}\"}[1m]), 0)))",
+          "interval": "",
           "legendFormat": "StitchIt {{tenantId}} dropped",
           "refId": "C"
         }
@@ -384,7 +384,7 @@
       "yaxes": [
         {
           "format": "short",
-          "label": "drops (30s count)",
+          "label": "drops (1m count)",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -460,5 +460,5 @@
   "variables": {
     "list": []
   },
-  "version": 7
+  "version": 9
 }
