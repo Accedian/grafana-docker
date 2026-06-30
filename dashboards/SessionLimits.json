@@ -60,13 +60,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "max by (tenantId) (gather_tenant_sessions_active{tenantId=~\"$tenant\"})",
+          "expr": "max by (tenantId) (gather_tenant_sessions_active{tenantId=~\"${tenant:regex}\"})",
           "interval": "",
           "legendFormat": "Gather {{tenantId}} active",
           "refId": "A"
         },
         {
-          "expr": "max by (tenantId) (ignite_tenant_sessions_active{tenantId=~\"$tenant\"})",
+          "expr": "max by (tenantId) (ignite_tenant_sessions_active{tenantId=~\"${tenant:regex}\"})",
           "interval": "",
           "legendFormat": "Ignite {{tenantId}} active",
           "refId": "B"
@@ -155,13 +155,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "max by (tenantId) (gather_tenant_sessions_archived{tenantId=~\"$tenant\"})",
+          "expr": "max by (tenantId) (gather_tenant_sessions_archived{tenantId=~\"${tenant:regex}\"})",
           "interval": "",
           "legendFormat": "Gather {{tenantId}} archived",
           "refId": "A"
         },
         {
-          "expr": "max by (tenantId) (ignite_tenant_sessions_archived{tenantId=~\"$tenant\"})",
+          "expr": "max by (tenantId) (ignite_tenant_sessions_archived{tenantId=~\"${tenant:regex}\"})",
           "interval": "",
           "legendFormat": "Ignite {{tenantId}} archived",
           "refId": "B"
@@ -250,13 +250,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "max by (tenantId) (gather_tenant_session_limit{tenantId=~\"$tenant\"})",
+          "expr": "max by (tenantId) (gather_tenant_session_limit{tenantId=~\"${tenant:regex}\"})",
           "interval": "",
           "legendFormat": "Gather {{tenantId}} limit",
           "refId": "A"
         },
         {
-          "expr": "max by (tenantId) (ignite_tenant_session_limit{tenantId=~\"$tenant\"})",
+          "expr": "max by (tenantId) (ignite_tenant_session_limit{tenantId=~\"${tenant:regex}\"})",
           "interval": "",
           "legendFormat": "Ignite {{tenantId}} limit",
           "refId": "B"
@@ -309,7 +309,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "description": "Rejected monitored-object session creates per Grafana interval, grouped by tenant and service.",
+      "description": "Rejected monitored-object session creates over a trailing 30 second window, grouped by tenant and service.",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -345,20 +345,20 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum by (tenantId) (increase(gather_tenant_sessions_dropped{tenantId=~\"$tenant\"}[$__rate_interval]))",
-          "interval": "",
+          "expr": "clamp_min(round(sum by (tenantId) (increase(gather_tenant_sessions_dropped{tenantId=~\"${tenant:regex}\"}[30s]))), 0)",
+          "interval": "30s",
           "legendFormat": "Gather {{tenantId}} dropped",
           "refId": "A"
         },
         {
-          "expr": "sum by (tenantId) (increase(ignite_tenant_sessions_dropped{tenantId=~\"$tenant\"}[$__rate_interval]))",
-          "interval": "",
+          "expr": "clamp_min(round(sum by (tenantId) (increase(ignite_tenant_sessions_dropped{tenantId=~\"${tenant:regex}\"}[30s]))), 0)",
+          "interval": "30s",
           "legendFormat": "Ignite {{tenantId}} dropped",
           "refId": "B"
         },
         {
-          "expr": "sum by (tenantId) (increase(stitchit_tenant_sessions_dropped{tenantId=~\"$tenant\"}[$__rate_interval]))",
-          "interval": "",
+          "expr": "clamp_min(round(sum by (tenantId) (increase(stitchit_tenant_sessions_dropped{tenantId=~\"${tenant:regex}\"}[30s]))), 0)",
+          "interval": "30s",
           "legendFormat": "StitchIt {{tenantId}} dropped",
           "refId": "C"
         }
@@ -384,7 +384,7 @@
       "yaxes": [
         {
           "format": "short",
-          "label": null,
+          "label": "drops (30s count)",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -460,5 +460,5 @@
   "variables": {
     "list": []
   },
-  "version": 1
+  "version": 7
 }
