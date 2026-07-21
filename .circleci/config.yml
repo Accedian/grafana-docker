@@ -3,7 +3,6 @@
 # Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2.1
 orbs:
-  gh: circleci/github-cli@2.5
   pca-bes: accedian/pca-bes@1
 
 # Jobs
