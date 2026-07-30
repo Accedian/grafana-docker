@@ -120,7 +120,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "rate(roadrunner_container_cpu_usage_usec[1m]) / 1e6",
+          "expr": "rate(roadrunner_container_cpu_usage_usec{hostname=~\"$Hostname\"}[1m]) / 1e6",
           "hide": false,
           "legendFormat": "cpu_usage - tenant: {{tenant}} zone: {{zone}}",
           "range": true,
@@ -217,7 +217,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "roadrunner_container_memory_usage / 1073741824",
+          "expr": "roadrunner_container_memory_usage{hostname=~\"$Hostname\"} / 1073741824",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "memory-usage - tenant: {{tenant}} zone: {{zone}}",
