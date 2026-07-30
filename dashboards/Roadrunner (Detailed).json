@@ -315,7 +315,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "roadrunner_disk_used_bytes{hostname=~\".*\"} / 1073741824",
+          "expr": "roadrunner_disk_used_bytes{hostname=~\"$Hostname\"} / 1073741824",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "disk-usage - tenant: {{tenant}} zone: {{zone}} path: {{path}}",
@@ -411,7 +411,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "roadrunner_avg_load{hostname=~\".*\"}",
+          "expr": "roadrunner_avg_load{hostname=~\"$Hostname\"}",
           "interval": "",
           "legendFormat": "",
           "range": true,
@@ -1124,7 +1124,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "roadrunner_batch_processing_time_ms{hostname=~\".*\"}",
+          "expr": "roadrunner_batch_processing_time_ms{hostname=~\"$Hostname\"}",
           "interval": "",
           "legendFormat": "",
           "range": true,
@@ -1989,7 +1989,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "increase(roadrunner_ack_count{hostname=~\".*\"}[1m])",
+          "expr": "increase(roadrunner_ack_count{hostname=~\"$Hostname\"}[1m])",
           "interval": "",
           "legendFormat": "",
           "range": true,
@@ -2083,7 +2083,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "increase(roadrunner_nack_count{hostname=~\".*\"}[1m])",
+          "expr": "increase(roadrunner_nack_count{hostname=~\"$Hostname\"}[1m])",
           "interval": "",
           "legendFormat": "",
           "range": true,
@@ -2600,6 +2600,7 @@
         },
         "datasource": "Prometheus",
         "definition": "",
+        "allValue": ".*",
         "includeAll": true,
         "multi": true,
         "name": "Hostname",
