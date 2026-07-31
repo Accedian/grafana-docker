@@ -1,9 +1,11 @@
+## Current Release
+### 0.226.0
+**Release Date:** Fri Jul 31 15:35:30 UTC 2026
+## Previous Releases
 * Feat - Update Roadrunner detailed dashboard [Asana](https://app.asana.com/1/5557457880942/project/1214071171407028/task/1216250937995216?focus=true)
 * Feat - Update Telemtry Collector dashboard [Asana](https://app.asana.com/1/5557457880942/project/1214071171407028/task/1216250937995208?focus=true)
-## Current Release
 ### 0.225.0
 **Release Date:** Thu Jul  2 14:54:23 UTC 2026
-## Previous Releases
 * Feat - Add session limit Grafana dashboard panels [Asana](https://app.asana.com/1/5557457880942/project/1215148943927840/task/1215537234829497?focus=true)
 ### 0.224.0
 **Release Date:** Tue Jun 23 12:54:25 UTC 2026
