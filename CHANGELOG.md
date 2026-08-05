@@ -1,3 +1,5 @@
+- PCA component hardening: pin the governed Debian runtime by version and immutable digest. [ditp-32p.2.89](https://github.com/Accedian/docs/tree/main/projects/pca-component-hardening)
+
 ## Current Release
 ### 0.226.0
 **Release Date:** Fri Jul 31 15:35:30 UTC 2026
@@ -595,4 +597,3 @@ Fix - add panel to adh-fedex dashboard for RR websocket teardown/rejection count
 **Release Date:** Wed Feb 28 19:25:31 UTC 2018     
 ### 0.1.0
 **Release Date:** Wed Feb 28 19:17:58 UTC 2018
-
