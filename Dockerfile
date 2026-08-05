@@ -1,4 +1,4 @@
-FROM debian:stable-slim
+FROM gcr.io/npav-172917/sto-ccc-cloud9/hardened_debian:12-slim@sha256:08a4dbdd271ed3740a5a41ffcf6df118755272c0fec35aef2f61df174700c5c8
 
 ARG TARGETARCH
 ARG GRAFANA_VERSION
