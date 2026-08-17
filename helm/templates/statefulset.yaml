@@ -51,6 +51,14 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "grafana.fullname" . }}-config
+          {{- if .Values.clickhouse.auth.existingSecret }}
+          env:
+            - name: CLICKHOUSE_PASSWORD_USER_MONITORING
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.clickhouse.auth.existingSecret }}
+                  key: {{ .Values.clickhouse.auth.monitoringSecretKey }}
+          {{- end }}
           volumeMounts:
             - name: {{ include "grafana.fullname" . }}-data
               mountPath: /var/lib/grafana

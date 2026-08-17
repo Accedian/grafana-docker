@@ -91,6 +91,14 @@ grafana:
 
   affinity: {}
 
+clickhouse:
+  auth:
+    # Name of the Kubernetes secret holding the ClickHouse monitoring password.
+    # When empty, the monitoring user connects without a password.
+    existingSecret: ""
+    # Key inside the secret that holds the monitoring password.
+    monitoringSecretKey: "password_monitoring"
+
 blackbox_exporter:
   image:
     registry: gcr.io
