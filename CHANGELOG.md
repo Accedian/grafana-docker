@@ -1,3 +1,4 @@
+* Fix - Make the Grafana Prometheus datasource URL configurable via `prometheusUrl` (defaults to the in-cluster kube-prometheus-stack service), so deployments with an existing/external Prometheus can point Grafana at it.
 ## Current Release
 ### 0.227.0
 **Release Date:** Wed Aug  5 20:12:58 UTC 2026
