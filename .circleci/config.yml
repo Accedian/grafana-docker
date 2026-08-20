@@ -13,11 +13,25 @@ jobs:
     machine: true
     resource_class: accedian/prod_bes-ubuntu24-medium
 
+    parameters:
+      trusted:
+        type: boolean
+        default: false
+
     environment:
       CGO_ENABLED: 1
 
     steps:
-      - pca-bes/workspacesetup
+      # Pull-request code must be checked out without loading the production
+      # credentials provided by the BES setup command and context.
+      - unless:
+          condition: << parameters.trusted >>
+          steps:
+            - checkout
+      - when:
+          condition: << parameters.trusted >>
+          steps:
+            - pca-bes/workspacesetup
 
       - run:
           name: "Create a temp directory for artifacts"
@@ -90,8 +104,7 @@ workflows:
               value: << pipeline.project.git_url >>
 
     jobs:
-      - build:
-          context: bes-builder-gcp-skybuilder-prd-51843
+      - build
 
   build_and_release:
     when: 
@@ -108,6 +121,7 @@ workflows:
     jobs:  
       - build:
           context: bes-builder-gcp-skybuilder-prd-51843
+          trusted: true
       - release:
           context: bes-builder-gcp-skybuilder-prd-51843
           requires:
