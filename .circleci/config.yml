@@ -8,6 +8,35 @@ orbs:
 
 # Jobs
 jobs:
+  # Branch and pull-request builds must not run on a privileged BES runner or
+  # receive the Vault-backed release context. Keep this job on CircleCI's
+  # isolated Docker executor and use the built-in checkout instead.
+  untrusted_build:
+    docker:
+      - image: cimg/base:stable
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - run:
+          name: "Create a temp directory for artifacts"
+          command: mkdir -p /tmp/artifacts
+
+      - run:
+          name: Building Docker Container
+          command: make build
+
+      - run:
+          name: "install helm"
+          command: |
+            wget -LO helm.tar.gz https://get.helm.sh/helm-v3.17.2-linux-amd64.tar.gz  # legit:ignore-pipeline
+            tar xf helm.tar.gz linux-amd64/helm
+            sudo mv linux-amd64/helm /usr/local/bin
+      - run:
+          name: "make chart"
+          command: make helm
+
   build:
     working_directory: ~/repo
     machine: true
@@ -90,8 +119,7 @@ workflows:
               value: << pipeline.project.git_url >>
 
     jobs:
-      - build:
-          context: bes-builder-gcp-skybuilder-prd-51843
+      - untrusted_build
 
   build_and_release:
     when: 
