@@ -106,18 +106,17 @@ workflows:
   version: 2.1
   build_only:
     when:
-      not:
-        and:
-          - or:
-            - equal: [master, << pipeline.git.branch >>]
-            - equal: [main, << pipeline.git.branch >>]
-            - matches:
-                pattern: /release\/.*/
-                value: << pipeline.git.branch >>
-          - matches:
-              pattern: "^https://github.com/[Aa]ccedian/.*"
-              value: << pipeline.project.git_url >>
-
+      and:
+        - matches:
+            pattern: "^https://github.com/[Aa]ccedian/.*"
+            value: << pipeline.project.git_url >>
+        - not:
+            or:
+              - equal: [master, << pipeline.git.branch >>]
+              - equal: [main, << pipeline.git.branch >>]
+              - matches:
+                  pattern: /release\/.*/
+                  value: << pipeline.git.branch >>
     jobs:
       - untrusted_build
 
