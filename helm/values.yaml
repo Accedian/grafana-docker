@@ -24,6 +24,11 @@ grafana:
   env:
     LOG_LEVEL: error
 
+  auth:
+    anonymous:
+      enabled: false
+      orgRole: Viewer
+
   serviceAccount:
     # Specifies whether a service account should be created
     create: true
