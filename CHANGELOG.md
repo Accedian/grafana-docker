@@ -1,7 +1,9 @@
 ## Current Release
+### 0.228.0
+**Release Date:** Fri Aug 21 07:37:40 UTC 2026
+## Previous Releases
 ### 0.227.0
 **Release Date:** Wed Aug  5 20:12:58 UTC 2026
-## Previous Releases
 - PCA component hardening: pin the governed Debian runtime by version and immutable digest. [ditp-32p.2.89](https://github.com/Accedian/docs/tree/main/projects/pca-component-hardening)
 
 ### 0.226.0
