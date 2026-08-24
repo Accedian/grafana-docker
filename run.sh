@@ -71,7 +71,7 @@ fi
 
 # Migrate legacy Prometheus datasource UIDs -> 'prometheus' within their organizations.
 if [ -f "$GF_PATHS_DATA/grafana.db" ] && command -v sqlite3 >/dev/null 2>&1; then
-    sqlite3 "$GF_PATHS_DATA/grafana.db" <<'SQL' || true
+    if ! sqlite3 -bail "$GF_PATHS_DATA/grafana.db" <<'SQL'
 BEGIN;
 CREATE TEMP TABLE legacy_prometheus AS
 SELECT org_id, uid
@@ -118,6 +118,9 @@ UPDATE data_source
    );
 COMMIT;
 SQL
+    then
+        echo "Prometheus datasource UID migration failed; all changes were rolled back" >&2
+    fi
 fi
 
 grafana_args=(
