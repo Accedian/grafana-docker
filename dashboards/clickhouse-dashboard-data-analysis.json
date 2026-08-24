@@ -2179,7 +2179,7 @@
         "query": "SELECT name FROM system.databases;\n",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
+        "skipUrlSync": true,
         "sort": 0,
         "type": "query"
       },
@@ -2203,7 +2203,7 @@
         "query": "SELECT name FROM system.tables WHERE database IN (${database:singlequote})",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
+        "skipUrlSync": true,
         "sort": 0,
         "type": "query"
       },
@@ -2224,7 +2224,7 @@
         "queryValue": "",
         "refresh": 1,
         "regex": "/(?=clickhouse.*)/",
-        "skipUrlSync": false,
+        "skipUrlSync": true,
         "type": "datasource"
       }
     ]

@@ -1431,7 +1431,7 @@
         "query": "SELECT DISTINCT(query_kind) as query_kind FROM system.query_log WHERE query_kind != ''",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
+        "skipUrlSync": true,
         "sort": 0,
         "type": "query"
       },
@@ -1455,7 +1455,7 @@
         "query": "SELECT type FROM system.query_log GROUP BY type",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
+        "skipUrlSync": true,
         "sort": 0,
         "type": "query"
       },
@@ -1479,7 +1479,7 @@
         "query": "SELECT DISTINCT(initial_user) FROM system.query_log WHERE initial_user != '' LIMIT 100",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
+        "skipUrlSync": true,
         "sort": 0,
         "type": "query"
       },
@@ -1500,7 +1500,7 @@
         "queryValue": "",
         "refresh": 1,
         "regex": "/(?=clickhouse.*)/",
-        "skipUrlSync": false,
+        "skipUrlSync": true,
         "type": "datasource"
       }
     ]
