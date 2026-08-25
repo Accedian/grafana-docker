@@ -29,7 +29,12 @@ HELM_VER ?= $(shell if echo "$(DOCKER_VER)" | grep -Eq '$(SEMVER_PATTERN)'; then
 HELM_REPO := oci://us-docker.pkg.dev/npav-172917/helm-package
 
 url-file:
-	echo $(DOCKER_REPO_NAME)$(DOCKER_IMAGE_NAME):$(shell cat current-version) > urlname.txt
+	@version=$$(tr -c -d -- '-0-9A-Z._a-z+' < current-version); \
+	if [ -z "$$version" ]; then \
+		echo "Invalid version in current-version: $$version" >&2; \
+		exit 1; \
+	fi; \
+	printf '%s\n' "$(DOCKER_REPO_NAME)$(DOCKER_IMAGE_NAME):$$version" > urlname.txt
 
 .PHONY: all
 all: build
