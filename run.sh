@@ -1,6 +1,9 @@
 #!/bin/bash -e
 
-umask 0002
+# OpenShift runs containers with an arbitrary UID in GID 0. Keep newly-created
+# files available to that group across restarts, but never make them accessible
+# to users outside it. Existing PVC permissions must not be broadened here.
+umask 0007
 export GF_USERS_DEFAULT_THEME=light
 
 : "${GF_PATHS_DATA:=/var/lib/grafana}"
@@ -9,6 +12,7 @@ export GF_USERS_DEFAULT_THEME=light
 : "${GF_PATHS_PROVISIONING:=${GF_PATHS_DATA}/provisioning}"
 : "${GF_PATHS_CONFIG:=${GF_PATHS_DATA}/grafana.ini}"
 : "${DS_PROMETHEUS:=http://localhost:9090}"
+: "${GRAFANA_SERVER_BIN:=/usr/share/grafana/bin/grafana-server}"
 
 mkdir -p "$GF_PATHS_DATA" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS" "$GF_PATHS_PROVISIONING" "$GF_PATHS_DATA/dashboards" || true
 
@@ -20,10 +24,6 @@ if [ ! -f "$GF_PATHS_CONFIG" ]; then
         : > "$GF_PATHS_CONFIG"
     fi
 fi
-
-# Ensure existing PVC data is group-writable for OpenShift random UIDs (GID 0).
-chmod -R g+rwX "$GF_PATHS_DATA" "$GF_PATHS_LOGS" 2>/dev/null || true
-
 
 if [ -f /var/run/secrets/gce_oauth_key ]; then
  export GF_AUTH_GOOGLE_CLIENT_ID=$(cat /var/run/secrets/gce_oauth_key)
@@ -113,7 +113,7 @@ grafana_args=(
 if [ "$(id -u)" = "0" ]; then
     # Fix ownership of files created as root before dropping to grafana user
     chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_LOGS" 2>/dev/null || true
-    exec gosu grafana /usr/share/grafana/bin/grafana-server "${grafana_args[@]}"
+    exec gosu grafana "$GRAFANA_SERVER_BIN" "${grafana_args[@]}"
 else
-    exec /usr/share/grafana/bin/grafana-server "${grafana_args[@]}"
+    exec "$GRAFANA_SERVER_BIN" "${grafana_args[@]}"
 fi

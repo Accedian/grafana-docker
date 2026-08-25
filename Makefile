@@ -39,6 +39,10 @@ url-file:
 .PHONY: all
 all: build
 
+.PHONY: test
+test:
+	./tests/run-permissions.sh
+
 .PHONY: build
 
 docker:
