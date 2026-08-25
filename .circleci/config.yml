@@ -90,8 +90,7 @@ workflows:
               value: << pipeline.project.git_url >>
 
     jobs:
-      - build:
-          context: bes-builder-gcp-skybuilder-prd-51843
+      - build
 
   build_and_release:
     when: 
@@ -106,8 +105,7 @@ workflows:
             pattern: "^https://github.com/[Aa]ccedian/.*"
             value: << pipeline.project.git_url >>
     jobs:  
-      - build:
-          context: bes-builder-gcp-skybuilder-prd-51843
+      - build
       - release:
           context: bes-builder-gcp-skybuilder-prd-51843
           requires:
