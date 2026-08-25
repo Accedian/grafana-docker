@@ -8,6 +8,37 @@ orbs:
 
 # Jobs
 jobs:
+  # Branch and pull-request builds must not run on a privileged BES runner or
+  # receive the Vault-backed release context. Keep this job on CircleCI's
+  # isolated Docker executor and use the built-in checkout instead.
+  untrusted_build:
+    docker:
+      - image: cimg/base:stable
+    working_directory: ~/repo
+    steps:
+      - run:
+          name: Checkout repository over HTTPS
+          command: git clone --depth 1 --single-branch --branch "${CIRCLE_BRANCH}" "https://github.com/Accedian/grafana-docker.git" .
+      - setup_remote_docker
+
+      - run:
+          name: "Create a temp directory for artifacts"
+          command: mkdir -p /tmp/artifacts
+
+      - run:
+          name: Building Docker Container
+          command: make build
+
+      - run:
+          name: "install helm"
+          command: |
+            wget -LO helm.tar.gz https://get.helm.sh/helm-v3.17.2-linux-amd64.tar.gz  # legit:ignore-pipeline
+            tar xf helm.tar.gz linux-amd64/helm
+            sudo mv linux-amd64/helm /usr/local/bin
+      - run:
+          name: "make chart"
+          command: make helm
+
   build:
     working_directory: ~/repo
     machine: true
@@ -77,21 +108,19 @@ workflows:
   version: 2.1
   build_only:
     when:
-      not:
-        and:
-          - or:
-            - equal: [master, << pipeline.git.branch >>]
-            - equal: [main, << pipeline.git.branch >>]
-            - matches:
-                pattern: /release\/.*/
-                value: << pipeline.git.branch >>
-          - matches:
-              pattern: "^https://github.com/[Aa]ccedian/.*"
-              value: << pipeline.project.git_url >>
-
+      and:
+        - matches:
+            pattern: "^https://github.com/[Aa]ccedian/.*"
+            value: << pipeline.project.git_url >>
+        - not:
+            or:
+              - equal: [master, << pipeline.git.branch >>]
+              - equal: [main, << pipeline.git.branch >>]
+              - matches:
+                  pattern: /release\/.*/
+                  value: << pipeline.git.branch >>
     jobs:
-      - build:
-          context: bes-builder-gcp-skybuilder-prd-51843
+      - untrusted_build
 
   build_and_release:
     when: 
