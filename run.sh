@@ -78,6 +78,12 @@ SELECT org_id, uid
   FROM data_source
  WHERE name='Prometheus'
    AND uid != 'prometheus'
+   AND NOT EXISTS (
+       SELECT 1
+         FROM data_source AS canonical
+        WHERE canonical.org_id=data_source.org_id
+          AND canonical.uid='prometheus'
+   )
    AND id IN (
        SELECT MIN(id)
          FROM data_source
