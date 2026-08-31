@@ -4,7 +4,7 @@
 version: 2.1
 orbs:
   gh: circleci/github-cli@2.5
-  pca-bes: accedian/pca-bes@1
+  pca-bes: accedian/pca-bes@2.1.0
 
 # Jobs
 jobs:
@@ -29,12 +29,6 @@ jobs:
           command: make build
 
       - run:
-          name: "install helm"
-          command: |
-            wget -LO helm.tar.gz https://get.helm.sh/helm-v3.17.2-linux-amd64.tar.gz  # legit:ignore-pipeline
-            tar xf helm.tar.gz linux-amd64/helm
-            sudo mv linux-amd64/helm /usr/local/bin
-      - run:
           name: "make chart"
           command: |
             make helm 
@@ -58,15 +52,9 @@ jobs:
             # make circleci-devhubpush
 
       - run:
-          name: "install helm"
-          command: |
-            wget -LO helm.tar.gz https://get.helm.sh/helm-v3.17.2-linux-amd64.tar.gz  # legit:ignore-pipeline
-            tar xf helm.tar.gz linux-amd64/helm
-            sudo mv linux-amd64/helm /usr/local/bin
-      - run:
           name: "login helm"
           command: |
-            echo ${GCR_DOCKER_RW_PASSWORD} | base64 -d | docker login -u ${GCR_DOCKER_RW_USERNAME} --password-stdin https://us-docker.pkg.dev
+            echo ${GCR_DOCKER_PASSWORD} | base64 -d | docker login -u ${GCR_DOCKER_USERNAME} --password-stdin https://us-docker.pkg.dev
       - run:
           name: "make chart"
           command: |
@@ -91,7 +79,7 @@ workflows:
 
     jobs:
       - build:
-          context: bes-builder-gcp-skybuilder-prd-51843
+          context: bes-builder-gcp-skybuilder-prd-51843-ro
 
   build_and_release:
     when: 
@@ -107,9 +95,9 @@ workflows:
             value: << pipeline.project.git_url >>
     jobs:  
       - build:
-          context: bes-builder-gcp-skybuilder-prd-51843
+          context: bes-builder-gcp-skybuilder-prd-51843-ro
       - release:
-          context: bes-builder-gcp-skybuilder-prd-51843
+          context: bes-builder-gcp-skybuilder-prd-51843-rw
           requires:
             - build
           filters:
@@ -119,7 +107,7 @@ workflows:
                 - master       
                 - /release\/.*/
       - pca-bes/image_signing:
-          context: bes-builder-gcp-skybuilder-prd-51843
+          context: bes-builder-gcp-skybuilder-prd-51843-rw
           requires:
             - release
           filters:
