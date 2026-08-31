@@ -1,13 +1,6 @@
 # config file version
 apiVersion: 1
 
-# Remove the legacy datasource that exposed internal Filebeat logs through
-# Grafana's backend proxy. Elasticsearch access must be configured separately
-# with deployment-specific authentication, TLS, and index permissions.
-deleteDatasources:
-  - name: Elasticsearch
-    orgId: 1
-
 # list of datasources to insert/update depending
 # whats available in the database
 datasources:

@@ -69,8 +69,31 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
     cp -R /tmp/dashboards/. "$GF_PATHS_DATA/dashboards/"
 fi
 
-# Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced.
+# Apply database migrations that cannot be expressed safely through persistent
+# provisioning directives.
 if [ -f "$GF_PATHS_DATA/grafana.db" ] && command -v sqlite3 >/dev/null 2>&1; then
+    # Remove only the datasource created by the old stock provisioning. A marker
+    # makes this a one-time migration, so a later administrator-managed
+    # datasource is never removed just because it uses the same name.
+    LEGACY_ES_MIGRATION_MARKER="$GF_PATHS_DATA/.legacy-elasticsearch-datasource-removed"
+    if [ ! -e "$LEGACY_ES_MIGRATION_MARKER" ]; then
+        if sqlite3 "$GF_PATHS_DATA/grafana.db" <<'SQL'
+DELETE FROM data_source
+ WHERE name = 'Elasticsearch'
+   AND org_id = 1
+   AND type = 'elasticsearch'
+   AND access = 'proxy'
+   AND url = 'http://elasticsearch01:9200'
+   AND database = 'filebeat-*';
+SQL
+        then
+            touch "$LEGACY_ES_MIGRATION_MARKER"
+        else
+            echo "Failed to migrate the legacy Elasticsearch datasource" >&2
+        fi
+    fi
+
+    # Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced.
     OLD_PROM_UID=$(sqlite3 "$GF_PATHS_DATA/grafana.db" \
         "SELECT uid FROM data_source WHERE name='Prometheus' AND uid != 'prometheus' LIMIT 1;" \
         2>/dev/null || true)
