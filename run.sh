@@ -103,17 +103,23 @@ UPDATE alert_rule_version
  WHERE EXISTS (SELECT 1 FROM legacy_prometheus WHERE org_id=alert_rule_version.rule_org_id)
    AND data LIKE '%"datasourceUid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=alert_rule_version.rule_org_id) || '"%';
 UPDATE dashboard
-   SET data = REPLACE(data,
-       '"uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=dashboard.org_id) || '"',
-       '"uid":"prometheus"')
+   SET data = REPLACE(REPLACE(data,
+       '"datasource":{"uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=dashboard.org_id) || '"',
+       '"datasource":{"uid":"prometheus"'),
+       '"datasource":{"type":"prometheus","uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=dashboard.org_id) || '"',
+       '"datasource":{"type":"prometheus","uid":"prometheus"')
  WHERE EXISTS (SELECT 1 FROM legacy_prometheus WHERE org_id=dashboard.org_id)
-   AND data LIKE '%"uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=dashboard.org_id) || '"%';
+   AND (data LIKE '%"datasource":{"uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=dashboard.org_id) || '"%'
+        OR data LIKE '%"datasource":{"type":"prometheus","uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=dashboard.org_id) || '"%');
 UPDATE library_element
-   SET model = REPLACE(model,
-       '"uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=library_element.org_id) || '"',
-       '"uid":"prometheus"')
+   SET model = REPLACE(REPLACE(model,
+       '"datasource":{"uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=library_element.org_id) || '"',
+       '"datasource":{"uid":"prometheus"'),
+       '"datasource":{"type":"prometheus","uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=library_element.org_id) || '"',
+       '"datasource":{"type":"prometheus","uid":"prometheus"')
  WHERE EXISTS (SELECT 1 FROM legacy_prometheus WHERE org_id=library_element.org_id)
-   AND model LIKE '%"uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=library_element.org_id) || '"%';
+   AND (model LIKE '%"datasource":{"uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=library_element.org_id) || '"%'
+        OR model LIKE '%"datasource":{"type":"prometheus","uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=library_element.org_id) || '"%');
 UPDATE data_source
    SET uid='prometheus'
  WHERE name='Prometheus'
