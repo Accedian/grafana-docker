@@ -32,6 +32,16 @@ if [ ! -f "$GF_PATHS_CONFIG" ]; then
     runtime_paths+=("$GF_PATHS_CONFIG")
 fi
 
+# chmod has no no-follow mode, so an entry swapped for a symlink would be
+# applied to its referent instead. Drop those rather than dereference them.
+for i in "${!runtime_paths[@]}"; do
+    if [ -L "${runtime_paths[$i]}" ]; then
+        echo "Skipping symlinked Grafana path: ${runtime_paths[$i]}" >&2
+        unset 'runtime_paths[i]'
+    fi
+done
+runtime_paths=("${runtime_paths[@]}")
+
 # Ensure the runtime paths are group-writable for OpenShift random UIDs (GID 0).
 chmod g+rwX "${runtime_paths[@]}" 2>/dev/null || true
 
