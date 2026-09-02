@@ -12,6 +12,16 @@ export GF_USERS_DEFAULT_THEME=light
 
 mkdir -p "$GF_PATHS_DATA" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS" "$GF_PATHS_PROVISIONING" "$GF_PATHS_DATA/dashboards" || true
 
+# Paths this script creates itself. Existing PVC contents are deliberately left
+# alone: a recursive chmod/chown would also follow hardlinks planted there.
+runtime_paths=(
+    "$GF_PATHS_DATA"
+    "$GF_PATHS_LOGS"
+    "$GF_PATHS_PLUGINS"
+    "$GF_PATHS_PROVISIONING"
+    "$GF_PATHS_DATA/dashboards"
+)
+
 # Prefer a writable config file on data volume for restricted OpenShift UIDs.
 if [ ! -f "$GF_PATHS_CONFIG" ]; then
     if [ -r /etc/grafana/grafana.ini ]; then
@@ -19,10 +29,11 @@ if [ ! -f "$GF_PATHS_CONFIG" ]; then
     else
         : > "$GF_PATHS_CONFIG"
     fi
+    runtime_paths+=("$GF_PATHS_CONFIG")
 fi
 
-# Ensure existing PVC data is group-writable for OpenShift random UIDs (GID 0).
-chmod -R g+rwX "$GF_PATHS_DATA" "$GF_PATHS_LOGS" 2>/dev/null || true
+# Ensure the runtime paths are group-writable for OpenShift random UIDs (GID 0).
+chmod g+rwX "${runtime_paths[@]}" 2>/dev/null || true
 
 
 if [ -f /var/run/secrets/gce_oauth_key ]; then
@@ -111,8 +122,9 @@ grafana_args=(
 )
 
 if [ "$(id -u)" = "0" ]; then
-    # Fix ownership of files created as root before dropping to grafana user
-    chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_LOGS" 2>/dev/null || true
+    # Fix ownership of the paths created as root before dropping to grafana
+    # user. -h keeps a symlinked entry from redirecting the change.
+    chown -h grafana:grafana "${runtime_paths[@]}" 2>/dev/null || true
     exec gosu grafana /usr/share/grafana/bin/grafana-server "${grafana_args[@]}"
 else
     exec /usr/share/grafana/bin/grafana-server "${grafana_args[@]}"
