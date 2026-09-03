@@ -69,33 +69,69 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
     cp -R /tmp/dashboards/. "$GF_PATHS_DATA/dashboards/"
 fi
 
-# Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced.
+# Migrate legacy Prometheus datasource UIDs -> 'prometheus' within their organizations.
 if [ -f "$GF_PATHS_DATA/grafana.db" ] && command -v sqlite3 >/dev/null 2>&1; then
-    OLD_PROM_UID=$(sqlite3 "$GF_PATHS_DATA/grafana.db" \
-        "SELECT uid FROM data_source WHERE name='Prometheus' AND uid != 'prometheus' LIMIT 1;" \
-        2>/dev/null || true)
-
-    if [ -n "$OLD_PROM_UID" ]; then
-        echo "Migrating Prometheus datasource UID '$OLD_PROM_UID' -> 'prometheus'"
-        # Escape single quotes for safe embedding in the SQL literal.
-        OLD_PROM_UID_SQL=${OLD_PROM_UID//\'/\'\'}
-        sqlite3 "$GF_PATHS_DATA/grafana.db" <<SQL || true
+    if ! sqlite3 -bail "$GF_PATHS_DATA/grafana.db" <<'SQL'
 BEGIN;
+CREATE TEMP TABLE legacy_prometheus AS
+SELECT org_id, uid
+  FROM data_source
+ WHERE name='Prometheus'
+   AND uid != 'prometheus'
+   AND NOT EXISTS (
+       SELECT 1
+         FROM data_source AS canonical
+        WHERE canonical.org_id=data_source.org_id
+          AND canonical.uid='prometheus'
+   )
+   AND id IN (
+       SELECT MIN(id)
+         FROM data_source
+        WHERE name='Prometheus' AND uid != 'prometheus'
+        GROUP BY org_id
+   );
 UPDATE alert_rule
-   SET data = REPLACE(data, '"datasourceUid":"${OLD_PROM_UID_SQL}"', '"datasourceUid":"prometheus"')
- WHERE data LIKE '%"datasourceUid":"${OLD_PROM_UID_SQL}"%';
+   SET data = REPLACE(data,
+       '"datasourceUid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=alert_rule.org_id) || '"',
+       '"datasourceUid":"prometheus"')
+ WHERE EXISTS (SELECT 1 FROM legacy_prometheus WHERE org_id=alert_rule.org_id)
+   AND data LIKE '%"datasourceUid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=alert_rule.org_id) || '"%';
 UPDATE alert_rule_version
-   SET data = REPLACE(data, '"datasourceUid":"${OLD_PROM_UID_SQL}"', '"datasourceUid":"prometheus"')
- WHERE data LIKE '%"datasourceUid":"${OLD_PROM_UID_SQL}"%';
+   SET data = REPLACE(data,
+       '"datasourceUid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=alert_rule_version.rule_org_id) || '"',
+       '"datasourceUid":"prometheus"')
+ WHERE EXISTS (SELECT 1 FROM legacy_prometheus WHERE org_id=alert_rule_version.rule_org_id)
+   AND data LIKE '%"datasourceUid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=alert_rule_version.rule_org_id) || '"%';
 UPDATE dashboard
-   SET data = REPLACE(data, '"uid":"${OLD_PROM_UID_SQL}"', '"uid":"prometheus"')
- WHERE data LIKE '%"uid":"${OLD_PROM_UID_SQL}"%';
+   SET data = REPLACE(REPLACE(data,
+       '"datasource":{"uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=dashboard.org_id) || '"',
+       '"datasource":{"uid":"prometheus"'),
+       '"datasource":{"type":"prometheus","uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=dashboard.org_id) || '"',
+       '"datasource":{"type":"prometheus","uid":"prometheus"')
+ WHERE EXISTS (SELECT 1 FROM legacy_prometheus WHERE org_id=dashboard.org_id)
+   AND (data LIKE '%"datasource":{"uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=dashboard.org_id) || '"%'
+        OR data LIKE '%"datasource":{"type":"prometheus","uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=dashboard.org_id) || '"%');
 UPDATE library_element
-   SET model = REPLACE(model, '"uid":"${OLD_PROM_UID_SQL}"', '"uid":"prometheus"')
- WHERE model LIKE '%"uid":"${OLD_PROM_UID_SQL}"%';
-UPDATE data_source SET uid='prometheus' WHERE uid='${OLD_PROM_UID_SQL}';
+   SET model = REPLACE(REPLACE(model,
+       '"datasource":{"uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=library_element.org_id) || '"',
+       '"datasource":{"uid":"prometheus"'),
+       '"datasource":{"type":"prometheus","uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=library_element.org_id) || '"',
+       '"datasource":{"type":"prometheus","uid":"prometheus"')
+ WHERE EXISTS (SELECT 1 FROM legacy_prometheus WHERE org_id=library_element.org_id)
+   AND (model LIKE '%"datasource":{"uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=library_element.org_id) || '"%'
+        OR model LIKE '%"datasource":{"type":"prometheus","uid":"' || (SELECT uid FROM legacy_prometheus WHERE org_id=library_element.org_id) || '"%');
+UPDATE data_source
+   SET uid='prometheus'
+ WHERE name='Prometheus'
+   AND EXISTS (
+       SELECT 1
+         FROM legacy_prometheus
+        WHERE org_id=data_source.org_id AND uid=data_source.uid
+   );
 COMMIT;
 SQL
+    then
+        echo "Prometheus datasource UID migration failed; all changes were rolled back" >&2
     fi
 fi
 
