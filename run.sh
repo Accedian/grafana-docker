@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-umask 0002
+umask 0077
 export GF_USERS_DEFAULT_THEME=light
 
 : "${GF_PATHS_DATA:=/var/lib/grafana}"
@@ -20,10 +20,6 @@ if [ ! -f "$GF_PATHS_CONFIG" ]; then
         : > "$GF_PATHS_CONFIG"
     fi
 fi
-
-# Ensure existing PVC data is group-writable for OpenShift random UIDs (GID 0).
-chmod -R g+rwX "$GF_PATHS_DATA" "$GF_PATHS_LOGS" 2>/dev/null || true
-
 
 if [ -f /var/run/secrets/gce_oauth_key ]; then
  export GF_AUTH_GOOGLE_CLIENT_ID=$(cat /var/run/secrets/gce_oauth_key)
