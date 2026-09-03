@@ -14,6 +14,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         curl \
         libfontconfig \
         musl \
+        python3-minimal \
+        python3-yaml \
         sqlite3 \
     && curl \
         --no-progress-meter \
@@ -61,9 +63,13 @@ VOLUME ["/var/lib/grafana", "/var/log/grafana", "/etc/grafana"]
 EXPOSE 3000
 
 COPY ./run.sh /run.sh
+COPY ./seed-alerts.py /usr/local/bin/seed-alerts.py
+RUN chmod +x /usr/local/bin/seed-alerts.py
 
 COPY provisioning /tmp/provisioning
 
 COPY dashboards /tmp/dashboards
+
+COPY help /usr/share/grafana/public/help
 
 ENTRYPOINT ["/run.sh"]

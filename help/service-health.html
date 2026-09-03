@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application Service Health Alert Guide</title>
+  <style>
+    :root {
+      --bg: #181b1f;
+      --surface: #22252b;
+      --border: #2c2f36;
+      --text: #dce0e6;
+      --text-muted: #8e929a;
+      --accent: #6c9eff;
+      --accent-dim: #3b5998;
+      --success: #6ccf8e;
+      --warning: #f5c451;
+      --danger: #f2726f;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f4f5f7;
+        --surface: #ffffff;
+        --border: #dce0e6;
+        --text: #1e2128;
+        --text-muted: #6b7280;
+        --accent: #3871e0;
+        --accent-dim: #d0def5;
+        --success: #1a8a42;
+        --warning: #b8860b;
+        --danger: #cc3733;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 52rem;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.6rem; margin-bottom: .25rem; }
+    .subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: .95rem; }
+    h2 { font-size: 1.15rem; margin: 1.75rem 0 .75rem; border-bottom: 1px solid var(--border); padding-bottom: .35rem; }
+    h3 { font-size: 1rem; margin: 1.25rem 0 .5rem; }
+    p, li { font-size: .925rem; }
+    p { margin-bottom: .75rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: .75rem; }
+    li { margin-bottom: .35rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .badge {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 600;
+      padding: .15rem .55rem;
+      border-radius: 4px;
+      margin-right: .35rem;
+      margin-bottom: .35rem;
+      vertical-align: middle;
+    }
+    .badge-alert  { background: var(--danger); color: #fff; }
+    .badge-warn   { background: var(--warning); color: #1e2128; }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.5rem; height: 1.5rem;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 700;
+      margin-right: .5rem;
+      flex-shrink: 0;
+    }
+    .steps li { list-style: none; display: flex; align-items: flex-start; margin-bottom: .6rem; }
+    .steps { padding-left: 0; }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: .85rem;
+      background: var(--border);
+      padding: .1rem .35rem;
+      border-radius: 3px;
+    }
+    .tag-list { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
+    footer { margin-top: 2.5rem; font-size: .8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Application Service Health Alert Guide</h1>
+  <p class="subtitle">Troubleshooting analytics application services, processing throughput, and message delivery</p>
+
+  <div class="card">
+    <h3>Affected alerts</h3>
+    <div class="tag-list">
+      <span class="badge badge-alert">IncidentBuilder Throughput</span>
+      <span class="badge badge-alert">IncidentBuilder Heartbeat</span>
+      <span class="badge badge-alert">CouchDB Client Changes</span>
+      <span class="badge badge-alert">Batch Processing Duration</span>
+      <span class="badge badge-alert">Processing Ratio</span>
+      <span class="badge badge-alert">Spark Batch Start Delay</span>
+      <span class="badge badge-warn">Gather Alert Parsing Errors</span>
+      <span class="badge badge-warn">Kafka MQTT Divergence</span>
+    </div>
+  </div>
+
+  <h2>What do these alerts mean?</h2>
+  <p>
+    These alerts monitor the health of application-level services that process, correlate, and
+    deliver analytics data. They detect situations where services have stopped, are falling behind,
+    or are producing errors.
+  </p>
+
+  <div class="card">
+    <h3>Processing throughput &amp; heartbeat</h3>
+    <p><strong>IncidentBuilder Throughput</strong> fires when the processing-to-input ratio drops below 1,
+    meaning the service is not keeping up with incoming data. <strong>IncidentBuilder Heartbeat</strong>
+    fires when the service's streaming timestamp stops advancing, indicating the service has stalled
+    or crashed. <strong>Processing Ratio</strong> and <strong>Batch Processing Duration</strong>
+    monitor similar throughput and advancement metrics for the batch analytics engine.</p>
+  </div>
+
+  <div class="card">
+    <h3>Configuration database</h3>
+    <p><strong>CouchDB Client Changes</strong> fires when an unusually high number of change-feed
+    requests are being made to the configuration database, which may indicate a client stuck in a
+    reconnection loop or an unexpected burst of configuration updates.</p>
+  </div>
+
+  <div class="card">
+    <h3>Alert pipeline</h3>
+    <p><strong>Gather Alert Parsing Errors</strong> fires when the alert processing service encounters
+    parsing errors, which may prevent alerts from being generated for certain metrics.
+    <strong>Kafka MQTT Divergence</strong> fires when the rate of messages consumed from the message
+    bus diverges significantly from the rate delivered via MQTT, indicating potential message loss
+    in the alert delivery path.</p>
+  </div>
+
+  <h2>Impact</h2>
+  <ul>
+    <li><strong>Stalled processing</strong> causes delayed or missing analytics data in dashboards
+    and reports.</li>
+    <li><strong>Parsing errors</strong> in the alert pipeline may result in some alert conditions
+    not being evaluated.</li>
+    <li><strong>Message delivery divergence</strong> may mean alert notifications are not reaching
+    their intended destinations.</li>
+    <li><strong>Configuration database pressure</strong> can slow down UI operations and service
+    configuration loading.</li>
+  </ul>
+
+  <h2>Investigation steps</h2>
+  <ol class="steps">
+    <li>
+      <span class="step-num">1</span>
+      <span>Open the alert in Grafana and identify the specific <strong>service</strong> and
+      <strong>metric</strong> that triggered the alert.</span>
+    </li>
+    <li>
+      <span class="step-num">2</span>
+      <span>Check the <strong>service logs</strong> for the affected application. Look for errors,
+      exceptions, or out-of-memory conditions.</span>
+    </li>
+    <li>
+      <span class="step-num">3</span>
+      <span>Verify that <strong>upstream dependencies</strong> are healthy — a stalled processing
+      service may be a symptom of an upstream data source or message bus issue.</span>
+    </li>
+    <li>
+      <span class="step-num">4</span>
+      <span>For CouchDB alerts, check which clients are generating the change requests and whether
+      they are behaving normally.</span>
+    </li>
+    <li>
+      <span class="step-num">5</span>
+      <span>For alert pipeline issues, verify the alert processing service is running and review its
+      logs for parsing errors or connectivity issues with the message bus.</span>
+    </li>
+  </ol>
+
+  <h2>Remediation</h2>
+  <div class="card">
+    <h3>Stalled or slow processing</h3>
+    <p>Restart the affected service after confirming upstream dependencies are healthy. If the service
+    consistently falls behind, it may need additional resources (memory, CPU). Monitor throughput
+    metrics after the restart to confirm recovery.</p>
+  </div>
+  <div class="card">
+    <h3>Alert pipeline errors</h3>
+    <p>Review the parsing errors to determine whether they are caused by malformed input data or a
+    service bug. If the input data format has changed, the service may need a configuration update.
+    Restart the service after addressing the root cause.</p>
+  </div>
+  <div class="card">
+    <h3>Message delivery divergence</h3>
+    <p>Check the MQTT broker health and connectivity. If the broker is healthy, the issue may be in
+    the bridge service that translates between the message bus and MQTT. Restart the bridge service
+    and monitor the divergence metric.</p>
+  </div>
+  <div class="card">
+    <h3>Configuration database pressure</h3>
+    <p>Identify the client generating excessive change requests. A service restart may resolve a
+    reconnection loop. If the request rate reflects legitimate activity, review the client's
+    polling interval and consider reducing it.</p>
+  </div>
+
+  <h2>Verification</h2>
+  <ul>
+    <li>Confirm processing throughput ratios return above 1.0 and timestamps advance.</li>
+    <li>Verify parsing error counts are zero.</li>
+    <li>Check that message delivery divergence returns to near zero.</li>
+    <li>Wait for the next Grafana evaluation cycle and confirm alerts return to <strong>Normal</strong>.</li>
+  </ul>
+
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="https://grafana.com/docs/grafana/latest/alerting/" target="_blank" rel="noopener">Grafana Alerting documentation</a></li>
+  </ul>
+
+  <footer>
+    This page is bundled with your Grafana deployment and may be updated with new releases.
+  </footer>
+</body>
+</html>

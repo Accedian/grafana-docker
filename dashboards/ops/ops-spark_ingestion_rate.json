@@ -1,0 +1,177 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": -1,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "min",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "sortBy": "Mean",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(increase(spark_executor_recordsRead{job=\"spark_streamingapp\"}[30m]))",
+          "hide": true,
+          "legendFormat": "recordsRead",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(increase(spark_executor_recordsWritten{job=\"spark_streamingapp\"}[30m]))",
+          "hide": true,
+          "legendFormat": "recordsWritten",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(increase(spark_executor_recordsRead{job='spark_streamingapp'}[30m] offset 10m))",
+          "hide": true,
+          "legendFormat": "alert",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "sum(sin(increase(spark_executor_recordsRead{job=\"spark_streamingapp\"}[5m])))",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "Spark Ingestion Rate",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "",
+  "revision": 1,
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Spark Ingestion Rate",
+  "uid": "oftqr4LVz",
+  "version": 1,
+  "weekStart": ""
+}

@@ -1,0 +1,199 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "panels": [],
+      "title": "Prometheus",
+      "type": "row"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*Time.*/"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsSystem"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/job|objectType|monitor|tenant/"
+            },
+            "properties": [
+              {
+                "id": "custom.filterable",
+                "value": true
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 1,
+        "y": 1
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.1.2",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum by(job,tenat,objectType) (spark_AccedianStreamingMetrics_streaming_maxTimestamp)",
+          "format": "table",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum by(job, tenat, objectType) (spark_AccedianStreamingMetrics_streaming_minTimestamp)",
+          "format": "table",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum by(job, tenat, objectType) (spark_AccedianStreamingMetrics_streaming_recCount)",
+          "format": "table",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount[5m])",
+          "format": "table",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "Object Type Metrics -",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "Value #A": "Max Timestamp",
+              "Value #B": "Min Timestamp",
+              "Value #C": "Record Count",
+              "Value #D": "Record Count Rate",
+              "objectType": ""
+            }
+          }
+        }
+      ],
+      "type": "table"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Object type metrics",
+  "uid": "cf3f24e1-ea47-4459-b0c6-9e8b23600292",
+  "version": 1,
+  "weekStart": ""
+}

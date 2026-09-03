@@ -10,7 +10,7 @@ export GF_USERS_DEFAULT_THEME=light
 : "${GF_PATHS_CONFIG:=${GF_PATHS_DATA}/grafana.ini}"
 : "${DS_PROMETHEUS:=http://localhost:9090}"
 
-mkdir -p "$GF_PATHS_DATA" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS" "$GF_PATHS_PROVISIONING" "$GF_PATHS_DATA/dashboards" || true
+mkdir -p "$GF_PATHS_DATA" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS" "$GF_PATHS_PROVISIONING" "$GF_PATHS_DATA/dashboards" "$GF_PATHS_DATA/dashboards-ops" || true
 
 # Prefer a writable config file on data volume for restricted OpenShift UIDs.
 if [ ! -f "$GF_PATHS_CONFIG" ]; then
@@ -62,11 +62,31 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
   echo "Deleting existing dashboards"
     rm -rf "$GF_PATHS_DATA/dashboards"/* || true
 
+  echo "Deleting existing ops dashboards"
+    rm -rf "$GF_PATHS_DATA/dashboards-ops"/* || true
+
+  echo "Restoring plugins from image"
+    cp -Rn /data/grafana/plugins/. "$GF_PATHS_PLUGINS/" 2>/dev/null || true
+
   echo "Copying stock provisioning"
     cp -R /tmp/provisioning/. "$GF_PATHS_PROVISIONING/"
 
+  # Alerts are seeded through the API from /tmp/provisioning/alerting so they
+  # can be edited in the UI. Do not leave them in Grafana's live file
+  # provisioning directory.
+  echo "Removing live alert provisioning files"
+    rm -rf "$GF_PATHS_PROVISIONING/alerting" || true
+
   echo "Copying stock dashboards"
-    cp -R /tmp/dashboards/. "$GF_PATHS_DATA/dashboards/"
+    # Resolve Docker COPY nesting (/tmp/dashboards/ may contain a dashboards/ subdir)
+    _DASH_SRC=/tmp/dashboards
+    [ -d "$_DASH_SRC/dashboards" ] && _DASH_SRC="$_DASH_SRC/dashboards"
+    # Copy non-ops dashboards, preserving nested dashboard folders from master.
+    find "$_DASH_SRC" -mindepth 1 -maxdepth 1 ! -name ops -exec cp -R {} "$GF_PATHS_DATA/dashboards/" \;
+    # Copy ops dashboards to dedicated directory (avoids overlap with system-provider)
+    if [ -d "$_DASH_SRC/ops" ]; then
+      find "$_DASH_SRC/ops" -maxdepth 1 -name '*.json' -exec cp {} "$GF_PATHS_DATA/dashboards-ops/" \;
+    fi
 fi
 
 # Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced.
@@ -98,6 +118,10 @@ COMMIT;
 SQL
     fi
 fi
+
+# Seed alert rules via API in the background once Grafana is ready.
+# Uses X-Disable-Provenance so customers can freely edit rules in the UI.
+/usr/local/bin/seed-alerts.py &
 
 grafana_args=(
     --homepath=/usr/share/grafana

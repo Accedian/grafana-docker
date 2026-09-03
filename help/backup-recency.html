@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backup Recency Alert Guide</title>
+  <style>
+    :root {
+      --bg: #181b1f;
+      --surface: #22252b;
+      --border: #2c2f36;
+      --text: #dce0e6;
+      --text-muted: #8e929a;
+      --accent: #6c9eff;
+      --accent-dim: #3b5998;
+      --success: #6ccf8e;
+      --warning: #f5c451;
+      --danger: #f2726f;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f4f5f7;
+        --surface: #ffffff;
+        --border: #dce0e6;
+        --text: #1e2128;
+        --text-muted: #6b7280;
+        --accent: #3871e0;
+        --accent-dim: #d0def5;
+        --success: #1a8a42;
+        --warning: #b8860b;
+        --danger: #cc3733;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 52rem;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.6rem; margin-bottom: .25rem; }
+    .subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: .95rem; }
+    h2 { font-size: 1.15rem; margin: 1.75rem 0 .75rem; border-bottom: 1px solid var(--border); padding-bottom: .35rem; }
+    h3 { font-size: 1rem; margin: 1.25rem 0 .5rem; }
+    p, li { font-size: .925rem; }
+    p { margin-bottom: .75rem; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: .75rem; }
+    li { margin-bottom: .35rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .badge {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 600;
+      padding: .15rem .55rem;
+      border-radius: 4px;
+      margin-right: .35rem;
+      vertical-align: middle;
+    }
+    .badge-alert  { background: var(--danger); color: #fff; }
+    .badge-info   { background: var(--accent-dim); color: var(--accent); }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.5rem; height: 1.5rem;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 700;
+      margin-right: .5rem;
+      flex-shrink: 0;
+    }
+    .steps li { list-style: none; display: flex; align-items: flex-start; margin-bottom: .6rem; }
+    .steps { padding-left: 0; }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: .85rem;
+      background: var(--border);
+      padding: .1rem .35rem;
+      border-radius: 3px;
+    }
+    .tag-list { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
+    footer { margin-top: 2.5rem; font-size: .8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Backup Recency Alert Guide</h1>
+  <p class="subtitle">Troubleshooting backup schedule and retention</p>
+
+  <div class="card">
+    <h3>Affected alert</h3>
+    <div class="tag-list">
+      <span class="badge badge-alert">Time since last backup</span>
+    </div>
+  </div>
+
+  <h2>What does this alert mean?</h2>
+  <p>
+    This alert fires when the elapsed time since the most recent successful database backup exceeds
+    the configured threshold (default: 1 day). This typically indicates that a scheduled backup
+    job did not complete.
+  </p>
+
+  <h2>Impact</h2>
+  <p>
+    Without a recent backup, data changes made since the last known-good snapshot are at risk.
+    In the event of a failure or data corruption, recovery would roll back to an older point in time,
+    potentially losing configuration changes, user data, or analytics results.
+  </p>
+
+  <h2>Investigation steps</h2>
+  <ol class="steps">
+    <li>
+      <span class="step-num">1</span>
+      <span>Open the alert in Grafana and review the metric to confirm when the last successful
+      backup was recorded. Note the gap duration.</span>
+    </li>
+    <li>
+      <span class="step-num">2</span>
+      <span>Check the <strong>backup job logs</strong> — this may be a cron job, a Kubernetes
+      CronJob, or a scheduled task depending on your deployment. Look for errors such as
+      authentication failures, connection timeouts, or storage quota exhaustion.</span>
+    </li>
+    <li>
+      <span class="step-num">3</span>
+      <span>Verify that the <strong>backup destination</strong> (object storage bucket, NFS share,
+      or local volume) is reachable from the backup job's execution context and has sufficient
+      available capacity.</span>
+    </li>
+    <li>
+      <span class="step-num">4</span>
+      <span>If the backup job uses database credentials, confirm they have not expired or been
+      rotated without updating the job configuration.</span>
+    </li>
+  </ol>
+
+  <h2>Remediation</h2>
+  <div class="card">
+    <h3>Re-run the backup</h3>
+    <p>Once the root cause is corrected (connectivity, credentials, quota), trigger a manual backup run
+    to restore coverage immediately. Verify the resulting artifact is complete and matches the
+    expected size.</p>
+  </div>
+  <div class="card">
+    <h3>Prevent recurrence</h3>
+    <ul>
+      <li>Add monitoring on the backup storage target to catch quota exhaustion before it blocks jobs.</li>
+      <li>Use alerting on the backup job exit code or duration so failures are detected within minutes,
+      not after the recency threshold is breached.</li>
+      <li>Consider incremental or continuous backups to shorten the recovery point objective (RPO).</li>
+    </ul>
+  </div>
+
+  <h2>Verification</h2>
+  <ul>
+    <li>Confirm a fresh backup artifact exists with the current date/time.</li>
+    <li>Verify the artifact's integrity (e.g., checksum or test restore).</li>
+    <li>Wait for the next Grafana evaluation cycle and confirm the alert returns to <strong>Normal</strong>.</li>
+  </ul>
+
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="https://grafana.com/docs/grafana/latest/alerting/" target="_blank" rel="noopener">Grafana Alerting documentation</a></li>
+    <li><a href="https://grafana.com/docs/grafana/latest/alerting/fundamentals/alert-rule-evaluation/" target="_blank" rel="noopener">Grafana — Alert rule evaluation</a></li>
+  </ul>
+
+  <footer>
+    This page is bundled with your Grafana deployment and may be updated with new releases.
+  </footer>
+</body>
+</html>
