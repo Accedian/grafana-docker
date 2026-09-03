@@ -33,6 +33,10 @@ if [ -f /var/run/secrets/gce_oauth_secret ]; then
  export GF_AUTH_GOOGLE_CLIENT_SECRET=$(cat /var/run/secrets/gce_oauth_secret)
 fi
 
+if [ -f "${CLICKHOUSE_PASSWORD_USER_MONITORING_FILE:-}" ]; then
+ export CLICKHOUSE_PASSWORD_USER_MONITORING=$(cat "$CLICKHOUSE_PASSWORD_USER_MONITORING_FILE")
+fi
+
 if [ ! -z ${GF_AWS_PROFILES+x} ]; then
     mkdir -p ~grafana/.aws/
     > ~grafana/.aws/credentials

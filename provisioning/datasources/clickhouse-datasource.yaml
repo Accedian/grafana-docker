@@ -16,8 +16,10 @@ datasources:
       server: clickhouse1a
       # <string>: ClickHouse username
       username: monitoring
-      # <bool>: Skip TLS Verify
+      # <bool>: Skip TLS Verify
       tlsSkipVerify: false
+    secureJsonData:
+      password: $CLICKHOUSE_PASSWORD_USER_MONITORING
 
   - name: clickhouse1b
     type: grafana-clickhouse-datasource
@@ -29,6 +31,8 @@ datasources:
       server: clickhouse1b
       username: monitoring
       tlsSkipVerify: false
+    secureJsonData:
+      password: $CLICKHOUSE_PASSWORD_USER_MONITORING
 
   - name: clickhouse2a
     type: grafana-clickhouse-datasource
@@ -40,6 +44,8 @@ datasources:
       server: clickhouse2a
       username: monitoring
       tlsSkipVerify: false
+    secureJsonData:
+      password: $CLICKHOUSE_PASSWORD_USER_MONITORING
 
   - name: clickhouse2b
     type: grafana-clickhouse-datasource
@@ -51,6 +57,8 @@ datasources:
       server: clickhouse2b
       username: monitoring
       tlsSkipVerify: false
+    secureJsonData:
+      password: $CLICKHOUSE_PASSWORD_USER_MONITORING
 
   - name: clickhouse3a
     type: grafana-clickhouse-datasource
@@ -62,6 +70,8 @@ datasources:
       server: clickhouse3a
       username: monitoring
       tlsSkipVerify: false
+    secureJsonData:
+      password: $CLICKHOUSE_PASSWORD_USER_MONITORING
 
   - name: clickhouse3b
     type: grafana-clickhouse-datasource
@@ -73,6 +83,8 @@ datasources:
       server: clickhouse3b
       username: monitoring
       tlsSkipVerify: false
+    secureJsonData:
+      password: $CLICKHOUSE_PASSWORD_USER_MONITORING
 
   - name: clickhouse4a
     type: grafana-clickhouse-datasource
@@ -84,6 +96,8 @@ datasources:
       server: clickhouse4a
       username: monitoring
       tlsSkipVerify: false
+    secureJsonData:
+      password: $CLICKHOUSE_PASSWORD_USER_MONITORING
 
   - name: clickhouse4b
     type: grafana-clickhouse-datasource
@@ -95,3 +109,5 @@ datasources:
       server: clickhouse4b
       username: monitoring
       tlsSkipVerify: false
+    secureJsonData:
+      password: $CLICKHOUSE_PASSWORD_USER_MONITORING
