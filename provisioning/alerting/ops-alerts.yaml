@@ -2,11 +2,11 @@ apiVersion: 1
 
 groups:
   - orgId: 1
-    name: cloud-ops-spark-ingestion-rate
-    folder: Cloud Operations
+    name: spark-ingestion-rate
+    folder: Operations
     interval: 10m
     rules:
-      - uid: cloudops-spark-ingestion-rate
+      - uid: spark-ingestion-rate
         title: SparkIngestionRate
         condition: B
         data:
@@ -66,11 +66,11 @@ groups:
           description: The streaming application has not read Kafka records during the evaluation window.
 
   - orgId: 1
-    name: cloud-ops-airflow-batch-dag-failed
-    folder: Cloud Operations
+    name: airflow-batch-dag-failed
+    folder: Operations
     interval: 10m
     rules:
-      - uid: cloudops-airflow-batch-dag-failed
+      - uid: airflow-batch-dag-failed
         title: AirflowBatchDAGFailed
         condition: B
         data:
@@ -130,11 +130,11 @@ groups:
           description: A Batch Ingestion Airflow DAG has failed within the last 24 hours and needs to be rerun manually.
 
   - orgId: 1
-    name: cloud-ops-opensearch-heap
-    folder: Cloud Operations
+    name: opensearch-heap
+    folder: Operations
     interval: 5m
     rules:
-      - uid: cloudops-opensearch-heap
+      - uid: opensearch-heap
         title: OpenSearchHeap
         condition: B
         data:
@@ -194,11 +194,11 @@ groups:
           description: OpenSearch JVM heap utilization has remained above 85 percent for 30 minutes.
 
   - orgId: 1
-    name: cloud-ops-prometheus-availability
-    folder: Cloud Operations
+    name: prometheus-availability
+    folder: Operations
     interval: 2m
     rules:
-      - uid: cloudops-prometheus-availability
+      - uid: prometheus-availability
         title: PrometheusAvailabilityDegraded
         condition: B
         data:
