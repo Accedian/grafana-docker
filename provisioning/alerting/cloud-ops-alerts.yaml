@@ -1,0 +1,256 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: cloud-ops-spark-ingestion-rate
+    folder: Cloud Operations
+    interval: 10m
+    rules:
+      - uid: cloudops-spark-ingestion-rate
+        title: SparkIngestionRate
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              expr: sum(increase(spark_executor_recordsRead{job="spark_streamingapp"}[5m]))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: eq
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels:
+          severity: critical
+          class: Ingestion Statistics
+          impact: devops
+          priority: P1
+          managed-by: grafana-docker
+        annotations:
+          summary: Spark ingestion rate has dropped to zero
+          description: The streaming application has not read Kafka records during the evaluation window.
+
+  - orgId: 1
+    name: cloud-ops-airflow-batch-dag-failed
+    folder: Cloud Operations
+    interval: 10m
+    rules:
+      - uid: cloudops-airflow-batch-dag-failed
+        title: AirflowBatchDAGFailed
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 7200
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              expr: increase(airflow_dag_status{status="failed", dag_id=~"Batch_Ingestion.*"}[2h])
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 1d
+        labels:
+          severity: warning
+          class: Ingestion Statistics
+          impact: devops
+          priority: P5
+          managed-by: grafana-docker
+        annotations:
+          summary: Airflow Batch DAG failed
+          description: A Batch Ingestion Airflow DAG has failed and needs to be rerun manually.
+
+  - orgId: 1
+    name: cloud-ops-opensearch-heap
+    folder: Cloud Operations
+    interval: 5m
+    rules:
+      - uid: cloudops-opensearch-heap
+        title: OpenSearchHeap
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              expr: sum(opensearch_jvm_memory_used_bytes{area="heap"}) / sum(opensearch_jvm_memory_max_bytes{area="heap"}) * 100
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 85
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 30m
+        labels:
+          severity: warning
+          class: OpenSearch Metrics
+          impact: infra
+          priority: P3
+          managed-by: grafana-docker
+        annotations:
+          summary: OpenSearch heap utilization is above 85 percent
+          description: OpenSearch JVM heap utilization has remained above 85 percent for 30 minutes.
+
+  - orgId: 1
+    name: cloud-ops-prometheus-availability
+    folder: Cloud Operations
+    interval: 2m
+    rules:
+      - uid: cloudops-prometheus-availability
+        title: PrometheusAvailabilityDegraded
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              expr: min(up{job!~".*middlemanager.*"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expression__
+                uid: "-100"
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 5m
+        labels:
+          severity: critical
+          impact: infra
+          managed-by: grafana-docker
+        annotations:
+          summary: Prometheus availability is degraded
+          description: Grafana cannot query Prometheus, or at least one monitored target is unavailable.
