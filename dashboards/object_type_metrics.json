@@ -52,9 +52,9 @@
           "editorMode": "code",
           "expr": "sum by(job, tenant, objectType) (spark_AccedianStreamingMetrics_streaming_maxTimestamp)",
           "format": "table",
-          "instant": false,
+          "instant": true,
           "legendFormat": "__auto",
-          "range": true,
+          "range": false,
           "refId": "A"
         },
         {
@@ -62,9 +62,9 @@
           "editorMode": "code",
           "expr": "sum by(job, tenant, objectType) (spark_AccedianStreamingMetrics_streaming_minTimestamp)",
           "format": "table",
-          "instant": false,
+          "instant": true,
           "legendFormat": "__auto",
-          "range": true,
+          "range": false,
           "refId": "B"
         },
         {
@@ -72,9 +72,9 @@
           "editorMode": "code",
           "expr": "sum by(job, tenant, objectType) (spark_AccedianStreamingMetrics_streaming_recCount_total)",
           "format": "table",
-          "instant": false,
+          "instant": true,
           "legendFormat": "__auto",
-          "range": true,
+          "range": false,
           "refId": "C"
         },
         {
@@ -82,9 +82,9 @@
           "editorMode": "code",
           "expr": "sum by(job, tenant, objectType) (rate(spark_AccedianStreamingMetrics_streaming_recCount_total[5m]))",
           "format": "table",
-          "instant": false,
+          "instant": true,
           "legendFormat": "__auto",
-          "range": true,
+          "range": false,
           "refId": "D"
         }
       ],

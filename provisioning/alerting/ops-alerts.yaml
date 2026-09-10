@@ -147,7 +147,7 @@ groups:
               datasource:
                 type: prometheus
                 uid: prometheus
-              expr: sum(opensearch_jvm_memory_used_bytes{area="heap"}) / sum(opensearch_jvm_memory_max_bytes{area="heap"}) * 100
+              expr: sum by (cluster, name) (opensearch_jvm_memory_used_bytes{area="heap"}) / sum by (cluster, name) (opensearch_jvm_memory_max_bytes{area="heap"}) * 100
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
