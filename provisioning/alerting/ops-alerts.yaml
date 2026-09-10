@@ -12,14 +12,14 @@ groups:
         data:
           - refId: A
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
             datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
                 uid: prometheus
-              expr: sum(increase(spark_executor_recordsRead{job="spark_streamingapp"}[5m]))
+              expr: sum(increase(spark_executor_recordsRead{job="spark_streamingapp"}[10m]))
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200

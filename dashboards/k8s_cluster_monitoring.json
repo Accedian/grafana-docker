@@ -20,7 +20,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum(rate(container_network_receive_bytes_total{node=~\"$Node\"}[$__rate_interval]))",
+          "expr": "sum(rate(container_network_receive_bytes_total{namespace!=\"\",node=~\"$Node\"}[$__rate_interval]))",
           "legendFormat": "Received",
           "range": true,
           "refId": "A"
@@ -28,7 +28,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "-sum(rate(container_network_transmit_bytes_total{node=~\"$Node\"}[$__rate_interval]))",
+          "expr": "-sum(rate(container_network_transmit_bytes_total{namespace!=\"\",node=~\"$Node\"}[$__rate_interval]))",
           "legendFormat": "Sent",
           "range": true,
           "refId": "B"
@@ -108,8 +108,8 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{container!=\"\",container!=\"POD\",node=~\"$Node\"}[$__rate_interval]))",
-          "legendFormat": "{{pod}}",
+          "expr": "sum by (namespace, pod) (rate(container_cpu_usage_seconds_total{container!=\"\",container!=\"POD\",node=~\"$Node\"}[$__rate_interval]))",
+          "legendFormat": "{{namespace}} / {{pod}}",
           "range": true,
           "refId": "A"
         }
@@ -134,8 +134,8 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum by (pod) (container_memory_working_set_bytes{container!=\"\",container!=\"POD\",node=~\"$Node\"})",
-          "legendFormat": "{{pod}}",
+          "expr": "sum by (namespace, pod) (container_memory_working_set_bytes{container!=\"\",container!=\"POD\",node=~\"$Node\"})",
+          "legendFormat": "{{namespace}} / {{pod}}",
           "range": true,
           "refId": "A"
         }
@@ -160,16 +160,16 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum by (pod) (rate(container_network_receive_bytes_total{node=~\"$Node\"}[$__rate_interval]))",
-          "legendFormat": "Received {{pod}}",
+          "expr": "sum by (namespace, pod) (rate(container_network_receive_bytes_total{namespace!=\"\",node=~\"$Node\"}[$__rate_interval]))",
+          "legendFormat": "Received {{namespace}} / {{pod}}",
           "range": true,
           "refId": "A"
         },
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "-sum by (pod) (rate(container_network_transmit_bytes_total{node=~\"$Node\"}[$__rate_interval]))",
-          "legendFormat": "Sent {{pod}}",
+          "expr": "-sum by (namespace, pod) (rate(container_network_transmit_bytes_total{namespace!=\"\",node=~\"$Node\"}[$__rate_interval]))",
+          "legendFormat": "Sent {{namespace}} / {{pod}}",
           "range": true,
           "refId": "B"
         }
