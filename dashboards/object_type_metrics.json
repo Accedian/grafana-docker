@@ -1,29 +1,110 @@
 {
-  "annotations": {"list": []},
+  "annotations": { "list": [] },
   "editable": true,
   "panels": [
     {
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": {"custom": {"align": "auto", "cellOptions": {"type": "auto"}, "inspect": false}, "mappings": [], "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 80}]}},
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": { "type": "auto" },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 80 }
+            ]
+          }
+        },
         "overrides": [
-          {"matcher": {"id": "byRegexp", "options": "/.*Time.*/"}, "properties": [{"id": "unit", "value": "dateTimeAsSystem"}]},
-          {"matcher": {"id": "byRegexp", "options": "/job|objectType|monitor|tenant/"}, "properties": [{"id": "custom.filterable", "value": true}]}
+          {
+            "matcher": { "id": "byRegexp", "options": "/.*Time.*/" },
+            "properties": [{ "id": "unit", "value": "dateTimeAsSystem" }]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/job|objectType|monitor|tenant/"
+            },
+            "properties": [{ "id": "custom.filterable", "value": true }]
+          }
         ]
       },
-      "gridPos": {"h": 12, "w": 24, "x": 0, "y": 0},
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 0 },
       "id": 1,
-      "options": {"cellHeight": "sm", "footer": {"countRows": false, "fields": "", "reducer": ["sum"], "show": false}, "showHeader": true},
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": ["sum"],
+          "show": false
+        },
+        "showHeader": true
+      },
       "targets": [
-        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "editorMode": "code", "expr": "sum by(job, tenat, objectType) (spark_AccedianStreamingMetrics_streaming_maxTimestamp)", "format": "table", "instant": false, "legendFormat": "__auto", "range": true, "refId": "A"},
-        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "editorMode": "code", "expr": "sum by(job, tenat, objectType) (spark_AccedianStreamingMetrics_streaming_minTimestamp)", "format": "table", "instant": false, "legendFormat": "__auto", "range": true, "refId": "B"},
-        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "editorMode": "code", "expr": "sum by(job, tenat, objectType) (spark_AccedianStreamingMetrics_streaming_recCount_total)", "format": "table", "instant": false, "legendFormat": "__auto", "range": true, "refId": "C"},
-        {"datasource": {"type": "prometheus", "uid": "prometheus"}, "editorMode": "code", "expr": "rate(spark_AccedianStreamingMetrics_streaming_recCount_total[5m])", "format": "table", "instant": false, "legendFormat": "__auto", "range": true, "refId": "D"}
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "expr": "sum by(job, tenant, objectType) (spark_AccedianStreamingMetrics_streaming_maxTimestamp)",
+          "format": "table",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "expr": "sum by(job, tenant, objectType) (spark_AccedianStreamingMetrics_streaming_minTimestamp)",
+          "format": "table",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "expr": "sum by(job, tenant, objectType) (spark_AccedianStreamingMetrics_streaming_recCount_total)",
+          "format": "table",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "expr": "sum by(job, tenant, objectType) (rate(spark_AccedianStreamingMetrics_streaming_recCount_total[5m]))",
+          "format": "table",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "D"
+        }
       ],
       "title": "Object Type Metrics",
       "transformations": [
-        {"id": "merge", "options": {}},
-        {"id": "organize", "options": {"excludeByName": {}, "indexByName": {}, "renameByName": {"Value #A": "Max Timestamp", "Value #B": "Min Timestamp", "Value #C": "Record Count", "Value #D": "Record Count Rate", "objectType": ""}}}
+        { "id": "merge", "options": {} },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "Value #A": "Max Timestamp",
+              "Value #B": "Min Timestamp",
+              "Value #C": "Record Count",
+              "Value #D": "Record Count Rate",
+              "objectType": ""
+            }
+          }
+        }
       ],
       "type": "table"
     }
@@ -32,8 +113,8 @@
   "schemaVersion": 38,
   "style": "dark",
   "tags": [],
-  "templating": {"list": []},
-  "time": {"from": "now-15m", "to": "now"},
+  "templating": { "list": [] },
+  "time": { "from": "now-15m", "to": "now" },
   "timepicker": {},
   "timezone": "",
   "title": "Object Type Metrics (Local)",

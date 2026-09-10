@@ -76,14 +76,14 @@ groups:
         data:
           - refId: A
             relativeTimeRange:
-              from: 7200
+              from: 86400
               to: 0
             datasourceUid: prometheus
             model:
               datasource:
                 type: prometheus
                 uid: prometheus
-              expr: increase(airflow_dag_status{status="failed", dag_id=~"Batch_Ingestion.*"}[2h])
+              expr: max by (dag_id) (max_over_time(airflow_dag_last_status{status="failed", dag_id=~"Batch_Ingestion.*"}[24h]))
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -118,7 +118,7 @@ groups:
               type: threshold
         noDataState: OK
         execErrState: Error
-        for: 1d
+        for: 0s
         labels:
           severity: warning
           class: Ingestion Statistics
@@ -127,7 +127,7 @@ groups:
           managed-by: grafana-docker
         annotations:
           summary: Airflow Batch DAG failed
-          description: A Batch Ingestion Airflow DAG has failed and needs to be rerun manually.
+          description: A Batch Ingestion Airflow DAG has failed within the last 24 hours and needs to be rerun manually.
 
   - orgId: 1
     name: cloud-ops-opensearch-heap
