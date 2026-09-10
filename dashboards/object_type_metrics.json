@@ -50,7 +50,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum by(job, tenant, objectType) (spark_AccedianStreamingMetrics_streaming_maxTimestamp)",
+          "expr": "sum by(job, tenant, objectType) (spark_AccedianStreamingMetrics_streaming_maxTimestamp != -9223372036854776000)",
           "format": "table",
           "instant": true,
           "legendFormat": "__auto",
@@ -60,7 +60,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum by(job, tenant, objectType) (spark_AccedianStreamingMetrics_streaming_minTimestamp)",
+          "expr": "sum by(job, tenant, objectType) (spark_AccedianStreamingMetrics_streaming_minTimestamp != 9223372036854776000)",
           "format": "table",
           "instant": true,
           "legendFormat": "__auto",
