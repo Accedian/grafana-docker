@@ -4,7 +4,7 @@
 version: 2.1
 orbs:
   gh: circleci/github-cli@2.5
-  pca-bes: accedian/pca-bes@2.1.0
+  pca-bes: accedian/pca-bes@2
 
 # Jobs
 jobs:
