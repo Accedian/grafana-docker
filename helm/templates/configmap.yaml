@@ -7,4 +7,13 @@ data:
     GF_SERVER_DOMAIN: "{{ .Values.global.analytics.deployment.name }}.{{ .Values.global.analytics.deployment.domain }}"
     GF_AUTH_ANONYMOUS_ENABLED: {{ .Values.grafana.auth.anonymous.enabled | quote }}
     GF_AUTH_ANONYMOUS_ORG_ROLE: {{ .Values.grafana.auth.anonymous.orgRole | quote }}
+    GF_AUTH_PROXY_ENABLED: {{ .Values.grafana.auth.proxy.enabled | quote }}
+    GF_AUTH_PROXY_HEADER_NAME: {{ .Values.grafana.auth.proxy.headerName | quote }}
+    GF_AUTH_PROXY_HEADER_PROPERTY: {{ .Values.grafana.auth.proxy.headerProperty | quote }}
+    GF_AUTH_PROXY_AUTO_SIGN_UP: {{ .Values.grafana.auth.proxy.autoSignUp | quote }}
+    GF_AUTH_PROXY_SYNC_TTL: {{ .Values.grafana.auth.proxy.syncTtl | quote }}
+    GF_AUTH_PROXY_HEADERS: {{ .Values.grafana.auth.proxy.headers | quote }}
+    GF_AUTH_PROXY_ENABLE_LOGIN_TOKEN: {{ .Values.grafana.auth.proxy.enableLoginToken | quote }}
+    GF_AUTH_DISABLE_SIGNOUT_MENU: {{ and .Values.grafana.auth.proxy.enabled .Values.grafana.auth.proxy.disableSignoutMenu | quote }}
+    GF_USERS_AUTO_ASSIGN_ORG_ROLE: {{ .Values.grafana.users.autoAssignOrgRole | quote }}
     GF_LOG_LEVEL: "{{ .Values.grafana.env.LOG_LEVEL }}"

@@ -28,6 +28,24 @@ grafana:
     anonymous:
       enabled: false
       orgRole: Viewer
+    # Auth-proxy identity headers are safe only when ingress is restricted to
+    # the trusted reverse proxy and explicitly required service clients.
+    proxy:
+      enabled: false
+      headerName: X-WEBAUTH-USER
+      headerProperty: username
+      autoSignUp: true
+      syncTtl: 0
+      headers: ""
+      enableLoginToken: false
+      disableSignoutMenu: true
+
+  users:
+    autoAssignOrgRole: Viewer
+
+  networkPolicy:
+    enabled: false
+    trustedIngress: []
 
   serviceAccount:
     # Specifies whether a service account should be created
