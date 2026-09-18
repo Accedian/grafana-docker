@@ -45,6 +45,69 @@ runtime_paths=("${runtime_paths[@]}")
 # Ensure the runtime paths are group-writable for OpenShift random UIDs (GID 0).
 chmod g+rwX "${runtime_paths[@]}" 2>/dev/null || true
 
+valid_oidc_client_id() {
+    local client_id="$1"
+    [[ "$client_id" =~ ^[A-Za-z0-9._:@-]{1,512}$ ]]
+}
+
+resolve_generic_oauth_client_id() {
+    if [ "${GF_AUTH_GENERIC_OAUTH_ENABLED,,}" != "true" ]; then
+        return
+    fi
+
+    if [ -n "${GF_AUTH_GENERIC_OAUTH_CLIENT_ID:-}" ]; then
+        if ! valid_oidc_client_id "$GF_AUTH_GENERIC_OAUTH_CLIENT_ID"; then
+            echo "Configured Grafana OAuth client ID has an invalid format" >&2
+            return 1
+        fi
+        return
+    fi
+
+    local discovery_url="${GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_URL:-}"
+    local organization="${GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_ORGANIZATION:-}"
+    local project="${GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_PROJECT:-}"
+    local application="${GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_APPLICATION:-}"
+    local timeout_seconds="${GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_TIMEOUT_SECONDS:-900}"
+
+    if [ -z "$discovery_url" ] || [ -z "$organization" ] || [ -z "$project" ] || [ -z "$application" ]; then
+        echo "Grafana OAuth requires a client ID or complete client ID discovery configuration" >&2
+        return 1
+    fi
+    if [[ ! "$timeout_seconds" =~ ^[1-9][0-9]{0,4}$ ]]; then
+        echo "Grafana OAuth client ID discovery timeout must be between 1 and 99999 seconds" >&2
+        return 1
+    fi
+
+    local deadline=$((SECONDS + timeout_seconds))
+    local resolved_client_id=""
+    echo "Waiting for the Grafana public OAuth client to be provisioned"
+    while (( SECONDS < deadline )); do
+        if resolved_client_id="$(curl \
+            --fail \
+            --silent \
+            --connect-timeout 5 \
+            --max-time 10 \
+            --get \
+            --data-urlencode "organization=$organization" \
+            --data-urlencode "project=$project" \
+            --data-urlencode "application=$application" \
+            "$discovery_url")"; then
+            if ! valid_oidc_client_id "$resolved_client_id"; then
+                echo "Grafana OAuth client discovery returned an invalid client ID" >&2
+                return 1
+            fi
+            export GF_AUTH_GENERIC_OAUTH_CLIENT_ID="$resolved_client_id"
+            echo "Grafana public OAuth client ID resolved"
+            return
+        fi
+        sleep 5
+    done
+
+    echo "Timed out waiting for the Grafana public OAuth client" >&2
+    return 1
+}
+
+resolve_generic_oauth_client_id
 
 if [ -f /var/run/secrets/gce_oauth_key ]; then
  export GF_AUTH_GOOGLE_CLIENT_ID=$(cat /var/run/secrets/gce_oauth_key)

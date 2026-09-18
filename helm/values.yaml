@@ -28,6 +28,8 @@ grafana:
     anonymous:
       enabled: false
       orgRole: Viewer
+    basic:
+      enabled: true
     # Auth-proxy identity headers are safe only when ingress is restricted to
     # the trusted reverse proxy and explicitly required service clients.
     proxy:
@@ -39,6 +41,36 @@ grafana:
       headers: ""
       enableLoginToken: false
       disableSignoutMenu: true
+    genericOAuth:
+      enabled: false
+      name: Zitadel
+      allowSignUp: true
+      autoLogin: true
+      # Public identifier, not a credential. Leave empty to discover it.
+      clientId: ""
+      clientIdDiscovery:
+        url: ""
+        organization: ""
+        project: ""
+        application: ""
+        timeoutSeconds: 900
+      scopes: "openid profile email"
+      authUrl: ""
+      tokenUrl: ""
+      apiUrl: ""
+      usePkce: true
+      # Use the immutable Zitadel subject as the Grafana login identifier.
+      loginAttributePath: sub
+      nameAttributePath: name
+      emailAttributePath: email
+      # Authorization remains local to Grafana; new users receive Viewer.
+      skipOrgRoleSync: true
+
+  security:
+    # Grafana is externally HTTPS even though nginx uses HTTP to the pod.
+    cookieSecure: false
+    # Lax permits the top-level OIDC authorization-code callback.
+    cookieSameSite: lax
 
   users:
     autoAssignOrgRole: Viewer
