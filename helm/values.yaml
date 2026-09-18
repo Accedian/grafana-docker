@@ -9,7 +9,12 @@ global:
     deployment:
       name: "deployment"
       domain: "accedian.local"
-      
+
+# URL of the Prometheus server that Grafana's Prometheus datasource queries.
+# When empty, the datasource template falls back to the in-cluster
+# kube-prometheus-stack service (see templates/prometheus-datasource.yaml).
+prometheusUrl: ""
+
 grafana:
   replicaCount: 1
   image:
