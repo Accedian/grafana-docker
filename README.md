@@ -44,6 +44,20 @@ You can use your own grafana.ini file by using environment variable `GF_PATHS_CO
 
 More information in the grafana configuration documentation: http://docs.grafana.org/installation/configuration/
 
+### Generic OAuth client discovery
+
+The chart can enable Generic OAuth with Authorization Code and PKCE. A public
+client ID can be supplied directly with `grafana.auth.genericOAuth.clientId`,
+or resolved at container startup from the configured discovery endpoint. The
+startup lookup is bounded and fails closed if the endpoint never returns a
+valid public client ID for the exact organization, project, and application
+names.
+
+No OAuth client secret is used or accepted by this flow. Keep Basic auth
+enabled for internal bootstrap and emergency administration. With OAuth
+auto-login enabled, append `?disableAutoLogin=true` to `/grafana/login` to
+reach the local login form.
+
 ## Grafana container with persistent storage (recommended)
 
 ```
