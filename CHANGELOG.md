@@ -1,3 +1,4 @@
+* Feat - Add Grafana Generic OAuth with PKCE, identity lookup through Zitadel's authenticated UserInfo endpoint, bounded public-client-ID discovery, and upstream session termination on logout for Zitadel SSO.
 ## Current Release
 ### 0.232.0
 **Release Date:** Fri Sep 18 14:06:52 UTC 2026
@@ -609,4 +610,3 @@ Fix - add panel to adh-fedex dashboard for RR websocket teardown/rejection count
 **Release Date:** Wed Feb 28 19:25:31 UTC 2018     
 ### 0.1.0
 **Release Date:** Wed Feb 28 19:17:58 UTC 2018
-

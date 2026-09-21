@@ -1,3 +1,28 @@
+{{- $endSessionUrl := .Values.grafana.auth.genericOAuth.endSessionUrl }}
+{{- $postLogoutRedirectUrl := .Values.grafana.auth.genericOAuth.postLogoutRedirectUrl }}
+{{- if .Values.grafana.auth.genericOAuth.enabled }}
+{{- $discovery := .Values.grafana.auth.genericOAuth.clientIdDiscovery }}
+{{- $jwkSetUrl := .Values.grafana.auth.genericOAuth.jwkSetUrl }}
+{{- if and (empty .Values.grafana.auth.genericOAuth.clientId) (or (empty $discovery.url) (empty $discovery.organization) (empty $discovery.project) (empty $discovery.application)) }}
+{{- fail "generic OAuth requires clientId or complete clientIdDiscovery configuration" }}
+{{- end }}
+{{- if or (empty .Values.grafana.auth.genericOAuth.authUrl) (empty .Values.grafana.auth.genericOAuth.tokenUrl) (empty .Values.grafana.auth.genericOAuth.apiUrl) }}
+{{- fail "generic OAuth requires authUrl, tokenUrl, and apiUrl" }}
+{{- end }}
+{{- if or (empty $endSessionUrl) (empty $postLogoutRedirectUrl) }}
+{{- fail "generic OAuth requires endSessionUrl and postLogoutRedirectUrl" }}
+{{- end }}
+{{- if or (not (hasPrefix "https://" $endSessionUrl)) (not (hasPrefix "https://" $postLogoutRedirectUrl)) }}
+{{- fail "generic OAuth logout URLs must use HTTPS" }}
+{{- end }}
+{{- if and .Values.grafana.auth.genericOAuth.validateIdToken (empty $jwkSetUrl) }}
+{{- fail "generic OAuth ID token validation requires jwkSetUrl" }}
+{{- end }}
+{{- if and .Values.grafana.auth.genericOAuth.validateIdToken (not (hasPrefix "https://" $jwkSetUrl)) }}
+{{- fail "generic OAuth jwkSetUrl must use HTTPS" }}
+{{- end }}
+{{- end }}
+
 kind: ConfigMap
 apiVersion: v1
 metadata:
@@ -7,4 +32,31 @@ data:
     GF_SERVER_DOMAIN: "{{ .Values.global.analytics.deployment.name }}.{{ .Values.global.analytics.deployment.domain }}"
     GF_AUTH_ANONYMOUS_ENABLED: {{ .Values.grafana.auth.anonymous.enabled | quote }}
     GF_AUTH_ANONYMOUS_ORG_ROLE: {{ .Values.grafana.auth.anonymous.orgRole | quote }}
+    GF_AUTH_BASIC_ENABLED: {{ .Values.grafana.auth.basic.enabled | quote }}
+    GF_AUTH_GENERIC_OAUTH_ENABLED: {{ .Values.grafana.auth.genericOAuth.enabled | quote }}
+    GF_AUTH_GENERIC_OAUTH_NAME: {{ .Values.grafana.auth.genericOAuth.name | quote }}
+    GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP: {{ .Values.grafana.auth.genericOAuth.allowSignUp | quote }}
+    GF_AUTH_GENERIC_OAUTH_AUTO_LOGIN: {{ .Values.grafana.auth.genericOAuth.autoLogin | quote }}
+    GF_AUTH_GENERIC_OAUTH_CLIENT_ID: {{ .Values.grafana.auth.genericOAuth.clientId | quote }}
+    GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_URL: {{ .Values.grafana.auth.genericOAuth.clientIdDiscovery.url | quote }}
+    GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_ORGANIZATION: {{ .Values.grafana.auth.genericOAuth.clientIdDiscovery.organization | quote }}
+    GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_PROJECT: {{ .Values.grafana.auth.genericOAuth.clientIdDiscovery.project | quote }}
+    GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_APPLICATION: {{ .Values.grafana.auth.genericOAuth.clientIdDiscovery.application | quote }}
+    GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_TIMEOUT_SECONDS: {{ .Values.grafana.auth.genericOAuth.clientIdDiscovery.timeoutSeconds | quote }}
+    GRAFANA_OAUTH_END_SESSION_URL: {{ $endSessionUrl | quote }}
+    GRAFANA_OAUTH_POST_LOGOUT_REDIRECT_URL: {{ $postLogoutRedirectUrl | quote }}
+    GF_AUTH_GENERIC_OAUTH_SCOPES: {{ .Values.grafana.auth.genericOAuth.scopes | quote }}
+    GF_AUTH_GENERIC_OAUTH_AUTH_URL: {{ .Values.grafana.auth.genericOAuth.authUrl | quote }}
+    GF_AUTH_GENERIC_OAUTH_TOKEN_URL: {{ .Values.grafana.auth.genericOAuth.tokenUrl | quote }}
+    GF_AUTH_GENERIC_OAUTH_API_URL: {{ .Values.grafana.auth.genericOAuth.apiUrl | quote }}
+    GF_AUTH_GENERIC_OAUTH_USE_PKCE: {{ .Values.grafana.auth.genericOAuth.usePkce | quote }}
+    GF_AUTH_GENERIC_OAUTH_VALIDATE_ID_TOKEN: {{ .Values.grafana.auth.genericOAuth.validateIdToken | quote }}
+    GF_AUTH_GENERIC_OAUTH_JWK_SET_URL: {{ .Values.grafana.auth.genericOAuth.jwkSetUrl | quote }}
+    GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH: {{ .Values.grafana.auth.genericOAuth.loginAttributePath | quote }}
+    GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH: {{ .Values.grafana.auth.genericOAuth.nameAttributePath | quote }}
+    GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_PATH: {{ .Values.grafana.auth.genericOAuth.emailAttributePath | quote }}
+    GF_AUTH_GENERIC_OAUTH_SKIP_ORG_ROLE_SYNC: {{ .Values.grafana.auth.genericOAuth.skipOrgRoleSync | quote }}
+    GF_SECURITY_COOKIE_SECURE: {{ .Values.grafana.security.cookieSecure | quote }}
+    GF_SECURITY_COOKIE_SAMESITE: {{ .Values.grafana.security.cookieSameSite | quote }}
+    GF_USERS_AUTO_ASSIGN_ORG_ROLE: {{ .Values.grafana.users.autoAssignOrgRole | quote }}
     GF_LOG_LEVEL: "{{ .Values.grafana.env.LOG_LEVEL }}"

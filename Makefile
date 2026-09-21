@@ -17,6 +17,7 @@ ifeq ($(UNAME),arm64)
 	LOCAL_BUILD_PLATFORM = linux/arm64/v8
 endif
 BUILD_PLATFORMS ?= linux/amd64 #linux/arm64/v8 remove arm64 from list because plugin not supported
+TEST_SCRIPTS := $(wildcard tests/test-*.sh helm/tests/test-*.sh)
 
 GRAFANA_VERSION ?= 12.1.0
 GRAFANA_URL ?= https://dl.grafana.com/oss/release/grafana_$(GRAFANA_VERSION)
@@ -40,6 +41,13 @@ url-file:
 all: build
 
 .PHONY: build
+
+.PHONY: test
+test:
+	@set -e; for test_script in $(TEST_SCRIPTS); do \
+		echo "Running $$test_script"; \
+		bash "$$test_script"; \
+	done
 
 docker:
 	@echo "Building Grafana image: $(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)"
