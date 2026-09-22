@@ -69,7 +69,11 @@ helm/%.yaml: helm/%.yaml.in .FORCE
 	@echo "# /!\ This file is generated, do not edit!" > $@
 	sed -e "s/@HELM_VER@/$(HELM_VER)/" $< >> $@
 
-helm-lint: helm/Chart.yaml helm/values.yaml
+.PHONY: helm-auth-test helm-lint
+helm-auth-test: helm/Chart.yaml helm/values.yaml
+	bash helm/tests/test-auth-config.sh
+
+helm-lint: helm/Chart.yaml helm/values.yaml helm-auth-test
 	helm lint helm
 
 helm $(DOCKER_IMAGE_NAME)-$(HELM_VER).tgz: .FORCE helm-lint helm/Chart.yaml helm/values.yaml

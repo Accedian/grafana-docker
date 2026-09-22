@@ -3,6 +3,10 @@
 # Declare variables to be passed into your templates.
 global:
   deployment_type:
+  external_ip: ""
+  clusterIPPortZitadelAuth: 3443
+  dns:
+    support: true
   images:
     pullSecrets: []
   analytics:
@@ -52,9 +56,6 @@ grafana:
       endSessionUrl: ""
       postLogoutRedirectUrl: ""
       usePkce: true
-      # Verify the signature of identity claims before using them.
-      validateIdToken: true
-      jwkSetUrl: ""
       # Use the immutable Zitadel subject as the Grafana login identifier.
       loginAttributePath: sub
       nameAttributePath: name
@@ -73,6 +74,8 @@ grafana:
 
   networkPolicy:
     enabled: false
+    # These peers may reach Grafana over the network. They are not trusted to
+    # assert user identity through Grafana Auth Proxy headers.
     trustedIngress: []
 
   serviceAccount:

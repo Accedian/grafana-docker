@@ -53,21 +53,37 @@ startup lookup is bounded and fails closed if the endpoint never returns a
 valid public client ID for the exact organization, project, and application
 names.
 
-ID-token signature validation is enabled by default. Set
-`grafana.auth.genericOAuth.jwkSetUrl` to the provider's JWKS endpoint; for
-Zitadel this is `https://auth.example.com/oauth/v2/keys`. Helm rendering fails
-when validation is enabled without a JWKS URL.
+When endpoint overrides are empty, the chart derives the Grafana public host
+and Zitadel OAuth endpoints from the global deployment, DNS, external IP, and
+authentication-port values. Explicit HTTPS endpoint values take precedence for
+deployments with nonstandard routing.
+
+Grafana 12.1 does not support Generic OAuth ID-token signature validation. To
+avoid consuming unverified ID-token claims, the chart configures the supported
+`id_token_attribute_name` setting with a field that Zitadel does not return.
+Grafana therefore resolves the user's identity through Zitadel's authenticated
+UserInfo endpoint using the access token obtained by the authorization-code
+exchange. Helm rendering requires the authorization, token, and UserInfo
+endpoints to use HTTPS.
 
 No OAuth client secret is used or accepted by this flow. Keep Basic auth
 enabled for internal bootstrap and emergency administration. With OAuth
 auto-login enabled, append `?disableAutoLogin=true` to `/grafana/login` to
 reach the local login form.
 
-Configure `grafana.auth.genericOAuth.endSessionUrl` and
-`postLogoutRedirectUrl` with Zitadel's HTTPS end-session endpoint and the
-exact return URI registered on the public client. At startup, Grafana combines
-them with the validated public client ID so signing out terminates the Zitadel
-browser session before automatic login can run again.
+The chart derives Zitadel's HTTPS end-session endpoint and the exact registered
+post-logout return URI from the same deployment values. Exact
+`endSessionUrl` and `postLogoutRedirectUrl` overrides remain available for
+nonstandard routing. At startup, Grafana combines those URLs with the validated
+public client ID so signing out terminates the Zitadel browser session before
+automatic login can run again.
+
+Generic OAuth does not use Grafana Auth Proxy. The reverse proxy routes the
+browser to Grafana, but Zitadel and Grafana establish the user identity through
+the OAuth authorization-code exchange. When Generic OAuth is enabled, the chart
+explicitly disables Auth Proxy rather than trusting an identity header. The
+`grafana.networkPolicy.trustedIngress` peers control Kubernetes network
+reachability only; they are not identity-header trust anchors.
 
 ## Grafana container with persistent storage (recommended)
 

@@ -1,4 +1,4 @@
-* Feat - Add Grafana Generic OAuth with PKCE, identity lookup through Zitadel's authenticated UserInfo endpoint, bounded public-client-ID discovery, and upstream session termination on logout for Zitadel SSO.
+* Feat - Add Grafana Generic OAuth with PKCE, deployment-derived endpoints, authenticated UserInfo identity lookup, bounded public-client-ID discovery, and upstream session termination on logout for Zitadel SSO.
 ## Current Release
 ### 0.232.0
 **Release Date:** Fri Sep 18 14:06:52 UTC 2026
