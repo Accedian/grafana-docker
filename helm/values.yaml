@@ -3,6 +3,10 @@
 # Declare variables to be passed into your templates.
 global:
   deployment_type:
+  external_ip: ""
+  clusterIPPortZitadelAuth: 3443
+  dns:
+    support: true
   images:
     pullSecrets: []
   analytics:
@@ -28,6 +32,51 @@ grafana:
     anonymous:
       enabled: false
       orgRole: Viewer
+    basic:
+      enabled: true
+    genericOAuth:
+      enabled: false
+      name: Zitadel
+      allowSignUp: true
+      autoLogin: true
+      # Public identifier, not a credential. Leave empty to discover it.
+      clientId: ""
+      clientIdDiscovery:
+        url: ""
+        organization: ""
+        project: ""
+        application: ""
+        timeoutSeconds: 900
+      scopes: "openid profile email"
+      authUrl: ""
+      tokenUrl: ""
+      apiUrl: ""
+      # Grafana appends the resolved public client ID and exact return URI at
+      # startup so Zitadel can terminate the browser SSO session on logout.
+      endSessionUrl: ""
+      postLogoutRedirectUrl: ""
+      usePkce: true
+      # Use the immutable Zitadel subject as the Grafana login identifier.
+      loginAttributePath: sub
+      nameAttributePath: name
+      emailAttributePath: email
+      # Authorization remains local to Grafana; new users receive Viewer.
+      skipOrgRoleSync: true
+
+  security:
+    # Grafana is externally HTTPS even though nginx uses HTTP to the pod.
+    cookieSecure: true
+    # Lax permits the top-level OIDC authorization-code callback.
+    cookieSameSite: lax
+
+  users:
+    autoAssignOrgRole: Viewer
+
+  networkPolicy:
+    enabled: false
+    # These peers may reach Grafana over the network. They are not trusted to
+    # assert user identity through Grafana Auth Proxy headers.
+    trustedIngress: []
 
   serviceAccount:
     # Specifies whether a service account should be created

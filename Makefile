@@ -17,6 +17,7 @@ ifeq ($(UNAME),arm64)
 	LOCAL_BUILD_PLATFORM = linux/arm64/v8
 endif
 BUILD_PLATFORMS ?= linux/amd64 #linux/arm64/v8 remove arm64 from list because plugin not supported
+TEST_SCRIPTS := $(wildcard tests/test-*.sh helm/tests/test-*.sh)
 
 GRAFANA_VERSION ?= 12.1.0
 GRAFANA_URL ?= https://dl.grafana.com/oss/release/grafana_$(GRAFANA_VERSION)
@@ -41,6 +42,13 @@ all: build
 
 .PHONY: build
 
+.PHONY: test
+test:
+	@set -e; for test_script in $(TEST_SCRIPTS); do \
+		echo "Running $$test_script"; \
+		bash "$$test_script"; \
+	done
+
 docker:
 	@echo "Building Grafana image: $(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)"
 	@echo "Using Grafana URL $(GRAFANA_URL)"
@@ -61,7 +69,11 @@ helm/%.yaml: helm/%.yaml.in .FORCE
 	@echo "# /!\ This file is generated, do not edit!" > $@
 	sed -e "s/@HELM_VER@/$(HELM_VER)/" $< >> $@
 
-helm-lint: helm/Chart.yaml helm/values.yaml
+.PHONY: helm-auth-test helm-lint
+helm-auth-test: helm/Chart.yaml helm/values.yaml
+	bash helm/tests/test-auth-config.sh
+
+helm-lint: helm/Chart.yaml helm/values.yaml helm-auth-test
 	helm lint helm
 
 helm $(DOCKER_IMAGE_NAME)-$(HELM_VER).tgz: .FORCE helm-lint helm/Chart.yaml helm/values.yaml
