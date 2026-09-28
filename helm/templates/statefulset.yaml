@@ -16,8 +16,9 @@ spec:
   serviceName: {{ include "grafana.fullname" . }}
   template:
     metadata:
-      {{- with .Values.grafana.podAnnotations }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      {{- with .Values.grafana.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:

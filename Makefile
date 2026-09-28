@@ -27,6 +27,7 @@ GF_INSTALL_PLUGINS ?= "xginn8-pagerduty-datasource,grafana-image-renderer,grafan
 # Add the following for helm chart
 SEMVER_PATTERN := ^[0-9]+\.[0-9]+\.[0-9]+
 HELM_VER ?= $(shell if echo "$(DOCKER_VER)" | grep -Eq '$(SEMVER_PATTERN)'; then echo "$(DOCKER_VER)"; else echo "0.0.0-$(DOCKER_VER)"; fi)
+APP_VER ?= $(DOCKER_VER)
 HELM_REPO := oci://us-docker.pkg.dev/npav-172917/helm-package
 
 url-file:
@@ -67,9 +68,13 @@ push:
 
 helm/%.yaml: helm/%.yaml.in .FORCE
 	@echo "# /!\ This file is generated, do not edit!" > $@
-	sed -e "s/@HELM_VER@/$(HELM_VER)/" $< >> $@
+	sed -e "s/@HELM_VER@/$(HELM_VER)/" -e "s/@APP_VER@/$(APP_VER)/" $< >> $@
 
-helm-lint: helm/Chart.yaml helm/values.yaml
+.PHONY: helm-auth-test helm-lint
+helm-auth-test: helm/Chart.yaml helm/values.yaml
+	bash helm/tests/test-auth-config.sh
+
+helm-lint: helm/Chart.yaml helm/values.yaml helm-auth-test
 	helm lint helm
 
 helm $(DOCKER_IMAGE_NAME)-$(HELM_VER).tgz: .FORCE helm-lint helm/Chart.yaml helm/values.yaml

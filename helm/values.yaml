@@ -3,6 +3,10 @@
 # Declare variables to be passed into your templates.
 global:
   deployment_type:
+  external_ip: ""
+  clusterIPPortZitadelAuth: 3443
+  dns:
+    support: true
   images:
     pullSecrets: []
   analytics:
@@ -32,6 +36,8 @@ grafana:
       enabled: true
     genericOAuth:
       enabled: false
+      # Umbrella charts can disable OAuth when the Zitadel stack is absent.
+      fullDeploymentOnly: false
       name: Zitadel
       allowSignUp: true
       autoLogin: true
@@ -39,6 +45,7 @@ grafana:
       clientId: ""
       clientIdDiscovery:
         url: ""
+        # Empty uses the configured deployment name.
         organization: ""
         project: ""
         application: ""
@@ -52,9 +59,6 @@ grafana:
       endSessionUrl: ""
       postLogoutRedirectUrl: ""
       usePkce: true
-      # Verify the signature of identity claims before using them.
-      validateIdToken: true
-      jwkSetUrl: ""
       # Use the immutable Zitadel subject as the Grafana login identifier.
       loginAttributePath: sub
       nameAttributePath: name
