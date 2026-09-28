@@ -1,0 +1,17 @@
+{
+  "annotations": {"list": []},
+  "description": "Freshness and volume diagnostics by local object type.",
+  "editable": true,
+  "panels": [
+    {"id": 1, "type": "text", "title": "About this dashboard", "transparent": true, "gridPos": {"h": 4, "w": 24, "x": 0, "y": 0}, "options": {"mode": "markdown", "content": "# Object type freshness and volume\nUse this table to compare the newest and oldest timestamps, record totals, and recent record rates for each tenant and object type in this deployment. It is useful when investigating stale, delayed, or unexpectedly low-volume data. Sentinel timestamp values are excluded. Empty results can be normal when no matching objects have been processed in the selected time range."}},
+    {"id": 2, "type": "table", "title": "Object type freshness and volume", "datasource": {"type": "prometheus", "uid": "prometheus"}, "gridPos": {"h": 14, "w": 24, "x": 0, "y": 4}, "options": {"showHeader": true, "cellHeight": "sm"}, "fieldConfig": {"defaults": {}, "overrides": [{"matcher": {"id": "byRegexp", "options": "/.*Timestamp.*/"}, "properties": [{"id": "unit", "value": "dateTimeAsSystem"}]}]}, "targets": [{"refId": "A", "expr": "sum by(job, tenant, objectType) (spark_AccedianStreamingMetrics_streaming_maxTimestamp != -9223372036854776000)", "format": "table", "instant": true, "range": false, "editorMode": "code", "datasource": {"type": "prometheus", "uid": "prometheus"}}, {"refId": "B", "expr": "sum by(job, tenant, objectType) (spark_AccedianStreamingMetrics_streaming_minTimestamp != 9223372036854776000)", "format": "table", "instant": true, "range": false, "editorMode": "code", "datasource": {"type": "prometheus", "uid": "prometheus"}}, {"refId": "C", "expr": "sum by(job, tenant, objectType) (spark_AccedianStreamingMetrics_streaming_recCount_total)", "format": "table", "instant": true, "range": false, "editorMode": "code", "datasource": {"type": "prometheus", "uid": "prometheus"}}, {"refId": "D", "expr": "sum by(job, tenant, objectType) (rate(spark_AccedianStreamingMetrics_streaming_recCount_total[5m]))", "format": "table", "instant": true, "range": false, "editorMode": "code", "datasource": {"type": "prometheus", "uid": "prometheus"}}], "transformations": [{"id": "merge", "options": {}}, {"id": "organize", "options": {"renameByName": {"Value #A": "Newest timestamp", "Value #B": "Oldest timestamp", "Value #C": "Record count", "Value #D": "Record rate"}}}]}
+  ],
+  "schemaVersion": 41,
+  "tags": ["freshness", "data-collection"],
+  "templating": {"list": []},
+  "time": {"from": "now-15m", "to": "now"},
+  "timezone": "browser",
+  "title": "Object Type Freshness",
+  "uid": "pca-object-type-freshness",
+  "version": 1
+}

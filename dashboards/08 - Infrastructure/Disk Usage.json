@@ -1,0 +1,17 @@
+{
+  "annotations": {"list": []},
+  "description": "Kubernetes-compatible node filesystem capacity for this deployment.",
+  "editable": true,
+  "panels": [
+    {"id": 1, "type": "text", "title": "About this dashboard", "transparent": true, "gridPos": {"h": 4, "w": 24, "x": 0, "y": 0}, "options": {"mode": "markdown", "content": "# Node disk usage\nThis dashboard shows used capacity for meaningful node filesystems in this deployment. Temporary filesystems, overlay mounts, and Docker/containerd runtime mounts are excluded because they would otherwise create noisy or misleading results. Use the instance and mountpoint legend to locate sustained high usage and then investigate the workload or node responsible."}},
+    {"id": 2, "type": "timeseries", "title": "Filesystem usage", "datasource": {"type": "prometheus", "uid": "prometheus"}, "gridPos": {"h": 12, "w": 24, "x": 0, "y": 4}, "options": {"legend": {"calcs": ["lastNotNull", "min", "mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi"}}, "fieldConfig": {"defaults": {"min": 0, "max": 1, "unit": "percentunit", "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 0.95}]}}, "overrides": []}, "targets": [{"refId": "A", "expr": "avg by (instance, mountpoint) (1 - node_filesystem_avail_bytes{fstype!~\"^(tmpfs|overlay|squashfs)$\",mountpoint!~\"^/var/lib/(docker|containerd)(/.*)?$\"} / node_filesystem_size_bytes{fstype!~\"^(tmpfs|overlay|squashfs)$\",mountpoint!~\"^/var/lib/(docker|containerd)(/.*)?$\"})", "legendFormat": "{{instance}} {{mountpoint}}", "range": true, "editorMode": "code", "datasource": {"type": "prometheus", "uid": "prometheus"}}]}
+  ],
+  "schemaVersion": 41,
+  "tags": ["infrastructure", "disk"],
+  "templating": {"list": []},
+  "time": {"from": "now-6h", "to": "now"},
+  "timezone": "browser",
+  "title": "Node Disk Usage",
+  "uid": "pca-node-disk-usage",
+  "version": 1
+}
