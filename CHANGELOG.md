@@ -1,4 +1,4 @@
-* Feat - Add Grafana Generic OAuth with PKCE, deployment-derived endpoints and discovery organization, authenticated UserInfo identity lookup, bounded public-client-ID discovery, and upstream session termination on logout for Zitadel SSO.
+* Feat - Add Grafana Generic OAuth with PKCE, deployment-derived endpoints and discovery organization, authenticated UserInfo identity lookup, bounded public-client-ID discovery from Skylight-AAA, and upstream session termination on logout for Zitadel SSO.
 * Fix - Skip Zitadel OAuth discovery when analytics-lite omits the identity provider, retain local Grafana login, and restart Grafana when the auth configuration changes.
 * Add - Optional Grafana ingress NetworkPolicy restricts access to configured Kubernetes peers without trusting identity headers.
 ## Current Release

@@ -12,6 +12,24 @@ cat > "$test_directory/bin/curl" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
 
+for expected_argument in \
+    "$DISCOVERY_EXPECTED_URL" \
+    "organization=performance" \
+    "project=Analytics" \
+    "application=pca-grafana-pkce"; do
+    found=false
+    for argument in "$@"; do
+        if [ "$argument" = "$expected_argument" ]; then
+            found=true
+            break
+        fi
+    done
+    if [ "$found" != true ]; then
+        echo "Missing AAA discovery argument: $expected_argument" >&2
+        exit 2
+    fi
+done
+
 call_count=0
 if [ -s "$DISCOVERY_CALL_COUNT_FILE" ]; then
     read -r call_count < "$DISCOVERY_CALL_COUNT_FILE"
@@ -64,7 +82,8 @@ chmod +x "$test_directory/bin/curl" "$test_directory/bin/sleep"
 export PATH="$test_directory/bin:$PATH"
 export DISCOVERY_CALL_COUNT_FILE="$test_directory/call-count"
 export GF_AUTH_GENERIC_OAUTH_ENABLED=true
-export GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_URL=http://discovery.example.test/client-id
+export DISCOVERY_EXPECTED_URL=http://aaa-discovery/api/v1/mediator/public-oidc-client-id
+export GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_URL="$DISCOVERY_EXPECTED_URL"
 export GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_ORGANIZATION=performance
 export GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_PROJECT=Analytics
 export GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_APPLICATION=pca-grafana-pkce

@@ -80,15 +80,16 @@ grep -Fq 'GRAFANA_OAUTH_POST_LOGOUT_REDIRECT_URL: "https://192.0.2.10/grafana/"'
 
 discovery_values=(
     --set grafana.auth.genericOAuth.enabled=true
-    --set-string grafana.auth.genericOAuth.clientIdDiscovery.url=http://sky-zitadel-gw/api/v1/mediator/public-oidc-client-id
-    --set-string grafana.auth.genericOAuth.clientIdDiscovery.project=Analytics
-    --set-string grafana.auth.genericOAuth.clientIdDiscovery.application=pca-grafana-pkce
+    --set-string grafana.auth.genericOAuth.clientIdDiscovery.url=http://aaa-discovery/api/v1/mediator/public-oidc-client-id
 )
 
 helm template grafana helm "${discovery_values[@]}" \
     --set-string global.analytics.deployment.name=Tenant-Blue \
     > "$rendered_chart"
 grep -Fq 'GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_ORGANIZATION: "Tenant-Blue"' "$rendered_chart"
+grep -Fq 'GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_URL: "http://aaa-discovery/api/v1/mediator/public-oidc-client-id"' "$rendered_chart"
+grep -Fq 'GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_PROJECT: "Analytics"' "$rendered_chart"
+grep -Fq 'GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_APPLICATION: "pca-grafana-pkce"' "$rendered_chart"
 
 helm template grafana helm "${discovery_values[@]}" \
     --set-string global.analytics.deployment.name=Tenant-Blue \

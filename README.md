@@ -53,6 +53,20 @@ startup lookup is bounded and fails closed if the endpoint never returns a
 valid public client ID for the exact organization, project, and application
 names.
 
+Skylight-AAA provisions the `pca-grafana-pkce` application in the deployment
+organization's `Analytics` project when its `grafanaOIDC.enabled` chart value
+is true. Configure `grafana.auth.genericOAuth.clientIdDiscovery.url` to reach
+AAA's `/api/v1/mediator/public-oidc-client-id` endpoint. The discovery
+project and application default to `Analytics` and `pca-grafana-pkce`; the
+organization defaults to the exact deployment name. The endpoint returns a
+public client ID, not a credential, as a plain-text response.
+
+AAA's REST API trusts identity headers, so do not grant the Grafana pod broad
+direct access to it. The deployment should expose only this discovery path to
+Grafana through a restricted internal proxy, without forwarding identity
+headers. The chart leaves the discovery URL unset until that route is
+configured.
+
 Umbrella charts that omit Zitadel in a lite deployment can set
 `grafana.auth.genericOAuth.fullDeploymentOnly: true`. When
 `global.skylight_full_version` is false, the chart disables Generic OAuth and

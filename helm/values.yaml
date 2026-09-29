@@ -47,8 +47,8 @@ grafana:
         url: ""
         # Empty uses the configured deployment name.
         organization: ""
-        project: ""
-        application: ""
+        project: Analytics
+        application: pca-grafana-pkce
         timeoutSeconds: 900
       scopes: "openid profile email"
       authUrl: ""
