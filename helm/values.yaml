@@ -9,13 +9,13 @@ global:
     deployment:
       name: "deployment"
       domain: "accedian.local"
-      
+
 grafana:
   replicaCount: 1
   image:
     registry: gcr.io
     repository: npav-172917/grafana
-    pullPolicy: IfNotPresent 
+    pullPolicy: IfNotPresent
 
   imagePullSecrets: []
   nameOverride: ""
@@ -23,6 +23,10 @@ grafana:
 
   env:
     LOG_LEVEL: error
+
+  smtp:
+    enabled: false
+    secretName: ""
 
   auth:
     anonymous:
@@ -101,7 +105,7 @@ blackbox_exporter:
     registry: gcr.io
     repository: npav-172917/3rdparty/quay.io/prometheus/blackbox-exporter
     tag: "20231205"
-    pullPolicy: IfNotPresent 
+    pullPolicy: IfNotPresent
   resources: {}
     # limits:
     #   cpu: 100m
