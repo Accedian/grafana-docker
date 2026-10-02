@@ -1,5 +1,9 @@
 #!/bin/bash -e
 
+run_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$run_directory/oauth-client-discovery.sh"
+unset run_directory
+
 umask 0002
 export GF_USERS_DEFAULT_THEME=light
 
@@ -45,6 +49,7 @@ runtime_paths=("${runtime_paths[@]}")
 # Ensure the runtime paths are group-writable for OpenShift random UIDs (GID 0).
 chmod g+rwX "${runtime_paths[@]}" 2>/dev/null || true
 
+configure_generic_oauth
 
 if [ -f /var/run/secrets/gce_oauth_key ]; then
  export GF_AUTH_GOOGLE_CLIENT_ID=$(cat /var/run/secrets/gce_oauth_key)
