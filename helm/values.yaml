@@ -26,8 +26,8 @@ grafana:
 
   auth:
     anonymous:
-      enabled: false
-      orgRole: Viewer
+      enabled: true
+      orgRole: Admin
 
   serviceAccount:
     # Specifies whether a service account should be created
