@@ -7,5 +7,11 @@ data:
     GF_SERVER_DOMAIN: "{{ .Values.global.analytics.deployment.name }}.{{ .Values.global.analytics.deployment.domain }}"
     GF_AUTH_ANONYMOUS_ENABLED: {{ .Values.grafana.auth.anonymous.enabled | quote }}
     GF_AUTH_ANONYMOUS_ORG_ROLE: {{ .Values.grafana.auth.anonymous.orgRole | quote }}
+    GF_AUTH_PROXY_ENABLED: {{ .Values.grafana.auth.proxy.enabled | quote }}
+    GF_AUTH_PROXY_HEADER_NAME: "X-WEBAUTH-USER"
+    GF_AUTH_PROXY_HEADERS: "Role:X-WEBAUTH-ROLE"
+    GF_AUTH_PROXY_SYNC_TTL: "0"
+    GF_USERS_AUTO_ASSIGN_ORG_ROLE: "Viewer"
+    GF_AUTH_DISABLE_LOGIN_FORM: {{ .Values.grafana.auth.proxy.enabled | quote }}
     GF_LOG_LEVEL: "{{ .Values.grafana.env.LOG_LEVEL }}"
     GF_SMTP_ENABLED: {{ .Values.grafana.smtp.enabled | quote }}

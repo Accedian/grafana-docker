@@ -1,15 +1,5 @@
 apiVersion: 1
 
-deleteRules:
-  - orgId: 1
-    uid: spark-ingestion-rate
-  - orgId: 1
-    uid: airflow-batch-dag-failed
-  - orgId: 1
-    uid: opensearch-heap
-  - orgId: 1
-    uid: prometheus-availability
-
 groups:
   - orgId: 1
     name: airflow-job-health

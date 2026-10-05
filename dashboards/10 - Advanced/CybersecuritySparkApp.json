@@ -78,7 +78,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -127,7 +127,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "(time() * 1000 - spark_CustomMetricSource_detection_completionTimestamp) / 1000",
@@ -172,7 +172,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -221,7 +221,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "increase(spark_CustomMetricSource_detection_failedJobsTotal{job=\"cyberapp\"}[2m])",
@@ -237,7 +237,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -281,7 +281,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "topk(10, sort_desc(ceil(increase(spark_CustomMetricSource_alerts_count_total{job=\"cyberapp\"}[$__range]))))",
@@ -293,7 +293,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "refId": "B"
         }
@@ -308,7 +308,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -355,7 +355,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "spark_CustomMetricSource_alerts_creation_millis{job=\"cyberapp\", quantile=\"0.95\"}",
           "interval": "",
@@ -426,7 +426,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "description": "Count of Kafka messages not yet consumed",
       "fieldConfig": {
@@ -475,7 +475,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(kafka_consumergroup_lag{consumergroup=~\"cybersecurity.cyberapp.[a-z0-9]{8}-.+\",instance=\"kafka-topic-metric-exporter:9308\",job=\"kafka-topic-metrics\", topic=~\"pvx.*\"})",
@@ -488,7 +488,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "sum(kafka_topic_partition_current_offset{topic=~\"pvx.*\"}) - sum(max_over_time(spark_CustomMetricSource_batch_processedOffsetsSum{job=\"cyberapp\"}[12h]))",
           "hide": true,
@@ -499,7 +499,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "sum(cybersecuritySparkApp_topicGauge{topic=~\"pvx.*\", metricName=\"untilOffsetSum\"}) -  sum(cybersecuritySparkApp_topicGauge{topic=~\"pvx.*\", metricName=\"fromOffsetSum\"})",
           "hide": true,
@@ -580,7 +580,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -629,7 +629,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "spark_CustomMetricSource_batch_processingTimeMs{job=\"cyberapp\"}",
           "instant": false,
@@ -718,7 +718,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "description": "Time taken for the first job of this batch to start processing from the time this batch was submitted to the streaming scheduler.",
       "fieldConfig": {
@@ -767,7 +767,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "time() - spark_CustomMetricSource_batch_timestamp{job=\"cyberapp\", role=\"driver\"} / 1000",
           "hide": false,
@@ -778,7 +778,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "spark_CustomMetricSource_batch_timestamp{job=\"cyberapp\", role=\"driver\"} / 1000",
           "hide": true,
@@ -832,7 +832,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -881,7 +881,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "spark_CustomMetricSource_batch_numRecords{job=\"cyberapp\"}",
           "instant": false,
@@ -964,7 +964,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1013,7 +1013,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "spark_CustomMetricSource_batch_processingRate{job=\"cyberapp\"}",
           "hide": false,
@@ -1025,7 +1025,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "spark_CustomMetricSource_batch_inputRate{job=\"cyberapp\"}",
           "hide": false,
@@ -1036,7 +1036,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "spark_CustomMetricSource_batch_processingRate{job=\"cyberapp\"} / spark_CustomMetricSource_batch_inputRate{job=\"cyberapp\"}",
           "hide": true,
@@ -1087,7 +1087,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1164,7 +1164,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "spark_CustomMetricSource_da_executors{job=\"cyberapp\"}",
@@ -1181,7 +1181,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1262,7 +1262,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "avg_over_time(spark_CustomMetricSource_batch_inputRate{job=\"cyberapp\"}[6m])/avg_over_time(spark_CustomMetricSource_batch_processingRate{job=\"cyberapp\"}[6m])",
@@ -1307,7 +1307,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "description": "Time the spark executor spends actually running the detection tasks (including fetching shuffle data).",
       "fieldConfig": {
@@ -1356,7 +1356,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(spark_CustomMetricSource_detection_task_executorRunTime{job=\"cyberapp\"}) by (detection,stage)",
@@ -1403,7 +1403,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "description": "Time taken on the spark executor to deserialize detection task.",
       "fieldConfig": {
@@ -1453,7 +1453,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(spark_CustomMetricSource_detection_task_executorDeserializeTime{job=\"cyberapp\"}) by (detection, stage)",
@@ -1500,7 +1500,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -1548,7 +1548,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "sum(spark_CustomMetricSource_detection_input_recordsRead{stage=\"0\"}) by (detection)",
           "interval": "",
@@ -1595,7 +1595,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1643,7 +1643,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(spark_CustomMetricSource_detection_shuffleread_totalBytesRead{job=\"cyberapp\"}) by (detection,stage)",
@@ -1656,7 +1656,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(spark_CustomMetricSource_detection_shuffleread_remoteBytesRead{job=\"cyberapp\"}) by (detection,stage)",
@@ -1669,7 +1669,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "sum(spark_CustomMetricSource_detection_shuffleread_localBytesRead) by (detection,stage)",
           "interval": "",
@@ -1716,7 +1716,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1762,7 +1762,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "expr": "sum(spark_CustomMetricSource_detection_shufflewrite_bytesWritten) by (detection, stage)",
           "interval": "",
@@ -1821,7 +1821,7 @@
           "dashes": false,
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -1867,7 +1867,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "expr": "rate(spark_JVMCPU_jvmCpuTime{job=\"cyberapp\", role=\"executor\"}[60s])/10000000000",
               "interval": "",
@@ -1912,7 +1912,7 @@
           "dashes": false,
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -1958,7 +1958,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "expr": "spark_ExecutorMetrics_JVMHeapMemory{job=\"cyberapp\", role=\"executor\"} / 1024 / 1024",
               "interval": "",
@@ -1968,7 +1968,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "expr": "spark_ExecutorMetrics_OnHeapStorageMemory{job=\"cyberapp\",role=\"executor\"}/1024/1024",
               "interval": "",
@@ -2013,7 +2013,7 @@
           "dashes": false,
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -2059,7 +2059,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "expr": "rate(spark_ExecutorMetrics_MinorGCTime{job=\"cyberapp\", role=\"executor\"}[1m])",
               "interval": "",
@@ -2069,7 +2069,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "expr": "rate(spark_ExecutorMetrics_MajorGCTime{job=\"cyberapp\", role=\"executor\"}[1m])",
               "hide": false,
@@ -2115,7 +2115,7 @@
           "dashes": false,
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -2161,7 +2161,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "expr": "increase(spark_ExecutorMetrics_MinorGCCount{job=\"cyberapp\",role=\"executor\"}[1m])",
               "hide": false,
@@ -2172,7 +2172,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "expr": "increase(spark_ExecutorMetrics_MajorGCCount{job=\"cyberapp\",role=\"executor\"}[1m])",
               "hide": false,
@@ -2221,7 +2221,7 @@
           "dashes": false,
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -2267,7 +2267,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "expr": "spark_BlockManager_memory_maxMem_MB{job=\"cyberapp\"}",
               "hide": true,
@@ -2278,7 +2278,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "expr": "spark_BlockManager_memory_memUsed_MB{job=\"cyberapp\"}",
               "hide": true,
@@ -2289,7 +2289,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "expr": "spark_BlockManager_memory_onHeapMemUsed_MB{job=\"cyberapp\"}",
               "hide": true,
@@ -2300,7 +2300,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "expr": "sum(connectivity_check{job=\"pinger\"}-clamp_max(floor((time() - push_time_seconds{job=\"pinger\"}) / 300), 1)) by(service)",
               "hide": false,
@@ -2373,7 +2373,7 @@
           "dashes": false,
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -2421,7 +2421,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "increase(spark_CustomMetricSource_statestore_readLatency{job=\"cyberapp\"}[1m])/1000",
@@ -2435,7 +2435,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "sum(increase(spark_CustomMetricSource_statestore_readLatency{job=\"cyberapp\"}[1m]))/1000",
@@ -2483,7 +2483,7 @@
           "dashes": false,
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -2531,7 +2531,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "increase(spark_CustomMetricSource_statestore_writeLatency{job=\"cyberapp\"}[1m])/1000",
@@ -2545,7 +2545,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "sum(increase(spark_CustomMetricSource_statestore_writeLatency{job=\"cyberapp\"}[1m]))/1000",
@@ -2592,7 +2592,7 @@
           "dashes": false,
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -2640,7 +2640,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "increase(spark_CustomMetricSource_statestore_reads{job=\"cyberapp\"}[1m])",
@@ -2687,7 +2687,7 @@
           "dashes": false,
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -2735,7 +2735,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "increase(spark_CustomMetricSource_statestore_writes{job=\"cyberapp\"}[1m])",
@@ -2783,7 +2783,7 @@
           "dashes": false,
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -2831,7 +2831,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "increase(spark_CustomMetricSource_statestore_serializeLatency{job=\"cyberapp\"}[1m])",
@@ -2879,7 +2879,7 @@
           "dashes": false,
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -2927,7 +2927,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "increase(spark_CustomMetricSource_statestore_deserializeLatency{job=\"cyberapp\"}[1m])",
@@ -2975,7 +2975,7 @@
           "dashes": false,
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -3023,7 +3023,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "spark_CustomMetricSource_statestore_evictedCount{job=\"cyberapp\"}",
@@ -3099,7 +3099,7 @@
           "dashes": false,
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -3145,7 +3145,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "expr": "spark_CustomMetricSource_rest_latency_millis{job=\"cyberapp\", quantile=\"0.95\"}",
               "interval": "",
@@ -3190,7 +3190,7 @@
           "dashes": false,
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -3236,7 +3236,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "expr": "increase(spark_CustomMetricSource_rest_errors_total{job=\"cyberapp\", quantile=\"0.95\"}[1m]) or vector(0)",
               "interval": "",
@@ -3300,7 +3300,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -3351,7 +3351,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "(time() - max_over_time(dslfeed_lastSynchronized[24h])/ 1000) / 60",
@@ -3366,7 +3366,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -3416,7 +3416,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "000000001"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "increase(dslfeed_errors_total[1h])",

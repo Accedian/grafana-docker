@@ -693,7 +693,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -758,7 +758,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -1064,7 +1064,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1123,7 +1123,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -1447,7 +1447,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1492,7 +1492,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -1715,7 +1715,7 @@
       {
         "datasource": {
           "type": "grafana-clickhouse-datasource",
-          "uid": "y-Ka8y37k"
+          "uid": "${datasource}"
         },
         "filters": [],
         "hide": 0,

@@ -32,6 +32,8 @@ grafana:
     anonymous:
       enabled: false
       orgRole: Viewer
+    proxy:
+      enabled: false
 
   serviceAccount:
     # Specifies whether a service account should be created
