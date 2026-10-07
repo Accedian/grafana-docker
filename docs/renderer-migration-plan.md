@@ -5,8 +5,12 @@
 Preserve PNG rendering while retiring the unmaintained Image Renderer plugin
 and upgrading system OpenSSL in the PCA Grafana image. Work is in this
 repository and PR #274. Helm integration is the repository's deployment path;
-Swarm integration in aod-deployer is pending confirmation of target scope.
-Do not deploy, publish a release image, or alter customer data volumes.
+Swarm integration remains outside scope. On 2026-10-07 the user explicitly
+authorized publishing a test component and single-stack Replicated release
+on the private unstable-grzegorz channel, updating the disposable offline
+test node replicated-grzegorz.pv.lab (172.25.77.12), and testing rendering
+through APIs. Preserve rollback information and existing Grafana data.
+Production deployments and protected release channels remain outside scope.
 
 ## Canonical inputs
 
@@ -51,7 +55,10 @@ an additional control; no customer volume files are deleted.
    isolated aod-deployer checkout. Follow that repository's default Helm
    scope; update Swarm only if the user explicitly includes the legacy path.
 5. Update PR #274 around the final behavior; retain migration/rollback notes
-   and verify the final head in CI. No release publication or deployment.
+   and verify the final head in CI.
+6. Under the user's later test-deployment authorization, publish uniquely
+   tagged preview artifacts, preserve the current private channel's other
+   components, update the specified test node and exercise real rendering.
 
 ## Verification
 
@@ -99,9 +106,89 @@ blocked by missing umbrella chart archives. The manifest remains on the
 published Grafana chart 0.230.0 until a new verified component release is
 available. No live Kubernetes, Replicated or Swarm deployment was validated.
 
-Next: verify CI on the final Grafana source head.
-Both PRs remain draft until the release prerequisites are resolved. The
-earlier successful CI only validated the system package update.
+Superseded by the deployment checkpoint below: final migration head f2fb105
+now passes CI. Both PRs remain draft pending deployment evidence and a final
+production component-version decision.
+
+2026-10-07 deployment checkpoint: final source head f2fb105 passes both
+CircleCI checks. The user supplied direct Vault CA SSH access to the offline
+single-node test deployment and authorized its update. Initial SSH and
+Replicated channel discovery are in progress. Next: record the current
+deployment/version, build a uniquely tagged test component/chart, publish a
+single-stack release only to unstable-grzegorz, transfer the airgap assets,
+update the node and verify real rendering with negative authentication checks.
+
+2026-10-07 publication checkpoint: Vault SSH works after VPN activation. The
+node is a Ready Kubernetes 1.32.13/k0s Embedded Cluster 2.16.0 with KOTS
+1.130.0-ec.1. The current application/channel release is 9521, channel
+sequence 173, version 26.8.10-1682-g2f40f54f8-grafana-auth-values-e6ba0566b.
+Its Helm revision 2 is already failed due to unrelated services; Grafana
+0.230.0 itself is Ready with anonymous access disabled. This is an online
+install restricted to internal PCA endpoints, not an airgap installation:
+update.pca.cisco.com and proxy-registry.pca.cisco.com are reachable.
+
+Published the previously validated image, unchanged, under unique tag
+0.232.0-pr274-f2fb105 with digest
+sha256:fcb8efe8ec2ac99a68e705090a88536cdf1c32e59afb960b75e1765abb3ee880.
+The source head's Dockerfile differs from that built image only in comments;
+the VERSION build argument is unused. Its chart has OCI digest
+sha256:4d73ac3380707a377edd12b55be32a4667d651c434b017f786aaa68769a675ae.
+Prepared a single-stack preview from downloaded release 9521, replacing only
+the Grafana subchart, chart-version metadata and renderer wrapper mapping.
+Verified 724 other umbrella/component files are byte-for-byte unchanged,
+along with all other Replicated manifests and the preinstall package. Removed
+the umbrella's obsolete dependency lock from this already bundled preview.
+Replicated lint exits successfully with warnings inherited from the base; default Helm
+rendering includes both internal images, the shared Secret and no renderer
+port exposure. Rollback
+inputs are release 9521 and the unchanged previous package; no reset or data
+deletion is planned.
+
+2026-10-07 live verification checkpoint (supersedes the earlier unpublished,
+missing-package and untested-deployment statements): release 9584 is published
+to pca-dev/unstable-grzegorz, channel sequence 174, version
+26.8.10-1682-g2f40f54f8-renderer-pr274-f2fb105. KOTS downloaded it and deployed
+the updated Grafana StatefulSet through the internal PCA proxy registry.
+Both Grafana and renderer containers are Ready with zero restarts. Grafana's
+PVC UID bc61af5e-a73b-4621-93ca-1e0e0bdc3ebe is unchanged and Bound. Anonymous
+access remains disabled. OpenSSL in Grafana is 3.0.22; the bundled retired
+plugin is absent.
+
+Live API checks created a temporary dashboard using the existing Grafana
+bootstrap credential Secret in memory and rendered a real panel PNG (800x400,
+12119 bytes), then removed the dashboard. The first full-dashboard PNG had
+valid dimensions but visual inspection revealed a Page not found screen;
+that result does not validate dashboard rendering. Reproduced the same Page
+not found screenshot in an isolated Docker run with the previous 0.230.0
+image and HTTP renderer. The old plugin-mode comparison instead returned
+500, so it does not establish a working full-dashboard baseline. The core's
+render-only empty appSubUrl and dashboard API's configured /grafana metadata
+URL are a plausible routing cause; no Grafana core patch was attempted.
+The existing impex service account correctly rejected dashboard
+creation with HTTP 403; its permissions were not widened. Missing/wrong
+renderer tokens returned 401; a correctly authenticated malformed request
+returned 400. A Grafana export without credentials returned 302 to login.
+Both containers' recent logs contain neither the tested credentials nor
+renderKey query strings. No renderer port or public Service was added.
+
+The umbrella's Helm revision 3 and KOTS application status remain failed:
+the pre-existing nginx-config ownership conflict with kubectl-patch repeats
+the same failure from revision 2. Other application services also had failures
+before this work. This does not prevent the updated Grafana/renderer from
+running or the API checks above, but it prevents claiming a healthy whole-PCA
+upgrade. No unrelated nginx ownership repair or application reset was made.
+Alert-notification image delivery and a true airgap-bundle install were not
+exercised; the target uses internal online update/proxy endpoints.
+
+The repeatable verification script is retained on the test node. It reads
+existing Kubernetes Secrets internally, prints only test outcomes and deletes
+its temporary dashboard. It writes a credential-free panel PNG under /tmp;
+inspect its visible test text. An optional --full-dashboard flag captures the
+known dashboard failure without falsely declaring its PNG content valid.
+
+```bash
+sudo python3 /tmp/test-grafana-renderer-live.py
+```
 
 ## Completion criteria
 
