@@ -86,8 +86,10 @@ exports. Access logging for render paths is silenced to avoid logging
 Grafana's temporary renderKey. The renderer image contains OpenSSL 3.5.7
 (Debian package 3.5.7-1~deb13u3); this does not establish absence of all CVEs.
 
-Gcloud reauthentication remains a prerequisite to verifying/creating the
-internal mirror. The aod-deployer companion
+Gcloud authentication now works. Copied the full upstream index to
+gcr.io/npav-172917/3rdparty/docker.io/grafana/grafana-image-renderer:v5.12.5;
+the copy preserved the original manifest digest and both amd64/arm64 images.
+The aod-deployer companion
 [PR #7155](https://github.com/Accedian/aod-deployer/pull/7155) is based on master
 47f60cf0d and adds the local/proxy registry mapping. Its snippet validation,
 generated YAML checks and reported CI checks pass; full Replicated lint is
@@ -95,7 +97,7 @@ blocked by missing umbrella chart archives. The manifest remains on the
 published Grafana chart 0.230.0 until a new verified component release is
 available. No live Kubernetes, Replicated or Swarm deployment was validated.
 
-Next: verify the internal mirror and CI on the final Grafana source head.
+Next: verify CI on the final Grafana source head.
 Both PRs remain draft until the release prerequisites are resolved. The
 earlier successful CI only validated the system package update.
 
