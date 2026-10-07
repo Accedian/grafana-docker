@@ -89,6 +89,8 @@ Grafana's temporary renderKey. The renderer image contains OpenSSL 3.5.7
 Gcloud authentication now works. Copied the full upstream index to
 gcr.io/npav-172917/3rdparty/docker.io/grafana/grafana-image-renderer:v5.12.5;
 the copy preserved the original manifest digest and both amd64/arm64 images.
+The integration checks also pass with the internal image reference and the
+chart's explicit UID/GID 65532:65532.
 The aod-deployer companion
 [PR #7155](https://github.com/Accedian/aod-deployer/pull/7155) is based on master
 47f60cf0d and adds the local/proxy registry mapping. Its snippet validation,

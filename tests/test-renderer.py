@@ -71,6 +71,7 @@ def main():
                              grafana_image).stdout.decode().strip()
             containers.append(grafana)
             renderer = docker("run", "-d", "--network", f"container:{grafana}",
+                              "--user", "65532:65532",
                               "--env-file", str(renderer_env), "--cap-drop", "ALL",
                               "--security-opt", "no-new-privileges", "--read-only",
                               "--tmpfs", "/tmp:rw,nosuid,nodev,mode=1777,size=1g",
