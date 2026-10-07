@@ -11,6 +11,12 @@ on the private unstable-grzegorz channel, updating the disposable offline
 test node replicated-grzegorz.pv.lab (172.25.77.12), and testing rendering
 through APIs. Preserve rollback information and existing Grafana data.
 Production deployments and protected release channels remain outside scope.
+On 2026-10-07 the user additionally authorized repairing nginx/UI access, or
+updating this same test deployment from current aod-deployer master with the
+preview Grafana if repairing the old private-channel installation is lengthy.
+After reinstall, the user authorized correcting the chart's selected IP access
+mode and Grafana subpath integration before giving UI test instructions. Use
+the Embedded Cluster Admin Console upgrade workflow for this next release.
 
 ## Canonical inputs
 
@@ -59,6 +65,9 @@ an additional control; no customer volume files are deleted.
 6. Under the user's later test-deployment authorization, publish uniquely
    tagged preview artifacts, preserve the current private channel's other
    components, update the specified test node and exercise real rendering.
+7. Honor the existing DNS/IP choice, configure Grafana and its callback to
+   serve `/grafana/`, coordinate authenticated nginx prefix handling, and
+   verify old-chart compatibility and the Replicated image-discovery builder.
 
 ## Verification
 
@@ -171,7 +180,8 @@ returned 400. A Grafana export without credentials returned 302 to login.
 Both containers' recent logs contain neither the tested credentials nor
 renderKey query strings. No renderer port or public Service was added.
 
-The umbrella's Helm revision 3 and KOTS application status remain failed:
+Historical deployment state, superseded for nginx ownership by the checkpoint
+below: the umbrella's Helm revision 3 and KOTS application status remain failed:
 the pre-existing nginx-config ownership conflict with kubectl-patch repeats
 the same failure from revision 2. Other application services also had failures
 before this work. This does not prevent the updated Grafana/renderer from
@@ -189,6 +199,118 @@ known dashboard failure without falsely declaring its PNG content valid.
 ```bash
 sudo python3 /tmp/test-grafana-renderer-live.py
 ```
+
+2026-10-07 UI repair checkpoint: the configured performance.onprem.cisco.internal
+root_url is not a verified DNS entry. The local resolver maps the test node's
+hostname to a different IP, so use the explicitly authorized 172.25.77.12.
+Nginx is running but readiness returns 503 because skylight-aaa is unavailable;
+its Service therefore has no Ready endpoints. The old private-channel release
+contains the CouchDB 0.50.0 development chart and is missing its required
+credential Secret. Current aod-deployer master remains 47f60cf0d/26.10.14 and
+uses the published CouchDB 0.48.0 chart. Next: prepare a private preview from
+the existing master release, add only the validated Grafana chart and renderer
+mapping, restore nginx ConfigMap ownership to Helm from canonical manifests,
+then update and verify external HTTPS routing/authentication and rendering.
+Back up runtime configuration without printing credentials; no permissive
+readiness or authentication bypass is planned.
+
+2026-10-07 manual-install handoff: prepared private release 9587 (channel
+sequence 175), version 26.10.14-renderer-pr274-f2fb105, from master release
+9575/26.10.14. The preview uses the previously verified Grafana component;
+699 other umbrella/component files and the remaining Replicated manifests
+match master byte-for-byte. Replicated lint has no additional warnings over
+the master baseline. Restored canonical nginx-config from Helm revision 3,
+validated it with nginx -t, and restored Helm field ownership. Its protected
+backup is on the node at /root/nginx-config-before-master-20261007.json.
+This supersedes the earlier statement that no ownership repair was made.
+
+Release 9587 is published but not deployed. Download/rendering failed because
+the old ConfigValues lacks rabbitmq_erlang_cookie. A configuration attempt
+against the current version was rejected as an unknown key and changed
+nothing. Do not characterize this as normal service startup time. Existing
+Grafana and renderer from release 9584 remain the tested deployment.
+Embedded Cluster v2's documented update lifecycle uses its Admin Console;
+direct internal KOTS CLI commands are not a supported full cluster update.
+The user requested installation/download commands and will perform the
+installation manually. Stop remote deployment mutations. Provide the exact
+private Embedded Cluster installer URL and fresh-install commands, clearly
+identifying reset as deletion of existing application data. No fresh
+installation, healthy external UI, or master-deployment success is claimed.
+Verified the exact-version Embedded Cluster installer endpoint from the node
+with its existing license: a bounded GET returns HTTP 200/application-gzip.
+HEAD returns 404 and is not a useful availability check for this endpoint.
+No complete installer download or reset was performed during the handoff.
+
+2026-10-07 post-reinstall verification: the user reset the lab and performed
+the Embedded Cluster installation. This supersedes the earlier not-deployed
+checkpoint for release 9587. The live Grafana Pod now has the preview Grafana
+image and pinned renderer v5.12.5, both Ready with zero restarts. CouchDB,
+gather, skylight-aaa and nginx are also Ready. These selected services do not
+establish that every PCA workload is healthy.
+
+Reinstalled the verification script after reset and ran it with
+--full-dashboard. The panel PNG is 800x400/12119 bytes and was visually
+verified to contain RENDERER SERVICE OK. The dashboard PNG is 1280x720/61635
+bytes and still visibly shows Page not found; full-dashboard rendering is
+not passed. Missing/wrong renderer tokens return 401; an authenticated
+malformed renderer request returns 400. An unauthenticated internal Grafana
+export redirects to login. Test credentials and renderKey are absent from
+recent logs. The temporary dashboard was removed.
+
+External nginx HTTPS is reachable at 172.25.77.12: root returns 200;
+/grafana/ and /grafana/api/health without a PCA session return 401. The
+certificate includes this IP SAN, is valid from 2026-10-07 through
+2027-01-05, and the probe validated TLS using the public CA from the deployed
+nginx certificate Secret. Runtime root_url remains
+https://performance.onprem.cisco.internal/grafana; this is configuration,
+not proof that the name resolves to this VM. A legacy form-login API probe
+returned 501, so authenticated external UI access was not dynamically proven.
+Direct Grafana bootstrap login returned 200 using its scoped credential
+Secret. Direct Pod port-forward is not a reliable UI instruction here:
+/grafana/login redirects back under the subpath and nginx is responsible
+for stripping that prefix. Retain PCA/Grafana authentication; no public
+route or workload configuration was changed during these checks.
+
+Repeat the panel-only check on the node:
+
+```bash
+sudo python3 /tmp/test-grafana-renderer-live.py
+```
+
+Inspect the PNG under /tmp/grafana-renderer-panel-live.png. These deployed behavioral checks retain
+PCA-SEC-AUTH-001/003, PCA-SEC-CRED-001 and PCA-SEC-TEST-003/004 evidence.
+
+2026-10-07 IP/subpath correction checkpoint: the current ConfigValues already
+select dns_support_choice=false, with external_ip_computed=172.25.77.12.
+The displayed DNS note is unconditional and is not evidence of DNS mode.
+Deployment name performance and domain onprem.cisco.internal remain internal
+identifiers. The Grafana chart incorrectly ignored the access mode and always
+used the DNS name. It also required coordinated subpath support: Grafana
+serves /grafana/, the loopback callback includes /grafana/, and nginx preserves
+the prefix only when the child chart declares serveFromSubPath=true. Existing
+authentication remains in the route; old Grafana charts retain stripping.
+A ConfigMap checksum ensures changed environment settings restart the Pod.
+Native boolean validation rejects string flags even with rendering disabled.
+Replicated's image-discovery builder uses DNS defaults because it has no
+customer IP; this does not change runtime configuration.
+
+Standalone chart checks and the packaged-image renderer test passed. Five
+full umbrella renders passed for old/new charts, builder, DNS, IP and explicit
+subpath opt-out. Isolated Grafana plus the actual nginx image returned correct
+login HTML, kept unauthenticated requests denied, and preserved OAuth callback
+and bare provisioning API compatibility. Both panel and whole-dashboard PNGs
+were visually verified. This supersedes the earlier full-dashboard failure
+only for the isolated corrected configuration; the live deployment has not
+yet received this correction. Keep that distinction until the new release
+is deployed and its PNGs inspected.
+
+The live Zitadel discovery endpoint at https://172.25.77.12:3443 returned 200
+with TLS verified against the deployed public CA and allowed the exact PCA
+origin https://172.25.77.12. The user's browser reported a null-status CORS
+failure, consistent with an untrusted lab certificate; no CORS relaxation is
+needed. The installation's first-login user is
+performance-admin@auth.onprem.cisco.internal, as shown by Config's generated
+credentials label; admin@datahub.com is an internal account, not the UI login.
 
 ## Completion criteria
 

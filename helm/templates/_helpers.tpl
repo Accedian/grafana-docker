@@ -64,3 +64,15 @@ Create the name of the service account to use
 {{- define "grafana.rendererSecretName" -}}
 {{- .Values.grafana.renderer.existingSecret | default (printf "%s-renderer-auth" (include "grafana.fullname" .)) -}}
 {{- end -}}
+
+{{/* Use PCA's selected external access mode for browser redirects. */}}
+{{- define "grafana.serverHost" -}}
+{{- if not (kindIs "bool" .Values.global.dns.support) -}}
+{{- fail "global.dns.support must be a boolean" -}}
+{{- end -}}
+{{- if .Values.global.dns.support -}}
+{{- printf "%s.%s" .Values.global.analytics.deployment.name .Values.global.analytics.deployment.domain -}}
+{{- else -}}
+{{- required "global.external_ip is required when DNS support is disabled" .Values.global.external_ip -}}
+{{- end -}}
+{{- end -}}

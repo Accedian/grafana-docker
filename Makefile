@@ -76,6 +76,7 @@ helm/%.yaml: helm/%.yaml.in .FORCE
 
 helm-lint: helm/Chart.yaml helm/values.yaml
 	helm lint helm
+	python3 tests/test-chart.py
 
 helm $(DOCKER_IMAGE_NAME)-$(HELM_VER).tgz: .FORCE helm-lint helm/Chart.yaml helm/values.yaml
 	@echo "Using 'version: $(HELM_VER)'"

@@ -52,12 +52,13 @@ def main():
         env = Path(directory) / "grafana.env"
         env.write_text("\n".join([
             f"GF_SECURITY_ADMIN_PASSWORD={password}",
-            "GF_SERVER_ROOT_URL=https://pca.example/grafana",
+            "GF_SERVER_ROOT_URL=https://pca.example/grafana/",
+            "GF_SERVER_SERVE_FROM_SUB_PATH=true",
             "GF_PLUGINS_PREINSTALL_DISABLED=true",
             "GF_ANALYTICS_CHECK_FOR_UPDATES=false",
             "GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES=false",
             "GF_RENDERING_SERVER_URL=http://127.0.0.1:8081/render",
-            "GF_RENDERING_CALLBACK_URL=http://127.0.0.1:3000/",
+            "GF_RENDERING_CALLBACK_URL=http://127.0.0.1:3000/grafana/",
             f"GF_RENDERING_RENDERER_TOKEN={token}",
         ]) + "\n")
         os.chmod(env, 0o600)
@@ -113,7 +114,7 @@ def main():
             status, _ = request(grafana, "http://127.0.0.1:3000/api/dashboards/db", auth, dashboard)
             if status != 200:
                 raise AssertionError(f"Dashboard creation returned {status}")
-            url = "http://127.0.0.1:3000/render/d-solo/renderer-test/renderer-test?panelId=1&width=800&height=400&timeout=60"
+            url = "http://127.0.0.1:3000/grafana/render/d-solo/renderer-test/renderer-test?panelId=1&width=800&height=400&timeout=60"
             status, png = request(grafana, url, auth, timeout=90)
             if status != 200 or not png.startswith(b"\x89PNG\r\n\x1a\n"):
                 raise AssertionError(f"PNG rendering failed: HTTP {status}, {len(png)} bytes")

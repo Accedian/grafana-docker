@@ -16,18 +16,14 @@ spec:
   serviceName: {{ include "grafana.fullname" . }}
   template:
     metadata:
-      {{- if .Values.grafana.renderer.enabled }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if .Values.grafana.renderer.enabled }}
         checksum/renderer-startup: {{ .Files.Get "files/run-renderer.sh" | sha256sum }}
+        {{- end }}
         {{- with .Values.grafana.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-      {{- else }}
-      {{- with .Values.grafana.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- end }}
       labels:
         {{- include "grafana.selectorLabels" . | nindent 8 }}
     spec:
@@ -61,7 +57,7 @@ spec:
             - name: GF_RENDERING_SERVER_URL
               value: http://127.0.0.1:8081/render
             - name: GF_RENDERING_CALLBACK_URL
-              value: http://127.0.0.1:3000/
+              value: {{ ternary "http://127.0.0.1:3000/grafana/" "http://127.0.0.1:3000/" .Values.grafana.server.serveFromSubPath | quote }}
             - name: GF_RENDERING_RENDERER_TOKEN
               valueFrom:
                 secretKeyRef:

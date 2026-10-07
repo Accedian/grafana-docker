@@ -42,6 +42,11 @@ Pod; the renderer has no Service, Ingress, or published port. Normal interactive
 dashboards and panels remain available. PNG exports and alert screenshots use
 this service through `GF_RENDERING_SERVER_URL` and `GF_RENDERING_CALLBACK_URL`.
 Enabling alert screenshots remains an independent Grafana setting.
+The chart selects the browser URL from PCA's DNS/IP access mode and serves
+Grafana under `/grafana/`. Its loopback callback uses the same subpath.
+The aod-deployer proxy must preserve that prefix for this chart; its routing
+condition keeps prefix stripping for older Grafana charts. A checksum of the
+Grafana ConfigMap restarts the Pod when these environment settings change.
 The sidecar uses PNG by default and accepts requested dimensions down to
 100 pixels, preserving smaller exports rather than clamping them to the
 service's upstream 1000x500 minimum. Render request access logs are disabled
