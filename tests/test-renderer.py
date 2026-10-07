@@ -62,7 +62,9 @@ def main():
         ]) + "\n")
         os.chmod(env, 0o600)
         renderer_env = Path(directory) / "renderer.env"
-        renderer_env.write_text(f"AUTH_TOKEN={token}\nSERVER_ADDR=127.0.0.1:8081\nAPI_DEFAULT_ENCODING=png\nHOME=/tmp\nGOMEMLIMIT=1GiB\n")
+        renderer_env.write_text(f"AUTH_TOKEN={token}\nSERVER_ADDR=127.0.0.1:8081\nAPI_DEFAULT_ENCODING=png\n"
+                                "BROWSER_MIN_WIDTH=100\nBROWSER_MIN_HEIGHT=100\n"
+                                "API_SILENCE_REQUEST_LOG_PATH=/render,/render/csv\nHOME=/tmp\nGOMEMLIMIT=1GiB\n")
         os.chmod(renderer_env, 0o600)
         try:
             grafana = docker("run", "-d", "--network", "none", "--env-file", str(env),
@@ -97,6 +99,11 @@ def main():
                     raise AssertionError(f"Unauthenticated render request returned {status}")
             print("Missing and wrong renderer tokens are denied.")
 
+            status, _ = request(grafana, render_url + "?renderKey=redaction-test-marker",
+                                f"X-Auth-Token: {token}")
+            if status != 400:
+                raise AssertionError(f"Authenticated invalid render request returned {status}")
+
             dashboard = {"dashboard": {"uid": "renderer-test", "title": "Renderer test",
                          "schemaVersion": 41, "panels": [{"id": 1, "type": "text",
                          "title": "Renderer integration", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
@@ -113,6 +120,12 @@ def main():
             if (width, height) != (800, 400) or len(png) < 1000:
                 raise AssertionError(f"Unexpected PNG dimensions/content: {width}x{height}, {len(png)} bytes")
             print(f"Grafana rendered a valid {width}x{height} PNG ({len(png)} bytes) using the service.")
+            for container in containers:
+                result = docker("logs", container)
+                logs = (result.stdout + result.stderr).decode(errors="replace")
+                if any(value in logs for value in (password, token, basic, "renderKey=", "redaction-test-marker")):
+                    raise AssertionError("Rendering credentials/query marker appeared in container logs")
+            print("Rendering credentials are absent from success and rejected-request logs.")
         except Exception:
             for container in containers:
                 result = docker("logs", "--tail", "40", container)

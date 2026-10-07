@@ -98,6 +98,13 @@ spec:
               value: "127.0.0.1:8081"
             - name: API_DEFAULT_ENCODING
               value: png
+            - name: BROWSER_MIN_WIDTH
+              value: "100"
+            - name: BROWSER_MIN_HEIGHT
+              value: "100"
+            # Render requests carry Grafana's temporary renderKey in the query.
+            - name: API_SILENCE_REQUEST_LOG_PATH
+              value: /render,/render/csv
             - name: AUTH_TOKEN
               valueFrom:
                 secretKeyRef:

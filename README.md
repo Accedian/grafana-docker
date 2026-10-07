@@ -42,6 +42,10 @@ Pod; the renderer has no Service, Ingress, or published port. Normal interactive
 dashboards and panels remain available. PNG exports and alert screenshots use
 this service through `GF_RENDERING_SERVER_URL` and `GF_RENDERING_CALLBACK_URL`.
 Enabling alert screenshots remains an independent Grafana setting.
+The sidecar uses PNG by default and accepts requested dimensions down to
+100 pixels, preserving smaller exports rather than clamping them to the
+service's upstream 1000x500 minimum. Render request access logs are disabled
+because their query contains Grafana's temporary `renderKey` credential.
 
 Both containers read the same token through Kubernetes Secret references. Helm
 generates a 64-character token on first install and reuses the release Secret

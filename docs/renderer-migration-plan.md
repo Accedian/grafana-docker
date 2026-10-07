@@ -65,7 +65,8 @@ absence of superseded statements. Check Replicated image mapping if touched.
 ## Recovery checkpoint
 
 2026-10-07: System OpenSSL commit 59f2bb4 is pushed and its CircleCI build passed.
-The migration is uncommitted in codex/update-openssl. The local packaged image
+The migration is on codex/update-openssl in
+[PR #274](https://github.com/Accedian/grafana-docker/pull/274). The local packaged image
 is built (ID 5d4d5cf73f74) with Grafana 12.1.0, system OpenSSL 3.0.22, the four
 remaining plugins and no renderer plugin. Packaged-file and shell checks pass.
 The persistent-backend check passes with a benign fixture: default HTTP mode
@@ -75,18 +76,28 @@ configurations. The startup script's five negative checks reject missing,
 empty, default, short and list-valued tokens before starting the service.
 Renderer v5.12.5 has manifest digest
 sha256:76542ccc4c045e5ff9f80f87b25de6fcc71b31222172de5031a8ceba33772ee1.
-Downloading its image remains pending; real PNG and token-denial tests have
-not yet run. Gcloud reauthentication is required before checking/creating the
-internal mirror. The aod-deployer companion worktree is based on master
-47f60cf0d and adds the local/proxy registry mapping. Its snippet validation and
-generated YAML checks pass; Replicated lint is blocked by missing umbrella
-chart archives. The manifest remains on the published Grafana chart 0.230.0
-until a new verified component release is available. No live Kubernetes,
-Replicated or Swarm deployment has been validated.
+The public Google mirror supplied that exact manifest after Docker Hub
+downloads stalled. Real integration checks now pass: Grafana produces an
+800x400 PNG (7014 bytes), missing/wrong tokens receive HTTP 401, an
+authenticated malformed request receives HTTP 400, and credential/query
+markers are absent from both containers' logs. The service's upstream
+1000x500 minimum was explicitly lowered to 100x100 to preserve smaller
+exports. Access logging for render paths is silenced to avoid logging
+Grafana's temporary renderKey. The renderer image contains OpenSSL 3.5.7
+(Debian package 3.5.7-1~deb13u3); this does not establish absence of all CVEs.
 
-Next: finish real rendering validation, verify the internal mirror, then
-publish the source changes as draft PRs. CI must run on the resulting heads;
-the earlier successful CI does not validate the uncommitted migration.
+Gcloud reauthentication remains a prerequisite to verifying/creating the
+internal mirror. The aod-deployer companion
+[PR #7155](https://github.com/Accedian/aod-deployer/pull/7155) is based on master
+47f60cf0d and adds the local/proxy registry mapping. Its snippet validation,
+generated YAML checks and reported CI checks pass; full Replicated lint is
+blocked by missing umbrella chart archives. The manifest remains on the
+published Grafana chart 0.230.0 until a new verified component release is
+available. No live Kubernetes, Replicated or Swarm deployment was validated.
+
+Next: verify the internal mirror and CI on the final Grafana source head.
+Both PRs remain draft until the release prerequisites are resolved. The
+earlier successful CI only validated the system package update.
 
 ## Completion criteria
 
