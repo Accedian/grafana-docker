@@ -312,6 +312,64 @@ needed. The installation's first-login user is
 performance-admin@auth.onprem.cisco.internal, as shown by Config's generated
 credentials label; admin@datahub.com is an internal account, not the UI login.
 
+2026-10-07 completed IP/subpath deployment: this supersedes the earlier live
+full-dashboard failure, DNS root URL and unreliable direct subpath UI notes.
+Published component chart 0.232.0-pr274-e39252f with OCI digest
+sha256:5dadb03f02befcd845cb92abd037fc986671cf8608e17b5d9a043c08451c6db9.
+It retains the previously tested Docker image 0.232.0-pr274-f2fb105;
+there was no new Docker image build for these chart/proxy corrections.
+Published private Replicated release 9597, channel sequence 176, version
+26.10.14-renderer-pr274-e39252f. From the preceding master-derived lab
+preview, only Grafana, nginx routing and wrapper/builder metadata changed;
+693 other bundled umbrella/component files and all other Replicated manifests
+were verified unchanged. Replicated lint matched the baseline counts.
+
+Upgraded the existing lab through the actual Embedded Cluster Admin Console
+upgrade wizard: exact target selection, unchanged configGroups, successful
+preflights, then the upgrade-service deploy endpoint with both bypass flags
+false. This invokes the Embedded Cluster infrastructure lifecycle rather than
+the standalone KOTS deploy path. The API mirrors UI internals; it is not a
+vendor-supported v2 headless CLI. Only one wizard was active. The console
+now marks application sequence 1 deployed and Helm revision 2 is deployed.
+This also supersedes the earlier instruction to stop deployment mutations,
+which was followed until the user's later authorization after reinstall.
+
+Live Grafana root_url is https://172.25.77.12/grafana/, subpath serving is
+enabled and anonymous access remains disabled. Nginx preserves the prefix,
+retains auth_request, is Ready and passes nginx -t. Grafana/renderer are
+2/2 Ready with zero restarts. All 39 PVC identities and both the impex API
+and dedicated renderer token contents were preserved. Protected backups are
+retained on the node; no credentials are included in this document.
+
+The real panel PNG is 800x400/12119 bytes and the whole-dashboard PNG is
+1280x720/46875 bytes. Both were visually inspected and contain RENDERER
+SERVICE OK; the Page not found regression is resolved on the live VM.
+Missing/wrong renderer tokens return 401, authenticated malformed input
+returns 400 and an unauthenticated Grafana export redirects to login.
+External /grafana/ without a PCA session remains denied. Recent container
+logs contain neither the test credentials nor renderKey. The temporary
+dashboard was removed. The user confirmed PCA login works after addressing
+the browser's lab certificate trust. The privileged Grafana bootstrap
+credential was provided only at the user's explicit request, not recorded
+in source or artifacts.
+
+Source validation: Grafana implementation e39252f passed both CircleCI checks.
+AOD PR 7155 was cleanly rebased onto master 96404040/26.10.16, with head
+41ae94c8 and all applicable CI checks passing; mapping, routing and own
+snippet stayed byte-identical. Its production manifest remains Grafana
+0.230.0 pending reviewed activation. The lab release intentionally retains
+the installed 26.10.14 base to avoid unrelated application changes.
+Alert screenshot delivery, true airgap bundle installation and the legacy
+Swarm path remain outside the dynamically verified scope.
+
+The updated repeatable script is installed on the node. It creates and removes
+its temporary dashboard, reads credentials in memory and requires visual
+inspection of the generated files:
+
+```bash
+sudo python3 /tmp/test-grafana-renderer-live.py --full-dashboard
+```
+
 ## Completion criteria
 
 The shipped Grafana image excludes the retired plugin; the configured
