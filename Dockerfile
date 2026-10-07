@@ -41,6 +41,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && rm --recursive --force /var/lib/apt/lists/*
 
 ENV GRAFANA_PLUGINS_DIR=/var/lib/grafana/plugins
+# Mark the retired plugin disabled; run.sh also selects HTTP rendering to block its backend.
+ENV GF_PLUGINS_DISABLE_PLUGINS=grafana-image-renderer
 RUN mkdir -p $GRAFANA_PLUGINS_DIR /data/grafana/plugins /var/lib/grafana/dashboards /var/log/grafana /etc/grafana /etc/grafana/provisioning \
     && chown grafana:root $GRAFANA_PLUGINS_DIR /data/grafana/plugins /var/lib/grafana /var/log/grafana /etc/grafana \
     && chmod -R g+rwX $GRAFANA_PLUGINS_DIR /data/grafana/plugins /var/lib/grafana /var/log/grafana /etc/grafana
@@ -49,6 +51,10 @@ RUN echo "Installing plugins: $GF_INSTALL_PLUGINS" && \
     IFS=','; for plugin_entry in $GF_INSTALL_PLUGINS; do \
       plugin=$(echo "$plugin_entry" | awk '{print $1}'); \
       version=$(echo "$plugin_entry" | awk '{print $2}'); \
+      if [ "$plugin" = "grafana-image-renderer" ]; then \
+        echo "The Image Renderer plugin is retired; configure a renderer service instead." >&2; \
+        exit 1; \
+      fi; \
       if [ -n "$version" ]; then \
         grafana-cli --pluginsDir $GRAFANA_PLUGINS_DIR plugins install "$plugin" "$version"; \
       else \

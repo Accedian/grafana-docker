@@ -24,6 +24,25 @@ grafana:
   env:
     LOG_LEVEL: error
 
+  renderer:
+    enabled: true
+    image:
+      registry: gcr.io
+      repository: npav-172917/3rdparty/docker.io/grafana/grafana-image-renderer
+      tag: "v5.12.5"
+      digest: "sha256:76542ccc4c045e5ff9f80f87b25de6fcc71b31222172de5031a8ceba33772ee1"
+      pullPolicy: IfNotPresent
+    # Empty means Helm creates/reuses a Secret dedicated to this release.
+    existingSecret: ""
+    secretKey: token
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "4"
+        memory: "16Gi"
+
   auth:
     anonymous:
       enabled: false

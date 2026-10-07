@@ -21,7 +21,8 @@ BUILD_PLATFORMS ?= linux/amd64 #linux/arm64/v8 remove arm64 from list because pl
 GRAFANA_VERSION ?= 12.1.0
 GRAFANA_URL ?= https://dl.grafana.com/oss/release/grafana_$(GRAFANA_VERSION)
 GOSU_URL ?= https://github.com/tianon/gosu/releases/download/1.17/gosu
-GF_INSTALL_PLUGINS ?= "xginn8-pagerduty-datasource,grafana-image-renderer,grafana-clock-panel,grafana-piechart-panel,grafana-clickhouse-datasource"
+GF_INSTALL_PLUGINS ?= "xginn8-pagerduty-datasource,grafana-clock-panel,grafana-piechart-panel,grafana-clickhouse-datasource"
+RENDERER_IMAGE ?= gcr.io/npav-172917/3rdparty/docker.io/grafana/grafana-image-renderer:v5.12.5@sha256:76542ccc4c045e5ff9f80f87b25de6fcc71b31222172de5031a8ceba33772ee1
 
 # Add the following for helm chart
 SEMVER_PATTERN := ^[0-9]+\.[0-9]+\.[0-9]+
@@ -41,6 +42,17 @@ all: build
 
 .PHONY: build
 build: docker
+	$(MAKE) test-image
+	$(MAKE) test-renderer
+
+.PHONY: test-image
+test-image:
+	bash tests/check-image.sh "$(DOCKER_REPO_NAME)$(DOCKER_IMAGE_NAME):$(DOCKER_VER)" $(GF_INSTALL_PLUGINS)
+	python3 tests/test-disabled-renderer.py "$(DOCKER_REPO_NAME)$(DOCKER_IMAGE_NAME):$(DOCKER_VER)"
+
+.PHONY: test-renderer
+test-renderer:
+	python3 tests/test-renderer.py "$(DOCKER_REPO_NAME)$(DOCKER_IMAGE_NAME):$(DOCKER_VER)" "$(RENDERER_IMAGE)"
 
 docker:
 	@echo "Building Grafana image: $(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)"
