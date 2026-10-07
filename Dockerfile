@@ -7,14 +7,20 @@ ARG GOSU_URL="https://github.com/tianon/gosu/releases/download/1.17/gosu-${TARGE
 ARG GF_INSTALL_PLUGINS
 
 RUN export DEBIAN_FRONTEND=noninteractive \
-    && apt-get update \
+    && apt-get update --error-on=any \
     && apt-get --yes --no-install-recommends install \
         adduser \
         ca-certificates \
         curl \
         libfontconfig \
+        libssl3 \
         musl \
+        openssl \
         sqlite3 \
+    # Select both OpenSSL packages explicitly and reject obsolete repository snapshots.
+    # This floor covers the Debian bookworm security update from August 2026.
+    && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' openssl)" ge '3.0.22-1~deb12u1' \
+    && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libssl3)" ge '3.0.22-1~deb12u1' \
     && curl \
         --no-progress-meter \
         --write-out "curl: %{filename_effective} %{size_download}B %{speed_download}B/s\n" \

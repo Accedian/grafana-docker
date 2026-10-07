@@ -40,6 +40,7 @@ url-file:
 all: build
 
 .PHONY: build
+build: docker
 
 docker:
 	@echo "Building Grafana image: $(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)"
@@ -52,7 +53,7 @@ push:
 	@echo "Building Grafana image: $(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)"
 	@echo "Using Grafana URL $(GRAFANA_URL)"
 	@echo "Using GOSU URL $(GOSU_URL)"
-	docker buildx build --build-arg GRAFANA_VERSION=$(GRAFANA_VERSION) --build-arg VERSION=$(DOCKER_VER) --build-arg GF_INSTALL_PLUGINS=$(GF_INSTALL_PLUGINS) --platform $(BUILD_PLATFORMS) -t $(DOCKER_REPO_NAME)$(DOCKER_IMAGE_NAME):$(DOCKER_VER) --push .
+	docker buildx build --no-cache --build-arg GRAFANA_VERSION=$(GRAFANA_VERSION) --build-arg VERSION=$(DOCKER_VER) --build-arg GF_INSTALL_PLUGINS=$(GF_INSTALL_PLUGINS) --platform $(BUILD_PLATFORMS) -t $(DOCKER_REPO_NAME)$(DOCKER_IMAGE_NAME):$(DOCKER_VER) --push .
 
 .FORCE: 
 

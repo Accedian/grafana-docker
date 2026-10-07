@@ -3,6 +3,26 @@
 [![CircleCI](https://circleci.com/gh/Accedian/grafana-docker.svg?style=svg)](https://circleci.com/gh/Accedian/grafana-docker)
  
 This project builds a Docker image with the latest master build of Grafana.
+
+## System OpenSSL updates
+
+Builds explicitly install `openssl` and `libssl3` from the configured Debian
+repositories and require both packages to be at least `3.0.22-1~deb12u1`.
+An unavailable repository or an older candidate fails the build. Local builds
+and release builds use `--no-cache` to refresh packages instead of reusing an
+old dependency layer. `make build` runs the same Dockerfile in the CircleCI
+build job before the release job can run.
+
+This minimum is the August 2026 bookworm security update; it does not imply
+that every OpenSSL CVE is resolved. Check the
+[Debian OpenSSL tracker](https://security-tracker.debian.org/tracker/source-package/openssl)
+when updating the floor.
+
+The bundled `grafana-image-renderer` plugin has a separate embedded OpenSSL
+copy, which package upgrades cannot update. Its replacement or removal remains
+required before claiming full remediation. Keep it until usage of PNG exports
+and alert screenshots is established; a migration must preserve those features.
+
 ## Important Notes
 If you've modified any of the dashboards that come with packged in this repository, 
 make sure to save them as copies of the originals. If you don't do this, you will
