@@ -13,6 +13,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         adduser \
         ca-certificates \
         curl \
+        jq \
         libfontconfig \
         musl \
         sqlite3 \
@@ -61,7 +62,7 @@ VOLUME ["/var/lib/grafana", "/var/log/grafana", "/etc/grafana"]
 
 EXPOSE 3000
 
-COPY ./run.sh /run.sh
+COPY ./run.sh ./oauth-client-discovery.sh /
 
 COPY provisioning /tmp/provisioning
 
