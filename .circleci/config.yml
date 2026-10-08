@@ -25,6 +25,10 @@ jobs:
             mkdir -p /tmp/artifacts
 
       - run:
+          name: Run tests
+          command: make test
+
+      - run:
           name: Building Docker Container
           command: make build
 
