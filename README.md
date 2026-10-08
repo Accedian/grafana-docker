@@ -1,5 +1,8 @@
 # Grafana Docker image
 
+See [browser acceptance](tests/BROWSER_ACCEPTANCE.md) for the opt-in real
+Zitadel/CAS login checks. These complement the local `make test` regressions.
+
 [![CircleCI](https://circleci.com/gh/Accedian/grafana-docker.svg?style=svg)](https://circleci.com/gh/Accedian/grafana-docker)
  
 This project builds a Docker image with the latest master build of Grafana.
