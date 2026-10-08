@@ -1,3 +1,6 @@
+{{- if not (kindIs "bool" .Values.grafana.server.serveFromSubPath) -}}
+{{- fail "grafana.server.serveFromSubPath must be a boolean" -}}
+{{- end -}}
 kind: ConfigMap
 apiVersion: v1
 metadata:
@@ -5,6 +8,7 @@ metadata:
 data:
     GF_SERVER_ROOT_URL: "https://{{ .Values.global.analytics.deployment.name }}.{{ .Values.global.analytics.deployment.domain }}/grafana"
     GF_SERVER_DOMAIN: "{{ .Values.global.analytics.deployment.name }}.{{ .Values.global.analytics.deployment.domain }}"
+    GF_SERVER_SERVE_FROM_SUB_PATH: {{ .Values.grafana.server.serveFromSubPath | quote }}
     GF_AUTH_ANONYMOUS_ENABLED: {{ .Values.grafana.auth.anonymous.enabled | quote }}
     GF_AUTH_ANONYMOUS_ORG_ROLE: {{ .Values.grafana.auth.anonymous.orgRole | quote }}
     GF_LOG_LEVEL: "{{ .Values.grafana.env.LOG_LEVEL }}"

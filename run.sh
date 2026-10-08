@@ -123,6 +123,10 @@ fi
 grafana_args=(
     --homepath=/usr/share/grafana
     --config="$GF_PATHS_CONFIG"
+    # Prefer the supported HTTP renderer even when a legacy plugin survives on a PVC.
+    # cfg:default keeps an explicitly configured external renderer URL authoritative.
+    cfg:default.rendering.server_url="http://127.0.0.1:8081/render"
+    cfg:default.rendering.callback_url="http://127.0.0.1:3000/"
     cfg:default.log.mode="console"
     cfg:default.paths.data="$GF_PATHS_DATA"
     cfg:default.paths.logs="$GF_PATHS_LOGS"

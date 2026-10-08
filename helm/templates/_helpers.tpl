@@ -60,3 +60,7 @@ Create the name of the service account to use
 {{- default "default" .Values.grafana.serviceAccount.name }}
 {{- end }}
 {{- end }}
+{{/* One shared credential for Grafana and its loopback-only renderer. */}}
+{{- define "grafana.rendererSecretName" -}}
+{{- .Values.grafana.renderer.existingSecret | default (printf "%s-renderer-auth" (include "grafana.fullname" .)) -}}
+{{- end -}}
