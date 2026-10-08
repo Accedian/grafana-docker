@@ -59,6 +59,12 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "grafana.fullname" . }}-config
+            {{- if and .Values.grafana.auth.genericOAuth.enabled .Values.grafana.auth.genericOAuth.activationConfigMap (or (not .Values.grafana.auth.genericOAuth.fullDeploymentOnly) .Values.global.skylight_full_version) }}
+            # Last wins: the verified activation profile overrides the baseline.
+            - configMapRef:
+                name: {{ .Values.grafana.auth.genericOAuth.activationConfigMap | quote }}
+                optional: true
+            {{- end }}
           volumeMounts:
             - name: {{ include "grafana.fullname" . }}-data
               mountPath: /var/lib/grafana

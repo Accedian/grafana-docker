@@ -36,6 +36,9 @@ grafana:
       enabled: true
     genericOAuth:
       enabled: false
+      # An ordered activation release may override the protected baseline.
+      # The ConfigMap is optional so a fresh install is ready before preparation.
+      activationConfigMap: ""
       # Umbrella charts can disable OAuth when the Zitadel stack is absent.
       fullDeploymentOnly: false
       name: Zitadel

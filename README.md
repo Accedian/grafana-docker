@@ -196,3 +196,15 @@ Supported variables:
 
 ### v3.1.1
 * Make it possible to install specific plugin version https://github.com/grafana/grafana-docker/issues/59#issuecomment-260584026
+
+# Ordered OAuth activation
+
+An installer can set `grafana.auth.genericOAuth.activationConfigMap` to the
+name of a separately managed, verified activation profile. With OAuth requested,
+the chart then starts in the protected local-login mode until that optional
+ConfigMap exists. Its environment entries override the baseline configuration.
+The owning installer must verify the root client before publishing the profile,
+and enable Reloader creation/deletion events so profile changes restart Grafana.
+Keep anonymous access disabled in the baseline as well as in the active profile.
+An existing profile survives an unsuccessful preparation or verification step.
+Disabled OAuth and analytics-lite do not consume an activation profile.
