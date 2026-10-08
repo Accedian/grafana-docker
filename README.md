@@ -152,6 +152,20 @@ regardless of `grafana.auth.anonymous.enabled`, so dashboards cannot bypass
 login. When OAuth is inactive, including gated lite deployments, the configured
 anonymous setting is preserved.
 
+### Optional ingress NetworkPolicy
+
+Set `grafana.networkPolicy.enabled: true` and configure
+`grafana.networkPolicy.trustedIngress` with the Kubernetes peers that need
+access to Grafana. The chart rejects an enabled policy with no peers. The
+policy permits ingress from those peers to Grafana's HTTP port; it does not
+authorize identity headers or replace Grafana authentication.
+
+The chart also rejects empty or malformed peer objects. CIDR syntax and
+`ipBlock.except` subnet validation belong to the Kubernetes API, not Helm.
+The chart passes configured ranges and exceptions through unchanged; invalid
+CIDRs or exceptions fail API validation during installation or upgrade rather
+than `helm template`.
+
 ## Grafana container with persistent storage (recommended)
 
 ```

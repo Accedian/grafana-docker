@@ -1,0 +1,63 @@
+{{- if .Values.grafana.networkPolicy.enabled }}
+{{- if empty .Values.grafana.networkPolicy.trustedIngress }}
+{{- fail "grafana.networkPolicy.trustedIngress must contain at least one peer when the NetworkPolicy is enabled" }}
+{{- end }}
+{{- if not (kindIs "slice" .Values.grafana.networkPolicy.trustedIngress) }}
+{{- fail "grafana.networkPolicy.trustedIngress must be a list of peers" }}
+{{- end }}
+{{- range $index, $peer := .Values.grafana.networkPolicy.trustedIngress }}
+{{- $error := printf "grafana.networkPolicy.trustedIngress[%d]" $index }}
+{{- if not (kindIs "map" $peer) }}
+{{- fail (printf "%s must be a peer object" $error) }}
+{{- end }}
+{{- $count := 0 }}
+{{- range $key, $value := $peer }}
+{{- if not (has $key (list "podSelector" "namespaceSelector" "ipBlock")) }}
+{{- fail (printf "%s contains an unsupported peer field" $error) }}
+{{- end }}
+{{- if not (kindIs "map" $value) }}
+{{- fail (printf "%s.%s must be an object, not null or a scalar" $error $key) }}
+{{- end }}
+{{- $count = add1 $count }}
+{{- if eq $key "ipBlock" }}
+{{- if or (not (kindIs "string" $value.cidr)) (empty $value.cidr) }}
+{{- fail (printf "%s.ipBlock.cidr must be a nonempty string" $error) }}
+{{- end }}
+{{- if hasKey $value "except" }}
+{{- if not (kindIs "slice" $value.except) }}
+{{- fail (printf "%s.ipBlock.except must be a list of CIDR strings" $error) }}
+{{- end }}
+{{- range $exceptionIndex, $exception := $value.except }}
+{{- if not (kindIs "string" $exception) }}
+{{- fail (printf "%s.ipBlock.except[%d] must be a CIDR string" $error $exceptionIndex) }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if eq (int $count) 0 }}
+{{- fail (printf "%s must specify podSelector, namespaceSelector or ipBlock" $error) }}
+{{- end }}
+{{- if and (hasKey $peer "ipBlock") (gt (int $count) 1) }}
+{{- fail (printf "%s cannot combine ipBlock with a selector" $error) }}
+{{- end }}
+{{- end }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "grafana.fullname" . }}
+  labels:
+    {{- include "grafana.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "grafana.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        {{- toYaml .Values.grafana.networkPolicy.trustedIngress | nindent 8 }}
+      ports:
+        - protocol: TCP
+          port: http
+{{- end }}
