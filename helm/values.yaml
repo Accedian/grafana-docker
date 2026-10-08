@@ -75,6 +75,12 @@ grafana:
   users:
     autoAssignOrgRole: Viewer
 
+  networkPolicy:
+    enabled: false
+    # These peers may reach Grafana over the network. They are not trusted to
+    # assert user identity through Grafana Auth Proxy headers.
+    trustedIngress: []
+
   serviceAccount:
     # Specifies whether a service account should be created
     create: true

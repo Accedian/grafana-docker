@@ -114,6 +114,14 @@ regardless of `grafana.auth.anonymous.enabled`, so dashboards cannot bypass
 login. When OAuth is inactive, including gated lite deployments, the configured
 anonymous setting is preserved.
 
+### Optional ingress NetworkPolicy
+
+Set `grafana.networkPolicy.enabled: true` and configure
+`grafana.networkPolicy.trustedIngress` with the Kubernetes peers that need
+access to Grafana. The chart rejects an enabled policy with no peers. The
+policy permits ingress from those peers to Grafana's HTTP port; it does not
+authorize identity headers or replace Grafana authentication.
+
 ## Grafana container with persistent storage (recommended)
 
 ```
