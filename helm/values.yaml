@@ -43,6 +43,9 @@ grafana:
       enabled: true
     genericOAuth:
       enabled: false
+      # The parent chart publishes verified OAuth values after preparation.
+      # An empty or absent profile keeps the fresh-install baseline protected.
+      activationConfigMap: ""
       # Umbrella charts can disable OAuth when the Zitadel stack is absent.
       fullDeploymentOnly: false
       name: Zitadel
