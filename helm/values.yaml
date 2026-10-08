@@ -3,10 +3,6 @@
 # Declare variables to be passed into your templates.
 global:
   deployment_type:
-  dns:
-    support: true
-  # Required by PCA's IPv4 access mode when DNS support is disabled.
-  external_ip: ""
   images:
     pullSecrets: []
   analytics:

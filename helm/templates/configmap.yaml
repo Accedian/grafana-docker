@@ -6,8 +6,8 @@ apiVersion: v1
 metadata:
   name: {{ include "grafana.fullname" . }}-config
 data:
-    GF_SERVER_ROOT_URL: {{ printf "https://%s/grafana/" (include "grafana.serverHost" .) | quote }}
-    GF_SERVER_DOMAIN: {{ include "grafana.serverHost" . | quote }}
+    GF_SERVER_ROOT_URL: "https://{{ .Values.global.analytics.deployment.name }}.{{ .Values.global.analytics.deployment.domain }}/grafana"
+    GF_SERVER_DOMAIN: "{{ .Values.global.analytics.deployment.name }}.{{ .Values.global.analytics.deployment.domain }}"
     GF_SERVER_SERVE_FROM_SUB_PATH: {{ .Values.grafana.server.serveFromSubPath | quote }}
     GF_AUTH_ANONYMOUS_ENABLED: {{ .Values.grafana.auth.anonymous.enabled | quote }}
     GF_AUTH_ANONYMOUS_ORG_ROLE: {{ .Values.grafana.auth.anonymous.orgRole | quote }}

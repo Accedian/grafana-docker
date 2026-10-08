@@ -16,14 +16,15 @@ spec:
   serviceName: {{ include "grafana.fullname" . }}
   template:
     metadata:
+      {{- if or .Values.grafana.renderer.enabled .Values.grafana.podAnnotations }}
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         {{- if .Values.grafana.renderer.enabled }}
         checksum/renderer-startup: {{ .Files.Get "files/run-renderer.sh" | sha256sum }}
         {{- end }}
         {{- with .Values.grafana.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+      {{- end }}
       labels:
         {{- include "grafana.selectorLabels" . | nindent 8 }}
     spec:

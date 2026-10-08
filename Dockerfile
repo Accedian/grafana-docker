@@ -5,6 +5,7 @@ ARG GRAFANA_VERSION
 ARG GRAFANA_URL="https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION}_${TARGETARCH}.deb"
 ARG GOSU_URL="https://github.com/tianon/gosu/releases/download/1.17/gosu-${TARGETARCH}"
 ARG GF_INSTALL_PLUGINS
+ARG OPENSSL_VERSION=3.0.22-1~deb12u1
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update --error-on=any \
@@ -13,14 +14,10 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         ca-certificates \
         curl \
         libfontconfig \
-        libssl3 \
+        "libssl3=${OPENSSL_VERSION}" \
         musl \
-        openssl \
+        "openssl=${OPENSSL_VERSION}" \
         sqlite3 \
-    # Select both OpenSSL packages explicitly and reject obsolete repository snapshots.
-    # This floor covers the Debian bookworm security update from August 2026.
-    && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' openssl)" ge '3.0.22-1~deb12u1' \
-    && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libssl3)" ge '3.0.22-1~deb12u1' \
     && curl \
         --no-progress-meter \
         --write-out "curl: %{filename_effective} %{size_download}B %{speed_download}B/s\n" \
