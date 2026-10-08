@@ -45,10 +45,15 @@ all: build
 
 .PHONY: test
 test:
+	python3 -m unittest discover -s tests -p 'test_*.py'
 	@set -e; for test_script in $(TEST_SCRIPTS); do \
 		echo "Running $$test_script"; \
 		bash "$$test_script"; \
 	done
+
+.PHONY: browser-test
+browser-test:
+	python3 tests/grafana_browser.py --config "$(ACCEPTANCE_CONFIG)" --target "$(ACCEPTANCE_TARGET)"
 
 docker:
 	@echo "Building Grafana image: $(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)"
