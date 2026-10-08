@@ -23,6 +23,10 @@
 {{- /* Always check explicit origins; the installer validates externally supplied browser settings. */}}
 {{- include "grafana.validatePublicOrigin" $publicOrigin }}
 {{- end }}
+{{- $staged := and $oauthEnabled (not (empty $oauth.activationConfigMap)) }}
+{{- if and $staged (not (regexMatch "^[a-z0-9]([-a-z0-9.]*[a-z0-9])?$" $oauth.activationConfigMap)) }}
+{{- fail "generic OAuth activationConfigMap must be a Kubernetes ConfigMap name" }}
+{{- end }}
 {{- $anonymousEnabled := and (not $oauthEnabled) .Values.grafana.auth.anonymous.enabled }}
 {{- if $oauthEnabled }}
 {{- $discoveryReady := and $discoveryUrl $discoveryHost $discovery.application }}
@@ -46,7 +50,7 @@ data:
     GF_AUTH_ANONYMOUS_ENABLED: {{ $anonymousEnabled | quote }}
     GF_AUTH_ANONYMOUS_ORG_ROLE: {{ .Values.grafana.auth.anonymous.orgRole | quote }}
     GF_AUTH_BASIC_ENABLED: {{ .Values.grafana.auth.basic.enabled | quote }}
-    GF_AUTH_GENERIC_OAUTH_ENABLED: {{ $oauthEnabled | quote }}
+    GF_AUTH_GENERIC_OAUTH_ENABLED: {{ and $oauthEnabled (not $staged) | quote }}
 {{- if $oauthEnabled }}
     # Generic OAuth establishes the Grafana session itself. Never trust a
     # reverse-proxy identity header while this flow is enabled.

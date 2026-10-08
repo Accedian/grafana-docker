@@ -66,6 +66,12 @@ spec:
             - configMapRef:
                 name: {{ .Values.grafana.publicOriginConfigMap | quote }}
             {{- end }}
+            {{- if and .Values.grafana.auth.genericOAuth.enabled .Values.grafana.auth.genericOAuth.activationConfigMap (or (not .Values.grafana.auth.genericOAuth.fullDeploymentOnly) .Values.global.skylight_full_version) }}
+            # Last wins: the verified activation profile overrides the baseline.
+            - configMapRef:
+                name: {{ .Values.grafana.auth.genericOAuth.activationConfigMap | quote }}
+                optional: true
+            {{- end }}
           volumeMounts:
             {{- if $discoveryCA }}
             - name: grafana-discovery-ca

@@ -234,3 +234,23 @@ Supported variables:
 
 ### v3.1.1
 * Make it possible to install specific plugin version https://github.com/grafana/grafana-docker/issues/59#issuecomment-260584026
+
+# Ordered OAuth activation
+
+An installer can set `grafana.auth.genericOAuth.activationConfigMap` to the
+name of a verified activation profile managed by deployment tooling. With OAuth
+requested, Grafana starts in protected local-login mode until verified values
+are published to that ConfigMap. The main Skylight chart creates it empty and
+publishes those values later in the same release, after verifying the root
+client. Its environment entries override the baseline configuration. Reloader
+must restart Grafana when the profile changes.
+Keep anonymous access disabled in the baseline as well as in the active profile.
+An existing profile survives an unsuccessful preparation or verification step.
+Disabled OAuth and analytics-lite do not consume an activation profile.
+The staged baseline can render unresolved deployment placeholders; explicitly
+supplied origins remain validated. The installer must validate the browser
+origin before publishing the activation profile.
+
+The staged Helm test inspects the actual ConfigMap and StatefulSet through
+Helm's JSON conversion and Python's standard library, with site packages
+disabled. Regular chart tests do not require PyYAML.
