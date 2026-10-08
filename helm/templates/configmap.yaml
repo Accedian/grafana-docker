@@ -1,10 +1,73 @@
+{{- $oauth := .Values.grafana.auth.genericOAuth }}
+{{- $publicHost := printf "%s.%s" .Values.global.analytics.deployment.name .Values.global.analytics.deployment.domain }}
+{{- $authBaseUrl := printf "https://auth.%s" .Values.global.analytics.deployment.domain }}
+{{- if and (not .Values.global.dns.support) (not (empty .Values.global.external_ip)) }}
+{{- $publicHost = .Values.global.external_ip }}
+{{- $authBaseUrl = printf "https://%s:%v" .Values.global.external_ip .Values.global.clusterIPPortZitadelAuth }}
+{{- end }}
+{{- $authUrl := $oauth.authUrl | default (printf "%s/oauth/v2/authorize" $authBaseUrl) }}
+{{- $tokenUrl := $oauth.tokenUrl | default (printf "%s/oauth/v2/token" $authBaseUrl) }}
+{{- $apiUrl := $oauth.apiUrl | default (printf "%s/oidc/v1/userinfo" $authBaseUrl) }}
+{{- $endSessionUrl := $oauth.endSessionUrl | default (printf "%s/oidc/v1/end_session" $authBaseUrl) }}
+{{- $postLogoutRedirectUrl := $oauth.postLogoutRedirectUrl | default (printf "https://%s/grafana/" $publicHost) }}
+{{- $discovery := $oauth.clientIdDiscovery }}
+{{- $discoveryHost := $discovery.host | default $publicHost }}
+{{- $discoveryUrl := $discovery.url | default (printf "https://%s/api/v1/onboarding/tenant-info" $publicHost) }}
+{{- $isFullDeployment := .Values.global.skylight_full_version | default false }}
+{{- $oauthEnabled := and $oauth.enabled (or (not $oauth.fullDeploymentOnly) $isFullDeployment) }}
+{{- $anonymousEnabled := and (not $oauthEnabled) .Values.grafana.auth.anonymous.enabled }}
+{{- if $oauthEnabled }}
+{{- $discoveryReady := and $discoveryUrl $discoveryHost $discovery.application }}
+{{- if and (empty $oauth.clientId) (not $discoveryReady) }}
+{{- fail "generic OAuth requires clientId or complete clientIdDiscovery configuration" }}
+{{- end }}
+{{- range $url := list $authUrl $tokenUrl $apiUrl $endSessionUrl $postLogoutRedirectUrl }}
+{{- if not (hasPrefix "https://" $url) }}
+{{- fail "generic OAuth endpoints must use HTTPS" }}
+{{- end }}
+{{- end }}
+{{- end }}
+
 kind: ConfigMap
 apiVersion: v1
 metadata:
   name: {{ include "grafana.fullname" . }}-config
 data:
-    GF_SERVER_ROOT_URL: "https://{{ .Values.global.analytics.deployment.name }}.{{ .Values.global.analytics.deployment.domain }}/grafana"
-    GF_SERVER_DOMAIN: "{{ .Values.global.analytics.deployment.name }}.{{ .Values.global.analytics.deployment.domain }}"
-    GF_AUTH_ANONYMOUS_ENABLED: {{ .Values.grafana.auth.anonymous.enabled | quote }}
+    GF_SERVER_ROOT_URL: "https://{{ $publicHost }}/grafana"
+    GF_SERVER_DOMAIN: {{ $publicHost | quote }}
+    GF_AUTH_ANONYMOUS_ENABLED: {{ $anonymousEnabled | quote }}
     GF_AUTH_ANONYMOUS_ORG_ROLE: {{ .Values.grafana.auth.anonymous.orgRole | quote }}
+    GF_AUTH_BASIC_ENABLED: {{ .Values.grafana.auth.basic.enabled | quote }}
+    GF_AUTH_GENERIC_OAUTH_ENABLED: {{ $oauthEnabled | quote }}
+{{- if $oauthEnabled }}
+    # Generic OAuth establishes the Grafana session itself. Never trust a
+    # reverse-proxy identity header while this flow is enabled.
+    GF_AUTH_PROXY_ENABLED: "false"
+    GF_AUTH_GENERIC_OAUTH_NAME: {{ .Values.grafana.auth.genericOAuth.name | quote }}
+    GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP: {{ .Values.grafana.auth.genericOAuth.allowSignUp | quote }}
+    GF_AUTH_GENERIC_OAUTH_AUTO_LOGIN: {{ .Values.grafana.auth.genericOAuth.autoLogin | quote }}
+    GF_AUTH_GENERIC_OAUTH_CLIENT_ID: {{ .Values.grafana.auth.genericOAuth.clientId | quote }}
+    GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_URL: {{ $discoveryUrl | quote }}
+    GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_HOST: {{ $discoveryHost | quote }}
+    GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_APPLICATION: {{ .Values.grafana.auth.genericOAuth.clientIdDiscovery.application | quote }}
+    GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_TIMEOUT_SECONDS: {{ .Values.grafana.auth.genericOAuth.clientIdDiscovery.timeoutSeconds | quote }}
+    GRAFANA_OAUTH_END_SESSION_URL: {{ $endSessionUrl | quote }}
+    GRAFANA_OAUTH_POST_LOGOUT_REDIRECT_URL: {{ $postLogoutRedirectUrl | quote }}
+    GF_AUTH_GENERIC_OAUTH_SCOPES: {{ .Values.grafana.auth.genericOAuth.scopes | quote }}
+    GF_AUTH_GENERIC_OAUTH_AUTH_URL: {{ $authUrl | quote }}
+    GF_AUTH_GENERIC_OAUTH_TOKEN_URL: {{ $tokenUrl | quote }}
+    GF_AUTH_GENERIC_OAUTH_API_URL: {{ $apiUrl | quote }}
+    GF_AUTH_GENERIC_OAUTH_USE_PKCE: {{ .Values.grafana.auth.genericOAuth.usePkce | quote }}
+    # Grafana 12.1 otherwise consumes unsigned ID-token claims before UserInfo.
+    # Select a token-response field Zitadel does not return so identity comes
+    # from the authenticated UserInfo endpoint instead.
+    GF_AUTH_GENERIC_OAUTH_ID_TOKEN_ATTRIBUTE_NAME: "__disabled_id_token"
+    GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH: {{ .Values.grafana.auth.genericOAuth.loginAttributePath | quote }}
+    GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH: {{ .Values.grafana.auth.genericOAuth.nameAttributePath | quote }}
+    GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_PATH: {{ .Values.grafana.auth.genericOAuth.emailAttributePath | quote }}
+    GF_AUTH_GENERIC_OAUTH_SKIP_ORG_ROLE_SYNC: {{ .Values.grafana.auth.genericOAuth.skipOrgRoleSync | quote }}
+{{- end }}
+    GF_SECURITY_COOKIE_SECURE: {{ .Values.grafana.security.cookieSecure | quote }}
+    GF_SECURITY_COOKIE_SAMESITE: {{ .Values.grafana.security.cookieSameSite | quote }}
+    GF_USERS_AUTO_ASSIGN_ORG_ROLE: {{ .Values.grafana.users.autoAssignOrgRole | quote }}
     GF_LOG_LEVEL: "{{ .Values.grafana.env.LOG_LEVEL }}"

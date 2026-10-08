@@ -16,8 +16,9 @@ spec:
   serviceName: {{ include "grafana.fullname" . }}
   template:
     metadata:
-      {{- with .Values.grafana.podAnnotations }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      {{- with .Values.grafana.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -46,6 +47,13 @@ spec:
             - name: http
               containerPort: 3000
               protocol: TCP
+          # Client discovery finishes before Grafana opens its HTTP listener.
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 1
           resources:
             {{- toYaml .Values.grafana.resources | nindent 12 }}
           envFrom:
