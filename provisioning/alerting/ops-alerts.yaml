@@ -1,0 +1,812 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: spark-ingestion-rate
+    folder: 06 - Data Processing
+    interval: 10m
+    rules:
+      - uid: spark-ingestion-rate
+        title: SparkIngestionRate
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: sum(increase(spark_executor_recordsRead{job="spark_streamingapp"}[10m]))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [0], type: eq }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Error
+        for: 10m
+        labels:
+          severity: critical
+          class: Ingestion Statistics
+          impact: devops
+          priority: P1
+          managed-by: grafana-docker
+        annotations:
+          summary: Spark ingestion rate has dropped to zero
+          description: The streaming application has not read Kafka records during the evaluation window.
+
+  - orgId: 1
+    name: airflow-job-health
+    folder: 05 - Data Collection
+    interval: 10m
+    rules:
+      - uid: pca-airflow-dag-failed
+        title: AirflowDAGFailed
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 14400, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: deriv(airflow_dag_status{status="failed",owner!="custom-reports",owner!="dhl"}[4h])
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [0], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 20m
+        labels:
+          {
+            severity: warning,
+            class: DataCollection,
+            priority: P5,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: Airflow DAG failure detected
+          description: A local Airflow DAG has recorded additional failures during the last four hours. Investigate the DAG run and its dependency logs.
+      - uid: pca-airflow-scheduler-unhealthy
+        title: AirflowSchedulerUnhealthy
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: min_over_time(airflow_scheduler_health_status{status="healthy"}[10m])
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [1], type: lt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        labels:
+          {
+            severity: warning,
+            class: DataCollection,
+            priority: P3,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: Airflow scheduler is unhealthy
+          description: The local Airflow scheduler health metric has remained below healthy for 15 minutes. Check scheduler and database connectivity logs.
+      - uid: pca-airflow-job-duration
+        title: AirflowJobDurationHigh
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: airflow_dag_run_duration
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [43200], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 30m
+        labels:
+          {
+            severity: warning,
+            class: DataCollection,
+            priority: P5,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: Airflow DAG run exceeds 12 hours
+          description: A local Airflow DAG run has exceeded 12 hours for 30 minutes. Review the DAG tasks and dependent services.
+  - orgId: 1
+    name: metrics-service-health
+    folder: 05 - Data Collection
+    interval: 5m
+    rules:
+      - uid: pca-metrics-service-unreachable
+        title: MetricsServiceUnreachable
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: metricsService_health_status
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [1], type: lt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 1h
+        labels:
+          {
+            severity: warning,
+            class: DataCollection,
+            priority: P3,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: Metrics service reachability is degraded
+          description: The local metrics service has been unable to reach active data for one hour. Check Druid historical capacity and Druid service health.
+      - uid: pca-metrics-service-query-nodes-low
+        title: MetricsServiceQueryNodesLow
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: metricsService_datasource_query_nodes
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [1], type: lt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 30m
+        labels:
+          {
+            severity: warning,
+            class: DataCollection,
+            priority: P3,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: Metrics service has no query nodes
+          description: The local metrics service reports fewer than one datasource query node for 30 minutes. Investigate the metrics service and Druid query path.
+      - uid: pca-roadrunner-persistence-cache-high
+        title: RoadrunnerPersistenceCacheHigh
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: roadrunner_persistence_service_cached_files{zone!~"overlord|test|dummy"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [500], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: max }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 1h
+        labels:
+          {
+            severity: warning,
+            class: DataCollection,
+            priority: P5,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: Roadrunner persistence cache is growing
+          description: A local Roadrunner has retained more than 500 persistence-service cached files for one hour. Check downstream connectivity and Roadrunner storage capacity.
+  - orgId: 1
+    name: data-platform-health
+    folder: 07 - Data Platform
+    interval: 5m
+    rules:
+      - uid: pca-druid-datasource-availability-low
+        title: DruidDatasourceAvailabilityLow
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: druid_coordinator_datasourceLoadStatus
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [90], type: lt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 1h
+        labels:
+          {
+            severity: warning,
+            class: DataPlatform,
+            priority: P3,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: Druid datasource availability is below 90 percent
+          description: At least one local Druid datasource has remained below 90 percent loaded for one hour. Check historical-node health and available disk capacity.
+      - uid: pca-druid-service-unhealthy
+        title: DruidServiceUnhealthy
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: min(druid_status_gauge{result="success"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [1], type: lt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 30m
+        labels:
+          {
+            severity: warning,
+            class: DataPlatform,
+            priority: P3,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: Druid service health is degraded
+          description: A local Druid service has reported an unsuccessful status for 30 minutes. Review the affected service logs and cluster connectivity.
+      - uid: pca-druid-task-slots-full
+        title: DruidTaskSlotsFull
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: druid_overall_mm_worker_gage{type="free"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [0], type: eq }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 2h
+        labels:
+          {
+            severity: warning,
+            class: DataPlatform,
+            priority: P5,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: All Druid task slots are full
+          description: Local Druid reports no free middle-manager worker slots for two hours. Review stuck tasks and available task capacity.
+      - uid: pca-dgraph-alpha-unavailable
+        title: DgraphAlphaUnavailable
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: sum(stitchit_dgraph_alpha_availability)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [0], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 1h
+        labels:
+          {
+            severity: warning,
+            class: DataPlatform,
+            priority: P5,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: Dgraph alpha availability errors detected
+          description: The aggregate local Dgraph alpha availability error signal has remained above zero for one hour. Check Dgraph alpha health and connectivity.
+      - uid: pca-opensearch-heap-high
+        title: OpenSearchHeapHigh
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: sum by(cluster,name) (opensearch_jvm_memory_used_bytes{area="heap"}) / sum by(cluster,name) (opensearch_jvm_memory_max_bytes{area="heap"}) * 100
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [85], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 30m
+        labels:
+          {
+            severity: warning,
+            class: DataPlatform,
+            priority: P3,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: OpenSearch heap utilization is above 85 percent
+          description: Local OpenSearch JVM heap utilization has remained above 85 percent for 30 minutes.
+  - orgId: 1
+    name: infrastructure-capacity
+    folder: 08 - Infrastructure
+    interval: 5m
+    rules:
+      - uid: pca-node-filesystem-usage-high
+        title: NodeFilesystemUsageHigh
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: avg by(instance,mountpoint) (1 - node_filesystem_avail_bytes{fstype!~"^(tmpfs|overlay|squashfs)$",mountpoint!~"^/var/lib/(docker|containerd)(/.*)?$"} / node_filesystem_size_bytes{fstype!~"^(tmpfs|overlay|squashfs)$",mountpoint!~"^/var/lib/(docker|containerd)(/.*)?$"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [0.95], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 1h
+        labels:
+          {
+            severity: warning,
+            class: Infrastructure,
+            priority: P3,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: Node filesystem usage is above 95 percent
+          description: A meaningful local node filesystem has remained above 95 percent used for one hour. Investigate the instance, mountpoint, and affected workload.
+  - orgId: 1
+    name: hdfs-health
+    folder: 07 - Data Platform
+    interval: 5m
+    rules:
+      - uid: pca-hdfs-dead-data-nodes
+        title: HDFSDeadDataNodes
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: hadoop_namenode_num_dead_data_nodes
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [0], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 30m
+        labels:
+          {
+            severity: warning,
+            class: DataPlatform,
+            priority: P3,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: HDFS reports dead data nodes
+          description: The local HDFS namenode has reported one or more dead data nodes for 30 minutes. Check HDFS node health and storage availability.
+      - uid: pca-hdfs-corrupt-blocks
+        title: HDFSCorruptBlocks
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: hadoop_namenode_corrupt_blocks
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [0], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels:
+          {
+            severity: warning,
+            class: DataPlatform,
+            priority: P5,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: HDFS reports corrupt blocks
+          description: The local HDFS namenode has reported corrupt blocks for five minutes. Investigate data integrity and namenode logs.
+      - uid: pca-hdfs-under-replicated-blocks
+        title: HDFSUnderReplicatedBlocks
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: hadoop_namenode_under_replicated_blocks{kind="FSNamesystem"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [400000], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 1h
+        labels:
+          {
+            severity: warning,
+            class: DataPlatform,
+            priority: P3,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: HDFS under-replicated block count is high
+          description: The local HDFS under-replicated block count has exceeded 400000 for one hour. Check namenode health and data-node capacity.
+      - uid: pca-hdfs-checkpoint-stale
+        title: HDFSCheckpointStale
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: time() - hadoop_namenode_last_checkpoint_time / 1000
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [7200], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 1h
+        labels:
+          {
+            severity: warning,
+            class: DataPlatform,
+            priority: P3,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: HDFS checkpoint is stale
+          description: The local HDFS namenode checkpoint age has exceeded two hours for one hour. Check namenode and secondary namenode health.
+  - orgId: 1
+    name: prometheus-availability
+    folder: 01 - Deployment Overview
+    interval: 2m
+    rules:
+      - uid: pca-prometheus-no-data
+        title: PrometheusNoData
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: max(up)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [1], type: lt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 5m
+        labels:
+          {
+            severity: critical,
+            class: Monitoring,
+            priority: P5,
+            managed-by: grafana-docker,
+          }
+        annotations:
+          summary: Prometheus has no viable target data
+          description: Grafana cannot query Prometheus successfully, or Prometheus has no up target series. This is the single deliberate no-data safeguard; individual service rules do not alert on missing data.

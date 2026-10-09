@@ -1,0 +1,19 @@
+{
+  "annotations": {"list": []},
+  "description": "Local Airflow scheduling and DAG-run health for this deployment.",
+  "editable": true,
+  "panels": [
+    {"id": 1, "type": "text", "title": "About this dashboard", "transparent": true, "gridPos": {"h": 4, "w": 24, "x": 0, "y": 0}, "options": {"mode": "markdown", "content": "# Airflow job health\nUse this dashboard to investigate the local Airflow scheduler and DAG runs. It shows scheduler health, failed DAG signals, and run durations so you can identify whether an ingestion workflow is unhealthy or simply idle. A panel with no series can be expected when no matching DAG has run; use the Prometheus availability alert to distinguish a monitoring outage from an absent service metric."}},
+    {"id": 2, "type": "stat", "title": "Scheduler health", "datasource": {"type": "prometheus", "uid": "prometheus"}, "gridPos": {"h": 6, "w": 8, "x": 0, "y": 4}, "options": {"colorMode": "value", "graphMode": "area", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}}, "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "Unhealthy", "color": "red"}, "1": {"text": "Healthy", "color": "green"}}}]}, "overrides": []}, "targets": [{"refId": "A", "expr": "airflow_scheduler_health_status{status=\"healthy\"}", "instant": true, "range": false, "editorMode": "code", "datasource": {"type": "prometheus", "uid": "prometheus"}}]},
+    {"id": 3, "type": "timeseries", "title": "Failed Airflow DAGs", "datasource": {"type": "prometheus", "uid": "prometheus"}, "gridPos": {"h": 10, "w": 16, "x": 8, "y": 4}, "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi"}}, "fieldConfig": {"defaults": {}, "overrides": []}, "targets": [{"refId": "A", "expr": "deriv(airflow_dag_status{status=\"failed\"}[4h])", "legendFormat": "{{dag_id}}", "range": true, "editorMode": "code", "datasource": {"type": "prometheus", "uid": "prometheus"}}, {"refId": "B", "expr": "max_over_time(airflow_dag_last_status{status=\"failed\",dag_id!~\"cleanup_airflow_db|DeltaLake_Table_Cleanup|dhl_job_.*\"}[24h])", "legendFormat": "{{dag_id}}", "range": true, "editorMode": "code", "datasource": {"type": "prometheus", "uid": "prometheus"}}]},
+    {"id": 4, "type": "timeseries", "title": "DAG run duration", "datasource": {"type": "prometheus", "uid": "prometheus"}, "gridPos": {"h": 10, "w": 24, "x": 0, "y": 14}, "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi"}}, "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []}, "targets": [{"refId": "A", "expr": "airflow_dag_run_duration", "legendFormat": "{{dag_id}}", "range": true, "editorMode": "code", "datasource": {"type": "prometheus", "uid": "prometheus"}}]}
+  ],
+  "schemaVersion": 41,
+  "tags": ["airflow", "data-collection"],
+  "templating": {"list": []},
+  "time": {"from": "now-24h", "to": "now"},
+  "timezone": "browser",
+  "title": "Airflow Job Health",
+  "uid": "pca-airflow-job-health",
+  "version": 1
+}
