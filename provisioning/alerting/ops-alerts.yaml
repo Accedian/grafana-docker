@@ -2,6 +2,54 @@ apiVersion: 1
 
 groups:
   - orgId: 1
+    name: spark-ingestion-rate
+    folder: 06 - Data Processing
+    interval: 10m
+    rules:
+      - uid: spark-ingestion-rate
+        title: SparkIngestionRate
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: sum(increase(spark_executor_recordsRead{job="spark_streamingapp"}[10m]))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [0], type: eq }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Error
+        for: 10m
+        labels:
+          severity: critical
+          class: Ingestion Statistics
+          impact: devops
+          priority: P1
+          managed-by: grafana-docker
+        annotations:
+          summary: Spark ingestion rate has dropped to zero
+          description: The streaming application has not read Kafka records during the evaluation window.
+
+  - orgId: 1
     name: airflow-job-health
     folder: 05 - Data Collection
     interval: 10m
@@ -422,7 +470,7 @@ groups:
             datasourceUid: "-100"
             model:
               conditions:
-                - evaluator: { params: [1], type: gt }
+                - evaluator: { params: [0], type: gt }
                   operator: { type: and }
                   query: { params: [A] }
                   reducer: { params: [], type: last }
@@ -445,7 +493,7 @@ groups:
           }
         annotations:
           summary: Dgraph alpha availability errors detected
-          description: The aggregate local Dgraph alpha availability error signal has exceeded one for one hour. Check Dgraph alpha health and connectivity.
+          description: The aggregate local Dgraph alpha availability error signal has remained above zero for one hour. Check Dgraph alpha health and connectivity.
       - uid: pca-opensearch-heap-high
         title: OpenSearchHeapHigh
         condition: B

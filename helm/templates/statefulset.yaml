@@ -51,44 +51,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "grafana.fullname" . }}-config
-          {{- with .Values.grafana.smtp.secretName }}
-          env:
-            - name: GF_SMTP_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: {{ . }}
-                  key: host
-            - name: GF_SMTP_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ . }}
-                  key: user
-            - name: GF_SMTP_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ . }}
-                  key: password
-            - name: GF_SMTP_FROM_ADDRESS
-              valueFrom:
-                secretKeyRef:
-                  name: {{ . }}
-                  key: from-address
-            - name: GF_SMTP_FROM_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ . }}
-                  key: from-name
-            - name: GF_SMTP_STARTTLS_POLICY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ . }}
-                  key: starttls-policy
-            - name: GF_SMTP_SKIP_VERIFY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ . }}
-                  key: skip-verify
-          {{- end }}
           volumeMounts:
             - name: {{ include "grafana.fullname" . }}-data
               mountPath: /var/lib/grafana

@@ -24,10 +24,6 @@ grafana:
   env:
     LOG_LEVEL: error
 
-  smtp:
-    enabled: false
-    secretName: ""
-
   auth:
     anonymous:
       enabled: false
