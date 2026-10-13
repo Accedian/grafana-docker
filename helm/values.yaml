@@ -53,6 +53,10 @@ grafana:
       autoLogin: true
       # Public identifier, not a credential. Leave empty to discover it.
       clientId: ""
+      # Deployment tooling owns the internal TLS provider Service/certificate.
+      internalProvider:
+        enabled: false
+        tlsCASecretName: grafana-oidc-provider-tls
       clientIdDiscovery:
         # Preserve HTTPS URL identity but connect to the same-namespace nginx.
         internalNginx: false
