@@ -18,6 +18,11 @@
 {{- $discoveryUrl := $discovery.url | default (printf "https://%s/api/v1/onboarding/tenant-info" $discoveryRootHost) }}
 {{- $isFullDeployment := .Values.global.skylight_full_version | default false }}
 {{- $oauthEnabled := and $oauth.enabled (or (not $oauth.fullDeploymentOnly) $isFullDeployment) }}
+{{- if and $oauthEnabled $oauth.internalProvider.enabled }}
+{{- $base := printf "https://grafana-oidc-provider.%s.svc.cluster.local" .Release.Namespace }}
+{{- $tokenUrl = printf "%s/oauth/v2/token" $base }}
+{{- $apiUrl = printf "%s/oidc/v1/userinfo" $base }}
+{{- end }}
 {{- if or .Values.grafana.publicOrigin
     (and $oauthEnabled (empty $oauth.activationConfigMap) (empty .Values.grafana.publicOriginConfigMap)) }}
 {{- /* Always check explicit origins; the installer validates externally supplied browser settings. */}}
@@ -79,6 +84,11 @@ data:
     GF_AUTH_GENERIC_OAUTH_AUTH_URL: {{ $authUrl | quote }}
     GF_AUTH_GENERIC_OAUTH_TOKEN_URL: {{ $tokenUrl | quote }}
     GF_AUTH_GENERIC_OAUTH_API_URL: {{ $apiUrl | quote }}
+{{- if $oauth.internalProvider.enabled }}
+    GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA: /etc/grafana-provider-ca/ca.crt
+    GF_AUTH_GENERIC_OAUTH_TLS_SKIP_VERIFY_INSECURE: "false"
+    NO_PROXY: localhost,127.0.0.1,.svc.cluster.local
+{{- end }}
     GF_AUTH_GENERIC_OAUTH_USE_PKCE: {{ .Values.grafana.auth.genericOAuth.usePkce | quote }}
     # Grafana 12.1 otherwise consumes unsigned ID-token claims before UserInfo.
     # Select a token-response field Zitadel does not return so identity comes
