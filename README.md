@@ -97,11 +97,41 @@ authorization and logout on port 3443.
 Set `clientIdDiscovery.tlsCASecretName` to the serving Nginx Secret when an
 additional CA is needed; only its `ca.crt` is mounted read-only. An empty optional
 bundle retains default system trust; unreadable or malformed nonempty bundles
-fail closed. Redirects are
-rejected. This transport applies only to client discovery, not browser URLs
-or Grafana's token/UserInfo requests; the configured issuer must remain
-reachable from Grafana. OAuth-disabled and lite deployments do not mount the
-discovery CA or perform this lookup.
+fail closed. Redirects are rejected. This transport applies only to client
+discovery, not browser URLs.
+OAuth-disabled and lite deployments do not mount the discovery CA or perform
+this lookup.
+
+For the remaining server-side OAuth requests, deployment tooling can set
+`grafana.auth.genericOAuth.internalProvider.enabled: true`. Token exchange
+and UserInfo then use the namespace's HTTPS `grafana-oidc-provider` Service,
+not the public issuer address. These managed URLs override `tokenUrl` and
+`apiUrl`; browser authorization, logout and callback URLs remain unchanged.
+Grafana verifies the Service certificate using only `ca.crt` from
+`internalProvider.tlsCASecretName`. TLS verification is never disabled.
+
+The image includes `/grafana-oidc-provider`, a small, separately launched TLS
+proxy for deployment tooling; normal Grafana startup does not launch it.
+The deployer supplies its internal Service certificate, optional upstream CA,
+canonical `ZITADEL_AUTHORITY` and internal `ZITADEL_ADDRESS`. An empty CA uses
+system roots for publicly trusted certificates; a nonempty malformed CA fails
+closed, and a private issuer requires an explicit trust bundle. It forwards only
+token POST and UserInfo GET requests, verifies the upstream certificate
+against the canonical DNS or IP identity, and retains that issuer authority.
+It rejects redirects and unrelated routes, strips cookies and caller-supplied
+instance headers, and never automatically repeats a code exchange. Its Go
+build uses the validated FIPS module, with TLS and route-isolation tests.
+Standalone Helm users must provide this Service before enabling the option.
+
+Swarm retains its CAS-protected route during ordinary installation, upgrades
+and restarts. Its selected OIDC transition mechanism is an operator-executed
+MOP in the matching aod-deployer checkout (`swarm/grafana-oidc/README.md`),
+paired with AAA's preparation MOP. This transition remains manual and
+unqualified until both Swarm layouts, address modes and exact versions pass
+live sign-off. No Grafana or AAA startup hook invokes preparation. The manual
+artifacts use a verified static public client ID and require site-qualified
+HTTPS token/UserInfo transport; Kubernetes Service names are not portable
+Swarm endpoints. See `tests/BROWSER_ACCEPTANCE.md` for the browser fixtures.
 
 OAuth disabled means no discovery request and no change to the existing
 Docker Swarm CAS authentication path.
