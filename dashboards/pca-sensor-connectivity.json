@@ -1,0 +1,3426 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Sensor/collector connectivity and configuration health for PCA: connected vs disconnected sensors across the data path (TC/agents -> Sensor Collector -> Fedex) and the config path (Sensor Collector -> Foxtrot, TC control channel), plus skylight-aaa certificate/auth health. Descriptions include what to check to fix a connectivity or configuration failure.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "panels": [
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# PCA Sensor Connectivity & Configuration\n\nShows which sensors/collectors are **connected vs disconnected**, for both the **data path** and the **configuration path**, and surfaces the most common root causes (auth, certificates, reverse-proxy/network).\n\n**Paths covered**\n- **Sensor Agents \u2192 Sensor Collector (roadrunner)** \u2014 overall connectivity & health of ALL edge agents, measured with the common `roadrunner_agent_connected` signal (telemetry collectors register on the same data gateway under the same agentId, so they are included here, not treated as a separate group).\n- **Telemetry Collector / File (NID) / MQTT detail (subsets)** \u2014 agent-type-specific metrics that add extra detail for the sensor agents that expose them (other agent types simply won't have these series, which is expected).\n- **Sensor Collector \u2192 Fedex** (data) and **\u2192 Foxtrot** (configuration)\n- **skylight-aaa** certificate & authentication health\n\n**Reverse proxy (nginx):** there is no nginx Prometheus exporter, so nginx is treated as part of a direct path \u2013 a proxy/network/DNS problem between a collector and PCA shows up as a `roadrunner_connection = 0`, websocket teardowns/rejections, or `roadrunner_foxtrot_connection_error` in the rows below.\n\n**Filters:** `$tenant`, `$zone`, `$connectorId` are applied only where each metric carries that label. Each summary tile shows **up% + connected/total** so the denominator is always visible (e.g. '100% \u00b7 45 of 45'); 'n/a \u00b7 total 0' means nothing of that type is monitored. Detailed per-entity red/green status is in the rows below.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.1.0",
+      "title": "",
+      "type": "text"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "id": 2,
+      "panels": [],
+      "title": "Connectivity Summary (now)",
+      "type": "row"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Sensor Collectors connected to Fedex for data, shown as up% plus connected/total (roadrunner_connection). GREEN = all connected. ORANGE/RED = some/most not connected. 'n/a' with total 0 means nothing of this type is currently monitored (not an error). If connected < total, expand 'Sensor Collector \u2192 Fedex'.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99.9
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 0,
+          "noValue": "n/a"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "text"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "C"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "text"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 0,
+        "y": 7
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "100 * count(roadrunner_connection{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) / count(roadrunner_connection{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"})",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "up %"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "count(roadrunner_connection{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) or vector(0)",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "legendFormat": "connected"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "count(roadrunner_connection{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}) or vector(0)",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "legendFormat": "total"
+        }
+      ],
+      "title": "Collectors connected (data \u2192 Fedex)",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Sensor Collectors connected to Foxtrot for configuration, as up% plus connected/total (foxtrot_connector_connected). GREEN = all connected. ORANGE/RED = some/most not connected. 'n/a' with total 0 means nothing of this type is currently monitored (not an error). If connected < total, expand 'Sensor Collector \u2192 Foxtrot'.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99.9
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 0,
+          "noValue": "n/a"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "text"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "C"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "text"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 5,
+        "y": 7
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "100 * count(foxtrot_connector_connected{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) / count(foxtrot_connector_connected{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"})",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "up %"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "count(foxtrot_connector_connected{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) or vector(0)",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "legendFormat": "connected"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "count(foxtrot_connector_connected{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}) or vector(0)",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "legendFormat": "total"
+        }
+      ],
+      "title": "Collectors connected (\u2192 Foxtrot)",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Sensor Collectors that successfully received configuration from Foxtrot, as up% plus configured/total (foxtrot_connector_configured). GREEN = all connected. ORANGE/RED = some/most not connected. 'n/a' with total 0 means nothing of this type is currently monitored (not an error). Configured < connected means connected-but-not-configured \u2013 check Foxtrot config/logs.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99.9
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 0,
+          "noValue": "n/a"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "text"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "C"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "text"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 10,
+        "y": 7
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "100 * count(foxtrot_connector_configured{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) / count(foxtrot_connector_configured{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"})",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "up %"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "count(foxtrot_connector_configured{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) or vector(0)",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "legendFormat": "connected"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "count(foxtrot_connector_configured{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}) or vector(0)",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "legendFormat": "total"
+        }
+      ],
+      "title": "Collectors configured",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Sensor agents connected to their Sensor Collector, as up% plus connected/total (roadrunner_agent_connected). GREEN = all connected. ORANGE/RED = some/most not connected. 'n/a' with total 0 means nothing of this type is currently monitored (not an error). If connected < total, expand 'Sensor Agents \u2192 Sensor Collector'.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99.9
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 0,
+          "noValue": "n/a"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "text"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "C"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "text"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 15,
+        "y": 7
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "100 * count(roadrunner_agent_connected{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) / count(roadrunner_agent_connected{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"})",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "up %"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "count(roadrunner_agent_connected{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) or vector(0)",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "legendFormat": "connected"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "count(roadrunner_agent_connected{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}) or vector(0)",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "legendFormat": "total"
+        }
+      ],
+      "title": "Sensor agents connected",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Client-certificate authorization requests rejected by skylight-aaa in the last hour. RED = sensors/collectors being refused at auth (often expired/revoked certs or tenant mismatch) \u2013 expand 'Certificates & Authentication'.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 20,
+        "y": 7
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(skylight_aaa_rejected_cert_authorization_requests{tenantId=~\"$tenant\"}[1h])) or vector(0)",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "count"
+        }
+      ],
+      "title": "Cert-auth rejections (1h)",
+      "type": "stat"
+    },
+    {
+      "collapsed": true,
+      "type": "row",
+      "id": 38,
+      "title": "Sensor Agents \u2192 Sensor Collector \u2014 Connectivity & Health (all agents)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Per-agent connection state (1=connected) for EVERY sensor agent attached to the Sensor Collector \u2013 this includes telemetry collectors (they register on the same OpenMetrics data gateway, keyed on the same agentId). This is the common health signal for the whole Sensor Agent population. Red/0 or a dropped line = that agent stopped reporting to the collector; check the agent host, its network path, and its auth/cert.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "stepAfter",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short",
+              "min": 0,
+              "max": 1.2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 13
+          },
+          "id": 14,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "roadrunner_agent_connected{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{connectorId}}/{{agentId}}"
+            }
+          ],
+          "title": "Sensor Agents \u2013 Connection Status (per agent)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Number of sensor-agent connections the collector sees (data + admin) and duplicate connection requests. A sudden drop in connections = agents dropped off. Rising duplicates = agents reconnecting repeatedly (flapping). CHECK agent-side network stability and for duplicate agentIds / two agents sharing an identity.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 13
+          },
+          "id": 15,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(roadrunner_sensor_agent_data_connections{tenant=~\"$tenant\",zone=~\"$zone\"})",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "data connections"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(roadrunner_sensor_agent_admin_connections{tenant=~\"$tenant\",zone=~\"$zone\"})",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "admin connections"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (objectType) (roadrunner_sensor_agent_connections{tenant=~\"$tenant\",zone=~\"$zone\"})",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "connections {{objectType}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(rate(roadrunner_sensor_agent_duplicate_connection_requests{tenant=~\"$tenant\",zone=~\"$zone\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "D",
+              "legendFormat": "duplicate requests/s"
+            }
+          ],
+          "title": "Sensor Agents \u2013 Connected Count & Duplicate Requests",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Data messages the collector dropped from agents, by cause. GOOD: flat at 0. BAD: any sustained rate \u2192 data loss at ingress even though the agent is connected. CHECK the cause label (e.g. buffer full, parse/validation).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 21
+          },
+          "id": 16,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (cause) (rate(roadrunner_sensor_agent_dropped_data_msgs{tenant=~\"$tenant\",zone=~\"$zone\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{cause}}"
+            }
+          ],
+          "title": "Sensor Agents \u2013 Dropped Data Messages (by cause)",
+          "type": "timeseries"
+        }
+      ]
+    },
+    {
+      "collapsed": true,
+      "type": "row",
+      "id": 39,
+      "title": "Sensor Agents \u2192 Telemetry Collector detail (subset)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "1 = connected to the broker/Sensor Collector, 0 = disconnected. If 0 the TC cannot deliver data. CHECK: the TC process/pod is running; the network path from the TC site to the Sensor Collector endpoint (firewall / reverse proxy / DNS); and the data-channel authentication panel below. OPTIONAL stage \u2013 if no TC is deployed this is empty.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "stepAfter",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short",
+              "min": 0,
+              "max": 1.2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 14
+          },
+          "id": 9,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "message_agentHealth_data_stats_connection{tenant=~\"$tenant\",zone=~\"$zone\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{hostname}}/{{zone}}/{{agentId}}"
+            }
+          ],
+          "title": "Telemetry Collector \u2013 Data Channel Connection",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "The management (control) channel carries configuration from the Sensor Orchestrator to the TC. 1 = connected, 0 = disconnected. If 0 the TC cannot receive config updates. CHECK: management endpoint reachability, the management-channel auth panel below, and the Sensor Orchestrator. NOTE: sensor-orchestrate exposes no Prometheus metrics, so this relayed channel status is the available config-reachability signal for TCs.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "stepAfter",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short",
+              "min": 0,
+              "max": 1.2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 14
+          },
+          "id": 10,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "message_agentHealth_management_stats_connection{tenant=~\"$tenant\",zone=~\"$zone\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{hostname}}/{{zone}}/{{agentId}}"
+            }
+          ],
+          "title": "Telemetry Collector \u2013 Control / Config Channel Connection",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Authentication outcomes on the TC data and management channels. Rising authenticationError/Failure with little/no Successful = the TC is being rejected. CHECK: the TC client certificate validity/expiry (Certificates row), tenant/credential config, and the skylight-aaa cert-auth rejection panel.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 22
+          },
+          "id": 11,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(rate(message_agentHealth_data_stats_authenticationError{tenant=~\"$tenant\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "data auth error"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(rate(message_agentHealth_data_stats_authenticationFailure{tenant=~\"$tenant\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "data auth failure"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(rate(message_agentHealth_data_stats_authenticationSuccessful{tenant=~\"$tenant\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "data auth OK"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(rate(message_agentHealth_management_stats_authenticationError{tenant=~\"$tenant\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "D",
+              "legendFormat": "mgmt auth error"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(rate(message_agentHealth_management_stats_authenticationSuccessful{tenant=~\"$tenant\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "E",
+              "legendFormat": "mgmt auth OK"
+            }
+          ],
+          "title": "Telemetry Collector \u2013 Authentication (data + control)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Batches queued inside the TC because it cannot ship to the Sensor Collector. GOOD: low/stable. BAD: steadily growing \u2192 the data channel is down or the collector is not accepting. CHECK the data-channel connection above and the 'Sensor Collector \u2192 Fedex' row.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 9,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 22
+          },
+          "id": 12,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "message_agentHealth_data_stats_batchesInQueue{tenant=~\"$tenant\",zone=~\"$zone\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{hostname}}/{{zone}}/{{agentId}}"
+            }
+          ],
+          "title": "Telemetry Collector \u2013 Outbound Backlog (batchesInQueue)",
+          "type": "timeseries"
+        }
+      ]
+    },
+    {
+      "collapsed": true,
+      "type": "row",
+      "id": 40,
+      "title": "Sensor Agents \u2192 File / NID source detail (subset)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "NID devices deliver data by writing files to a directory that the Sensor Collector's filewatcher consumes (an alternative to streaming agents). 'in watched dir' = files currently present; 'enqueued' = files picked up and waiting to be processed. GOOD: both stay low/stable (files consumed as fast as they arrive). BAD: 'in watched dir' grows unbounded = the collector is not consuming (filewatcher stuck / roadrunner down); both flat at 0 when you expect data = the NID devices are not writing. CHECK: the NID device is exporting files; the shared location/mount is reachable, writable and not full; and the roadrunner/sensor-collector process and its filewatcher are running.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 15
+          },
+          "id": 35,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (hostname) (roadrunner_filewatcher_files_in_dir{tenant=~\"$tenant\",zone=~\"$zone\"})",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "in watched dir {{hostname}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (hostname) (roadrunner_filewatcher_enqueued_files{tenant=~\"$tenant\",zone=~\"$zone\"})",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "enqueued {{hostname}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "avg by (hostname) (roadrunner_filewatcher_time_in_queue_ms{tenant=~\"$tenant\",zone=~\"$zone\"})",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "time in queue ms {{hostname}}"
+            }
+          ],
+          "title": "File Sources (NID) \u2013 Files In Watched Directory & Enqueued",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Problems the filewatcher hit processing NID files. failed = files it could not process (bad format/content); requeued = files picked up before being fully written (writer/timing issue); nack = negative acks with a reason. GOOD: flat at 0. BAD: failed/nack rising = malformed files or incomplete writes, so data from those NID files is lost. CHECK: the file format matches the configured parser; the NID writes atomically (write to a temp name then rename) so the watcher never sees a partial file; and the nack reason label.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 15
+          },
+          "id": 36,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (objectType) (rate(roadrunner_filewatcher_failed_files{tenant=~\"$tenant\",zone=~\"$zone\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "failed {{objectType}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum (rate(roadrunner_filewatcher_requeued_files{tenant=~\"$tenant\",zone=~\"$zone\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "requeued"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (reason) (rate(roadrunner_filewatcher_nack_count{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "nack ({{reason}})"
+            }
+          ],
+          "title": "File Sources (NID) \u2013 File Processing Issues",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Average time the collector spends reading a raw file from disk, parsing it, and normalizing it per GetData cycle. GOOD: low/stable. BAD: rising read time = slow disk/mount to the NID file location; rising parse/normalize = large or complex files. Sustained increases precede a growing 'in watched dir' backlog above.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 23
+          },
+          "id": 37,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "avg by (hostname) (roadrunner_getdata_read_time_ms{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"})",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "read {{hostname}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "avg by (hostname) (roadrunner_getdata_parse_time_ms{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"})",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "parse {{hostname}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "avg by (hostname) (roadrunner_getdata_norm_time_ms{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"})",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "normalize {{hostname}}"
+            }
+          ],
+          "title": "File Sources (NID) \u2013 Read / Parse / Normalize Time",
+          "type": "timeseries"
+        }
+      ]
+    },
+    {
+      "collapsed": true,
+      "type": "row",
+      "id": 41,
+      "title": "Sensor Agents \u2192 MQTT source detail (subset)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "For sources that feed the collector over MQTT. GOOD: successfully_consumed > 0, errors flat. BAD: connection_error > 0 or not_consumed rising with no successful \u2192 the MQTT source is not delivering. CHECK the MQTT broker reachability and the source device.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 16
+          },
+          "id": 17,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(rate(roadrunner_mqtt_connection_error{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "mqtt connection error/s"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(rate(roadrunner_mqtt_messages_not_consumed_count{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "mqtt not consumed/s"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(rate(roadrunner_mqtt_messages_successfully_consumed_count{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "mqtt consumed OK/s"
+            }
+          ],
+          "title": "Other Sources \u2013 MQTT Connectivity",
+          "type": "timeseries"
+        }
+      ]
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 23,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Each Sensor Collector's data connection to PCA (Fedex). 1 = connected, 0 = disconnected. 0 = that collector cannot deliver data and it backs up in its local persistence cache. Because this path traverses the reverse proxy, a 0 can also mean a proxy / network / DNS problem between the collector and PCA. CHECK: collector running; outbound reachability to the PCA data endpoint; the websocket and rejected-batch panels; and certificate validity (Certificates row).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "stepAfter",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short",
+              "min": 0,
+              "max": 1.2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 17
+          },
+          "id": 19,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "roadrunner_connection{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{hostname}}-{{zone}}-{{connectorId}}"
+            }
+          ],
+          "title": "Sensor Collector \u2013 Data Connection to Fedex",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Fedex-side websocket closes (teardown) and refused connection attempts (rejected, with reason). GOOD: flat. BAD: repeated for a connector \u2192 it cannot hold a connection. CHECK the reason label; the usual causes are auth/cert failures (Certificates row) and tenant mismatches (next panel).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "bars",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 17
+          },
+          "id": 20,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (connectorId) (rate(roadrunner_websocket_teardown_count[$__rate_interval]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "teardown {{connectorId}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (connectorId, reason) (rate(roadrunner_websocket_rejected_count[$__rate_interval]))",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "rejected {{connectorId}} ({{reason}})"
+            }
+          ],
+          "title": "Sensor Collector \u2013 Websocket Teardowns / Rejections",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Batches Fedex rejected: unauthorized tenant (the collector's tenantId does not match its authorized websocket \u2013 a provisioning/config issue), bad data (unparseable), or internal error. GOOD: flat at 0. CHECK provisioning/tenant config for unauthorized; collector data quality for bad_data; Fedex logs for internal.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 25
+          },
+          "id": 21,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (connectorId) (rate(roadrunner_rejected_batches_due_to_unauthorized_tenant_count[$__rate_interval]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "unauthorized tenant {{connectorId}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (connectorId) (rate(roadrunner_rejected_batches_due_to_bad_data_count[$__rate_interval]))",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "bad data {{connectorId}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (connectorId) (rate(roadrunner_rejected_batches_due_to_internal_errors_count[$__rate_interval]))",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "internal error {{connectorId}}"
+            }
+          ],
+          "title": "Sensor Collector \u2013 Rejected Batches (by cause)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Time for the collector to ship a batch to Fedex and receive an ack (roadrunner_data_ship_latency_ms). GOOD: low/stable. BAD: rising \u2192 a degraded (not yet down) link \u2013 proxy/network latency or Fedex under load. Sustained high latency typically precedes disconnects.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 25
+          },
+          "id": 22,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "avg by (connectorId) (roadrunner_data_ship_latency_ms{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"})",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{connectorId}}"
+            }
+          ],
+          "title": "Sensor Collector \u2013 Data Ship Latency",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Data the Sensor Collector (roadrunner) has buffered to its on-disk persistence cache because it has not yet shipped to Fedex (roadrunner_persistence_service_cached_files = data files, _available_batches = batches ready to ship), per collector. This is the direct symptom of a data-path problem: when the 'Data Connection to Fedex' above drops or the link degrades, data accumulates here. GOOD: flat/near zero. BAD: steadily rising \u2192 the collector cannot deliver to Fedex \u2013 check the connection, websocket teardown and rejected-batch panels above; a persistently growing cache risks filling the collector's disk and dropping data.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "id": 42,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (connectorId) (roadrunner_persistence_service_cached_files{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"})",
+              "legendFormat": "cached files {{connectorId}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (connectorId) (roadrunner_persistence_service_available_batches{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"})",
+              "legendFormat": "available batches {{connectorId}}",
+              "range": true,
+              "instant": false,
+              "refId": "B"
+            }
+          ],
+          "title": "Sensor Collector \u2013 Persistence Cache Backlog (unshipped to Fedex)",
+          "type": "timeseries",
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 33
+          }
+        }
+      ],
+      "title": "Sensor Collector \u2192 Fedex  (data connectivity)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 28,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Foxtrot's view of each connector's control connection (foxtrot_connector_connected). 1 = connected, 0 = disconnected. 0 = the collector cannot reach Foxtrot for configuration, even if its data path to Fedex is healthy. CHECK: outbound reachability to the Foxtrot/config endpoint through the proxy; certificate/auth; and the collector-side Foxtrot error panel below.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "stepAfter",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short",
+              "min": 0,
+              "max": 1.2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 18
+          },
+          "id": 24,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "foxtrot_connector_connected{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{hostname}}-{{zone}}-{{connectorId}}"
+            }
+          ],
+          "title": "Sensor Collector \u2013 Connection to Foxtrot",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "1 = the connector successfully requested and received its configuration from Foxtrot; 0 = connected but not (yet) configured or the config push failed. If connected (above) but not configured: CHECK Foxtrot logs and the config-request error panel below, and verify a valid connector config exists for this tenant/zone.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "stepAfter",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short",
+              "min": 0,
+              "max": 1.2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 18
+          },
+          "id": 25,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "foxtrot_connector_configured{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{hostname}}-{{zone}}-{{connectorId}}"
+            }
+          ],
+          "title": "Sensor Collector \u2013 Configured by Foxtrot",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Errors the collector itself reports connecting to Foxtrot (roadrunner_foxtrot_connection_error) and retrieving/parsing configuration (roadrunner_configuration_error). GOOD: flat at 0. BAD: >0 \u2192 the collector is failing to reach Foxtrot or process its config. CHECK the network path to Foxtrot and the config content/validity.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 26
+          },
+          "id": 26,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (connectorId) (rate(roadrunner_foxtrot_connection_error{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "foxtrot connection error {{connectorId}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (connectorId) (rate(roadrunner_configuration_error{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "configuration error {{connectorId}}"
+            }
+          ],
+          "title": "Sensor Collector \u2013 Foxtrot / Config Errors (collector-side)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Config/control messages Foxtrot handled, grouped by resulting HTTP code, plus unhandled messages. GOOD: 2xx only. BAD: a rise in 4xx/5xx or unhandled \u2192 Foxtrot is receiving requests but failing them. CHECK Foxtrot logs for the failing message type and code.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 26
+          },
+          "id": 27,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (related_http_code) (rate(foxtrot_ws_server_handle_duration_count[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "http {{related_http_code}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(rate(foxtrot_ws_server_unhandled_messages_total[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "unhandled"
+            }
+          ],
+          "title": "Foxtrot \u2013 Config Request Handling (by HTTP code)",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Sensor Collector \u2192 Foxtrot  (configuration connectivity)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 34,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Client-certificate authorization requests skylight-aaa rejected, by reason. GOOD: flat at 0. BAD: >0 \u2192 sensors/collectors are being refused at authentication \u2013 this is frequently the root cause of the websocket rejections in the Fedex row. Common reasons: expired/revoked certificate, unknown CA, tenant mismatch.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 19
+          },
+          "id": 29,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (tenantId, reason) (rate(skylight_aaa_rejected_cert_authorization_requests{tenantId=~\"$tenant\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{reason}} ({{tenantId}})"
+            }
+          ],
+          "title": "Cert Authorization Rejections (skylight-aaa, by reason)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Outcome of OCSP revocation checks for client certificates. GOOD: only 'good'. BAD: any 'revoked'/'unknown' \u2192 the affected sensors will be refused at connection. CHECK whether the certificate was intentionally revoked; reissue/rotate if the revocation is unexpected.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 19
+          },
+          "id": 30,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (status) (rate(skylight_aaa_client_certificates_ocsp_status{tenantId=~\"$tenant\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{status}}"
+            }
+          ],
+          "title": "Client Certificate OCSP Status",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Days until each Sensor Collector's client certificate expires (derived from roadrunner_cert_expiry). An expired cert = immediate auth failure and disconnect. GOOD: comfortably above 30d (green). WARN < 30d (orange), CRITICAL < 14d (red). Renew/rotate the collector certificate before it reaches 0.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "days",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 14
+                  },
+                  {
+                    "color": "green",
+                    "value": 30
+                  }
+                ]
+              },
+              "unit": "d",
+              "decimals": 1
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 27
+          },
+          "id": 31,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(roadrunner_cert_expiry{tenant=~\"$tenant\",zone=~\"$zone\"} / 1000 - time()) / 86400",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{hostname}}-{{zone}}"
+            }
+          ],
+          "title": "Sensor Collector Client Cert \u2013 Days to Expiry",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Days until each tenant's intermediate CA certificate expires (skylight_aaa_tenant_cert_expiry_days). Expiry here affects ALL of that tenant's sensors at once. GOOD: > 30d (green). WARN < 30d, CRITICAL < 14d \u2192 rotate the tenant CA well before expiry.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "days",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 14
+                  },
+                  {
+                    "color": "green",
+                    "value": 30
+                  }
+                ]
+              },
+              "unit": "d"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 27
+          },
+          "id": 32,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "skylight_aaa_tenant_cert_expiry_days{tenantId=~\"$tenant\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{tenantId}}"
+            }
+          ],
+          "title": "Tenant CA Certificate \u2013 Days to Expiry",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Per-tenant counts of active vs revoked client certificates (skylight_aaa_client_certificates_active / _revoked). A rising revoked count or a drop in active = certificates being revoked/removed, which will disconnect those sensors. CHECK why certs are being revoked (rotation, decommission, or compromise).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 35
+          },
+          "id": 33,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "skylight_aaa_client_certificates_active{tenantId=~\"$tenant\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "active ({{tenantId}})"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "skylight_aaa_client_certificates_revoked{tenantId=~\"$tenant\"}",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "revoked ({{tenantId}})"
+            }
+          ],
+          "title": "Client Certificates \u2013 Active vs Revoked",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Certificates & Authentication  (skylight-aaa)",
+      "type": "row"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 41,
+  "tags": [
+    "pca",
+    "connectivity",
+    "sensors",
+    "configuration"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(roadrunner_connection, tenant)",
+        "includeAll": true,
+        "label": "tenant",
+        "multi": true,
+        "name": "tenant",
+        "options": [],
+        "query": {
+          "query": "label_values(roadrunner_connection, tenant)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(roadrunner_connection, zone)",
+        "includeAll": true,
+        "label": "zone",
+        "multi": true,
+        "name": "zone",
+        "options": [],
+        "query": {
+          "query": "label_values(roadrunner_connection, zone)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(roadrunner_connection, connectorId)",
+        "includeAll": true,
+        "label": "connectorId",
+        "multi": true,
+        "name": "connectorId",
+        "options": [],
+        "query": {
+          "query": "label_values(roadrunner_connection, connectorId)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "PCA Sensor Connectivity & Configuration",
+  "uid": "pca-sensor-connectivity",
+  "version": 1
+}
