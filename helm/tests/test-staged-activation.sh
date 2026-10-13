@@ -111,6 +111,7 @@ for secret in nginx-tls-secret-cm nginx-tls-secret-hm; do
         helm template grafana "$test_dir/chart" "${staged_values[@]}" \
             --set global.clusterIPPort=8443 \
             --set grafana.auth.genericOAuth.clientIdDiscovery.internalNginx=true \
+            --set grafana.auth.genericOAuth.internalProvider.enabled=true \
             --set-string "grafana.auth.genericOAuth.clientIdDiscovery.tlsCASecretName=$secret" \
             "${extra_values[@]}" --show-only templates/staged-activation-probe.yaml > "$rendered_chart"
         python3 -S - "$rendered_chart" "$secret" "$mode" <<'PY'
@@ -124,6 +125,19 @@ pod = resources["statefulset"]["spec"]["template"]["spec"]
 volumes = [v for v in pod["volumes"] if v["name"] == "grafana-discovery-ca"]
 mounts = [v for v in pod["containers"][0]["volumeMounts"] if v["name"] == "grafana-discovery-ca"]
 if sys.argv[3] == "full":
+    assert data["GF_AUTH_GENERIC_OAUTH_TOKEN_URL"] == (
+        "https://grafana-oidc-provider.default.svc.cluster.local/oauth/v2/token"
+    )
+    assert data["GF_AUTH_GENERIC_OAUTH_API_URL"] == (
+        "https://grafana-oidc-provider.default.svc.cluster.local/oidc/v1/userinfo"
+    )
+    assert data["GF_AUTH_GENERIC_OAUTH_AUTH_URL"] == "https://auth.accedian.local/oauth/v2/authorize"
+    assert data["GRAFANA_OAUTH_END_SESSION_URL"] == "https://auth.accedian.local/oidc/v1/end_session"
+    assert data["GF_AUTH_GENERIC_OAUTH_TLS_SKIP_VERIFY_INSECURE"] == "false"
+    assert data["GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA"] == "/etc/grafana-provider-ca/ca.crt"
+    provider, = [v for v in pod["volumes"] if v["name"] == "grafana-provider-ca"]
+    assert provider["secret"] == {"secretName": "grafana-oidc-provider-tls",
+                                  "items": [{"key": "ca.crt", "path": "ca.crt"}]}
     assert data["GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_NGINX_HTTPS_PORT"] == "8443"
     assert data["GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_URL"] == (
         "https://deployment.accedian.local/api/v1/onboarding/tenant-info"
@@ -134,6 +148,8 @@ if sys.argv[3] == "full":
     assert mounts == [{"name": "grafana-discovery-ca",
         "mountPath": "/etc/grafana-discovery-ca", "readOnly": True}]
 else:
+    assert "GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA" not in data
+    assert not [v for v in pod["volumes"] if v["name"] == "grafana-provider-ca"]
     assert not volumes and not mounts
     assert "GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_NGINX_HTTPS_PORT" not in data
     assert "GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_CA_FILE" not in data
