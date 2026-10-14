@@ -3,6 +3,8 @@
 # Declare variables to be passed into your templates.
 global:
   deployment_type:
+  linkerd:
+    enabled: false
   images:
     pullSecrets: []
   analytics:

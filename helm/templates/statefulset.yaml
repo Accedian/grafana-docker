@@ -51,6 +51,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "grafana.fullname" . }}-config
+          env:
+            - name: LINKERD_ENABLED
+              value: {{ .Values.global.linkerd.enabled | quote }}
           volumeMounts:
             - name: {{ include "grafana.fullname" . }}-data
               mountPath: /var/lib/grafana

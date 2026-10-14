@@ -8,6 +8,27 @@ If you've modified any of the dashboards that come with packged in this reposito
 make sure to save them as copies of the originals. If you don't do this, you will
 lose your changes when you redeploy.
 
+## Linkerd dashboards
+
+The image includes the official Linkerd dashboards in the `linkerd` folder.
+They use the existing Prometheus datasource with UID `prometheus`.
+Prometheus must scrape Linkerd proxy and controller metrics with Linkerd's
+expected labels. Some panels also need Kubernetes metrics, the Viz extension,
+or the multicluster extension.
+
+The dashboards are disabled by default. Set `global.linkerd.enabled=true` in
+Helm to load them. The PCA umbrella chart passes this global value from its
+computed Linkerd option. For a standalone container, set `LINKERD_ENABLED=true`.
+
+Changing the Helm value replaces the Grafana pod because the value is part of
+its container environment. On startup, Grafana provisions the dashboards when
+enabled and removes the provisioned stock Linkerd dashboards when disabled.
+`DONT_COPY_STOCK_DASHBOARDS` continues to leave all existing dashboards and
+provisioning untouched.
+
+The [source catalog and pinned revisions](dashboards/linkerd/README.md) are
+included with the dashboards. No dashboard download occurs at startup.
+
 ## Running your Grafana container
 
 Start your container binding the external port `3000`.
