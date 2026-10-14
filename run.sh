@@ -88,6 +88,9 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
 
   echo "Copying stock dashboards"
     cp -R /tmp/dashboards/. "$GF_PATHS_DATA/dashboards/"
+    if [ "${LINKERD_ENABLED:-false}" != "true" ]; then
+        rm -rf "$GF_PATHS_DATA/dashboards/linkerd"
+    fi
 fi
 
 # Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced.

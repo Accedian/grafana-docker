@@ -1,4 +1,5 @@
 ## Current Release
+- Add the official Linkerd dashboards, loaded only when Linkerd is enabled.
 ### 0.232.0
 **Release Date:** Fri Sep 18 14:06:52 UTC 2026
 ## Previous Releases
