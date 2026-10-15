@@ -39,7 +39,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "# PCA Sensor Connectivity & Configuration\n\nShows which sensors/collectors are **connected vs disconnected**, for both the **data path** and the **configuration path**, and surfaces the most common root causes (auth, certificates, reverse-proxy/network).\n\n**Paths covered**\n- **Sensor Agents \u2192 Sensor Collector (roadrunner)** \u2014 overall connectivity & health of ALL edge agents, measured with the common `roadrunner_agent_connected` signal (telemetry collectors register on the same data gateway under the same agentId, so they are included here, not treated as a separate group).\n- **Telemetry Collector / File (NID) / MQTT detail (subsets)** \u2014 agent-type-specific metrics that add extra detail for the sensor agents that expose them (other agent types simply won't have these series, which is expected).\n- **Sensor Collector \u2192 Fedex** (data) and **\u2192 Foxtrot** (configuration)\n- **skylight-aaa** certificate & authentication health\n\n**Reverse proxy (nginx):** there is no nginx Prometheus exporter, so nginx is treated as part of a direct path \u2013 a proxy/network/DNS problem between a collector and PCA shows up as a `roadrunner_connection = 0`, websocket teardowns/rejections, or `roadrunner_foxtrot_connection_error` in the rows below.\n\n**Filters:** `$tenant`, `$zone`, `$connectorId` are applied only where each metric carries that label. Each summary tile shows **up% + connected/total** so the denominator is always visible (e.g. '100% \u00b7 45 of 45'); 'n/a \u00b7 total 0' means nothing of that type is monitored. Detailed per-entity red/green status is in the rows below.",
+        "content": "# PCA Sensor Connectivity & Configuration\n\n**Kubernetes and Docker Swarm:** connectivity and authentication metrics are shared across environments. Verify the corresponding exporter/component is scraped; a total of zero or an empty panel can also mean missing monitoring, not just an optional component.\n\nShows which sensors/collectors are **connected vs disconnected**, for both the **data path** and the **configuration path**, and surfaces the most common root causes (auth, certificates, reverse-proxy/network).\n\n**Paths covered**\n- **Sensor Agents \u2192 Sensor Collector (roadrunner)** \u2014 overall connectivity & health of ALL edge agents, measured with the common `roadrunner_agent_connected` signal (telemetry collectors register on the same data gateway under the same agentId, so they are included here, not treated as a separate group).\n- **Telemetry Collector / File (NID) / MQTT detail (subsets)** \u2014 agent-type-specific metrics that add extra detail for the sensor agents that expose them (other agent types simply won't have these series, which is expected).\n- **Sensor Collector \u2192 Fedex** (data) and **\u2192 Foxtrot** (configuration)\n- **skylight-aaa** certificate & authentication health\n\n**Reverse proxy (nginx):** there is no nginx Prometheus exporter, so nginx is treated as part of a direct path \u2013 a proxy/network/DNS problem between a collector and PCA shows up as a `roadrunner_connection = 0`, websocket teardowns/rejections, or `roadrunner_foxtrot_connection_error` in the rows below.\n\n**Filters:** `$tenant`, `$zone`, `$connectorId` are applied only where each metric carries that label. Each summary tile shows **up% + connected/total** so the denominator is always visible (e.g. '100% \u00b7 45 of 45'); 'n/a \u00b7 total 0' means nothing of that type is monitored. Detailed per-entity red/green status is in the rows below.",
         "mode": "markdown"
       },
       "pluginVersion": "12.1.0",
@@ -999,7 +999,7 @@
       "panels": [
         {
           "datasource": "Prometheus",
-          "description": "1 = connected to the broker/Sensor Collector, 0 = disconnected. If 0 the TC cannot deliver data. CHECK: the TC process/pod is running; the network path from the TC site to the Sensor Collector endpoint (firewall / reverse proxy / DNS); and the data-channel authentication panel below. OPTIONAL stage \u2013 if no TC is deployed this is empty.",
+          "description": "1 = connected to the broker/Sensor Collector, 0 = disconnected. If 0 the TC cannot deliver data. CHECK: the TC process, Kubernetes pod or Swarm task is running; the network path from the TC site to the Sensor Collector endpoint (firewall / reverse proxy / DNS); and the data-channel authentication panel below. OPTIONAL stage \u2013 if no TC is deployed this is empty.",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -3340,6 +3340,8 @@
   "schemaVersion": 41,
   "tags": [
     "pca",
+    "kubernetes",
+    "docker-swarm",
     "connectivity",
     "sensors",
     "configuration"
@@ -3422,5 +3424,5 @@
   "timezone": "browser",
   "title": "PCA Sensor Connectivity & Configuration",
   "uid": "pca-sensor-connectivity",
-  "version": 1
+  "version": 2
 }

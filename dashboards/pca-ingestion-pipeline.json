@@ -39,7 +39,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "# PCA Ingestion Pipeline\n\nTop-down view of the PCA core ingestion pipeline. The dashboard is ordered the way data flows: the **Pipeline Flow Summary** below gives an at-a-glance 'is data moving at each stage' view, and the collapsible rows beneath it (Sensor Agents \u2192 Sensor Collector \u2192 Fedex \u2192 Ignite \u2192 Spark \u2192 Gather \u2192 Druid) let you drill into each service.\n\n**How to triage a data outage:** read the summary left-to-right \u2014 the first stage showing **red (0)** is where data stopped. Expand that service's row for the detailed panels and troubleshooting hints.\n\n**Filters:** `$tenant` and `$objectType` scope the panels that carry those labels. Note some stages have no `objectType` (Telemetry Collector, Kafka consumer lag, Gather/Druid) \u2014 those panels are intentionally not filtered by object type. The edge stage is modelled as **Sensor Agents** (overall health via the common `roadrunner_agent_connected` signal, covering all agent types); **telemetry-collector-specific** flow/backlog panels appear as a labelled *(subset)* within that stage, since only telemetry collectors expose them.",
+        "content": "# PCA Ingestion Pipeline\n\n**Kubernetes and Docker Swarm:** these application metrics are shared across environments. Spark processed/dropped-record rates accept both unsuffixed and legacy `_total` counter names, preferring the unsuffixed variant for matching series. Verify the relevant component/exporter is scraped; missing or optional stages can produce empty panels, and zero-count fallbacks do not prove monitoring is working.\n\nTop-down view of the PCA core ingestion pipeline. The dashboard is ordered the way data flows: the **Pipeline Flow Summary** below gives an at-a-glance 'is data moving at each stage' view, and the collapsible rows beneath it (Sensor Agents \u2192 Sensor Collector \u2192 Fedex \u2192 Ignite \u2192 Spark \u2192 Gather \u2192 Druid) let you drill into each service.\n\n**How to triage a data outage:** read the summary left-to-right \u2014 the first stage showing **red (0)** is where data stopped. Expand that service's row for the detailed panels and troubleshooting hints.\n\n**Filters:** `$tenant` and `$objectType` scope the panels that carry those labels. Note some stages have no `objectType` (Telemetry Collector, Kafka consumer lag, Gather/Druid) \u2014 those panels are intentionally not filtered by object type. The edge stage is modelled as **Sensor Agents** (overall health via the common `roadrunner_agent_connected` signal, covering all agent types); **telemetry-collector-specific** flow/backlog panels appear as a labelled *(subset)* within that stage, since only telemetry collectors expose them.",
         "mode": "markdown"
       },
       "pluginVersion": "12.1.0",
@@ -2112,7 +2112,7 @@
       "panels": [
         {
           "datasource": "Prometheus",
-          "description": "Consumer lag per topic for Ignite reading the spark_raw_in / latent_raw_in topics that Fedex produces to (mo-summary topics excluded). GOOD: low and flat. BAD: continuously growing for a topic \u2192 Ignite is not keeping up or is stuck; check the ignite pod logs and the processing-rate panel below.",
+          "description": "Consumer lag per topic for Ignite reading the spark_raw_in / latent_raw_in topics that Fedex produces to (mo-summary topics excluded). GOOD: low and flat. BAD: continuously growing for a topic \u2192 Ignite is not keeping up or is stuck; check the ignite pod / Swarm task logs and the processing-rate panel below.",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -2647,7 +2647,7 @@
       "panels": [
         {
           "datasource": "Prometheus",
-          "description": "Consumer lag of the streamingapp on the ignite.contemporary topics (from the Kafka exporter). GOOD: low/flat. BAD: continuously growing for one or more topics \u2192 an error in the streamingapp pod; check its logs. (Kafka-exporter metric has no tenant/objectType labels.)",
+          "description": "Consumer lag of the streamingapp on the ignite.contemporary topics (from the Kafka exporter). GOOD: low/flat. BAD: continuously growing for one or more topics \u2192 an error in the streamingapp pod / Swarm task; check its logs. (Kafka-exporter metric has no tenant/objectType labels.)",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -2838,7 +2838,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum by (objectType) (rate(spark_AccedianStreamingMetrics_streaming_recCount{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
+              "expr": "sum by (objectType) (rate(spark_AccedianStreamingMetrics_streaming_recCount{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]) or rate(spark_AccedianStreamingMetrics_streaming_recCount_total{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
               "range": true,
               "instant": false,
               "refId": "B",
@@ -2847,7 +2847,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum by (objectType, cause) (rate(spark_AccedianStreamingMetrics_streaming_droppedRecCount{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
+              "expr": "sum by (objectType, cause) (rate(spark_AccedianStreamingMetrics_streaming_droppedRecCount{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]) or rate(spark_AccedianStreamingMetrics_streaming_droppedRecCount_total{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
               "range": true,
               "instant": false,
               "refId": "C",
@@ -2957,7 +2957,7 @@
         },
         {
           "datasource": "Prometheus",
-          "description": "Consumer lag of the latentapp on the ignite.latent topics. GOOD: low/flat (latent data is bursty, so short spikes are normal). BAD: continuously growing \u2192 an issue in the latentapp pod; check its logs.",
+          "description": "Consumer lag of the latentapp on the ignite.latent topics. GOOD: low/flat (latent data is bursty, so short spikes are normal). BAD: continuously growing \u2192 an issue in the latentapp pod / Swarm task; check its logs.",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -3152,7 +3152,7 @@
         },
         {
           "datasource": "Prometheus",
-          "description": "Consumer lag of the alertStreaming app on the alert-events topic. GOOD: low/flat. BAD: continuously growing \u2192 an issue in the alertstream pod; check its logs.",
+          "description": "Consumer lag of the alertStreaming app on the alert-events topic. GOOD: low/flat. BAD: continuously growing \u2192 an issue in the alertstream pod / Swarm task; check its logs.",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -3249,7 +3249,7 @@
         },
         {
           "datasource": "Prometheus",
-          "description": "Number of latent batch partitions queued for processing, per job. GOOD: trends down after a burst. BAD: not decreasing for a job \u2192 inspect the Batch_Ingestion_v1.1_latent DAG in Airflow; the failed task log gives a driver ID and sparkworker pod, and /work/<driverID>/stderr on that pod has the detail.",
+          "description": "Number of latent batch partitions queued for processing, per job. GOOD: trends down after a burst. BAD: not decreasing for a job \u2192 inspect the Batch_Ingestion_v1.1_latent DAG in Airflow; the failed task log gives a driver ID and sparkworker pod / Swarm task, and /work/<driverID>/stderr on that pod / Swarm task has the detail.",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -3774,7 +3774,7 @@
         },
         {
           "datasource": "Prometheus",
-          "description": "Errors / back-pressure when Pacemaker submits tasks to Druid: task shed, insufficient slots, submission-cycle failures, persistence failures. GOOD: flat at 0. BAD: rising \u2192 Druid availability problem; check the overlord pod health and logs.",
+          "description": "Errors / back-pressure when Pacemaker submits tasks to Druid: task shed, insufficient slots, submission-cycle failures, persistence failures. GOOD: flat at 0. BAD: rising \u2192 Druid availability problem; check the overlord pod / Swarm task health and logs.",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -4122,6 +4122,8 @@
   "schemaVersion": 41,
   "tags": [
     "pca",
+    "kubernetes",
+    "docker-swarm",
     "ingestion",
     "pipeline"
   ],
@@ -4181,5 +4183,5 @@
   "timezone": "browser",
   "title": "PCA Ingestion Pipeline",
   "uid": "pca-ingestion-v2",
-  "version": 1
+  "version": 2
 }

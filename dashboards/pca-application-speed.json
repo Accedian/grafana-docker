@@ -39,7 +39,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "# PCA Application Speed\n\nResponse time, request volume and error rate for the platform's APIs, database calls, Spark jobs, and consumer lag \u2013 the 'why is it slow?' dashboard.\n\n**Sections**\n- **API overview (RED)**: per service Request rate, Error rate (5xx), and Duration (p99). Latency is in seconds.\n- **Per-service detail**: slowest endpoints and response-code breakdown for Gather and Skylight-AAA, plus other services.\n- **Database speed**: app-side call latency (what the services actually experience calling Dgraph/Postgres/Druid) plus CouchDB and OpenSearch exporter internals.\n- **Spark**: streaming micro-batch duration & throughput, batch-job execution time & scheduling delay. A *micro-batch* is the group of messages a Spark app pulls from its Kafka topic each trigger and processes together (streamingapp reads the `ignite.contemporary*` topics, latentapp the `ignite.latent*` topics, and alertstream the `alert-events` topic).\n- **Sensor Collector persistence**: batch ship time and cache backlog (files/batches) for roadrunner's on-disk persistence service \u2013 the collector's end-of-pipe shipping speed to Fedex.\n- **Lag**: Kafka consumer-group lag and Ignite ingestion lag.\n\n**Reading latency:** API/DB summaries expose p50/p90/p99 quantiles directly; histograms (sky-topo, foxtrot, alert-service REST, foxtrot-postgres) use `histogram_quantile`. A rising p99 with flat rate = genuine slowdown; rising rate + rising p99 = load-driven. Correlate DB latency spikes with API latency to localise the cause.\n\n**Note:** nginx has no per-route Prometheus metrics (only stub_status), so API timings come from each upstream service. weld exposes request/error counts but no latency; report-service / custom-reports / tenant-orchestrator did not expose confirmable timing metrics (tell me if they do and I'll add them).",
+        "content": "# PCA Application Speed\n\n**Kubernetes and Docker Swarm:** these application metrics are shared across environments. Panels require the corresponding component/exporter and compatible metric names; an empty panel is not proof of health.\n\nResponse time, request volume and error rate for the platform's APIs, database calls, Spark jobs, and consumer lag \u2013 the 'why is it slow?' dashboard.\n\n**Sections**\n- **API overview (RED)**: per service Request rate, Error rate (5xx), and Duration (p99). Latency is in seconds.\n- **Per-service detail**: slowest endpoints and response-code breakdown for Gather and Skylight-AAA, plus other services.\n- **Database speed**: app-side call latency (what the services actually experience calling Dgraph/Postgres/Druid) plus CouchDB and OpenSearch exporter internals.\n- **Spark**: streaming micro-batch duration & throughput, batch-job execution time & scheduling delay. A *micro-batch* is the group of messages a Spark app pulls from its Kafka topic each trigger and processes together (streamingapp reads the `ignite.contemporary*` topics, latentapp the `ignite.latent*` topics, and alertstream the `alert-events` topic).\n- **Sensor Collector persistence**: batch ship time and cache backlog (files/batches) for roadrunner's on-disk persistence service \u2013 the collector's end-of-pipe shipping speed to Fedex.\n- **Lag**: Kafka consumer-group lag and Ignite ingestion lag.\n\n**Reading latency:** API/DB summaries expose p50/p90/p99 quantiles directly; histograms (sky-topo, foxtrot, alert-service REST, foxtrot-postgres) use `histogram_quantile`. A rising p99 with flat rate = genuine slowdown; rising rate + rising p99 = load-driven. Correlate DB latency spikes with API latency to localise the cause.\n\n**Note:** nginx has no per-route Prometheus metrics (only stub_status), so API timings come from each upstream service. weld exposes request/error counts but no latency; report-service / custom-reports / tenant-orchestrator did not expose confirmable timing metrics (tell me if they do and I'll add them).",
         "mode": "markdown"
       },
       "pluginVersion": "12.1.0",
@@ -3130,6 +3130,8 @@
   "schemaVersion": 41,
   "tags": [
     "pca",
+    "kubernetes",
+    "docker-swarm",
     "application",
     "speed",
     "latency"
@@ -3145,5 +3147,5 @@
   "timezone": "browser",
   "title": "PCA Application Speed",
   "uid": "pca-application-speed",
-  "version": 1
+  "version": 2
 }
