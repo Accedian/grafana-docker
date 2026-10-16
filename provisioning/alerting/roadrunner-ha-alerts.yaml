@@ -9,10 +9,9 @@ apiVersion: 1
 groups:
   - orgId: 1
     name: roadrunner-ha
-    folder: HA Monitoring
+    folder: 03 - Operations & Administration
     interval: 1m
     rules:
-
       # -----------------------------------------------------------------------
       # 1. Liveness Degraded
       # Fires when the liveness watchdog reports stale heartbeats.
@@ -351,4 +350,3 @@ groups:
           runbook: >
             Verify TC configuration points to the correct RR address.
             Check AgentProxy port accessibility and network connectivity between TCs and this RR.
-

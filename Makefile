@@ -41,6 +41,10 @@ all: build
 
 .PHONY: build
 
+.PHONY: test
+test:
+	python3 -m unittest discover -s tests -v
+
 docker:
 	@echo "Building Grafana image: $(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)"
 	@echo "Using Grafana URL $(GRAFANA_URL)"

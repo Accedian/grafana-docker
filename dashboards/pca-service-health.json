@@ -1,0 +1,2210 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "PCA service health for Kubernetes and Docker Swarm. Kubernetes uses ready/desired workload replicas; the Docker Swarm section uses running/desired service replicas from the opt-in manager collector, gated on collection freshness and node-exporter reachability. Scaled-to-zero services are excluded. Running is not application readiness. Edge collectors/sensors are out of scope.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "panels": [
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# PCA Service Health — Kubernetes + Docker Swarm\n\n**Kubernetes sections:** show whether the PCA platform **services** running in the cluster are up now and when they were degraded/down. To stay stable and readable, the service timelines are keyed on the **workload** (Deployment / StatefulSet / DaemonSet), not individual pods \u2013 so a rollout that replaces pods does not create noise, and each row is a short, stable service name. Edge collectors/sensors are out of scope.\n\n**Scaled-to-0 workloads are excluded** (desired replicas = 0, e.g. an optional app like latentapp when disabled) \u2013 they are intentionally off, not down, so they are not shown and not counted.\n\n**How to read it**\n- **Summary tiles**: fully-ready workloads vs total (scaled-to-0 excluded), degraded workloads, pending pods, crash-loops, restarts, failed jobs.\n- **Per-group timelines**: each row is a workload's **ready/desired replica ratio** over time \u2013 GREEN (1) = fully ready, ORANGE = partially ready, RED (0) = no ready replicas (down), GAP = the workload did not exist or is scaled to 0. This is the authoritative 'is the service up / when was it down' view.\n- **Jobs & CronJobs**: one-off/scheduled jobs are tracked separately (completed = normal; only failures are flagged).\n- **Restarts & Crash-loops**: pod-level detail, filtered to pods that actually restarted or are stuck.\n\n**Fixing a degraded/down service:** `kubectl describe` the workload and its pods (events: image pull, scheduling, probes), check pod logs, node pressure/resources, and upstream dependencies (e.g. if `postgres`/`zookeeper`/`kafka` is down, dependents go unready too).\n\n**Filters:** `$cluster` and `$namespace` scope the board (namespace defaults to `pca`) for Kubernetes.\n\n**Docker Swarm:** expand the Docker Swarm service-replica row. Select `$swarm_deployment`, `$stack` and `$swarm_service` independently of Kubernetes filters. It requires the opt-in manager-side collector published through node-exporter. Replicas are **running/desired**, not application-ready; a running task can still be unhealthy. GREEN = all desired replicas running, ORANGE = partially running, RED = zero running. Scaled-to-zero services, job-mode services and explicitly excluded one-shot workloads are omitted. The collector defaults to excluding airflow-dags-registry, whose completed publisher task is not a failed long-running service. This does not infer success/failure of those jobs. Ratios are capped at 1 during rollouts. Collector failure, a failed exporter scrape, a snapshot older than 300 seconds or a timestamp more than 30 seconds ahead of Prometheus removes availability data; check the collector-status tile rather than interpreting gaps as healthy. Use `docker service ps` and `docker service logs` on the manager for diagnosis.\n\nKubernetes Pending/CrashLoopBackOff/restart and Jobs/CronJobs panels have no Swarm equivalent here and remain unavailable, rather than displaying false healthy zeros. Kubernetes queries require healthy kube-state-metrics scrapes. Summary tiles use instant queries so an old good sample cannot mask a current monitoring outage. The 300-second Swarm freshness window accommodates the existing 120-second cloud node-exporter scrapes and the 60-second collection timer.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.1.0",
+      "title": "",
+      "type": "text"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
+      "id": 2,
+      "panels": [],
+      "title": "Kubernetes Service Summary (now)",
+      "type": "row"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Fully-ready workloads (Deployments + StatefulSets + DaemonSets with ready replicas >= desired, excluding any scaled to 0) shown as ready% plus ready/total. GREEN = everything at full capacity. ORANGE/RED = some/most services degraded \u2013 see 'Workloads degraded' and the per-group timelines.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99.9
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 0,
+          "noValue": "n/a"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "text"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "C"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "text"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "(100 * ((count((kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\"} >= kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"}) and (kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0)) or vector(0)) + (count((kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\"} >= kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"}) and (kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0)) or vector(0)) + (count((kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\"} >= kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\"}) and (kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0)) or vector(0))) / ((count(kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0) or vector(0)) + (count(kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0) or vector(0)) + (count(kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0) or vector(0)))) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+          "range": false,
+          "instant": true,
+          "refId": "A",
+          "legendFormat": "ready %"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "((count((kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\"} >= kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"}) and (kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0)) or vector(0)) + (count((kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\"} >= kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"}) and (kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0)) or vector(0)) + (count((kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\"} >= kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\"}) and (kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0)) or vector(0))) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+          "range": false,
+          "instant": true,
+          "refId": "B",
+          "legendFormat": "ready"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "((count(kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0) or vector(0)) + (count(kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0) or vector(0)) + (count(kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0) or vector(0))) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+          "range": false,
+          "instant": true,
+          "refId": "C",
+          "legendFormat": "total"
+        }
+      ],
+      "title": "Workloads ready",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Workloads with fewer ready replicas than desired (pods crashing, unschedulable, or unexpectedly scaled down). Scaled-to-0 workloads are not counted. RED = at least one service is not at full capacity \u2013 expand its functional group below.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 4,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "((count(kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\"} < kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"}) or vector(0)) + (count(kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\"} < kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"}) or vector(0)) + (count(kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\"} < kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\"}) or vector(0))) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+          "range": false,
+          "instant": true,
+          "refId": "A",
+          "legendFormat": "value"
+        }
+      ],
+      "title": "Workloads degraded",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Pods stuck in the Pending phase (cannot be scheduled or still initializing). RED = check node resources/affinity and the pod's events (`kubectl describe pod`).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 8,
+        "y": 8
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "(count(max by (pod)(kube_pod_status_phase{namespace=~\"$namespace\",cluster=~\"$cluster\",phase=\"Pending\"}) == 1) or vector(0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+          "range": false,
+          "instant": true,
+          "refId": "A",
+          "legendFormat": "value"
+        }
+      ],
+      "title": "Pods pending",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Containers currently in CrashLoopBackOff. RED = a container keeps crashing on start \u2013 check its logs and config/dependencies (see Restarts & Crash-loops).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 12,
+        "y": 8
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "(count(kube_pod_container_status_waiting_reason{namespace=~\"$namespace\",cluster=~\"$cluster\",reason=\"CrashLoopBackOff\"} == 1) or vector(0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+          "range": false,
+          "instant": true,
+          "refId": "A",
+          "legendFormat": "value"
+        }
+      ],
+      "title": "CrashLoopBackOff",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Total container restarts in the namespace over the last 24h. A few are normal (rollouts/node moves); a steadily climbing count points at an unstable container \u2013 see Restarts & Crash-loops. (Informational.)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 16,
+        "y": 8
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "(round(sum(increase(kube_pod_container_status_restarts_total{namespace=~\"$namespace\",cluster=~\"$cluster\"}[24h])) or vector(0))) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+          "range": false,
+          "instant": true,
+          "refId": "A",
+          "legendFormat": "value"
+        }
+      ],
+      "title": "Restarts (24h)",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Kubernetes Jobs currently reporting one or more failed pods (kube_job_status_failed > 0). RED = a batch/setup job failed \u2013 see Jobs & CronJobs. Completed jobs are normal and not counted.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 20,
+        "y": 8
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "(count(kube_job_status_failed{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0) or vector(0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+          "range": false,
+          "instant": true,
+          "refId": "A",
+          "legendFormat": "value"
+        }
+      ],
+      "title": "Failed jobs",
+      "type": "stat"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "id": 33,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Container restarts per pod over the last hour, showing only pods that actually restarted (zero-restart pods are hidden to avoid rollout churn). Repeated bumps = a container crashing and being restarted \u2013 check that pod's logs and the waiting-reason panel below. NOTE: a Deployment rollout replaces pods with new names rather than restarting them, so a clean rollout shows nothing here; use the workload timelines above for rollouts/availability.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "bars",
+                "fillOpacity": 60,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short",
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 25
+          },
+          "id": 31,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(sum by (pod) (increase(kube_pod_container_status_restarts_total{namespace=~\"$namespace\",cluster=~\"$cluster\"}[1h])) > 0) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{pod}}"
+            }
+          ],
+          "title": "Container Restarts (pods that restarted, 1h increase)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "When each pod was stuck in a container waiting-state for a genuine failure reason (benign PodInitializing/ContainerCreating excluded). A coloured block = the pod could not start during that time; a gap = not stuck. Row label shows the reason: ImagePull*/InvalidImageName = registry/credentials/tag; CrashLoopBackOff = app crashing on start; CreateContainerConfigError = bad config/secret/mount; CreateContainerError/RunContainerError = runtime problem. Check that pod's logs and `kubectl describe pod`.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 85,
+                "lineWidth": 0,
+                "spanNulls": false,
+                "insertNulls": false,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "1": {
+                      "text": "Stuck",
+                      "color": "red",
+                      "index": 0
+                    }
+                  }
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 33
+          },
+          "id": 32,
+          "options": {
+            "alignValue": "left",
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "never",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(sum by (pod, reason) (kube_pod_container_status_waiting_reason{namespace=~\"$namespace\",cluster=~\"$cluster\",reason=~\"CrashLoopBackOff|ImagePullBackOff|ErrImagePull|InvalidImageName|CreateContainerConfigError|CreateContainerError|RunContainerError\"}) > 0) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{pod}} [{{reason}}]"
+            }
+          ],
+          "title": "Pods Stuck Waiting (real failure reasons only)",
+          "type": "state-timeline"
+        }
+      ],
+      "title": "Restarts & Crash-loops (pod detail)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 10,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Ready/desired replica ratio over time for each workload in the 'Ingestion pipeline' group (Deployments/StatefulSets/DaemonSets whose name starts with one of: fedex, foxtrot, draftsman). GREEN = fully ready, ORANGE = partially ready, RED = no ready replicas (down), GAP = workload absent or scaled to 0. To fix a red/orange row: `kubectl describe` that workload and its pods, check events and logs, and any dependency it needs.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 85,
+                "lineWidth": 0,
+                "spanNulls": false,
+                "insertNulls": false,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "1": {
+                      "text": "Ready",
+                      "color": "green",
+                      "index": 0
+                    },
+                    "0": {
+                      "text": "Down",
+                      "color": "red",
+                      "index": 1
+                    }
+                  }
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 14
+          },
+          "id": 9,
+          "options": {
+            "alignValue": "left",
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "never",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(fedex|foxtrot|draftsman).*\"} / (kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(fedex|foxtrot|draftsman).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{deployment}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(fedex|foxtrot|draftsman).*\"} / (kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(fedex|foxtrot|draftsman).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "{{statefulset}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(fedex|foxtrot|draftsman).*\"} / (kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(fedex|foxtrot|draftsman).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "{{daemonset}}"
+            }
+          ],
+          "title": "Ingestion pipeline \u2013 workload readiness",
+          "type": "state-timeline"
+        }
+      ],
+      "title": "Ingestion pipeline",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "id": 12,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Ready/desired replica ratio over time for each workload in the 'Stream & batch analytics' group (Deployments/StatefulSets/DaemonSets whose name starts with one of: ignite, sparkmaster, sparkworker, streamingapp, alertstream, latentapp, stitchit, gather, sky-topo, health-clinic, airflow). GREEN = fully ready, ORANGE = partially ready, RED = no ready replicas (down), GAP = workload absent or scaled to 0. To fix a red/orange row: `kubectl describe` that workload and its pods, check events and logs, and any dependency it needs.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 85,
+                "lineWidth": 0,
+                "spanNulls": false,
+                "insertNulls": false,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "1": {
+                      "text": "Ready",
+                      "color": "green",
+                      "index": 0
+                    },
+                    "0": {
+                      "text": "Down",
+                      "color": "red",
+                      "index": 1
+                    }
+                  }
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 15
+          },
+          "id": 11,
+          "options": {
+            "alignValue": "left",
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "never",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(ignite|sparkmaster|sparkworker|streamingapp|alertstream|latentapp|stitchit|gather|sky-topo|health-clinic|airflow).*\"} / (kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(ignite|sparkmaster|sparkworker|streamingapp|alertstream|latentapp|stitchit|gather|sky-topo|health-clinic|airflow).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{deployment}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(ignite|sparkmaster|sparkworker|streamingapp|alertstream|latentapp|stitchit|gather|sky-topo|health-clinic|airflow).*\"} / (kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(ignite|sparkmaster|sparkworker|streamingapp|alertstream|latentapp|stitchit|gather|sky-topo|health-clinic|airflow).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "{{statefulset}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(ignite|sparkmaster|sparkworker|streamingapp|alertstream|latentapp|stitchit|gather|sky-topo|health-clinic|airflow).*\"} / (kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(ignite|sparkmaster|sparkworker|streamingapp|alertstream|latentapp|stitchit|gather|sky-topo|health-clinic|airflow).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "{{daemonset}}"
+            }
+          ],
+          "title": "Stream & batch analytics \u2013 workload readiness",
+          "type": "state-timeline"
+        }
+      ],
+      "title": "Stream & batch analytics",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 14,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Ready/desired replica ratio over time for each workload in the 'Druid analytics cluster' group (Deployments/StatefulSets/DaemonSets whose name starts with one of: overlord, middlemanager, coordinator, historical, broker, router). GREEN = fully ready, ORANGE = partially ready, RED = no ready replicas (down), GAP = workload absent or scaled to 0. To fix a red/orange row: `kubectl describe` that workload and its pods, check events and logs, and any dependency it needs.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 85,
+                "lineWidth": 0,
+                "spanNulls": false,
+                "insertNulls": false,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "1": {
+                      "text": "Ready",
+                      "color": "green",
+                      "index": 0
+                    },
+                    "0": {
+                      "text": "Down",
+                      "color": "red",
+                      "index": 1
+                    }
+                  }
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 16
+          },
+          "id": 13,
+          "options": {
+            "alignValue": "left",
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "never",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(overlord|middlemanager|coordinator|historical|broker|router).*\"} / (kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(overlord|middlemanager|coordinator|historical|broker|router).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{deployment}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(overlord|middlemanager|coordinator|historical|broker|router).*\"} / (kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(overlord|middlemanager|coordinator|historical|broker|router).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "{{statefulset}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(overlord|middlemanager|coordinator|historical|broker|router).*\"} / (kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(overlord|middlemanager|coordinator|historical|broker|router).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "{{daemonset}}"
+            }
+          ],
+          "title": "Druid analytics cluster \u2013 workload readiness",
+          "type": "state-timeline"
+        }
+      ],
+      "title": "Druid analytics cluster",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 16,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Ready/desired replica ratio over time for each workload in the 'Data stores & messaging' group (Deployments/StatefulSets/DaemonSets whose name starts with one of: kafka, zookeeper, namenode, secnamenode, datanode, minio, pca-minio, postgres, couchdb, dgraph, opensearch, rabbitmq, redis, valkey). GREEN = fully ready, ORANGE = partially ready, RED = no ready replicas (down), GAP = workload absent or scaled to 0. To fix a red/orange row: `kubectl describe` that workload and its pods, check events and logs, and any dependency it needs.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 85,
+                "lineWidth": 0,
+                "spanNulls": false,
+                "insertNulls": false,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "1": {
+                      "text": "Ready",
+                      "color": "green",
+                      "index": 0
+                    },
+                    "0": {
+                      "text": "Down",
+                      "color": "red",
+                      "index": 1
+                    }
+                  }
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 17
+          },
+          "id": 15,
+          "options": {
+            "alignValue": "left",
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "never",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(kafka|zookeeper|namenode|secnamenode|datanode|minio|pca-minio|postgres|couchdb|dgraph|opensearch|rabbitmq|redis|valkey).*\"} / (kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(kafka|zookeeper|namenode|secnamenode|datanode|minio|pca-minio|postgres|couchdb|dgraph|opensearch|rabbitmq|redis|valkey).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{deployment}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(kafka|zookeeper|namenode|secnamenode|datanode|minio|pca-minio|postgres|couchdb|dgraph|opensearch|rabbitmq|redis|valkey).*\"} / (kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(kafka|zookeeper|namenode|secnamenode|datanode|minio|pca-minio|postgres|couchdb|dgraph|opensearch|rabbitmq|redis|valkey).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "{{statefulset}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(kafka|zookeeper|namenode|secnamenode|datanode|minio|pca-minio|postgres|couchdb|dgraph|opensearch|rabbitmq|redis|valkey).*\"} / (kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(kafka|zookeeper|namenode|secnamenode|datanode|minio|pca-minio|postgres|couchdb|dgraph|opensearch|rabbitmq|redis|valkey).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "{{daemonset}}"
+            }
+          ],
+          "title": "Data stores & messaging \u2013 workload readiness",
+          "type": "state-timeline"
+        }
+      ],
+      "title": "Data stores & messaging",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 18,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Ready/desired replica ratio over time for each workload in the 'Query, alerting & northbound' group (Deployments/StatefulSets/DaemonSets whose name starts with one of: alert-service, alert-export, analytics-streamer, report-service). GREEN = fully ready, ORANGE = partially ready, RED = no ready replicas (down), GAP = workload absent or scaled to 0. To fix a red/orange row: `kubectl describe` that workload and its pods, check events and logs, and any dependency it needs.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 85,
+                "lineWidth": 0,
+                "spanNulls": false,
+                "insertNulls": false,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "1": {
+                      "text": "Ready",
+                      "color": "green",
+                      "index": 0
+                    },
+                    "0": {
+                      "text": "Down",
+                      "color": "red",
+                      "index": 1
+                    }
+                  }
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 18
+          },
+          "id": 17,
+          "options": {
+            "alignValue": "left",
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "never",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(alert-service|alert-export|analytics-streamer|report-service).*\"} / (kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(alert-service|alert-export|analytics-streamer|report-service).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{deployment}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(alert-service|alert-export|analytics-streamer|report-service).*\"} / (kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(alert-service|alert-export|analytics-streamer|report-service).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "{{statefulset}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(alert-service|alert-export|analytics-streamer|report-service).*\"} / (kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(alert-service|alert-export|analytics-streamer|report-service).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "{{daemonset}}"
+            }
+          ],
+          "title": "Query, alerting & northbound \u2013 workload readiness",
+          "type": "state-timeline"
+        }
+      ],
+      "title": "Query, alerting & northbound",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "id": 20,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Ready/desired replica ratio over time for each workload in the 'Identity & authorization' group (Deployments/StatefulSets/DaemonSets whose name starts with one of: zitadel, sky-zitadel-gw, skylight-aaa, cerbos). GREEN = fully ready, ORANGE = partially ready, RED = no ready replicas (down), GAP = workload absent or scaled to 0. To fix a red/orange row: `kubectl describe` that workload and its pods, check events and logs, and any dependency it needs.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 85,
+                "lineWidth": 0,
+                "spanNulls": false,
+                "insertNulls": false,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "1": {
+                      "text": "Ready",
+                      "color": "green",
+                      "index": 0
+                    },
+                    "0": {
+                      "text": "Down",
+                      "color": "red",
+                      "index": 1
+                    }
+                  }
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 19
+          },
+          "id": 19,
+          "options": {
+            "alignValue": "left",
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "never",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(zitadel|sky-zitadel-gw|skylight-aaa|cerbos).*\"} / (kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(zitadel|sky-zitadel-gw|skylight-aaa|cerbos).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{deployment}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(zitadel|sky-zitadel-gw|skylight-aaa|cerbos).*\"} / (kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(zitadel|sky-zitadel-gw|skylight-aaa|cerbos).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "{{statefulset}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(zitadel|sky-zitadel-gw|skylight-aaa|cerbos).*\"} / (kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(zitadel|sky-zitadel-gw|skylight-aaa|cerbos).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "{{daemonset}}"
+            }
+          ],
+          "title": "Identity & authorization \u2013 workload readiness",
+          "type": "state-timeline"
+        }
+      ],
+      "title": "Identity & authorization",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
+      "id": 22,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Ready/desired replica ratio over time for each workload in the 'Sensor management & control plane' group (Deployments/StatefulSets/DaemonSets whose name starts with one of: sensor-orch, sm-, yang-gateway, yang-postgres). GREEN = fully ready, ORANGE = partially ready, RED = no ready replicas (down), GAP = workload absent or scaled to 0. To fix a red/orange row: `kubectl describe` that workload and its pods, check events and logs, and any dependency it needs.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 85,
+                "lineWidth": 0,
+                "spanNulls": false,
+                "insertNulls": false,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "1": {
+                      "text": "Ready",
+                      "color": "green",
+                      "index": 0
+                    },
+                    "0": {
+                      "text": "Down",
+                      "color": "red",
+                      "index": 1
+                    }
+                  }
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 20
+          },
+          "id": 21,
+          "options": {
+            "alignValue": "left",
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "never",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(sensor-orch|sm-|yang-gateway|yang-postgres).*\"} / (kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(sensor-orch|sm-|yang-gateway|yang-postgres).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{deployment}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(sensor-orch|sm-|yang-gateway|yang-postgres).*\"} / (kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(sensor-orch|sm-|yang-gateway|yang-postgres).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "{{statefulset}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(sensor-orch|sm-|yang-gateway|yang-postgres).*\"} / (kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(sensor-orch|sm-|yang-gateway|yang-postgres).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "{{daemonset}}"
+            }
+          ],
+          "title": "Sensor management & control plane \u2013 workload readiness",
+          "type": "state-timeline"
+        }
+      ],
+      "title": "Sensor management & control plane",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 21
+      },
+      "id": 24,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Ready/desired replica ratio over time for each workload in the 'UI, data-access & reporting' group (Deployments/StatefulSets/DaemonSets whose name starts with one of: ui-, users-ui, deployment-ui, weld-, foss-presenter). GREEN = fully ready, ORANGE = partially ready, RED = no ready replicas (down), GAP = workload absent or scaled to 0. To fix a red/orange row: `kubectl describe` that workload and its pods, check events and logs, and any dependency it needs.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 85,
+                "lineWidth": 0,
+                "spanNulls": false,
+                "insertNulls": false,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "1": {
+                      "text": "Ready",
+                      "color": "green",
+                      "index": 0
+                    },
+                    "0": {
+                      "text": "Down",
+                      "color": "red",
+                      "index": 1
+                    }
+                  }
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 21
+          },
+          "id": 23,
+          "options": {
+            "alignValue": "left",
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "never",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(ui-|users-ui|deployment-ui|weld-|foss-presenter).*\"} / (kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(ui-|users-ui|deployment-ui|weld-|foss-presenter).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{deployment}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(ui-|users-ui|deployment-ui|weld-|foss-presenter).*\"} / (kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(ui-|users-ui|deployment-ui|weld-|foss-presenter).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "{{statefulset}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(ui-|users-ui|deployment-ui|weld-|foss-presenter).*\"} / (kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(ui-|users-ui|deployment-ui|weld-|foss-presenter).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "{{daemonset}}"
+            }
+          ],
+          "title": "UI, data-access & reporting \u2013 workload readiness",
+          "type": "state-timeline"
+        }
+      ],
+      "title": "UI, data-access & reporting",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "id": 26,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Ready/desired replica ratio over time for each workload in the 'Operational platform' group (Deployments/StatefulSets/DaemonSets whose name starts with one of: tenant-orchestrator, skyweather, grafana, consul, nginx, replicated). GREEN = fully ready, ORANGE = partially ready, RED = no ready replicas (down), GAP = workload absent or scaled to 0. To fix a red/orange row: `kubectl describe` that workload and its pods, check events and logs, and any dependency it needs.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 85,
+                "lineWidth": 0,
+                "spanNulls": false,
+                "insertNulls": false,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "1": {
+                      "text": "Ready",
+                      "color": "green",
+                      "index": 0
+                    },
+                    "0": {
+                      "text": "Down",
+                      "color": "red",
+                      "index": 1
+                    }
+                  }
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 22
+          },
+          "id": 25,
+          "options": {
+            "alignValue": "left",
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "never",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(tenant-orchestrator|skyweather|grafana|consul|nginx|replicated).*\"} / (kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment=~\"(tenant-orchestrator|skyweather|grafana|consul|nginx|replicated).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{deployment}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(tenant-orchestrator|skyweather|grafana|consul|nginx|replicated).*\"} / (kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset=~\"(tenant-orchestrator|skyweather|grafana|consul|nginx|replicated).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "{{statefulset}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(tenant-orchestrator|skyweather|grafana|consul|nginx|replicated).*\"} / (kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset=~\"(tenant-orchestrator|skyweather|grafana|consul|nginx|replicated).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "{{daemonset}}"
+            }
+          ],
+          "title": "Operational platform \u2013 workload readiness",
+          "type": "state-timeline"
+        }
+      ],
+      "title": "Operational platform",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
+      "id": 28,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Workloads (Deployments/StatefulSets/DaemonSets) in the namespace that did not match any functional group above \u2013 cluster infrastructure, operators, exporters, or anything newly added. Scaled-to-0 workloads are excluded. If a workload you expected in a named group appears here, its name differs from the service map \u2013 tell me and I'll add it. (Jobs/CronJobs are in the next section.)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 85,
+                "lineWidth": 0,
+                "spanNulls": false,
+                "insertNulls": false,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "1": {
+                      "text": "Ready",
+                      "color": "green",
+                      "index": 0
+                    },
+                    "0": {
+                      "text": "Down",
+                      "color": "red",
+                      "index": 1
+                    }
+                  }
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 0.5
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 23
+          },
+          "id": 27,
+          "options": {
+            "alignValue": "left",
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "never",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment!~\"(fedex|foxtrot|draftsman|ignite|sparkmaster|sparkworker|streamingapp|alertstream|latentapp|stitchit|gather|sky-topo|health-clinic|airflow|overlord|middlemanager|coordinator|historical|broker|router|kafka|zookeeper|namenode|secnamenode|datanode|minio|pca-minio|postgres|couchdb|dgraph|opensearch|rabbitmq|redis|valkey|alert-service|alert-export|analytics-streamer|report-service|zitadel|sky-zitadel-gw|skylight-aaa|cerbos|sensor-orch|sm-|yang-gateway|yang-postgres|ui-|users-ui|deployment-ui|weld-|foss-presenter|tenant-orchestrator|skyweather|grafana|consul|nginx|replicated).*\"} / (kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",deployment!~\"(fedex|foxtrot|draftsman|ignite|sparkmaster|sparkworker|streamingapp|alertstream|latentapp|stitchit|gather|sky-topo|health-clinic|airflow|overlord|middlemanager|coordinator|historical|broker|router|kafka|zookeeper|namenode|secnamenode|datanode|minio|pca-minio|postgres|couchdb|dgraph|opensearch|rabbitmq|redis|valkey|alert-service|alert-export|analytics-streamer|report-service|zitadel|sky-zitadel-gw|skylight-aaa|cerbos|sensor-orch|sm-|yang-gateway|yang-postgres|ui-|users-ui|deployment-ui|weld-|foss-presenter|tenant-orchestrator|skyweather|grafana|consul|nginx|replicated).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{deployment}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset!~\"(fedex|foxtrot|draftsman|ignite|sparkmaster|sparkworker|streamingapp|alertstream|latentapp|stitchit|gather|sky-topo|health-clinic|airflow|overlord|middlemanager|coordinator|historical|broker|router|kafka|zookeeper|namenode|secnamenode|datanode|minio|pca-minio|postgres|couchdb|dgraph|opensearch|rabbitmq|redis|valkey|alert-service|alert-export|analytics-streamer|report-service|zitadel|sky-zitadel-gw|skylight-aaa|cerbos|sensor-orch|sm-|yang-gateway|yang-postgres|ui-|users-ui|deployment-ui|weld-|foss-presenter|tenant-orchestrator|skyweather|grafana|consul|nginx|replicated).*\"} / (kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\",statefulset!~\"(fedex|foxtrot|draftsman|ignite|sparkmaster|sparkworker|streamingapp|alertstream|latentapp|stitchit|gather|sky-topo|health-clinic|airflow|overlord|middlemanager|coordinator|historical|broker|router|kafka|zookeeper|namenode|secnamenode|datanode|minio|pca-minio|postgres|couchdb|dgraph|opensearch|rabbitmq|redis|valkey|alert-service|alert-export|analytics-streamer|report-service|zitadel|sky-zitadel-gw|skylight-aaa|cerbos|sensor-orch|sm-|yang-gateway|yang-postgres|ui-|users-ui|deployment-ui|weld-|foss-presenter|tenant-orchestrator|skyweather|grafana|consul|nginx|replicated).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "{{statefulset}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset!~\"(fedex|foxtrot|draftsman|ignite|sparkmaster|sparkworker|streamingapp|alertstream|latentapp|stitchit|gather|sky-topo|health-clinic|airflow|overlord|middlemanager|coordinator|historical|broker|router|kafka|zookeeper|namenode|secnamenode|datanode|minio|pca-minio|postgres|couchdb|dgraph|opensearch|rabbitmq|redis|valkey|alert-service|alert-export|analytics-streamer|report-service|zitadel|sky-zitadel-gw|skylight-aaa|cerbos|sensor-orch|sm-|yang-gateway|yang-postgres|ui-|users-ui|deployment-ui|weld-|foss-presenter|tenant-orchestrator|skyweather|grafana|consul|nginx|replicated).*\"} / (kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\",daemonset!~\"(fedex|foxtrot|draftsman|ignite|sparkmaster|sparkworker|streamingapp|alertstream|latentapp|stitchit|gather|sky-topo|health-clinic|airflow|overlord|middlemanager|coordinator|historical|broker|router|kafka|zookeeper|namenode|secnamenode|datanode|minio|pca-minio|postgres|couchdb|dgraph|opensearch|rabbitmq|redis|valkey|alert-service|alert-export|analytics-streamer|report-service|zitadel|sky-zitadel-gw|skylight-aaa|cerbos|sensor-orch|sm-|yang-gateway|yang-postgres|ui-|users-ui|deployment-ui|weld-|foss-presenter|tenant-orchestrator|skyweather|grafana|consul|nginx|replicated).*\"} > 0)) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "{{daemonset}}"
+            }
+          ],
+          "title": "Other workloads \u2013 readiness",
+          "type": "state-timeline"
+        }
+      ],
+      "title": "Other / unclassified workloads",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "id": 30,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Kubernetes Jobs with failed pods or currently-active pods. GOOD: no 'failed' series (completed jobs just disappear \u2013 that is normal). BAD: a 'failed' series at >0 \u2013 that job's pod errored; check its logs. 'active' shows jobs currently running. One-off setup jobs and scheduled (CronJob) runs both surface here.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "bars",
+                "fillOpacity": 60,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short",
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 24
+          },
+          "id": 29,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_job_status_failed{namespace=~\"$namespace\",cluster=~\"$cluster\",job_name!=\"\"} > 0) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "failed {{job_name}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(kube_job_status_active{namespace=~\"$namespace\",cluster=~\"$cluster\",job_name!=\"\"} > 0) and on() (min(up{job=\"kube-state-metrics\",cluster=~\"$cluster\"}) == 1)",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "active {{job_name}}"
+            }
+          ],
+          "title": "Jobs \u2013 Failed / Active (by job)",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Kubernetes — Jobs & CronJobs",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 25},
+      "id": 34,
+      "title": "Docker Swarm — Service Replicas",
+      "type": "row",
+      "panels": [
+        {
+          "id": 35, "type": "stat", "title": "Swarm collector healthy",
+          "description": "1 = latest manager collection succeeded, its snapshot is less than 300 seconds old, and its node-exporter target scrapes successfully. 0 = failed/stale collection, excessive clock skew or failed exporter scrape. Unavailable = collector not installed or its metrics absent. No replica health is inferred from missing monitoring.",
+          "datasource": "Prometheus", "gridPos": {"h": 5, "w": 6, "x": 0, "y": 26},
+          "fieldConfig": {"defaults": {"noValue": "Unavailable", "mappings": [{"type": "special", "options": {"match": "null+nan", "result": {"text": "Unavailable", "color": "text"}}}], "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []},
+          "options": {"colorMode": "value", "graphMode": "none", "reduceOptions": {"calcs": ["last"], "fields": "", "values": false}},
+          "targets": [{"refId": "A", "editorMode": "code", "expr": "min(pca_swarm_collector_success{deployment=~\"$swarm_deployment\",stack=~\"$stack\"} * (time() - pca_swarm_collector_timestamp_seconds{deployment=~\"$swarm_deployment\",stack=~\"$stack\"} < bool 300) * (time() - pca_swarm_collector_timestamp_seconds{deployment=~\"$swarm_deployment\",stack=~\"$stack\"} >= bool -30) * on(job,instance,cluster) group_left() up)", "instant": true, "range": false}]
+        },
+        {
+          "id": 36, "type": "stat", "title": "Swarm services fully running %",
+          "description": "Percentage of active services with running replicas >= desired. Includes replicated and global services, excludes desired=0 and job-mode services. Running is not application readiness. No data when collection/exporter health is unavailable or no active services match.",
+          "datasource": "Prometheus", "gridPos": {"h": 5, "w": 6, "x": 6, "y": 26},
+          "fieldConfig": {"defaults": {"unit": "percent", "noValue": "Unavailable", "mappings": [{"type": "special", "options": {"match": "null+nan", "result": {"text": "Unavailable", "color": "text"}}}], "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "orange", "value": 90}, {"color": "green", "value": 100}]}}, "overrides": []},
+          "options": {"colorMode": "value", "graphMode": "none", "reduceOptions": {"calcs": ["last"], "fields": "", "values": false}},
+          "targets": [{"refId": "A", "editorMode": "code", "expr": "100 * avg(max by (deployment,stack,service) ((pca_swarm_service_running_replicas{deployment=~\"$swarm_deployment\",stack=~\"$stack\",service=~\"$swarm_service\"} / (pca_swarm_service_desired_replicas{deployment=~\"$swarm_deployment\",stack=~\"$stack\",service=~\"$swarm_service\"} > 0) >= bool 1) and on(deployment,stack,job,instance,cluster) ((pca_swarm_collector_success{deployment=~\"$swarm_deployment\",stack=~\"$stack\"} == 1) and (time() - pca_swarm_collector_last_success_timestamp_seconds{deployment=~\"$swarm_deployment\",stack=~\"$stack\"} < 300) and (time() - pca_swarm_collector_last_success_timestamp_seconds{deployment=~\"$swarm_deployment\",stack=~\"$stack\"} >= -30) and on(job,instance,cluster) (up == 1))))", "instant": true, "range": false}]
+        },
+        {
+          "id": 37, "type": "stat", "title": "Swarm services degraded",
+          "description": "Active services with fewer running tasks than desired. Zero means none degraded only when the manager collector is fresh and node-exporter is reachable. Inspect docker service ps and logs for affected services.",
+          "datasource": "Prometheus", "gridPos": {"h": 5, "w": 6, "x": 12, "y": 26},
+          "fieldConfig": {"defaults": {"unit": "short", "noValue": "Unavailable", "mappings": [{"type": "special", "options": {"match": "null+nan", "result": {"text": "Unavailable", "color": "text"}}}], "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]}}, "overrides": []},
+          "options": {"colorMode": "value", "graphMode": "none", "reduceOptions": {"calcs": ["last"], "fields": "", "values": false}},
+          "targets": [{"refId": "A", "editorMode": "code", "expr": "sum(max by (deployment,stack,service) ((pca_swarm_service_running_replicas{deployment=~\"$swarm_deployment\",stack=~\"$stack\",service=~\"$swarm_service\"} / (pca_swarm_service_desired_replicas{deployment=~\"$swarm_deployment\",stack=~\"$stack\",service=~\"$swarm_service\"} > 0) < bool 1) and on(deployment,stack,job,instance,cluster) ((pca_swarm_collector_success{deployment=~\"$swarm_deployment\",stack=~\"$stack\"} == 1) and (time() - pca_swarm_collector_last_success_timestamp_seconds{deployment=~\"$swarm_deployment\",stack=~\"$stack\"} < 300) and (time() - pca_swarm_collector_last_success_timestamp_seconds{deployment=~\"$swarm_deployment\",stack=~\"$stack\"} >= -30) and on(job,instance,cluster) (up == 1))))", "instant": true, "range": false}]
+        },
+        {
+          "id": 38, "type": "stat", "title": "Swarm active services",
+          "description": "Distinct selected services with desired replicas > 0 and valid collection/exporter health. Scaled-to-zero optional services are intentionally off, not down.",
+          "datasource": "Prometheus", "gridPos": {"h": 5, "w": 6, "x": 18, "y": 26},
+          "fieldConfig": {"defaults": {"unit": "short", "noValue": "Unavailable", "mappings": [{"type": "special", "options": {"match": "null+nan", "result": {"text": "Unavailable", "color": "text"}}}]}, "overrides": []},
+          "options": {"colorMode": "none", "graphMode": "none", "reduceOptions": {"calcs": ["last"], "fields": "", "values": false}},
+          "targets": [{"refId": "A", "editorMode": "code", "expr": "count(max by (deployment,stack,service) ((pca_swarm_service_desired_replicas{deployment=~\"$swarm_deployment\",stack=~\"$stack\",service=~\"$swarm_service\"} > 0) and on(deployment,stack,job,instance,cluster) ((pca_swarm_collector_success{deployment=~\"$swarm_deployment\",stack=~\"$stack\"} == 1) and (time() - pca_swarm_collector_last_success_timestamp_seconds{deployment=~\"$swarm_deployment\",stack=~\"$stack\"} < 300) and (time() - pca_swarm_collector_last_success_timestamp_seconds{deployment=~\"$swarm_deployment\",stack=~\"$stack\"} >= -30) and on(job,instance,cluster) (up == 1))))", "instant": true, "range": false}]
+        },
+        {
+          "id": 39, "type": "state-timeline", "title": "Swarm — Running / desired service replicas",
+          "description": "Stable service-name timelines: GREEN=all desired tasks running, ORANGE=partial capacity, RED=no tasks running. Scaled-to-zero and job-mode services are excluded. Missing/failing/stale collection creates a gap, never a fabricated zero or healthy state. Ratios are capped at 1 during rolling updates. This measures running tasks, not readiness probes.",
+          "datasource": "Prometheus", "gridPos": {"h": 12, "w": 24, "x": 0, "y": 31},
+          "fieldConfig": {"defaults": {"min": 0, "max": 1, "color": {"mode": "thresholds"}, "custom": {"fillOpacity": 85, "lineWidth": 0, "spanNulls": false}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "orange", "value": 0.000001}, {"color": "green", "value": 1}]}}, "overrides": []},
+          "options": {"mergeValues": true, "showValue": "never", "rowHeight": 0.8, "tooltip": {"mode": "multi"}, "legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}},
+          "targets": [{"refId": "A", "editorMode": "code", "expr": "max by (deployment,stack,service) (clamp_max(pca_swarm_service_running_replicas{deployment=~\"$swarm_deployment\",stack=~\"$stack\",service=~\"$swarm_service\"} / (pca_swarm_service_desired_replicas{deployment=~\"$swarm_deployment\",stack=~\"$stack\",service=~\"$swarm_service\"} > 0), 1) and on(deployment,stack,job,instance,cluster) ((pca_swarm_collector_success{deployment=~\"$swarm_deployment\",stack=~\"$stack\"} == 1) and (time() - pca_swarm_collector_last_success_timestamp_seconds{deployment=~\"$swarm_deployment\",stack=~\"$stack\"} < 300) and (time() - pca_swarm_collector_last_success_timestamp_seconds{deployment=~\"$swarm_deployment\",stack=~\"$stack\"} >= -30) and on(job,instance,cluster) (up == 1)))", "legendFormat": "{{service}} @ {{deployment}}", "instant": false, "range": true}]
+        }
+      ]
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 41,
+  "tags": [
+    "pca",
+    "kubernetes",
+    "docker-swarm",
+    "service-health"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(up{job=\"kube-state-metrics\"}, cluster)",
+        "includeAll": true,
+        "label": "cluster",
+        "multi": true,
+        "name": "cluster",
+        "options": [],
+        "query": {
+          "query": "label_values(up{job=\"kube-state-metrics\"}, cluster)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "pca",
+          "value": "pca"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(kube_pod_info{cluster=~\"$cluster\"}, namespace)",
+        "includeAll": true,
+        "label": "namespace",
+        "multi": true,
+        "name": "namespace",
+        "options": [],
+        "query": {
+          "query": "label_values(kube_pod_info{cluster=~\"$cluster\"}, namespace)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "name": "swarm_deployment", "label": "Swarm deployment", "type": "query", "datasource": "Prometheus",
+        "allValue": ".*", "includeAll": true, "multi": true, "current": {"text": "All", "value": "$__all"},
+        "definition": "label_values(pca_swarm_collector_success, deployment)",
+        "query": {"query": "label_values(pca_swarm_collector_success, deployment)", "refId": "StandardVariableQuery"},
+        "refresh": 2, "options": [], "regex": "", "sort": 1
+      },
+      {
+        "name": "stack", "label": "Swarm stack", "type": "query", "datasource": "Prometheus",
+        "allValue": ".*", "includeAll": true, "multi": true, "current": {"text": "All", "value": "$__all"},
+        "definition": "label_values(pca_swarm_collector_success{deployment=~\"$swarm_deployment\"}, stack)",
+        "query": {"query": "label_values(pca_swarm_collector_success{deployment=~\"$swarm_deployment\"}, stack)", "refId": "StandardVariableQuery"},
+        "refresh": 2, "options": [], "regex": "", "sort": 1
+      },
+      {
+        "name": "swarm_service", "label": "Swarm service", "type": "query", "datasource": "Prometheus",
+        "allValue": ".*", "includeAll": true, "multi": true, "current": {"text": "All", "value": "$__all"},
+        "definition": "label_values(pca_swarm_service_desired_replicas{deployment=~\"$swarm_deployment\",stack=~\"$stack\"}, service)",
+        "query": {"query": "label_values(pca_swarm_service_desired_replicas{deployment=~\"$swarm_deployment\",stack=~\"$stack\"}, service)", "refId": "StandardVariableQuery"},
+        "refresh": 2, "options": [], "regex": "", "sort": 1
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "PCA Service Health",
+  "uid": "pca-service-health",
+  "version": 2
+}

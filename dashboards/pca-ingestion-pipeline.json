@@ -1,0 +1,4187 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Top-down view of the PCA core ingestion pipeline (Telemetry Collector -> Sensor Collector -> Fedex -> Ignite -> Spark -> Gather -> Druid) for detecting where data ingestion has stalled. Includes an at-a-glance per-stage flow summary and tenant/objectType filters scoped to the stages that carry those labels.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "panels": [
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# PCA Ingestion Pipeline\n\n**Kubernetes and Docker Swarm:** these application metrics are shared across environments. Spark processed/dropped-record rates accept both unsuffixed and legacy `_total` counter names, preferring the unsuffixed variant for matching series. Verify the relevant component/exporter is scraped; missing or optional stages can produce empty panels, and zero-count fallbacks do not prove monitoring is working.\n\nTop-down view of the PCA core ingestion pipeline. The dashboard is ordered the way data flows: the **Pipeline Flow Summary** below gives an at-a-glance 'is data moving at each stage' view, and the collapsible rows beneath it (Sensor Agents \u2192 Sensor Collector \u2192 Fedex \u2192 Ignite \u2192 Spark \u2192 Gather \u2192 Druid) let you drill into each service.\n\n**How to triage a data outage:** read the summary left-to-right \u2014 the first stage showing **red (0)** is where data stopped. Expand that service's row for the detailed panels and troubleshooting hints.\n\n**Filters:** `$tenant` and `$objectType` scope the panels that carry those labels. Note some stages have no `objectType` (Telemetry Collector, Kafka consumer lag, Gather/Druid) \u2014 those panels are intentionally not filtered by object type. The edge stage is modelled as **Sensor Agents** (overall health via the common `roadrunner_agent_connected` signal, covering all agent types); **telemetry-collector-specific** flow/backlog panels appear as a labelled *(subset)* within that stage, since only telemetry collectors expose them.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.1.0",
+      "title": "",
+      "type": "text"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "id": 2,
+      "panels": [],
+      "title": "Pipeline Flow Summary (last 5m)",
+      "type": "row"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Connected sensor agents feeding the pipeline (common `roadrunner_agent_connected` signal, all agent types incl. telemetry collectors). GREY/0 here with downstream data still flowing can be normal if agents push via other paths; a sudden drop means edge agents disconnected \u2013 see the Sensor Connectivity dashboard.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#808080",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short",
+          "noValue": "n/a (no TC)"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 6
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "count(roadrunner_agent_connected{tenant=~\"$tenant\"} == 1) or vector(0)",
+          "range": false,
+          "instant": true,
+          "refId": "A",
+          "legendFormat": "connected"
+        }
+      ],
+      "title": "1 \u00b7 Sensor Agents (edge)",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Files/batches the Sensor Collector (adh-roadrunner) delivered and Fedex processed in the last 5m (file_processing_time_seconds_count \u2013 the same signal as the Roadrunner 'processing time' panel). GREEN = data moving. RED (0) = metric present but nothing delivered \u2192 expand the Sensor Collector row. GREY = metric unavailable.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 0,
+                  "text": "0"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#808080",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 6
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(file_processing_time_seconds_count{tenant=~\"$tenant\"}[5m]))",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "files (5m)"
+        }
+      ],
+      "title": "2 \u00b7 Sensor Collector \u2192 Fedex",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Records Fedex wrote into the pipeline Kafka topics in the last 5m (fedex_record_count). GREEN = flowing. RED (0) while stage 2 is green \u2192 data stalled at Fedex (check Fedex Kafka produce errors). GREY = metric unavailable.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 0,
+                  "text": "0"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#808080",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 6
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(fedex_record_count{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "records (5m)"
+        }
+      ],
+      "title": "3 \u00b7 Fedex \u2192 Kafka",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Normalized records Ignite produced to ignite.contemporary / ignite.latent in the last 5m (ignite_kafka_total_sent). GREEN = flowing. RED (0) while stage 3 is green \u2192 Ignite normalization/consumption. GREY = metric unavailable.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 0,
+                  "text": "0"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#808080",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 6
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(ignite_kafka_total_sent{tenantId=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "records (5m)"
+        }
+      ],
+      "title": "4 \u00b7 Ignite \u2192 Kafka",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Largest micro-batch input-row count seen across the streaming apps over the last 5m (spark_queryInputRows, streamingapp+latentapp). A micro-batch = the messages an app reads from its Kafka topic per trigger (streamingapp reads the `ignite.contemporary*` topics, latentapp the `ignite.latent*` topics, and alertstream the `alert-events` topic). GREEN = batches are ingesting rows. RED (0) = apps running but no input for 5m. GREY = metric unavailable (e.g. pushgateway not scraped) \u2013 in that case use the Lag + Micro-Batch Duration panels in the Spark row.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 0,
+                  "text": "0"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#808080",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 6
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(max_over_time(spark_queryInputRows{job=~\"spark_streamingapp|spark_latentapp\"}[5m]))",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "input rows (5m max)"
+        }
+      ],
+      "title": "5 \u00b7 Spark (Streaming)",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Spark ingestion requests Gather successfully submitted to Druid in the last 5m (gather_batch_ingest_submit_success). GREEN = flowing. RED (0) while stage 5 is green \u2192 Gather/Druid ingestion. GREY = metric unavailable.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 0,
+                  "text": "0"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#808080",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 6
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(gather_batch_ingest_submit_success{tenantId=~\"$tenant\"}[5m]))",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "requests (5m)"
+        }
+      ],
+      "title": "6 \u00b7 Gather \u2192 Druid",
+      "type": "stat"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 10
+      },
+      "id": 13,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Number of sensor agents currently connected to the Sensor Collector, using the common `roadrunner_agent_connected` signal that covers EVERY agent type (telemetry collectors are included \u2013 they attach to the same data gateway under the same agentId). This is the overall health of the Sensor Agent population feeding the pipeline. A drop here = fewer agents delivering data; open the Sensor Connectivity dashboard to see which agents disconnected. Telemetry-collector-specific flow/backlog detail is in the subset row below.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 11
+          },
+          "id": 49,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "count(roadrunner_agent_connected{tenant=~\"$tenant\"} == 1) or vector(0)",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "connected agents"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "count(roadrunner_agent_connected{tenant=~\"$tenant\"}) or vector(0)",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "total known agents"
+            }
+          ],
+          "title": "Sensor Agents \u2013 Connected (all agents)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Records entering the Telemetry Collector from the data generator (rxFromGenerator) versus records shipped out to the broker/Sensor Collector (txToBroker), per report interval. GOOD: both > 0 and roughly tracking each other. BAD: Out falls to 0 while In stays > 0 \u2192 TC cannot ship (see the Connection panel and the Sensor Collector row). Metrics are relayed to Prometheus via Fedex, so there is up to a ~60s reporting delay.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 11
+          },
+          "id": 9,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(message_agentHealth_data_stats_rxFromGenerator{tenant=~\"$tenant\"})",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "rx from generator (in)"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(message_agentHealth_data_stats_txToBroker{tenant=~\"$tenant\"})",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "tx to broker (out)"
+            }
+          ],
+          "title": "Telemetry Collector (subset) \u2013 Data Flow (In vs Out)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Connection state of each Telemetry Collector agent to the broker. 1 = connected, 0 = disconnected. The data channel carries metrics; the management channel carries control/config. GOOD: both at 1. BAD: data channel at 0 \u2192 the TC is offline and no data will reach PCA from it.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 19
+          },
+          "id": 10,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "message_agentHealth_data_stats_connection{tenant=~\"$tenant\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "data {{hostname}}/{{zone}}/{{agentId}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "message_agentHealth_management_stats_connection{tenant=~\"$tenant\"}",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "mgmt {{hostname}}/{{zone}}/{{agentId}}"
+            }
+          ],
+          "title": "Telemetry Collector (subset) \u2013 Connection Status",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Number of batches waiting in the TC outbound queue to the Sensor Collector (batchesInQueue) and batches currently being transmitted/awaiting ack (batchesInFlight). GOOD: low and stable. BAD: queue steadily growing \u2192 the downstream Sensor Collector is not accepting data fast enough (or is down).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 9,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 19
+          },
+          "id": 11,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "message_agentHealth_data_stats_batchesInFlight{tenant=~\"$tenant\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "batchesInFlight {{hostname}}/{{zone}}/{{agentId}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "message_agentHealth_data_stats_batchesInQueue{tenant=~\"$tenant\"}",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "batchesInQueue {{hostname}}/{{zone}}/{{agentId}}"
+            }
+          ],
+          "title": "Telemetry Collector (subset) \u2013 Outbound Batch Backlog",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Metrics dropped inside the Telemetry Collector before shipping: data_gateway_update_fail (could not hand off to the Sensor Collector), missing_object_type and missing_value (data-quality drops). GOOD: flat at 0. BAD: any sustained increase \u2192 data loss at the source; the suffix identifies the cause.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 27
+          },
+          "id": 12,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(message_agentHealth_telemetryAgent_telemetry_dropped_data_gateway_update_fail{tenant=~\"$tenant\"})",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "dropped: data_gateway_update_fail"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(message_agentHealth_telemetryAgent_telemetry_dropped_missing_object_type{tenant=~\"$tenant\"})",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "dropped: missing_object_type"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(message_agentHealth_telemetryAgent_telemetry_dropped_missing_value{tenant=~\"$tenant\"})",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "dropped: missing_value"
+            }
+          ],
+          "title": "Telemetry Collector (subset) \u2013 Dropped Metrics",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Sensor Agents \u2192 Sensor Collector (edge ingress)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 11
+      },
+      "id": 18,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Primary signal: files/batches per second the Sensor Collector delivered and Fedex processed (file_processing_time_seconds). Secondary: per-object-type record rate (roadrunner_record_count) \u2013 only populated when the Sensor Collector reports per-record counts; may be empty in deployments fed from another source. GOOD: steady, non-zero flow. BAD: drop to 0 for an active source \u2192 no data arriving or the Sensor Collector is stalled.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 12
+          },
+          "id": 14,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(rate(file_processing_time_seconds_count{tenant=~\"$tenant\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "files/s (processed by Fedex)"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (objectType) (rate(roadrunner_record_count{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "records/s {{objectType}}"
+            }
+          ],
+          "title": "Sensor Collector \u2013 Throughput",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Data from NID devices arrives as files written to a directory that the Sensor Collector's filewatcher consumes (an alternative to streaming agents). 'in watched dir' = files present; 'enqueued' = waiting to be processed; 'failed' = files the filewatcher could not process. GOOD: dir/enqueued low and stable, failed flat at 0. BAD: 'in watched dir' growing = the collector is not consuming; flat 0 when data is expected = NID devices not writing or a mount issue; failed rising = malformed files. This is the ingress point for file-based (NID) sources into the pipeline.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 20
+          },
+          "id": 48,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (hostname) (roadrunner_filewatcher_files_in_dir{tenant=~\"$tenant\"})",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "in watched dir {{hostname}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (hostname) (roadrunner_filewatcher_enqueued_files{tenant=~\"$tenant\"})",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "enqueued {{hostname}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (objectType) (rate(roadrunner_filewatcher_failed_files{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "failed {{objectType}}"
+            }
+          ],
+          "title": "Sensor Collector \u2013 File Ingestion (NID file-drop / filewatcher)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Per Sensor Collector connection status to PCA (Fedex). 1 = connected, 0 = disconnected. GOOD: 1. BAD: 0 for any connector \u2192 that Sensor Collector cannot deliver data; data will back up in its persistence cache (see next panel).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 28
+          },
+          "id": 15,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "roadrunner_connection{tenant=~\"$tenant\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{hostname}}-{{zone}}-{{connectorId}}"
+            }
+          ],
+          "title": "Sensor Collector \u2013 Connection to PCA",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Data files cached locally awaiting shipment to Fedex (cached_files) and batches waiting to ship (available_batches). GOOD: low/stable. BAD: steadily increasing \u2192 the Sensor Collector is receiving data but cannot ship it to Fedex (check the connection panel and Fedex).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 36
+          },
+          "id": 16,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "roadrunner_persistence_service_cached_files{tenant=~\"$tenant\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "cached files {{hostname}}-{{connectorId}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "roadrunner_persistence_service_available_batches{tenant=~\"$tenant\"}",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "available batches {{hostname}}-{{connectorId}}"
+            }
+          ],
+          "title": "Sensor Collector \u2013 Persistence Cache Backlog",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Rate of data dropped by the Sensor Collector, broken down by reason. GOOD: flat at 0. BAD: any sustained rate \u2192 data loss before PCA; the reason label indicates why (buffer full, parse error, etc.).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 44
+          },
+          "id": 17,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (reason) (rate(roadrunner_data_dropped_count{tenant=~\"$tenant\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{reason}}"
+            }
+          ],
+          "title": "Sensor Collector \u2013 Dropped Data (by reason)",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Sensor Collector  (roadrunner)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 24,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Per-object-type rate of records Fedex received from the Sensor Collectors. GOOD: steady flow matching the Sensor Collector processing rate. BAD: a drop while the Sensor Collector is still processing \u2192 the websocket/handoff to Fedex is broken (see the Websocket and Rejected Batches panels).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 13
+          },
+          "id": 19,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (objectType) (rate(fedex_record_count{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "records/s {{objectType}}"
+            }
+          ],
+          "title": "Fedex \u2013 Records In (from Sensor Collectors)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Rate of messages Fedex successfully wrote to the pipeline Kafka topics (spark_raw_in / latent_raw_in) per object type. This is the hand-off from the collection tier into the processing pipeline. GOOD: tracks 'Records In'. BAD: 0 while 'Records In' > 0 \u2192 Fedex cannot write to Kafka \u2192 data stops here (see Kafka Produce Errors).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 21
+          },
+          "id": 20,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (objectType) (rate(fedex_kafka_producer_msg_count{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "msgs/s {{objectType}}"
+            }
+          ],
+          "title": "Fedex \u2192 Kafka Produced (msgs/s)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Rate of Kafka producer write errors in Fedex, per topic/object type. GOOD: flat at 0. BAD: any sustained rate \u2192 Fedex is failing to write to Kafka (broker outage, topic/ACL issue) and ingestion is stalled at Fedex. Check Fedex and Kafka broker health.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 29
+          },
+          "id": 21,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (topic, objectType) (rate(fedex_kafka_producer_error_count{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{topic}} / {{objectType}}"
+            }
+          ],
+          "title": "Fedex \u2013 Kafka Produce Errors",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Fedex-side reasons a Sensor Collector websocket was closed or refused: teardown = Fedex removed the connection; rejected = Fedex refused a connection attempt (reason label). GOOD: flat. BAD: repeated teardown/rejection for a connector \u2192 that Sensor Collector cannot stay connected. (Metric carries only connectorId, so it is not filtered by tenant/objectType.)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "bars",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 37
+          },
+          "id": 22,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "rate(roadrunner_websocket_teardown_count[$__rate_interval])",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "teardown {{connectorId}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "rate(roadrunner_websocket_rejected_count[$__rate_interval])",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "rejected {{connectorId}} ({{reason}})"
+            }
+          ],
+          "title": "Fedex \u2013 Sensor Collector Websocket Issues",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Batches Fedex rejected from Sensor Collectors: unauthorized tenant (tenantId mismatch vs the authorized websocket), bad data (unparseable), or internal errors. GOOD: flat at 0. BAD: sustained rejections \u2192 data from that connector is being discarded; the cause identifies whether it is config (auth), data quality, or a Fedex fault.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 45
+          },
+          "id": 23,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (connectorId) (rate(roadrunner_rejected_batches_due_to_unauthorized_tenant_count[$__rate_interval]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "unauthorized tenant {{connectorId}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (connectorId) (rate(roadrunner_rejected_batches_due_to_bad_data_count[$__rate_interval]))",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "bad data {{connectorId}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (connectorId) (rate(roadrunner_rejected_batches_due_to_internal_errors_count[$__rate_interval]))",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "internal error {{connectorId}}"
+            }
+          ],
+          "title": "Fedex \u2013 Rejected Batches (by cause)",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Fedex  (fedex)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "id": 30,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Consumer lag per topic for Ignite reading the spark_raw_in / latent_raw_in topics that Fedex produces to (mo-summary topics excluded). GOOD: low and flat. BAD: continuously growing for a topic \u2192 Ignite is not keeping up or is stuck; check the ignite pod / Swarm task logs and the processing-rate panel below.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 14
+          },
+          "id": 25,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (topic) (ignite_ingestion_lag{tenantId=~\"$tenant\",objectType=~\"$objectType\",topic!~\"mo-summary-.*\"})",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{topic}}"
+            }
+          ],
+          "title": "Ignite \u2013 Ingestion Lag (consume from Fedex topics)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Ignite internal stages: Fedex processed = messages consumed from the raw topics; Normalized = records transformed from Fedex protobuf to JSON (one message can yield many records); Kafka sent = records produced to ignite.contemporary / ignite.latent. GOOD: all three non-zero and proportional. BAD: 'Fedex processed' > 0 but 'Kafka sent' flat \u2192 records are being dropped or failing normalization (see the next two panels). (Processed/Normalized are global counters without tenant/objectType labels.)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 22
+          },
+          "id": 26,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(rate(ignite_normalizer_total_fedex_msg_processed[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "Fedex processed"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(rate(ignite_normalizer_total_normalized[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "Normalized"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(rate(ignite_kafka_total_sent{tenantId=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "Kafka sent"
+            }
+          ],
+          "title": "Ignite \u2013 Processing Pipeline (rates)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Records Ignite dropped per object type with the drop reason (e.g. max_age_exceeded, duplicate, bad timestamp). GOOD: flat at 0. BAD: sustained drops \u2192 data gaps caused by Ingestion Profile config, duplicate objects, or incorrect timestamps. The reason guides the fix.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 30
+          },
+          "id": 27,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (objectType, reason) (rate(ignite_kafka_total_dropped{tenantId=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{objectType}} ({{reason}})"
+            }
+          ],
+          "title": "Ignite \u2013 Dropped Records (by reason)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "missing_metric_data = an expected metric field was not supplied by the source; missing_object_identifier = rows dropped because objectId/name was absent after the dictionary was applied. GOOD: flat at 0. BAD: sustained \u2192 common root cause of per-object data gaps; enable Ignite debug logging to see the offending rows. (Global counters, not tenant/objectType filtered.)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 38
+          },
+          "id": 28,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (field) (rate(ignite_normalizer_missing_metric_data[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "missing data [{{field}}]"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (identifier) (rate(ignite_normalizer_missing_object_identifier_total[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "missing identifier [{{identifier}}]"
+            }
+          ],
+          "title": "Ignite \u2013 Missing Data / Missing Identifier",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Errors while normalizing: data_conversion = a value could not be cast to its declared type; apply_sql_expression = an Ingestion Dictionary SQL expression failed. GOOD: flat at 0. BAD: sustained \u2192 a metric definition in the Ingestion Dictionary is wrong for that field; enable Ignite debug logs for detail.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 46
+          },
+          "id": 29,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (field) (rate(ignite_normalizer_data_conversion[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "data conversion [{{field}}]"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (field) (rate(ignite_normalizer_apply_sql_expression[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "SQL expression [{{field}}]"
+            }
+          ],
+          "title": "Ignite \u2013 Normalization Errors",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Ignite  (ignite)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 38,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Consumer lag of the streamingapp on the ignite.contemporary topics (from the Kafka exporter). GOOD: low/flat. BAD: continuously growing for one or more topics \u2192 an error in the streamingapp pod / Swarm task; check its logs. (Kafka-exporter metric has no tenant/objectType labels.)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 15
+          },
+          "id": 31,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "kafka_consumergroup_lag_sum{consumergroup=\"streamingapp\", topic=~\"ignite.contemporary.*\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{topic}}"
+            }
+          ],
+          "title": "Streaming App \u2013 Contemporary Lag",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "A **micro-batch** is the group of messages the app pulls from its Kafka topic each trigger interval and processes together; this panel shows how many input rows each batch contained (spark_queryInputRows) for the streaming apps (streamingapp reads `ignite.contemporary*`, latentapp reads `ignite.latent*`) \u2013 confirmed available via the pushgateway. Secondary: per-object-type processed/dropped record counts (spark_AccedianStreamingMetrics_*) \u2013 only present when the DataMetrics pushgateway source is scraped; may be empty. GOOD: input rows > 0, dropped flat at 0. BAD: input falls to 0 (data not flowing through Spark) or dropped climbs.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 23
+          },
+          "id": 32,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (query) (spark_queryInputRows{job=~\"spark_streamingapp|spark_latentapp\"})",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "input rows {{query}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (objectType) (rate(spark_AccedianStreamingMetrics_streaming_recCount{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]) or rate(spark_AccedianStreamingMetrics_streaming_recCount_total{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "processed {{objectType}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (objectType, cause) (rate(spark_AccedianStreamingMetrics_streaming_droppedRecCount{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]) or rate(spark_AccedianStreamingMetrics_streaming_droppedRecCount_total{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "dropped {{objectType}} ({{cause}})"
+            }
+          ],
+          "title": "Streaming App \u2013 Throughput (rows per Kafka batch)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "A **micro-batch** is the group of messages the app pulls from its Kafka topic each trigger interval and processes together \u2013 for streamingapp each batch is the messages read from the `ignite.contemporary*` Kafka topics. This panel shows the per-query time to process one batch (spark_queryBatchDuration). GOOD: comfortably under the 60s trigger (green). BAD: approaching/exceeding 60s (red line) \u2192 the streamingapp is falling behind; tune resources/partitions.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "bars",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 60000
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 31
+          },
+          "id": 33,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "spark_queryBatchDuration{job=\"spark_streamingapp\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "raw batch duration {{query}}"
+            }
+          ],
+          "title": "Streaming App \u2013 Micro-Batch Duration (per Kafka batch)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Consumer lag of the latentapp on the ignite.latent topics. GOOD: low/flat (latent data is bursty, so short spikes are normal). BAD: continuously growing \u2192 an issue in the latentapp pod / Swarm task; check its logs.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 39
+          },
+          "id": 34,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "kafka_consumergroup_lag_sum{consumergroup=\"latentapp\", topic=~\"ignite.latent.*\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{topic}}"
+            }
+          ],
+          "title": "Latent App \u2013 Lag",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "A **micro-batch** is the group of messages the app pulls from its Kafka topic each trigger interval and processes together \u2013 for latentapp each batch is the messages read from the `ignite.latent*` Kafka topics. This panel shows the per-query time to process one batch (spark_queryBatchDuration). GOOD: under 60s (green). BAD: exceeding 60s (red line) \u2192 tune the latentapp.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "bars",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 60000
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 47
+          },
+          "id": 35,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "spark_queryBatchDuration{job=\"spark_latentapp\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "latent batch duration {{query}}"
+            }
+          ],
+          "title": "Latent App \u2013 Micro-Batch Duration (per Kafka batch)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Consumer lag of the alertStreaming app on the alert-events topic. GOOD: low/flat. BAD: continuously growing \u2192 an issue in the alertstream pod / Swarm task; check its logs.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 55
+          },
+          "id": 36,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "kafka_consumergroup_lag_sum{consumergroup=\"alertStreaming\", topic=\"alert-events\"}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{topic}}"
+            }
+          ],
+          "title": "Alert Streaming \u2013 Lag",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Number of latent batch partitions queued for processing, per job. GOOD: trends down after a burst. BAD: not decreasing for a job \u2192 inspect the Batch_Ingestion_v1.1_latent DAG in Airflow; the failed task log gives a driver ID and sparkworker pod / Swarm task, and /work/<driverID>/stderr on that pod / Swarm task has the detail.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 63
+          },
+          "id": 37,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "spark_AccedianLatentBatchPartitionsCount",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{job}}"
+            }
+          ],
+          "title": "Latent Batch \u2013 Partitions To Process",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Spark  (streamingapp / latentapp / alertstream)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "id": 44,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Rate Gather consumes ingestion requests from the parquet-notif topic, by change type. APPEND adds Spark output files to a Druid datasource; REFRESH overwrites a whole time bucket. GOOD: non-zero, roughly periodic. BAD: 0 while Spark is producing \u2192 Gather is not consuming (check Gather + Kafka).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "stepAfter",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 16
+          },
+          "id": 39,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (changeType) (increase(gather_batch_ingest_reqs_read{tenantId=~\"$tenant\"}[1h]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{changeType}}"
+            }
+          ],
+          "title": "Gather \u2013 Spark Ingest Requests Read (APPEND/REFRESH)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Spark ingestion requests Gather successfully added to a Druid task (success) versus requests that failed to process (fail), by change type. GOOD: success tracks requests read, fail flat at 0. BAD: fail > 0 \u2192 Gather could not parse the message or build a Druid task; check Gather logs for batch-ingestion errors.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 24
+          },
+          "id": 40,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (changeType) (increase(gather_batch_ingest_submit_success{tenantId=~\"$tenant\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "success {{changeType}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (changeType) (increase(gather_batch_ingest_submit_fail{tenantId=~\"$tenant\"}[5m]))",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "fail {{changeType}}"
+            }
+          ],
+          "title": "Gather \u2013 Submit Success vs Fail",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "submit_ignored = requests Gather deliberately skipped (reason label); ingest_metrics_missing_manifest = expected metrics manifests not seen over the last 24h, per granularity/object. GOOD: flat/low. BAD: rising missing-manifest \u2192 a tenant/object is not producing expected data (upstream gap); ignored spikes \u2192 inspect the reason.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 32
+          },
+          "id": 41,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (reason) (increase(gather_batch_ingest_submit_ignored{tenantId=~\"$tenant\"}[1h]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "ignored ({{reason}})"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (granularity, objectType) (increase(gather_ingest_metrics_missing_manifest{tenantId=~\"$tenant\"}[1h]))",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "missing manifest {{granularity}}/{{objectType}}"
+            }
+          ],
+          "title": "Gather \u2013 Ignored Requests & Missing Manifests",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Pacemaker is a persisted queue that paces REFRESH/optimization task submission to Druid so latent/optimization work never starves contemporary APPEND slots. GOOD: 0 or draining. BAD: continuously growing/consistently > 0 \u2192 Druid cannot keep up; you likely need more Druid middlemanager resources.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 40
+          },
+          "id": 42,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(gather_ingest_pacemaker_queue_size)",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "Total"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (tenantId) ( label_replace(gather_ingest_pacemaker_queue_size, \"tenantId\", \"$1\", \"datasource\", \"(^.{36}).+\") )",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "Tenant: {{tenantId}}"
+            }
+          ],
+          "title": "Gather \u2013 Pacemaker Queue Size",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Errors / back-pressure when Pacemaker submits tasks to Druid: task shed, insufficient slots, submission-cycle failures, persistence failures. GOOD: flat at 0. BAD: rising \u2192 Druid availability problem; check the overlord pod / Swarm task health and logs.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 48
+          },
+          "id": 43,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "gather_ingest_pacemaker_tasks_shed",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "task shed {{datasource}} ({{reason}})"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "gather_ingest_pacemaker_no_task_space{reason=\"insufficient_slots_exist\"}",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "insufficient slots {{datasource}}"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "gather_ingest_pacemaker_submission_failure",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "submission cycle failure"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "gather_ingest_pacemaker_persistence_failure",
+              "range": true,
+              "instant": false,
+              "refId": "D",
+              "legendFormat": "persistence failure {{datasource}} ({{operation}})"
+            }
+          ],
+          "title": "Gather \u2013 Pacemaker Submission Errors",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Gather  (gather)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 47,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Druid middlemanager ingestion slots available to run tasks. Pacemaker always keeps slots free for contemporary APPEND. GOOD: > 0 most of the time. BAD: 0 for extended periods \u2192 a middlemanager problem or too few slots for the volume (a temporary dip to 0 during a large latent backfill is expected).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 17
+          },
+          "id": 45,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull",
+                "min"
+              ],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "gather_ingest_pacemaker_slots_available",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{category}}"
+            }
+          ],
+          "title": "Druid \u2013 Middlemanager Slot Availability",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Druid ingestion tasks exceeding their expected duration (REFRESH > 30 min, delta/APPEND > 5 min), per datasource. GOOD: empty. BAD: entries present \u2192 ingestion task tuning needs adjustment via the tenant-metadata API for that datasource.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "m"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 25
+          },
+          "id": 46,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(gather_batch_ingest_long_running_tasks{type=\"refreshed\"} / 60000) > 30",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{datasource}} - refreshed"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "(gather_batch_ingest_long_running_tasks{type=\"delta\"} / 60000) > 5",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "{{datasource}} - delta"
+            }
+          ],
+          "title": "Druid \u2013 Tasks Taking Too Long",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Druid  (druid)",
+      "type": "row"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 41,
+  "tags": [
+    "pca",
+    "kubernetes",
+    "docker-swarm",
+    "ingestion",
+    "pipeline"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(roadrunner_record_count, tenant)",
+        "includeAll": true,
+        "label": "tenant",
+        "multi": true,
+        "name": "tenant",
+        "options": [],
+        "query": {
+          "query": "label_values(roadrunner_record_count, tenant)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(fedex_record_count, objectType)",
+        "includeAll": true,
+        "label": "objectType",
+        "multi": true,
+        "name": "objectType",
+        "options": [],
+        "query": {
+          "query": "label_values(fedex_record_count, objectType)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "PCA Ingestion Pipeline",
+  "uid": "pca-ingestion-v2",
+  "version": 2
+}

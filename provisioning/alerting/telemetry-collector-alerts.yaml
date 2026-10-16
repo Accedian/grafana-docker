@@ -15,10 +15,9 @@ apiVersion: 1
 groups:
   - orgId: 1
     name: telemetry-collector-ha
-    folder: HA Monitoring
+    folder: 05 - Data Collection
     interval: 1m
     rules:
-
       # -----------------------------------------------------------------------
       # 1. Telegraf Unhealthy (Critical)
       # Fires when the embedded Telegraf health-check fails for >60s.
@@ -411,7 +410,6 @@ groups:
             Verify network connectivity between the TC agent and Roadrunner AgentProxy port 55777.
             Check Roadrunner logs for ManagementGateway connection errors.
 
-
       # -----------------------------------------------------------------------
       # 6. Telegraf Misconfigured (Info)
       # Fires immediately (for: 0s) when telegraf_misconfigured==1.
@@ -485,5 +483,3 @@ groups:
             Update the Telegraf configuration template in the Sensor Orchestrator to
             include fieldpass = ["value"] in the [[inputs.kafka_consumer]] section
             (or whichever input uses json_name_key = "kpi").
-
-

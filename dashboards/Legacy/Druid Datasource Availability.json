@@ -1,0 +1,17 @@
+{
+  "annotations": {"list": []},
+  "description": "Local Druid datasource loading health.",
+  "editable": true,
+  "panels": [
+    {"id": 1, "type": "text", "title": "About this dashboard", "transparent": true, "gridPos": {"h": 4, "w": 24, "x": 0, "y": 0}, "options": {"mode": "markdown", "content": "# Druid datasource availability\nThis dashboard shows the percentage of each local Druid datasource loaded by the coordinator. Values should normally remain near 100%. A sustained reduction can indicate a historical-node, storage-capacity, or Druid service issue; use the Data Platform alerts and Druid service views to investigate. No data is not automatically a service failure—Prometheus availability is monitored separately."}},
+    {"id": 2, "type": "timeseries", "title": "Datasource load status", "datasource": {"type": "prometheus", "uid": "prometheus"}, "gridPos": {"h": 12, "w": 24, "x": 0, "y": 4}, "options": {"legend": {"calcs": ["lastNotNull", "min"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi"}}, "fieldConfig": {"defaults": {"unit": "percent", "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "orange", "value": 90}, {"color": "green", "value": 99}]}}, "overrides": []}, "targets": [{"refId": "A", "expr": "druid_coordinator_datasourceLoadStatus", "legendFormat": "{{datasource}}", "range": true, "editorMode": "code", "datasource": {"type": "prometheus", "uid": "prometheus"}}]}
+  ],
+  "schemaVersion": 41,
+  "tags": ["druid", "data-platform"],
+  "templating": {"list": []},
+  "time": {"from": "now-6h", "to": "now"},
+  "timezone": "browser",
+  "title": "Druid Datasource Availability",
+  "uid": "pca-druid-datasource-availability",
+  "version": 1
+}
