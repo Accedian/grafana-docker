@@ -1,3 +1,6 @@
+{{- $oauth := .Values.grafana.auth.genericOAuth }}
+{{- $discoveryCA := and $oauth.enabled (or (not $oauth.fullDeploymentOnly) .Values.global.skylight_full_version) $oauth.clientIdDiscovery.tlsCASecretName }}
+{{- $providerCA := and $oauth.enabled (or (not $oauth.fullDeploymentOnly) .Values.global.skylight_full_version) $oauth.internalProvider.enabled }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -16,8 +19,9 @@ spec:
   serviceName: {{ include "grafana.fullname" . }}
   template:
     metadata:
-      {{- with .Values.grafana.podAnnotations }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      {{- with .Values.grafana.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -46,18 +50,62 @@ spec:
             - name: http
               containerPort: 3000
               protocol: TCP
+          # Client discovery finishes before Grafana opens its HTTP listener.
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 1
           resources:
             {{- toYaml .Values.grafana.resources | nindent 12 }}
           envFrom:
             - configMapRef:
                 name: {{ include "grafana.fullname" . }}-config
+            {{- if and .Values.grafana.auth.genericOAuth.enabled .Values.grafana.publicOriginConfigMap (empty .Values.grafana.auth.genericOAuth.activationConfigMap) (or (not .Values.grafana.auth.genericOAuth.fullDeploymentOnly) .Values.global.skylight_full_version) }}
+            # The parent supplies the same browser origin it registers in AAA.
+            - configMapRef:
+                name: {{ .Values.grafana.publicOriginConfigMap | quote }}
+            {{- end }}
+            {{- if and .Values.grafana.auth.genericOAuth.enabled .Values.grafana.auth.genericOAuth.activationConfigMap (or (not .Values.grafana.auth.genericOAuth.fullDeploymentOnly) .Values.global.skylight_full_version) }}
+            # Last wins: the verified activation profile overrides the baseline.
+            - configMapRef:
+                name: {{ .Values.grafana.auth.genericOAuth.activationConfigMap | quote }}
+                optional: true
+            {{- end }}
           volumeMounts:
+            {{- if $providerCA }}
+            - name: grafana-provider-ca
+              mountPath: /etc/grafana-provider-ca
+              readOnly: true
+            {{- end }}
+            {{- if $discoveryCA }}
+            - name: grafana-discovery-ca
+              mountPath: /etc/grafana-discovery-ca
+              readOnly: true
+            {{- end }}
             - name: {{ include "grafana.fullname" . }}-data
               mountPath: /var/lib/grafana
             - name: prometheus-datasource
               mountPath: /tmp/provisioning/datasources/prometheus-datasource.yaml
               subPath: prometheus-datasource.yaml
       volumes:
+        {{- if $providerCA }}
+        - name: grafana-provider-ca
+          secret:
+            secretName: {{ required "Internal OAuth requires internalProvider.tlsCASecretName" $oauth.internalProvider.tlsCASecretName | quote }}
+            items:
+              - key: ca.crt
+                path: ca.crt
+        {{- end }}
+        {{- if $discoveryCA }}
+        - name: grafana-discovery-ca
+          secret:
+            secretName: {{ $oauth.clientIdDiscovery.tlsCASecretName | quote }}
+            items:
+              - key: ca.crt
+                path: ca.crt
+        {{- end }}
         - name: prometheus-datasource
           configMap:
             name: prometheus-datasource
