@@ -5,6 +5,14 @@ set -euo pipefail
 rendered_chart="$(mktemp)"
 trap 'rm -f "$rendered_chart"' EXIT
 
+# Role synchronization is opt-in; image startup derives root-scoped mappings.
+for enabled in false true; do
+    helm template grafana helm --set grafana.auth.genericOAuth.enabled=true \
+        --set "grafana.auth.genericOAuth.deploymentAdminRole.enabled=$enabled" > "$rendered_chart"
+    grep -Fq "GRAFANA_OAUTH_DEPLOYMENT_ADMIN_ROLE_ENABLED: \"$enabled\"" "$rendered_chart"
+    grep -Fq 'GF_USERS_AUTO_ASSIGN_ORG_ROLE: "Viewer"' "$rendered_chart"
+done
+
 # Umbrella build defaults are unresolved placeholders, not browser origins.
 placeholder_values=(
     --set-string global.analytics.deployment.name=from_env_file_TF_VAR_deployment_name

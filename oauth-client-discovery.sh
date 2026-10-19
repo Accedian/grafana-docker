@@ -55,7 +55,9 @@ resolve_generic_oauth_client_id() {
             echo "Configured Grafana OAuth client ID has an invalid format" >&2
             return 1
         fi
-        return
+        if [ "${GRAFANA_OAUTH_DEPLOYMENT_ADMIN_ROLE_ENABLED:-false}" != true ]; then
+            return
+        fi
     fi
 
     local discovery_url="${GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_URL:-}"
@@ -170,10 +172,21 @@ resolve_generic_oauth_client_id() {
                 | select(type == "string" and length > 0)
                 ' "$response_file" 2>/dev/null)" || resolved_client_id=""
             if valid_oidc_client_id "$resolved_client_id"; then
-                rm -f "$response_file"
-                export GF_AUTH_GENERIC_OAUTH_CLIENT_ID="$resolved_client_id"
-                echo "Grafana public OAuth client ID resolved"
-                return
+                if [ -n "${GF_AUTH_GENERIC_OAUTH_CLIENT_ID:-}" ] &&
+                    [ "$GF_AUTH_GENERIC_OAUTH_CLIENT_ID" != "$resolved_client_id" ]; then
+                    rm -f "$response_file"
+                    echo "Configured Grafana client ID does not match root discovery" >&2
+                    return 1
+                fi
+                if [ "${GRAFANA_OAUTH_DEPLOYMENT_ADMIN_ROLE_ENABLED:-false}" = true ] &&
+                    ! configure_deployment_admin_role "$response_file"; then
+                    echo "Root role-mapping identity is unavailable; retrying" >&2
+                else
+                    rm -f "$response_file"
+                    export GF_AUTH_GENERIC_OAUTH_CLIENT_ID="$resolved_client_id"
+                    echo "Grafana public OAuth client ID resolved"
+                    return
+                fi
             fi
             echo "Grafana OAuth client discovery has not returned a valid client ID; retrying" >&2
         fi
@@ -192,6 +205,28 @@ resolve_generic_oauth_client_id() {
     rm -f "$response_file"
     echo "Timed out waiting for the Grafana public OAuth client" >&2
     return 1
+}
+
+configure_deployment_admin_role() {
+    local identity organization_id project_id role_claim
+    identity="$(jq -er '
+        .data.attributes.zitadelConfig
+        | .organizationId as $org
+        | [.projects[] | select(.name == "Analytics")]
+        | select(length == 1)
+        | [$org, .[0].projectId]
+        | select(all(.[]; type == "string" and test("^[0-9]{1,64}$")))
+        | @tsv' "$1" 2>/dev/null)" || return 1
+    IFS=$'\t' read -r organization_id project_id <<< "$identity"
+    # IDs are validated numeric values, never caller-selected JMESPath text.
+    role_claim="\"urn:zitadel:iam:org:project:${project_id}:roles\".\"skylight-admin\".\"${organization_id}\""
+    export GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH="type($role_claim) == 'string' && $role_claim && 'Admin' || 'Viewer'"
+    export GF_AUTH_GENERIC_OAUTH_SKIP_ORG_ROLE_SYNC=false
+    export GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT=true
+    export GF_AUTH_GENERIC_OAUTH_ALLOW_ASSIGN_GRAFANA_ADMIN=false
+    export GF_AUTH_GENERIC_OAUTH_ID_TOKEN_ATTRIBUTE_NAME=__disabled_id_token
+    export GF_USERS_AUTO_ASSIGN_ORG_ROLE=Viewer
+    export GF_AUTH_GENERIC_OAUTH_SCOPES="${GF_AUTH_GENERIC_OAUTH_SCOPES:-openid profile email} urn:zitadel:iam:org:project:id:${project_id}:aud urn:zitadel:iam:org:projects:roles"
 }
 
 configure_generic_oauth_signout_redirect() {
@@ -225,10 +260,15 @@ configure_generic_oauth() {
         return 0
     fi
 
+    case "${GRAFANA_OAUTH_DEPLOYMENT_ADMIN_ROLE_ENABLED:-false}" in
+        true|false) ;;
+        *) echo "Invalid Grafana deployment-admin role mapping setting" >&2; return 1 ;;
+    esac
+
     # Standard Generic OAuth is owned by Grafana, not this managed root flow.
     # Any nonempty managed setting opts in, so partial configuration fails closed.
     local setting
-    local managed=false
+    local managed="${GRAFANA_OAUTH_DEPLOYMENT_ADMIN_ROLE_ENABLED:-false}"
     for setting in ${!GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_@} \
         GRAFANA_OAUTH_END_SESSION_URL GRAFANA_OAUTH_POST_LOGOUT_REDIRECT_URL; do
         if [ -n "${!setting:-}" ]; then
