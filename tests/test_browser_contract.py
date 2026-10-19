@@ -5,13 +5,36 @@ from pathlib import Path
 from urllib.parse import urlencode
 from unittest.mock import Mock
 
-from grafana_browser import (check_authorization, check_navigation, origin,
-                             provider_state, verify_provider_logout)
+from grafana_browser import (check_authorization, check_grafana_role, check_navigation, origin,
+                             provider_state, role_targets, verify_provider_logout)
 
 ROOT, ISSUER = "https://root.example.test", "https://auth.example.test"
 
 
 class BrowserContractTests(unittest.TestCase):
+    def test_role_assertion_rejects_unexpected_privileges_and_missing_demotion(self):
+        for role in ("Admin", "Viewer"):
+            check_grafana_role({"isGrafanaAdmin": False}, [{"role": role}], role)
+            for server_admin, organizations in ((True, [{"role": role}]), (False, []),
+                    (False, [{"role": "Editor"}]), (False, [{"role": "Admin" if role == "Viewer" else "Viewer"}])):
+                with self.subTest(role=role), self.assertRaises(AssertionError):
+                    check_grafana_role({"isGrafanaAdmin": server_admin}, organizations, role)
+
+    def test_role_matrix_keeps_the_default_viewer_mode_and_checks_demotion(self):
+        self.assertEqual(role_targets({"grafana_login": "legacy"}), [{"grafana_login": "legacy"}])
+        names = ("administrator", "viewer", "other-organization", "other-project", "revoked-administrator")
+        target = {"role_mapping_cases": {name: {
+            "grafana_login": "admin" if name in ("administrator", "revoked-administrator") else name,
+            "storage_state": name + ".json"} for name in names}}
+        self.assertEqual([case["expected_org_role"] for case in role_targets(target)],
+                         ["Admin", "Viewer", "Viewer", "Viewer"])
+        demoted, = role_targets(target, "revoked-administrator")
+        self.assertEqual(demoted["grafana_login"], "admin")
+        self.assertEqual(demoted["expected_org_role"], "Viewer")
+        target["role_mapping_cases"]["revoked-administrator"]["grafana_login"] = "another-user"
+        with self.assertRaises(AssertionError):
+            role_targets(target)
+
     def logout_fixture(self, final_url=ISSUER + "/ui/login/login"):
         page, context = Mock(), Mock()
         paths, authorization = [], []
@@ -124,6 +147,13 @@ class BrowserContractTests(unittest.TestCase):
                   "secure": True, "httpOnly": True, "sameSite": "Lax"}
         check_authorization(ISSUER + "/oauth/v2/authorize?" + urlencode(query),
                             [cookie], ROOT, ISSUER, "public")
+        role_scopes = "urn:zitadel:iam:org:projects:roles urn:zitadel:iam:org:project:id:200:aud"
+        check_authorization(ISSUER + "/oauth/v2/authorize?" + urlencode(dict(query, scope=role_scopes)),
+                            [cookie], ROOT, ISSUER, "public", "200")
+        for scopes in ("openid profile email", role_scopes.replace("200", "999")):
+            with self.subTest(scopes=scopes), self.assertRaises(AssertionError):
+                check_authorization(ISSUER + "/oauth/v2/authorize?" + urlencode(dict(query, scope=scopes)),
+                                    [cookie], ROOT, ISSUER, "public", "200")
         for key, value in (("domain", ".example.test"), ("secure", False),
                            ("httpOnly", False), ("sameSite", "Strict")):
             with self.subTest(key=key), self.assertRaises(AssertionError):

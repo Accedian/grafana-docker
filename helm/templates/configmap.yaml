@@ -39,7 +39,7 @@
 {{- $anonymousEnabled := and (not $oauthEnabled) .Values.grafana.auth.anonymous.enabled }}
 {{- if $oauthEnabled }}
 {{- $discoveryReady := and $discoveryUrl $discoveryHost $discovery.application }}
-{{- if and (empty $oauth.clientId) (not $discoveryReady) }}
+{{- if and (or (empty $oauth.clientId) $oauth.deploymentAdminRole.enabled) (not $discoveryReady) }}
 {{- fail "generic OAuth requires clientId or complete clientIdDiscovery configuration" }}
 {{- end }}
 {{- range $url := list $authUrl $tokenUrl $apiUrl $endSessionUrl $postLogoutRedirectUrl }}
@@ -98,6 +98,7 @@ data:
     GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH: {{ .Values.grafana.auth.genericOAuth.nameAttributePath | quote }}
     GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_PATH: {{ .Values.grafana.auth.genericOAuth.emailAttributePath | quote }}
     GF_AUTH_GENERIC_OAUTH_SKIP_ORG_ROLE_SYNC: {{ .Values.grafana.auth.genericOAuth.skipOrgRoleSync | quote }}
+    GRAFANA_OAUTH_DEPLOYMENT_ADMIN_ROLE_ENABLED: {{ $oauth.deploymentAdminRole.enabled | quote }}
 {{- end }}
     GF_SECURITY_COOKIE_SECURE: {{ .Values.grafana.security.cookieSecure | quote }}
     GF_SECURITY_COOKIE_SAMESITE: {{ .Values.grafana.security.cookieSameSite | quote }}

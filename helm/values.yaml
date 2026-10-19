@@ -83,6 +83,10 @@ grafana:
       emailAttributePath: email
       # Authorization remains local to Grafana; new users receive Viewer.
       skipOrgRoleSync: true
+      # Opt-in: root Analytics skylight-admin grants become organization Admin.
+      # Resolve organization/project IDs from the same HTTPS tenant-info read.
+      deploymentAdminRole:
+        enabled: false
 
   security:
     # Grafana is externally HTTPS even though nginx uses HTTP to the pod.

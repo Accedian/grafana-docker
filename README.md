@@ -3,6 +3,14 @@
 See [browser acceptance](tests/BROWSER_ACCEPTANCE.md) for the opt-in real
 Zitadel/CAS login checks. These complement the local `make test` regressions.
 
+Install local test dependencies before running `make test`:
+
+```sh
+python3 -m venv .acceptance/test-venv
+.acceptance/test-venv/bin/pip install -r tests/requirements-test.txt
+PATH="$PWD/.acceptance/test-venv/bin:$PATH" make test
+```
+
 [![CircleCI](https://circleci.com/gh/Accedian/grafana-docker.svg?style=svg)](https://circleci.com/gh/Accedian/grafana-docker)
  
 This project builds a Docker image with the latest master build of Grafana.
@@ -157,6 +165,29 @@ No OAuth client secret is used or accepted by this flow. Keep Basic auth
 enabled for internal bootstrap and emergency administration. With OAuth
 auto-login enabled, append `?disableAutoLogin=true` to `/grafana/login` to
 reach the local login form.
+
+### Optional deployment-administrator role mapping
+
+The default remains local Grafana authorization with Viewer for new users.
+Set `grafana.auth.genericOAuth.deploymentAdminRole.enabled: true` to map
+root Analytics `skylight-admin` grants to Grafana organization Admin. At
+startup, the managed flow resolves numeric organization/project IDs from the
+same HTTPS root tenant-info response as the client ID, even with a configured
+static client ID. Missing or ambiguous identities fail bounded discovery.
+
+The image requests project-scoped roles and evaluates the exact project,
+role and root organization keys from authenticated UserInfo. Other tenants,
+projects, roles and missing claims remain Viewer. No display-name, email or
+legacy unscoped-role matching grants administration. ID-token claims remain
+disabled, and this option never grants server-wide GrafanaAdmin privileges.
+It does not alter the exporter service account.
+
+Roles synchronize on OAuth login, including promotion and demotion of
+existing users. Removing a grant does not invalidate existing Grafana sessions;
+terminate them separately when immediate revocation is required. Turning this
+option off resumes local role management; it does not undo prior promotions.
+Review existing Admin memberships before reverting to the default mode.
+See `tests/BROWSER_ACCEPTANCE.md` for the live role and revocation matrix.
 
 The chart derives Zitadel's HTTPS end-session endpoint and the exact registered
 post-logout return URI from the same deployment values. Exact

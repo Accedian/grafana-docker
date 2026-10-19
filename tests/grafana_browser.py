@@ -26,7 +26,7 @@ def provider_state(path):
     return state
 
 
-def check_authorization(url, cookies, root, issuer, client_id):
+def check_authorization(url, cookies, root, issuer, client_id, role_project=None):
     query = parse_qs(urlsplit(url).query)
     assert origin(url) == issuer, "unexpected authorization provider"
     assert query.get("client_id") == [client_id], "unexpected public client"
@@ -35,6 +35,11 @@ def check_authorization(url, cookies, root, issuer, client_id):
     assert query.get("code_challenge_method") == ["S256"]
     assert len(query.get("code_challenge", [""])[0]) >= 43
     assert query.get("state"), "missing OAuth state"
+    if role_project is not None:
+        assert len(query.get("scope", [])) == 1, "missing or ambiguous role scopes"
+        scopes = set(query["scope"][0].split())
+        assert {f"urn:zitadel:iam:org:project:id:{role_project}:aud",
+                "urn:zitadel:iam:org:projects:roles"} <= scopes, "missing role scopes"
     state = [c for c in cookies if c["name"] == "oauth_state"]
     assert len(state) == 1, "root OAuth state cookie missing or ambiguous"
     cookie, = state
@@ -87,6 +92,13 @@ def verify_provider_logout(page, context, root, issuer, paths, authorization):
         "provider session silently authenticated Grafana after logout"
 
 
+def check_grafana_role(user, organizations, expected):
+    assert expected in ("Viewer", "Admin")
+    assert user.get("isGrafanaAdmin") is False, "OAuth granted server administrator access"
+    assert organizations and all(org["role"] == expected for org in organizations), \
+        "unexpected Grafana organization role"
+
+
 def run_oidc(browser, target):
     root, issuer = target["root_url"].rstrip("/"), origin(target["issuer_url"])
     assert urlsplit(root).path == "" and not urlsplit(root).query and not urlsplit(root).fragment
@@ -109,6 +121,12 @@ def run_oidc(browser, target):
             clients = [c for c in attributes["zitadelConfig"]["clients"] if c["name"] == "pca-grafana-pkce"]
             assert len(clients) == 1 and clients[0]["appId"] and clients[0]["clientId"]
             client_id = clients[0]["clientId"]
+            role_project = None
+            if "expected_org_role" in target:
+                projects = [p for p in attributes["zitadelConfig"]["projects"]
+                            if p["name"] == "Analytics"]
+                assert len(projects) == 1 and projects[0]["projectId"]
+                role_project = projects[0]["projectId"]
             if "client_id" in target:
                 assert client_id == target["client_id"]
             page = context.new_page()
@@ -122,7 +140,7 @@ def run_oidc(browser, target):
                 if parsed.path == "/oauth/v2/authorize":
                     # Discard state/code values immediately; never log the raw URL.
                     check_authorization(request.url, context.cookies(root + "/grafana/"),
-                                        root, issuer, client_id)
+                                        root, issuer, client_id, role_project)
                     authorization.append(True)
 
             page.on("request", inspect)
@@ -135,11 +153,10 @@ def run_oidc(browser, target):
             user = context.request.get(root + "/grafana/api/user")
             assert user.status == 200
             assert user.json()["login"] == target["grafana_login"], "wrong Grafana identity"
-            assert user.json().get("isGrafanaAdmin") is False, "OAuth granted server administrator access"
             organizations = context.request.get(root + "/grafana/api/user/orgs")
             assert organizations.status == 200
-            roles = organizations.json()
-            assert roles and all(org["role"] == "Viewer" for org in roles)
+            check_grafana_role(user.json(), organizations.json(),
+                               target.get("expected_org_role", "Viewer"))
             if origin(entry) != origin(root):
                 wrong_callback = context.request.get(
                     origin(entry) + "/grafana/login/generic_oauth?code=invalid&state=invalid",
@@ -174,15 +191,37 @@ def run_swarm(browser, target):
     print("PASS: live Swarm CAS gate remains unchanged")
 
 
-def run_target(target):
+def role_targets(target, selected=None):
+    cases = target.get("role_mapping_cases")
+    if cases is None:
+        assert selected is None, "role cases are not configured"
+        return [target]
+    names = {"administrator", "viewer", "other-organization", "other-project",
+             "revoked-administrator"}
+    assert set(cases) == names, "configure the complete role-mapping matrix"
+    assert cases["administrator"]["grafana_login"] == cases["revoked-administrator"]["grafana_login"], \
+        "demotion must exercise the previously promoted administrator"
+    assert len({cases[name]["grafana_login"] for name in names - {"revoked-administrator"}}) == 4
+    for case in cases.values():
+        assert case["grafana_login"] and case["storage_state"]
+    assert selected is None or selected in names
+    chosen = [selected] if selected else ["administrator", "viewer", "other-organization", "other-project"]
+    return [dict(target, **{key: cases[name][key] for key in ("grafana_login", "storage_state")},
+                 expected_org_role="Admin" if name == "administrator" else "Viewer")
+            for name in chosen]
+
+
+def run_target(target, role_case=None):
     # Missing dependencies or expired provider sessions fail acceptance, not skip it.
     from playwright.sync_api import sync_playwright
     with sync_playwright() as playwright:
         with playwright.chromium.launch() as browser:
             if target.get("mode", "oidc") == "swarm":
+                assert role_case is None and "role_mapping_cases" not in target
                 run_swarm(browser, target)
             else:
-                run_oidc(browser, target)
+                for identity in role_targets(target, role_case):
+                    run_oidc(browser, identity)
 
 
 def main():
@@ -191,13 +230,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True)
     parser.add_argument("--target", required=True)
+    parser.add_argument("--role-case")
     args = parser.parse_args()
     config = json.loads(Path(args.config).read_text())
     assert config.get("disposable") is True, "use a disposable acceptance environment"
     targets = [t for t in config["targets"] if t["name"] == args.target]
     assert len(targets) == 1, "select one explicit target"
     try:
-        run_target(targets[0]["browser"])
+        run_target(targets[0]["browser"], args.role_case)
     except Exception:
         # Playwright errors can contain callback URLs or cookie values.
         raise SystemExit("FAIL: browser acceptance; inspect the disposable deployment") from None

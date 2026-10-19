@@ -75,6 +75,44 @@ This fixture expects Zitadel's built-in login UI; a different login UI requires
 an equivalent credential-form assertion, not a weaker URL-only check.
 Refresh the provider state before rerunning the suite.
 
+## Optional deployment-administrator mapping
+
+Keep the default Viewer matrix above. Qualify the optional mapping separately
+with `grafana.auth.genericOAuth.deploymentAdminRole.enabled: true` and a
+Grafana image/chart containing that feature. Do not reuse local Grafana role
+assignments as evidence of automatic mapping. Start with new Grafana users or
+verify that the administrator fixture initially has Viewer permissions.
+
+Add `role_mapping_cases` to an OIDC target's `browser` object. It is an object
+with these five required keys. Each value contains `grafana_login` (the
+Zitadel subject) and a private `storage_state` file:
+
+- `administrator`: root Analytics `skylight-admin`; expects Admin.
+- `viewer`: no administrator grant; expects Viewer.
+- `other-organization`: same role/project, another organization; expects Viewer.
+- `other-project`: same role/root organization, another project; expects Viewer.
+- `revoked-administrator`: the administrator's same subject after grant removal;
+  expects Viewer on a fresh OAuth login, using a fresh provider-only session.
+
+The first four subjects must differ. A normal browser run exercises those
+four identities through root/child entry and real logout. It also checks the
+project-role scopes and always rejects server-wide GrafanaAdmin. Existing
+Grafana sessions cannot satisfy the test.
+
+After explicitly removing `skylight-admin` from the fixture's root Analytics grant,
+refresh its provider-only session and exercise the demotion case:
+
+```sh
+.acceptance/venv/bin/python tests/grafana_browser.py \
+  --config .acceptance/targets.json --target fresh-dns \
+  --role-case revoked-administrator
+```
+
+Restore the fixture grant afterward. The deployer acceptance driver can run
+these fixture operations and restore the grant even if the demotion test fails.
+The fixture setup must grant the wrong-organization/project roles explicitly;
+otherwise a Viewer result would not exercise those negative boundaries.
+
 For live Swarm CAS non-regression, use `mode: "swarm"`, `dns: true`, a CAS
 `issuer_url`, root Grafana URL and CAS-only storage state. The browser verifies
 anonymous entry reaches CAS, authenticated access succeeds, and no browser
