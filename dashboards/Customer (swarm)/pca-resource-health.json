@@ -1,0 +1,1859 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Swarm node and container resource pressure using existing sysmetrics node-exporter jobs and cAdvisor. CPU, memory, disk, I/O-wait, load per core and container CPU throttling; no Kubernetes or new collectors.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "panels": [
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# PCA Swarm Resource Health\n\nExisting node-exporter and cAdvisor metrics show CPU, memory, disk, I/O-wait, load per core and container CPU throttling. Start with the cluster overview, find busy nodes, then inspect heavy containers.\n\n**Filters:** `node` selects node-exporter instances in per-node panels. Cluster gauges always cover all reporting nodes. `cadvisorHost` and `container` select container metrics independently: cloud node-exporter instances use VM names, whereas cAdvisor instances use target addresses. Container legends include the cAdvisor instance to distinguish hosts.\n\n**Not collected:** desired/running Swarm replicas, application readiness, restart counts, OOM termination reasons, resource requests and per-volume disk usage. Filesystem panels show host storage, not volume attribution. Missing cAdvisor task metrics are not zero usage.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.1.0",
+      "title": "",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 2,
+      "panels": [],
+      "title": "Cluster Overview (now)",
+      "type": "row",
+      "description": ""
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Average CPU used across all nodes (1 - idle). Orange >=80%, red >=90% \u2013 the cluster is CPU-bound; find the hot node(s) in Per-node.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 1,
+          "max": 100,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 0,
+        "y": 9
+      },
+      "id": 3,
+      "options": {
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",mode=\"idle\"}[$__rate_interval])))",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "interval": "2m"
+        }
+      ],
+      "title": "Cluster CPU utilisation",
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Used memory across all nodes (1 - MemAvailable/MemTotal). Orange >=85%, red >=95% \u2013 risk of OOM kills and swapping/sluggishness.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 85
+              },
+              {
+                "color": "red",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 1,
+          "max": 100,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 4,
+        "y": 9
+      },
+      "id": 4,
+      "options": {
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "100 * (1 - sum(node_memory_MemAvailable_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\"}) / sum(node_memory_MemTotal_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\"}))",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "interval": "2m"
+        }
+      ],
+      "title": "Cluster memory utilisation",
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Highest filesystem usage on any node/mount. Orange >=80%, red >=90% \u2013 a full disk stalls writes (HDFS/MinIO/Postgres/Kafka) and can crash services.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 1,
+          "max": 100,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 8,
+        "y": 9
+      },
+      "id": 5,
+      "options": {
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "max(100 * (1 - node_filesystem_avail_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",fstype!=\"\",mountpoint!=\"\"} / node_filesystem_size_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",fstype!=\"\",mountpoint!=\"\"}))",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "interval": "2m"
+        }
+      ],
+      "title": "Fullest filesystem",
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Average CPU time waiting on disk I/O across nodes. Orange >=5%, red >=10% \u2013 the disk subsystem is the bottleneck; CPU is idle waiting for storage.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 1,
+          "max": 50,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 12,
+        "y": 9
+      },
+      "id": 6,
+      "options": {
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "100 * avg(rate(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",mode=\"iowait\"}[$__rate_interval]))",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "interval": "2m"
+        }
+      ],
+      "title": "Cluster I/O-wait",
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Total 1-min load average / total logical cores. Orange >=1, red >=2 \u2013 more runnable work than CPUs = queuing/slowness.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "unit": "short",
+          "decimals": 2,
+          "max": 4,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 16,
+        "y": 9
+      },
+      "id": 7,
+      "options": {
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(node_load1{job=~\"sysmetrics|sysmetrics-private-cloud\"}) / count(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",mode=\"idle\"})",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "interval": "2m"
+        }
+      ],
+      "title": "Load per core (cluster)",
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Number of nodes reporting node-exporter metrics in this cluster.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 20,
+        "y": 9
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "count(node_uname_info{job=~\"sysmetrics|sysmetrics-private-cloud\"})",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "interval": "2m"
+        }
+      ],
+      "title": "Nodes",
+      "type": "stat"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "id": 15,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "The busiest nodes by CPU right now. Orange \u2265 80%, red \u2265 90% \u2013 a node near 100% will throttle/queue its containers; check the Top containers CPU panel to see which containers are driving it, or reschedule/scale.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent",
+              "decimals": 1
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 16
+          },
+          "id": 25,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, 100 * (1 - avg by (instance)(rate(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",mode=\"idle\"}[$__rate_interval]))))",
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "interval": "2m"
+            }
+          ],
+          "title": "Top nodes \u2013 CPU utilisation %",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "The fullest nodes by memory right now. Orange \u2265 80%, red \u2265 90% \u2013 a node near 100% risks kernel OOM-kills of its containers; identify heavy containers (Top containers memory) or add capacity.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent",
+              "decimals": 1
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 16
+          },
+          "id": 26,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, 100 * (1 - sum by (instance)(node_memory_MemAvailable_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\"}) / sum by (instance)(node_memory_MemTotal_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\"})))",
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "interval": "2m"
+            }
+          ],
+          "title": "Top nodes \u2013 memory utilisation %",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Absolute CPU cores consumed per node right now. Compare against each node's core count to spot imbalance across the cluster. Not threshold-coloured (core counts differ by node).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short",
+              "decimals": 2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 16
+          },
+          "id": 27,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, sum by (instance)(rate(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",mode!=\"idle\"}[$__rate_interval])))",
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "interval": "2m"
+            }
+          ],
+          "title": "Top nodes \u2013 CPU cores used",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Absolute memory used per node right now (total \u2212 available). Use with memory % to see both pressure and raw footprint. Not threshold-coloured (node sizes differ).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes",
+              "decimals": 2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 24
+          },
+          "id": 28,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, sum by (instance)(node_memory_MemTotal_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\"} - node_memory_MemAvailable_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\"}))",
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "interval": "2m"
+            }
+          ],
+          "title": "Top nodes \u2013 memory used",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Nodes spending the most CPU time waiting on disk. Orange \u2265 10%, red \u2265 25% \u2013 high I/O-wait means storage is the bottleneck; see the disk I/O utilisation panel and the Host Filesystems row.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 10
+                  },
+                  {
+                    "color": "red",
+                    "value": 25
+                  }
+                ]
+              },
+              "unit": "percent",
+              "decimals": 1
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 24
+          },
+          "id": 29,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, 100 * avg by (instance)(rate(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",mode=\"iowait\"}[$__rate_interval])))",
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "interval": "2m"
+            }
+          ],
+          "title": "Top nodes \u2013 I/O-wait %",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Run-queue pressure normalised by core count (load1 / cores). Orange \u2265 1 (fully committed), red \u2265 2 (over-subscribed) \u2013 sustained > 1 means processes are waiting for CPU on that node.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 1
+                  },
+                  {
+                    "color": "red",
+                    "value": 2
+                  }
+                ]
+              },
+              "unit": "short",
+              "decimals": 2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 24
+          },
+          "id": 30,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, sum by (instance)(node_load1{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\"}) / count by (instance)(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",mode=\"idle\"}))",
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "interval": "2m"
+            }
+          ],
+          "title": "Top nodes \u2013 load per core",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Per-node CPU used (1 - idle). Dashed lines mark the 80%/90% thresholds. A node pinned near/over the red line is CPU-bound \u2013 drill into Per-container to see which containers on it are heaviest.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent",
+              "max": 100,
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 32
+          },
+          "id": 9,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "100 * (1 - avg by (instance)(rate(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",mode=\"idle\",instance=~\"$node\"}[$__rate_interval])))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{instance}}",
+              "interval": "2m"
+            }
+          ],
+          "title": "Node \u2013 CPU utilisation %",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Per-node memory utilisation (1 - MemAvailable/MemTotal). High usage risks memory pressure; inspect container working sets. OOM termination reasons are not collected.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 85
+                  },
+                  {
+                    "color": "red",
+                    "value": 95
+                  }
+                ]
+              },
+              "unit": "percent",
+              "max": 100,
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 32
+          },
+          "id": 10,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "100 * (1 - sum by (instance)(node_memory_MemAvailable_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\"}) / sum by (instance)(node_memory_MemTotal_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\"}))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{instance}}",
+              "interval": "2m"
+            }
+          ],
+          "title": "Node \u2013 memory utilisation %",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Per-node CPU time spent waiting on disk I/O. Thresholds 5%/10%. Sustained high I/O-wait = the node's disks cannot keep up; correlate with Disk IO % below and the storage containers (HDFS/MinIO/Kafka/Postgres).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 5
+                  },
+                  {
+                    "color": "red",
+                    "value": 10
+                  }
+                ]
+              },
+              "unit": "percent",
+              "max": 50,
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 40
+          },
+          "id": 11,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "100 * avg by (instance)(rate(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",mode=\"iowait\",instance=~\"$node\"}[$__rate_interval]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{instance}}",
+              "interval": "2m"
+            }
+          ],
+          "title": "Node \u2013 I/O-wait %",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Per-node 1-min load average divided by that node's logical cores. Thresholds 1/2. > 1 per core = more runnable work than CPUs (queuing). Compare with CPU% \u2013 high load with moderate CPU often means I/O-wait. (Fixed: load1 is summed by instance so it matches the per-node core count.)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 1
+                  },
+                  {
+                    "color": "red",
+                    "value": 2
+                  }
+                ]
+              },
+              "unit": "short",
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 40
+          },
+          "id": 12,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (instance)(node_load1{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\"}) / count by (instance)(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",mode=\"idle\"})",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{instance}}",
+              "interval": "2m"
+            }
+          ],
+          "title": "Node \u2013 load average per core",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Per-node, per-mount filesystem usage. Thresholds 80%/90%. A mount near red will stop accepting writes \u2013 identify the node/mount and free space or expand the volume.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent",
+              "max": 100,
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 48
+          },
+          "id": 13,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "100 * (1 - node_filesystem_avail_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",fstype!=\"\",mountpoint!=\"\"} / node_filesystem_size_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",fstype!=\"\",mountpoint!=\"\"})",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{instance}}:{{mountpoint}}",
+              "interval": "2m"
+            }
+          ],
+          "title": "Node \u2013 filesystem usage % (by mount)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Fraction of time each disk device was busy (node_disk_io_time_seconds_total rate). ~100% = the device is saturated and is the bottleneck behind high I/O-wait. Correlate with the storage services on that node.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent",
+              "max": 100,
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 48
+          },
+          "id": 14,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "100 * rate(node_disk_io_time_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\"}[$__rate_interval])",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{instance}}:{{device}}",
+              "interval": "2m"
+            }
+          ],
+          "title": "Node \u2013 disk I/O utilisation % (by device)",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Per-node Resource Health",
+      "type": "row",
+      "description": ""
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 22,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Existing cAdvisor task metrics, grouped by host and container name. CPU is in cores; memory is the working set; throttling is the percentage of CFS periods throttled (only when periods are reported). Missing task metrics indicate unavailable telemetry, not zero usage.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short",
+              "decimals": 2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 8,
+            "x": 0,
+            "y": 17
+          },
+          "id": 16,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, sum by (instance,name)(rate(container_cpu_usage_seconds_total{job=\"cadvisor\",instance=~\"$cadvisorHost\",name=~\"$container\",name!=\"\",image!=\"\"}[$__rate_interval])))",
+              "range": false,
+              "instant": true,
+              "refId": "A",
+              "legendFormat": "{{instance}} / {{name}}",
+              "interval": "2m"
+            }
+          ],
+          "title": "Top containers - CPU (cores)",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Existing cAdvisor task metrics, grouped by host and container name. CPU is in cores; memory is the working set; throttling is the percentage of CFS periods throttled (only when periods are reported). Missing task metrics indicate unavailable telemetry, not zero usage.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes",
+              "decimals": 2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 8,
+            "x": 8,
+            "y": 17
+          },
+          "id": 17,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, sum by (instance,name)(container_memory_working_set_bytes{job=\"cadvisor\",instance=~\"$cadvisorHost\",name=~\"$container\",name!=\"\",image!=\"\"}))",
+              "range": false,
+              "instant": true,
+              "refId": "A",
+              "legendFormat": "{{instance}} / {{name}}",
+              "interval": "2m"
+            }
+          ],
+          "title": "Top containers - memory",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Existing cAdvisor task metrics, grouped by host and container name. CPU is in cores; memory is the working set; throttling is the percentage of CFS periods throttled (only when periods are reported). Missing task metrics indicate unavailable telemetry, not zero usage.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 25
+                  },
+                  {
+                    "color": "red",
+                    "value": 50
+                  }
+                ]
+              },
+              "unit": "percent",
+              "decimals": 1
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 8,
+            "x": 16,
+            "y": 17
+          },
+          "id": 18,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, 100 * sum by (instance,name)(rate(container_cpu_cfs_throttled_periods_total{job=\"cadvisor\",instance=~\"$cadvisorHost\",name=~\"$container\",name!=\"\",image!=\"\"}[$__rate_interval])) / (sum by (instance,name)(rate(container_cpu_cfs_periods_total{job=\"cadvisor\",instance=~\"$cadvisorHost\",name=~\"$container\",name!=\"\",image!=\"\"}[$__rate_interval])) > 0))",
+              "range": false,
+              "instant": true,
+              "refId": "A",
+              "legendFormat": "{{instance}} / {{name}}",
+              "interval": "2m"
+            }
+          ],
+          "title": "Top containers - CPU throttling %",
+          "type": "bargauge"
+        }
+      ],
+      "title": "Per-container Resource Health",
+      "type": "row",
+      "description": ""
+    },
+    {
+      "collapsed": true,
+      "type": "row",
+      "id": 36,
+      "title": "Top Host Filesystems (now)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Fullest host filesystems by node and mount. This does not measure individual Docker volumes.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent",
+              "decimals": 1
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 18
+          },
+          "id": 31,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, 100 * (1 - node_filesystem_avail_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",fstype!=\"\",mountpoint!=\"\"} / node_filesystem_size_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",fstype!=\"\",mountpoint!=\"\"}))",
+              "legendFormat": "{{instance}}:{{mountpoint}}",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "interval": "2m"
+            }
+          ],
+          "title": "Top nodes \u2013 filesystem usage % (node-local disk)",
+          "type": "bargauge"
+        }
+      ],
+      "description": ""
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 41,
+  "tags": [
+    "nodes",
+    "pca",
+    "resources",
+    "swarm"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(node_uname_info{job=~\"sysmetrics|sysmetrics-private-cloud\"}, instance)",
+        "includeAll": true,
+        "label": "node-exporter host",
+        "multi": true,
+        "name": "node",
+        "options": [],
+        "query": {
+          "query": "label_values(node_uname_info{job=~\"sysmetrics|sysmetrics-private-cloud\"}, instance)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(container_last_seen{job=\"cadvisor\"}, instance)",
+        "includeAll": true,
+        "label": "cAdvisor host",
+        "multi": true,
+        "name": "cadvisorHost",
+        "options": [],
+        "query": {
+          "query": "label_values(container_last_seen{job=\"cadvisor\"}, instance)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(container_last_seen{job=\"cadvisor\",instance=~\"$cadvisorHost\",name!=\"\"}, name)",
+        "includeAll": true,
+        "label": "container",
+        "multi": true,
+        "name": "container",
+        "options": [],
+        "query": {
+          "query": "label_values(container_last_seen{job=\"cadvisor\",instance=~\"$cadvisorHost\",name!=\"\"}, name)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "PCA Node & Cluster Resource Health",
+  "uid": "pca-resource-health-swarm",
+  "version": 1,
+  "id": null
+}
