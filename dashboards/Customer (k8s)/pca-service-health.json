@@ -166,8 +166,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "100 * ((count((kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\"} >= kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"}) and (kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0)) or vector(0)) + (count((kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\"} >= kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"}) and (kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0)) or vector(0)) + (count((kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\"} >= kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\"}) and (kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0)) or vector(0))) / ((count(kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0) or vector(0)) + (count(kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0) or vector(0)) + (count(kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0) or vector(0)))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "ready %"
         },
@@ -175,8 +175,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "(count((kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\"} >= kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"}) and (kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0)) or vector(0)) + (count((kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\"} >= kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"}) and (kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0)) or vector(0)) + (count((kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\"} >= kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\"}) and (kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0)) or vector(0))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "B",
           "legendFormat": "ready"
         },
@@ -184,8 +184,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "(count(kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0) or vector(0)) + (count(kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0) or vector(0)) + (count(kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0) or vector(0))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "C",
           "legendFormat": "total"
         }
@@ -247,8 +247,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "(count(kube_deployment_status_replicas_available{namespace=~\"$namespace\",cluster=~\"$cluster\"} < kube_deployment_spec_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"}) or vector(0)) + (count(kube_statefulset_status_replicas_ready{namespace=~\"$namespace\",cluster=~\"$cluster\"} < kube_statefulset_replicas{namespace=~\"$namespace\",cluster=~\"$cluster\"}) or vector(0)) + (count(kube_daemonset_status_number_ready{namespace=~\"$namespace\",cluster=~\"$cluster\"} < kube_daemonset_status_desired_number_scheduled{namespace=~\"$namespace\",cluster=~\"$cluster\"}) or vector(0))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "value"
         }
@@ -310,8 +310,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "count(max by (pod)(kube_pod_status_phase{namespace=~\"$namespace\",cluster=~\"$cluster\",phase=\"Pending\"}) == 1) or vector(0)",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "value"
         }
@@ -373,8 +373,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "count(kube_pod_container_status_waiting_reason{namespace=~\"$namespace\",cluster=~\"$cluster\",reason=\"CrashLoopBackOff\"} == 1) or vector(0)",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "value"
         }
@@ -432,8 +432,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "round(sum(increase(kube_pod_container_status_restarts_total{namespace=~\"$namespace\",cluster=~\"$cluster\"}[24h])) or vector(0))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "value"
         }
@@ -495,8 +495,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "count(kube_job_status_failed{namespace=~\"$namespace\",cluster=~\"$cluster\"} > 0) or vector(0)",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "value"
         }

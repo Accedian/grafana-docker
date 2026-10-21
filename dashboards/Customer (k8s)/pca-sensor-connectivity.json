@@ -166,8 +166,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "100 * count(roadrunner_connection{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) / count(roadrunner_connection{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"})",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "up %"
         },
@@ -175,8 +175,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "count(roadrunner_connection{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) or vector(0)",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "B",
           "legendFormat": "connected"
         },
@@ -184,8 +184,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "count(roadrunner_connection{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}) or vector(0)",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "C",
           "legendFormat": "total"
         }
@@ -300,8 +300,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "100 * count(foxtrot_connector_connected{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) / count(foxtrot_connector_connected{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"})",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "up %"
         },
@@ -309,8 +309,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "count(foxtrot_connector_connected{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) or vector(0)",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "B",
           "legendFormat": "connected"
         },
@@ -318,8 +318,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "count(foxtrot_connector_connected{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}) or vector(0)",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "C",
           "legendFormat": "total"
         }
@@ -434,8 +434,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "100 * count(foxtrot_connector_configured{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) / count(foxtrot_connector_configured{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"})",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "up %"
         },
@@ -443,8 +443,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "count(foxtrot_connector_configured{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) or vector(0)",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "B",
           "legendFormat": "connected"
         },
@@ -452,8 +452,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "count(foxtrot_connector_configured{tenantID=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}) or vector(0)",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "C",
           "legendFormat": "total"
         }
@@ -568,8 +568,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "100 * count(roadrunner_agent_connected{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) / count(roadrunner_agent_connected{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"})",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "up %"
         },
@@ -577,8 +577,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "count(roadrunner_agent_connected{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"} == 1) or vector(0)",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "B",
           "legendFormat": "connected"
         },
@@ -586,8 +586,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "count(roadrunner_agent_connected{tenant=~\"$tenant\",zone=~\"$zone\",connectorId=~\"$connectorId\"}) or vector(0)",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "C",
           "legendFormat": "total"
         }
@@ -649,8 +649,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(increase(skylight_aaa_rejected_cert_authorization_requests{tenantId=~\"$tenant\"}[1h])) or vector(0)",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "count"
         }

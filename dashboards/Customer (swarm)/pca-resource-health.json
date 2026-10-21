@@ -119,8 +119,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",mode=\"idle\"}[$__rate_interval])))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "interval": "2m"
         }
@@ -186,8 +186,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "100 * (1 - sum(node_memory_MemAvailable_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\"}) / sum(node_memory_MemTotal_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\"}))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "interval": "2m"
         }
@@ -253,8 +253,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "max(100 * (1 - node_filesystem_avail_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",fstype!=\"\",mountpoint!=\"\"} / node_filesystem_size_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",fstype!=\"\",mountpoint!=\"\"}))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "interval": "2m"
         }
@@ -320,8 +320,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "100 * avg(rate(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",mode=\"iowait\"}[$__rate_interval]))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "interval": "2m"
         }
@@ -387,8 +387,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(node_load1{job=~\"sysmetrics|sysmetrics-private-cloud\"}) / count(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",mode=\"idle\"})",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "interval": "2m"
         }
@@ -523,8 +523,8 @@
               "editorMode": "code",
               "expr": "topk(15, 100 * (1 - avg by (instance)(rate(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",mode=\"idle\"}[$__rate_interval]))))",
               "legendFormat": "{{instance}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A",
               "interval": "2m"
             }
@@ -590,8 +590,8 @@
               "editorMode": "code",
               "expr": "topk(15, 100 * (1 - sum by (instance)(node_memory_MemAvailable_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\"}) / sum by (instance)(node_memory_MemTotal_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\"})))",
               "legendFormat": "{{instance}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A",
               "interval": "2m"
             }
@@ -649,8 +649,8 @@
               "editorMode": "code",
               "expr": "topk(15, sum by (instance)(rate(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",mode!=\"idle\"}[$__rate_interval])))",
               "legendFormat": "{{instance}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A",
               "interval": "2m"
             }
@@ -708,8 +708,8 @@
               "editorMode": "code",
               "expr": "topk(15, sum by (instance)(node_memory_MemTotal_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\"} - node_memory_MemAvailable_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\"}))",
               "legendFormat": "{{instance}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A",
               "interval": "2m"
             }
@@ -775,8 +775,8 @@
               "editorMode": "code",
               "expr": "topk(15, 100 * avg by (instance)(rate(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",mode=\"iowait\"}[$__rate_interval])))",
               "legendFormat": "{{instance}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A",
               "interval": "2m"
             }
@@ -842,8 +842,8 @@
               "editorMode": "code",
               "expr": "topk(15, sum by (instance)(node_load1{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\"}) / count by (instance)(node_cpu_seconds_total{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",mode=\"idle\"}))",
               "legendFormat": "{{instance}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A",
               "interval": "2m"
             }
@@ -1755,8 +1755,8 @@
               "editorMode": "code",
               "expr": "topk(15, 100 * (1 - node_filesystem_avail_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",fstype!=\"\",mountpoint!=\"\"} / node_filesystem_size_bytes{job=~\"sysmetrics|sysmetrics-private-cloud\",instance=~\"$node\",fstype!=\"\",mountpoint!=\"\"}))",
               "legendFormat": "{{instance}}:{{mountpoint}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A",
               "interval": "2m"
             }

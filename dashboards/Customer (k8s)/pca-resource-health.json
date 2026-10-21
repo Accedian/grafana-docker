@@ -117,8 +117,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",cluster=~\"$cluster\"}[$__rate_interval])))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -183,8 +183,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "100 * (1 - sum(node_memory_MemAvailable_bytes{job=\"node-exporter\",cluster=~\"$cluster\"}) / sum(node_memory_MemTotal_bytes{job=\"node-exporter\",cluster=~\"$cluster\"}))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -249,8 +249,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "max(100 * (1 - node_filesystem_avail_bytes{job=\"node-exporter\",cluster=~\"$cluster\",fstype!=\"\",mountpoint!=\"\"} / node_filesystem_size_bytes{job=\"node-exporter\",cluster=~\"$cluster\",fstype!=\"\",mountpoint!=\"\"}))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -315,8 +315,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "100 * avg(rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"iowait\",cluster=~\"$cluster\"}[$__rate_interval]))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -381,8 +381,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(node_load1{job=\"node-exporter\",cluster=~\"$cluster\"}) / count(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",cluster=~\"$cluster\"})",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -515,8 +515,8 @@
               "editorMode": "code",
               "expr": "topk(15, 100 * (1 - avg by (instance)(rate(node_cpu_seconds_total{job=\"node-exporter\",cluster=~\"$cluster\",instance=~\"$node\",mode=\"idle\"}[$__rate_interval]))))",
               "legendFormat": "{{instance}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A"
             }
           ],
@@ -581,8 +581,8 @@
               "editorMode": "code",
               "expr": "topk(15, 100 * (1 - sum by (instance)(node_memory_MemAvailable_bytes{job=\"node-exporter\",cluster=~\"$cluster\",instance=~\"$node\"}) / sum by (instance)(node_memory_MemTotal_bytes{job=\"node-exporter\",cluster=~\"$cluster\",instance=~\"$node\"})))",
               "legendFormat": "{{instance}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A"
             }
           ],
@@ -639,8 +639,8 @@
               "editorMode": "code",
               "expr": "topk(15, sum by (instance)(rate(node_cpu_seconds_total{job=\"node-exporter\",cluster=~\"$cluster\",instance=~\"$node\",mode!=\"idle\"}[$__rate_interval])))",
               "legendFormat": "{{instance}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A"
             }
           ],
@@ -697,8 +697,8 @@
               "editorMode": "code",
               "expr": "topk(15, sum by (instance)(node_memory_MemTotal_bytes{job=\"node-exporter\",cluster=~\"$cluster\",instance=~\"$node\"} - node_memory_MemAvailable_bytes{job=\"node-exporter\",cluster=~\"$cluster\",instance=~\"$node\"}))",
               "legendFormat": "{{instance}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A"
             }
           ],
@@ -763,8 +763,8 @@
               "editorMode": "code",
               "expr": "topk(15, 100 * avg by (instance)(rate(node_cpu_seconds_total{job=\"node-exporter\",cluster=~\"$cluster\",instance=~\"$node\",mode=\"iowait\"}[$__rate_interval])))",
               "legendFormat": "{{instance}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A"
             }
           ],
@@ -829,8 +829,8 @@
               "editorMode": "code",
               "expr": "topk(15, sum by (instance)(node_load1{job=\"node-exporter\",cluster=~\"$cluster\",instance=~\"$node\"}) / count by (instance)(node_cpu_seconds_total{job=\"node-exporter\",cluster=~\"$cluster\",instance=~\"$node\",mode=\"idle\"}))",
               "legendFormat": "{{instance}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A"
             }
           ],
@@ -2190,8 +2190,8 @@
               "editorMode": "code",
               "expr": "topk(15, 100 * (1 - node_filesystem_avail_bytes{job=\"node-exporter\",cluster=~\"$cluster\",instance=~\"$node\",fstype!=\"\",mountpoint!=\"\"} / node_filesystem_size_bytes{job=\"node-exporter\",cluster=~\"$cluster\",instance=~\"$node\",fstype!=\"\",mountpoint!=\"\"}))",
               "legendFormat": "{{instance}}:{{mountpoint}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A"
             }
           ],
@@ -2248,8 +2248,8 @@
               "editorMode": "code",
               "expr": "topk(15, sum by (node) (\n(\nopenebs_hostpath_volume_used_bytes\n  * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n    label_replace(kube_persistentvolumeclaim_info{namespace=~\"$namespace\"}, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n)\n  * on(namespace, persistentvolumeclaim) group_left(node)\n    max by (namespace, persistentvolumeclaim, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info\n    )\n))",
               "legendFormat": "{{node}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A"
             }
           ],
@@ -2306,8 +2306,8 @@
               "editorMode": "code",
               "expr": "topk(15, sum by (namespace, pod) (\n(\nopenebs_hostpath_volume_used_bytes\n  * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n    label_replace(kube_persistentvolumeclaim_info{namespace=~\"$namespace\"}, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n)\n  * on(namespace, persistentvolumeclaim) group_left(pod)\n    kube_pod_spec_volumes_persistentvolumeclaims_info{namespace=~\"$namespace\"}\n))",
               "legendFormat": "{{namespace}}/{{pod}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A"
             }
           ],
@@ -2372,8 +2372,8 @@
               "editorMode": "code",
               "expr": "topk(15, 100 * (\nopenebs_hostpath_volume_used_bytes\n  * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n    label_replace(kube_persistentvolumeclaim_info{namespace=~\"$namespace\"}, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n) / on(namespace, persistentvolumeclaim) group_left() kubelet_volume_stats_capacity_bytes)",
               "legendFormat": "{{namespace}}/{{persistentvolumeclaim}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A"
             }
           ],
@@ -2430,8 +2430,8 @@
               "editorMode": "code",
               "expr": "topk(15, sum by (namespace, persistentvolumeclaim) (\nopenebs_hostpath_volume_used_bytes\n  * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n    label_replace(kube_persistentvolumeclaim_info{namespace=~\"$namespace\"}, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n))",
               "legendFormat": "{{namespace}}/{{persistentvolumeclaim}}",
-              "range": true,
-              "instant": false,
+              "range": false,
+              "instant": true,
               "refId": "A"
             }
           ],
