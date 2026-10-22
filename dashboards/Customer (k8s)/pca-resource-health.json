@@ -1840,29 +1840,29 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum by (pod)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace=~\"$namespace\",pod=~\"$pod\",container!=\"\"})",
+              "expr": "sum by (namespace,pod)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace=~\"$namespace\",pod=~\"$pod\",container!=\"\"})",
               "range": true,
               "instant": false,
               "refId": "A",
-              "legendFormat": "{{pod}} usage"
+              "legendFormat": "{{namespace}}/{{pod}} usage"
             },
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum by (pod)(cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{namespace=~\"$namespace\",pod=~\"$pod\"})",
+              "expr": "sum by (namespace,pod)(cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{namespace=~\"$namespace\",pod=~\"$pod\"})",
               "range": true,
               "instant": false,
               "refId": "B",
-              "legendFormat": "{{pod}} request"
+              "legendFormat": "{{namespace}}/{{pod}} request"
             },
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum by (pod)(cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{namespace=~\"$namespace\",pod=~\"$pod\"})",
+              "expr": "sum by (namespace,pod)(cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{namespace=~\"$namespace\",pod=~\"$pod\"})",
               "range": true,
               "instant": false,
               "refId": "C",
-              "legendFormat": "{{pod}} limit"
+              "legendFormat": "{{namespace}}/{{pod}} limit"
             }
           ],
           "title": "Selected pod \u2013 CPU vs requests/limits",
@@ -1954,29 +1954,29 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum by (pod)(container_memory_working_set_bytes{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",namespace=~\"$namespace\",pod=~\"$pod\",container!=\"\",image!=\"\"})",
+              "expr": "sum by (namespace,pod)(container_memory_working_set_bytes{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",namespace=~\"$namespace\",pod=~\"$pod\",container!=\"\",image!=\"\"})",
               "range": true,
               "instant": false,
               "refId": "A",
-              "legendFormat": "{{pod}} usage"
+              "legendFormat": "{{namespace}}/{{pod}} usage"
             },
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum by (pod)(cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{namespace=~\"$namespace\",pod=~\"$pod\"})",
+              "expr": "sum by (namespace,pod)(cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{namespace=~\"$namespace\",pod=~\"$pod\"})",
               "range": true,
               "instant": false,
               "refId": "B",
-              "legendFormat": "{{pod}} request"
+              "legendFormat": "{{namespace}}/{{pod}} request"
             },
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum by (pod)(cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{namespace=~\"$namespace\",pod=~\"$pod\"})",
+              "expr": "sum by (namespace,pod)(cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{namespace=~\"$namespace\",pod=~\"$pod\"})",
               "range": true,
               "instant": false,
               "refId": "C",
-              "legendFormat": "{{pod}} limit"
+              "legendFormat": "{{namespace}}/{{pod}} limit"
             }
           ],
           "title": "Selected pod \u2013 memory vs requests/limits",
