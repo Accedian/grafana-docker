@@ -110,8 +110,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate({__name__=~\"gather_api_call_duration_count|skylight_aaa_api_call_duration_count|stitchit_api_call_duration_count|alert_service_api_call_duration_count\"}[5m]))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -169,8 +169,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "max({__name__=~\"gather_api_call_duration|skylight_aaa_api_call_duration|stitchit_api_call_duration|alert_service_api_call_duration\", quantile=\"0.99\"})",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -228,8 +228,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "max(kafka_consumergroup_lag_sum)",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -287,8 +287,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "max(ignite_ingestion_lag)",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A"
         }
       ],

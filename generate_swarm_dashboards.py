@@ -116,7 +116,7 @@ def resource_health(dashboard):
         else:
             panel["description"] = panel.get("description", "").replace("pods", "containers").replace("pod", "container").replace("Disk/PVC consumers", "Host Filesystems")
         for target in panel.get("targets", []):
-            target["expr"] = target["expr"].replace('job="node-exporter"', NODE_JOB).replace(',cluster=~"$cluster"', "")
+            target["expr"] = target["expr"].replace('job="node-exporter"', NODE_JOB)
             # Cloud cAdvisor/node-exporter discovery inherits a 120-second scrape.
             target["interval"] = "2m"
     compact(dashboard["panels"])

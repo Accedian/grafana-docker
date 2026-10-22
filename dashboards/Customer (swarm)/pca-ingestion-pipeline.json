@@ -188,8 +188,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(increase(file_processing_time_seconds_count{tenant=~\"$tenant\"}[5m]))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "files (5m)"
         }
@@ -262,8 +262,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(increase(fedex_record_count{tenant=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "records (5m)"
         }
@@ -336,8 +336,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(increase(ignite_kafka_total_sent{tenantId=~\"$tenant\",objectType=~\"$objectType\"}[5m]))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "records (5m)"
         }
@@ -410,8 +410,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(max_over_time(spark_queryInputRows{job=~\"spark_streamingapp|spark_latentapp\"}[5m]))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "input rows (5m max)"
         }
@@ -484,8 +484,8 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(increase(gather_batch_ingest_submit_success{tenantId=~\"$tenant\"}[5m]))",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "refId": "A",
           "legendFormat": "requests (5m)"
         }

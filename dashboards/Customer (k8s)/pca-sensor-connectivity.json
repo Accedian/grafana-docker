@@ -3019,7 +3019,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum by (status) (rate(skylight_aaa_client_certificates_ocsp_status{tenantId=~\"$tenant\"}[5m]))",
+              "expr": "sum by (status) (skylight_aaa_client_certificates_ocsp_status{tenantId=~\"$tenant\"})",
               "range": true,
               "instant": false,
               "refId": "A",

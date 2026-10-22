@@ -13,6 +13,17 @@ def walk(panels):
 
 
 class CustomerQueryModesTest(unittest.TestCase):
+    SNAPSHOT_IDS = {
+        "pca-ingestion-pipeline.json": {3, 4, 5, 6, 7, 8},
+        "pca-resource-health.json": {
+            3, 4, 5, 6, 7, 16, 17, 18, 23, 24,
+            25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+        },
+        "pca-sensor-connectivity.json": {3, 4, 5, 6, 8},
+        "pca-service-health.json": {3, 4, 5, 6, 7, 8},
+        "pca-application-speed.json": {3, 4, 5, 6},
+    }
+
     @classmethod
     def setUpClass(cls):
         cls.dashboards = {
@@ -22,18 +33,10 @@ class CustomerQueryModesTest(unittest.TestCase):
         }
 
     def test_snapshot_panels_use_only_instant_queries(self):
-        snapshot_ids = {
-            "pca-resource-health.json": {
-                3, 4, 5, 6, 7, 16, 17, 18, 23, 24,
-                25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
-            },
-            "pca-sensor-connectivity.json": {3, 4, 5, 6, 8},
-            "pca-service-health.json": {3, 4, 5, 6, 7, 8},
-        }
         for (platform, name), dashboard in self.dashboards.items():
-            if name not in snapshot_ids:
+            if name not in self.SNAPSHOT_IDS:
                 continue
-            expected = snapshot_ids[name]
+            expected = self.SNAPSHOT_IDS[name]
             if platform == "swarm" and name == "pca-resource-health.json":
                 expected = expected - {23, 24, 32, 33, 34, 35}
             panels = {
@@ -54,8 +57,8 @@ class CustomerQueryModesTest(unittest.TestCase):
             for panel in walk(dashboard["panels"]):
                 history = panel["type"] in {"timeseries", "state-timeline"}
                 sparkline = panel.get("options", {}).get("graphMode") == "area"
-                # The edge-agent count already used instant mode before this fix.
-                if name == "pca-ingestion-pipeline.json" and panel["id"] == 3:
+                # Snapshot panels use instant queries even when they show sparklines.
+                if panel["id"] in self.SNAPSHOT_IDS.get(name, set()):
                     continue
                 if not (history or sparkline):
                     continue
