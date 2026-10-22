@@ -1,0 +1,125 @@
+# Live Grafana browser acceptance
+
+These tests use real Chromium, Grafana and Zitadel/CAS, with no mocked network
+responses. They are opt-in and do not run during image builds. The normal
+`make test` checks their assertions with local negative tests.
+
+Install the pinned test dependency in an isolated environment:
+
+```sh
+python3 -m venv .acceptance/venv
+.acceptance/venv/bin/pip install -r tests/requirements-browser.txt
+.acceptance/venv/bin/python -m playwright install chromium
+```
+
+Use HTTPS endpoints with certificates trusted by Chromium and the host. For a
+lab CA, install its trust explicitly; do not bypass certificate verification.
+No screenshots, HAR files or traces are produced: they could contain passwords,
+authorization codes or session cookies.
+
+Provide a private Playwright storage-state file containing a valid **provider
+session only**. Log in to the disposable Zitadel/CAS instance to obtain it,
+without first logging into Grafana, and set its permissions to `0600`. The
+suite rejects existing Grafana session cookies and confirms anonymous Grafana
+API access is denied before each OIDC login. Expired provider sessions fail
+the test instead of skipping it. Never commit storage state or credentials.
+
+Create a private JSON configuration using this shape:
+
+```json
+{
+  "disposable": true,
+  "targets": [{
+    "name": "fresh-dns",
+    "browser": {
+      "mode": "oidc",
+      "dns": true,
+      "root_url": "https://root.example.test",
+      "issuer_url": "https://auth.example.test",
+      "entry_urls": [
+        "https://root.example.test/grafana/",
+        "https://child.example.test/grafana/"
+      ],
+      "storage_state": ".acceptance/provider-state.json",
+      "grafana_login": "expected-zitadel-subject"
+    }
+  }]
+}
+```
+
+`grafana_login` is the test identity's immutable Zitadel subject, not its
+display name or Grafana's automatically allocated database ID. The client ID
+is read from root tenant-info; an optional `client_id` expectation can pin a
+known existing client. Use a newly auto-provisioned Viewer test identity.
+DNS cases require both root and child URLs. IP-only cases use the external IP
+on port 443 and the Zitadel issuer on port 3443; they need only the root entry.
+All configuration/state paths are relative to the command's working directory.
+
+```sh
+PATH="$PWD/.acceptance/venv/bin:$PATH" make browser-test \
+  ACCEPTANCE_CONFIG=.acceptance/targets.json ACCEPTANCE_TARGET=fresh-dns
+```
+
+Each entry uses a new browser context. Assertions check the root redirect
+before OAuth, exact callback/client ID, S256 PKCE, a Secure/HttpOnly root-scoped
+state cookie, completion of the real callback, the expected authenticated
+Grafana identity and Viewer role. Child callbacks must return 404. Provider
+logout is checked last, since it revokes the shared provider fixture session.
+The check requires Grafana API access to return 401, then starts another normal
+OAuth login in the same browser context. It must reach the Zitadel login UI
+with a visible username or password form within 60 seconds, while Grafana API
+access remains denied. An outbound end-session request alone is not success:
+provider error pages and silent reauthentication fail acceptance. Cookies are
+not cleared or reseeded, and reauthentication is not forced with `prompt=login`.
+This fixture expects Zitadel's built-in login UI; a different login UI requires
+an equivalent credential-form assertion, not a weaker URL-only check.
+Refresh the provider state before rerunning the suite.
+
+## Optional deployment-administrator mapping
+
+Keep the default Viewer matrix above. Qualify the optional mapping separately
+with `grafana.auth.genericOAuth.deploymentAdminRole.enabled: true` and a
+Grafana image/chart containing that feature. Do not reuse local Grafana role
+assignments as evidence of automatic mapping. Start with new Grafana users or
+verify that the administrator fixture initially has Viewer permissions.
+
+Add `role_mapping_cases` to an OIDC target's `browser` object. It is an object
+with these five required keys. Each value contains `grafana_login` (the
+Zitadel subject) and a private `storage_state` file:
+
+- `administrator`: root Analytics `skylight-admin`; expects Admin.
+- `viewer`: no administrator grant; expects Viewer.
+- `other-organization`: same role/project, another organization; expects Viewer.
+- `other-project`: same role/root organization, another project; expects Viewer.
+- `revoked-administrator`: the administrator's same subject after grant removal;
+  expects Viewer on a fresh OAuth login, using a fresh provider-only session.
+
+The first four subjects must differ. A normal browser run exercises those
+four identities through root/child entry and real logout. It also checks the
+project-role scopes and always rejects server-wide GrafanaAdmin. Existing
+Grafana sessions cannot satisfy the test.
+
+After explicitly removing `skylight-admin` from the fixture's root Analytics grant,
+refresh its provider-only session and exercise the demotion case:
+
+```sh
+.acceptance/venv/bin/python tests/grafana_browser.py \
+  --config .acceptance/targets.json --target fresh-dns \
+  --role-case revoked-administrator
+```
+
+Restore the fixture grant afterward. The deployer acceptance driver can run
+these fixture operations and restore the grant even if the demotion test fails.
+The fixture setup must grant the wrong-organization/project roles explicitly;
+otherwise a Viewer result would not exercise those negative boundaries.
+
+For live Swarm CAS non-regression, use `mode: "swarm"`, `dns: true`, a CAS
+`issuer_url`, root Grafana URL and CAS-only storage state. The browser verifies
+anonymous entry reaches CAS, authenticated access succeeds, and no browser
+OIDC authorization or tenant-info request occurs. Deployer acceptance also
+checks service environment and absence of the Grafana application in IAM;
+browser observations alone cannot prove absence of server-side discovery.
+
+The full disposable deployment matrix and failure/restart/rollback driver
+live in aod-deployer's `docs/GRAFANA_OIDC_ACCEPTANCE.md`. A successful local
+assertion test is not a successful live qualification.

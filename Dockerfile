@@ -1,3 +1,11 @@
+FROM --platform=$BUILDPLATFORM gcr.io/npav-172917/3rdparty/golang:1.26.9-alpine3.23@sha256:96123126ac58e910f4dd3619a8901e2fb6d1ad84b59b1232cac7c9ea65a8f888 AS provider-builder
+ARG TARGETARCH
+WORKDIR /provider
+COPY oidc-provider/ ./
+RUN CGO_ENABLED=0 GOFIPS140=v1.0.0 GODEBUG=fips140=only go test ./...
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETARCH GOFIPS140=v1.0.0 \
+    go build -trimpath -o /grafana-oidc-provider .
+
 FROM gcr.io/npav-172917/sto-ccc-cloud9/hardened_debian:12-slim@sha256:08a4dbdd271ed3740a5a41ffcf6df118755272c0fec35aef2f61df174700c5c8
 
 ARG TARGETARCH
@@ -12,6 +20,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         adduser \
         ca-certificates \
         curl \
+        jq \
         libfontconfig \
         musl \
         sqlite3 \
@@ -60,7 +69,8 @@ VOLUME ["/var/lib/grafana", "/var/log/grafana", "/etc/grafana"]
 
 EXPOSE 3000
 
-COPY ./run.sh /run.sh
+COPY ./run.sh ./oauth-client-discovery.sh /
+COPY --from=provider-builder /grafana-oidc-provider /grafana-oidc-provider
 
 COPY provisioning /tmp/provisioning
 

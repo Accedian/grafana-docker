@@ -1,5 +1,16 @@
 # Grafana Docker image
 
+See [browser acceptance](tests/BROWSER_ACCEPTANCE.md) for the opt-in real
+Zitadel/CAS login checks. These complement the local `make test` regressions.
+
+Install local test dependencies before running `make test`:
+
+```sh
+python3 -m venv .acceptance/test-venv
+.acceptance/test-venv/bin/pip install -r tests/requirements-test.txt
+PATH="$PWD/.acceptance/test-venv/bin:$PATH" make test
+```
+
 [![CircleCI](https://circleci.com/gh/Accedian/grafana-docker.svg?style=svg)](https://circleci.com/gh/Accedian/grafana-docker)
  
 This project builds a Docker image with the latest master build of Grafana.
@@ -43,6 +54,171 @@ docker run \
 You can use your own grafana.ini file by using environment variable `GF_PATHS_CONFIG`.
 
 More information in the grafana configuration documentation: http://docs.grafana.org/installation/configuration/
+
+### Generic OAuth client discovery
+
+Standalone Generic OAuth configurations remain owned by Grafana. When no
+managed `GRAFANA_OAUTH_CLIENT_ID_DISCOVERY_*` or logout settings are supplied,
+startup leaves the configured client ID and sign-out redirect URL unchanged.
+Supplying a managed setting opts into the root discovery/logout flow; partial
+or invalid managed configurations still fail closed.
+
+The chart can enable Generic OAuth with Authorization Code and PKCE. Supply a
+public client ID directly with `grafana.auth.genericOAuth.clientId`, or resolve
+it at startup from the root tenant's existing onboarding response.
+
+Skylight-AAA prepares `pca-grafana-pkce` in the root Analytics project through
+an explicit Replicated upgrade operation. AAA startup does not provision it.
+Prepare the client with OAuth disabled, then activate OAuth only after the
+verified client is published in the root tenant metadata.
+
+With an empty `clientIdDiscovery.url`, the chart derives
+`https://<root-host>/api/v1/onboarding/tenant-info`. The optional discovery
+`host` defaults to Grafana's canonical deployment host; `application`
+defaults to `pca-grafana-pkce`. The lookup requires a Zitadel-enabled root
+tenant and exactly one named `zitadelConfig.clients` entry with nonempty
+`appId` and `clientId`. It never chooses a child tenant's client.
+
+Discovery URLs must use HTTPS in both direct and internal-nginx modes, with
+certificate verification enabled. Plaintext URLs are rejected before any
+request; curl is restricted to HTTPS and redirects are not followed.
+
+The bounded startup wait retries HTTP failures and invalid, missing, duplicate,
+or not-ready JSON responses. Each response is limited while reading to 64 KiB,
+including chunked responses; oversized data is rejected. Only the public client
+ID is used, not a credential. There is no separate client-ID API or dedicated
+discovery port. Discovery through the ordinary HTTPS proxy avoids granting
+Grafana broad access to AAA's trusted REST API. Certificate verification stays
+enabled. Configure the normal CA trust if the deployment uses a private CA.
+
+For Kubernetes deployments without public loopback routing, set
+`clientIdDiscovery.internalNginx: true`. Discovery keeps the canonical HTTPS
+URL, TLS SNI, certificate-name checks and root tenant headers, but connects to
+the same-namespace `nginx-service` on `global.clusterIPPort` (default 443).
+Set `clientIdDiscovery.tlsCASecretName` to the serving Nginx Secret when an
+additional CA is needed; only its `ca.crt` is mounted read-only. An empty optional
+bundle retains default system trust; unreadable or malformed nonempty bundles
+fail closed. Redirects are rejected. This transport applies only to client
+discovery, not browser URLs.
+OAuth-disabled and lite deployments do not mount the discovery CA or perform
+this lookup.
+
+For the remaining server-side OAuth requests, deployment tooling can set
+`grafana.auth.genericOAuth.internalProvider.enabled: true`. Token exchange
+and UserInfo then use the namespace's HTTPS `grafana-oidc-provider` Service,
+not the public issuer address. These managed URLs override `tokenUrl` and
+`apiUrl`; browser authorization, logout and callback URLs remain unchanged.
+Grafana verifies the Service certificate using only `ca.crt` from
+`internalProvider.tlsCASecretName`. TLS verification is never disabled.
+
+The image includes `/grafana-oidc-provider`, a small, separately launched TLS
+proxy for deployment tooling; normal Grafana startup does not launch it.
+The deployer supplies its internal Service certificate, optional upstream CA,
+canonical `ZITADEL_AUTHORITY` and internal `ZITADEL_ADDRESS`. An empty CA uses
+system roots for publicly trusted certificates; a nonempty malformed CA fails
+closed, and a private issuer requires an explicit trust bundle. It forwards only
+token POST and UserInfo GET requests, verifies the upstream certificate
+against the canonical DNS or IP identity, and retains that issuer authority.
+It rejects redirects and unrelated routes, strips cookies and caller-supplied
+instance headers, and never automatically repeats a code exchange. Its Go
+build uses the validated FIPS module, with TLS and route-isolation tests.
+Standalone Helm users must provide this Service before enabling the option.
+
+OAuth disabled means no discovery request and no change to the existing
+Docker Swarm CAS authentication path.
+
+Umbrella charts that omit Zitadel in a lite deployment can set
+`grafana.auth.genericOAuth.fullDeploymentOnly: true`. When
+`global.skylight_full_version` is false, the chart disables Generic OAuth and
+its client-ID lookup, leaving Grafana's local login available. This opt-in
+does not change standalone chart behavior.
+
+When endpoint overrides are empty, the chart derives the Grafana public host
+and Zitadel OAuth endpoints from the global deployment, DNS, external IP, and
+authentication-port values. Explicit HTTPS endpoint values take precedence for
+deployments with nonstandard routing.
+
+Set `grafana.publicOrigin` for a nonstandard Grafana hostname or HTTPS port,
+for example `https://grafana.example.test:8443`. It controls the browser root
+URL and default logout return URI without changing the deployment root host
+used to discover AAA's client. Origins must have no path, credentials, query
+or fragment and ports must be in the range 1–65535. Configure external routing
+and TLS separately. An umbrella chart can instead supply these browser-only
+settings through `grafana.publicOriginConfigMap`; discovery remains unchanged.
+Explicit origins are always validated. Deployment-derived placeholders may
+render while OAuth is disabled or gated out in lite installations, or when a
+parent-origin ConfigMap supplies the browser settings. Without an external
+override, direct OAuth activation validates the derived HTTPS browser origin.
+The installer must validate the actual origin supplied through the ConfigMap.
+This rendering exemption does not make unresolved discovery or issuer settings
+usable at runtime; those settings still need valid deployment values.
+
+Grafana 12.1 does not support Generic OAuth ID-token signature validation. To
+avoid consuming unverified ID-token claims, the chart configures the supported
+`id_token_attribute_name` setting with a field that Zitadel does not return.
+Grafana therefore resolves the user's identity through Zitadel's authenticated
+UserInfo endpoint using the access token obtained by the authorization-code
+exchange. Helm rendering requires the authorization, token, and UserInfo
+endpoints to use HTTPS.
+
+No OAuth client secret is used or accepted by this flow. Keep Basic auth
+enabled for internal bootstrap and emergency administration. With OAuth
+auto-login enabled, append `?disableAutoLogin=true` to `/grafana/login` to
+reach the local login form.
+
+### Optional deployment-administrator role mapping
+
+The default remains local Grafana authorization with Viewer for new users.
+Set `grafana.auth.genericOAuth.deploymentAdminRole.enabled: true` to map
+root Analytics `skylight-admin` grants to Grafana organization Admin. At
+startup, the managed flow resolves numeric organization/project IDs from the
+same HTTPS root tenant-info response as the client ID, even with a configured
+static client ID. Missing or ambiguous identities fail bounded discovery.
+
+The image requests project-scoped roles and evaluates the exact project,
+role and root organization keys from authenticated UserInfo. Other tenants,
+projects, roles and missing claims remain Viewer. No display-name, email or
+legacy unscoped-role matching grants administration. ID-token claims remain
+disabled, and this option never grants server-wide GrafanaAdmin privileges.
+It does not alter the exporter service account.
+
+Roles synchronize on OAuth login, including promotion and demotion of
+existing users. Removing a grant does not invalidate existing Grafana sessions;
+terminate them separately when immediate revocation is required. Turning this
+option off resumes local role management; it does not undo prior promotions.
+Review existing Admin memberships before reverting to the default mode.
+See `tests/BROWSER_ACCEPTANCE.md` for the live role and revocation matrix.
+
+The chart derives Zitadel's HTTPS end-session endpoint and the exact registered
+post-logout return URI from the same deployment values. Exact
+`endSessionUrl` and `postLogoutRedirectUrl` overrides remain available for
+nonstandard routing. At startup, Grafana combines those URLs with the validated
+public client ID so signing out terminates the Zitadel browser session before
+automatic login can run again.
+
+Generic OAuth does not use Grafana Auth Proxy. The reverse proxy routes the
+browser to Grafana, but Zitadel and Grafana establish the user identity through
+the OAuth authorization-code exchange. When Generic OAuth is enabled, the chart
+explicitly disables Auth Proxy rather than trusting an identity header.
+
+When Generic OAuth is active, the chart also disables anonymous access,
+regardless of `grafana.auth.anonymous.enabled`, so dashboards cannot bypass
+login. When OAuth is inactive, including gated lite deployments, the configured
+anonymous setting is preserved.
+
+### Optional ingress NetworkPolicy
+
+Set `grafana.networkPolicy.enabled: true` and configure
+`grafana.networkPolicy.trustedIngress` with the Kubernetes peers that need
+access to Grafana. The chart rejects an enabled policy with no peers. The
+policy permits ingress from those peers to Grafana's HTTP port; it does not
+authorize identity headers or replace Grafana authentication.
+
+The chart also rejects empty or malformed peer objects. CIDR syntax and
+`ipBlock.except` subnet validation belong to the Kubernetes API, not Helm.
+The chart passes configured ranges and exceptions through unchanged; invalid
+CIDRs or exceptions fail API validation during installation or upgrade rather
+than `helm template`.
 
 ## Grafana container with persistent storage (recommended)
 
@@ -119,3 +295,22 @@ Supported variables:
 ### v3.1.1
 * Make it possible to install specific plugin version https://github.com/grafana/grafana-docker/issues/59#issuecomment-260584026
 
+# Ordered OAuth activation
+
+An installer can set `grafana.auth.genericOAuth.activationConfigMap` to the
+name of a verified activation profile managed by deployment tooling. With OAuth
+requested, Grafana starts in protected local-login mode until verified values
+are published to that ConfigMap. The main Skylight chart creates it empty and
+publishes those values later in the same release, after verifying the root
+client. Its environment entries override the baseline configuration. Reloader
+must restart Grafana when the profile changes.
+Keep anonymous access disabled in the baseline as well as in the active profile.
+An existing profile survives an unsuccessful preparation or verification step.
+Disabled OAuth and analytics-lite do not consume an activation profile.
+The staged baseline can render unresolved deployment placeholders; explicitly
+supplied origins remain validated. The installer must validate the browser
+origin before publishing the activation profile.
+
+The staged Helm test inspects the actual ConfigMap and StatefulSet through
+Helm's JSON conversion and Python's standard library, with site packages
+disabled. Regular chart tests do not require PyYAML.
