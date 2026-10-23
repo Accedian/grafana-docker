@@ -52,12 +52,28 @@
   ],
   "panels": [
     {
+      "id": 156,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Kubernetes dashboard overview\nThis dashboard provides a broad Kubernetes resource overview across nodes, namespaces, pods, and microservices. It includes CPU, memory, storage, network, and workload detail with selectors for the relevant scope. Use it to spot an anomaly at a high level, then follow the selected node, namespace, pod, or container panels to narrow the investigation."
+      }
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 54,
       "panels": [],
@@ -97,7 +113,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 1
+        "y": 5
       },
       "id": 44,
       "options": {
@@ -202,7 +218,7 @@
         "h": 4,
         "w": 4,
         "x": 4,
-        "y": 1
+        "y": 5
       },
       "id": 45,
       "options": {
@@ -303,7 +319,7 @@
         "h": 4,
         "w": 3,
         "x": 8,
-        "y": 1
+        "y": 5
       },
       "id": 74,
       "options": {
@@ -475,7 +491,7 @@
         "h": 8,
         "w": 5,
         "x": 11,
-        "y": 1
+        "y": 5
       },
       "id": 51,
       "options": {
@@ -663,7 +679,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 1
+        "y": 5
       },
       "id": 32,
       "options": {
@@ -748,7 +764,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 5
+        "y": 9
       },
       "id": 71,
       "options": {
@@ -851,7 +867,7 @@
         "h": 4,
         "w": 4,
         "x": 4,
-        "y": 5
+        "y": 9
       },
       "id": 72,
       "options": {
@@ -1006,7 +1022,7 @@
         "h": 4,
         "w": 3,
         "x": 8,
-        "y": 5
+        "y": 9
       },
       "id": 73,
       "options": {
@@ -1108,7 +1124,7 @@
         "h": 2,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 13
       },
       "id": 88,
       "maxPerRow": 2,
@@ -1295,7 +1311,7 @@
         "h": 5,
         "w": 8,
         "x": 0,
-        "y": 11
+        "y": 15
       },
       "id": 79,
       "options": {
@@ -1438,7 +1454,7 @@
         "h": 5,
         "w": 8,
         "x": 8,
-        "y": 11
+        "y": 15
       },
       "id": 80,
       "options": {
@@ -1609,7 +1625,7 @@
         "h": 5,
         "w": 8,
         "x": 16,
-        "y": 11
+        "y": 15
       },
       "id": 81,
       "options": {
@@ -1740,7 +1756,7 @@
         "h": 6,
         "w": 8,
         "x": 0,
-        "y": 16
+        "y": 20
       },
       "id": 75,
       "options": {
@@ -1839,7 +1855,7 @@
         "h": 6,
         "w": 8,
         "x": 8,
-        "y": 16
+        "y": 20
       },
       "id": 76,
       "options": {
@@ -1952,7 +1968,7 @@
         "h": 6,
         "w": 8,
         "x": 16,
-        "y": 16
+        "y": 20
       },
       "id": 78,
       "options": {
@@ -2335,7 +2351,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 26
       },
       "id": 52,
       "options": {
@@ -2871,7 +2887,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 33
+        "y": 37
       },
       "id": 92,
       "options": {
@@ -3048,7 +3064,7 @@
         "h": 8,
         "w": 9,
         "x": 6,
-        "y": 33
+        "y": 37
       },
       "id": 86,
       "options": {
@@ -3153,7 +3169,7 @@
         "h": 8,
         "w": 9,
         "x": 15,
-        "y": 33
+        "y": 37
       },
       "id": 85,
       "options": {
@@ -3199,7 +3215,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 45
       },
       "id": 49,
       "panels": [],
@@ -3634,7 +3650,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 46
       },
       "id": 47,
       "options": {
@@ -3821,7 +3837,7 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(sum(irate(container_network_receive_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}[2m])) by (pod)* on(pod) group_right kube_pod_container_info{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",namespace=~\"$NameSpace\",container =~\"$Container\"}) by(pod) *8",
+          "expr": "sum(sum(irate(container_network_receive_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}[2m])) by (namespace,pod)* on(namespace,pod) group_right kube_pod_container_info{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",namespace=~\"$NameSpace\",container =~\"$Container\"}) by(namespace,pod) *8",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -3833,7 +3849,7 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(sum(irate(container_network_transmit_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}[2m])) by (pod)* on(pod) group_right kube_pod_container_info{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",namespace=~\"$NameSpace\",container =~\"$Container\"}) by(pod) *8",
+          "expr": "sum(sum(irate(container_network_transmit_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}[2m])) by (namespace,pod)* on(namespace,pod) group_right kube_pod_container_info{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",namespace=~\"$NameSpace\",container =~\"$Container\"}) by(namespace,pod) *8",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -4096,7 +4112,7 @@
         "h": 9,
         "w": 8,
         "x": 0,
-        "y": 50
+        "y": 54
       },
       "id": 58,
       "options": {
@@ -4122,12 +4138,12 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "exemplar": true,
-          "expr": "max(irate(container_cpu_usage_seconds_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",container =~\"$Container\",container !=\"\",container!=\"POD\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}[2m])) by (container, pod) / (max(container_spec_cpu_quota{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",container =~\"$Container\",container !=\"\",container!=\"POD\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}/100000) by (container, pod)) * 100",
+          "expr": "max(irate(container_cpu_usage_seconds_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",container =~\"$Container\",container !=\"\",container!=\"POD\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}[2m])) by (container, namespace, pod) / (max(container_spec_cpu_quota{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",container =~\"$Container\",container !=\"\",container!=\"POD\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}/100000) by (container, namespace, pod)) * 100",
           "hide": false,
           "instant": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{ pod }}",
+          "legendFormat": "{{ namespace }}/{{ pod }}",
           "metric": "container_cpu",
           "refId": "A",
           "step": 10
@@ -4199,7 +4215,7 @@
         "h": 9,
         "w": 8,
         "x": 8,
-        "y": 50
+        "y": 54
       },
       "id": 27,
       "options": {
@@ -4225,10 +4241,10 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "exemplar": false,
-          "expr": "max (container_memory_working_set_bytes{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",container =~\"$Container\",container !=\"\",container!=\"POD\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}) by (container, pod)/ max(container_spec_memory_limit_bytes{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",container =~\"$Container\",container !=\"\",container!=\"POD\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}) by (container, pod) * 100",
+          "expr": "max (container_memory_working_set_bytes{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",container =~\"$Container\",container !=\"\",container!=\"POD\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}) by (container, namespace, pod)/ max(container_spec_memory_limit_bytes{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",container =~\"$Container\",container !=\"\",container!=\"POD\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}) by (container, namespace, pod) * 100",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "WSS：{{ pod }}",
+          "legendFormat": "WSS：{{ namespace }}/{{ pod }}",
           "metric": "container_memory_usage:sort_desc",
           "range": true,
           "refId": "A",
@@ -4238,10 +4254,10 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "exemplar": false,
-          "expr": "max (container_memory_rss{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",container =~\"$Container\",container !=\"\",container!=\"POD\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}) by (container, pod)/ max(container_spec_memory_limit_bytes{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",container =~\"$Container\",container !=\"\",container!=\"POD\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}) by (container, pod) * 100",
+          "expr": "max (container_memory_rss{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",container =~\"$Container\",container !=\"\",container!=\"POD\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}) by (container, namespace, pod)/ max(container_spec_memory_limit_bytes{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",container =~\"$Container\",container !=\"\",container!=\"POD\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}) by (container, namespace, pod) * 100",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "RSS：{{ pod }}",
+          "legendFormat": "RSS：{{ namespace }}/{{ pod }}",
           "metric": "container_memory_usage:sort_desc",
           "range": true,
           "refId": "B",
@@ -4256,7 +4272,7 @@
           "instant": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "Heap：{{ pod }}",
+          "legendFormat": "Heap：{{ namespace }}/{{ pod }}",
           "metric": "container_memory_usage:sort_desc",
           "refId": "C",
           "step": 10
@@ -4328,7 +4344,7 @@
         "h": 9,
         "w": 8,
         "x": 16,
-        "y": 50
+        "y": 54
       },
       "id": 77,
       "options": {
@@ -4354,11 +4370,11 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "exemplar": false,
-          "expr": "max(max(irate(container_network_receive_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}[2m])) by (pod)* on(pod) group_right kube_pod_container_info{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",namespace=~\"$NameSpace\",container =~\"$Container\"}) by(pod) *8",
+          "expr": "max(max(irate(container_network_receive_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}[2m])) by (namespace,pod)* on(namespace,pod) group_right kube_pod_container_info{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",namespace=~\"$NameSpace\",container =~\"$Container\"}) by(namespace,pod) *8",
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "Inflow:{{ pod}}",
+          "legendFormat": "Inflow:{{ namespace }}/{{ pod}}",
           "metric": "network",
           "range": true,
           "refId": "A",
@@ -4368,10 +4384,10 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "exemplar": false,
-          "expr": "max(max(irate(container_network_transmit_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}[2m])) by (pod)* on(pod) group_right kube_pod_container_info{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",namespace=~\"$NameSpace\",container =~\"$Container\"}) by(pod) *8",
+          "expr": "max(max(irate(container_network_transmit_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}[2m])) by (namespace,pod)* on(namespace,pod) group_right kube_pod_container_info{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",namespace=~\"$NameSpace\",container =~\"$Container\"}) by(namespace,pod) *8",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "Outflow:{{ pod}}",
+          "legendFormat": "Outflow:{{ namespace }}/{{ pod}}",
           "metric": "network",
           "range": true,
           "refId": "B",
@@ -4380,7 +4396,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(sum(irate(container_network_receive_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",image!=\"\",name=~\"^k8s_.*\",node=~\"^$Node$\",namespace=~\"$NameSpace\",pod=~\".*$Container.*\"}[2m])) by (pod)* on(pod) group_right kube_pod_container_info) by(pod) *8",
+          "expr": "sum(sum(irate(container_network_receive_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",image!=\"\",name=~\"^k8s_.*\",node=~\"^$Node$\",namespace=~\"$NameSpace\",pod=~\".*$Container.*\"}[2m])) by (namespace,pod)* on(namespace,pod) group_right kube_pod_container_info{origin_prometheus=~\"$origin_prometheus\",namespace=~\"$NameSpace\"}) by(namespace,pod) *8",
           "hide": true,
           "interval": "",
           "intervalFactor": 1,
@@ -4393,7 +4409,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(sum(irate(container_network_transmit_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",image!=\"\",name=~\"^k8s_.*\",node=~\"^$Node$\",namespace=~\"$NameSpace\",pod=~\".*$Container.*\"}[2m])) by (pod)* on(pod) group_right kube_pod_container_info) by(pod) *8",
+          "expr": "sum(sum(irate(container_network_transmit_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",image!=\"\",name=~\"^k8s_.*\",node=~\"^$Node$\",namespace=~\"$NameSpace\",pod=~\".*$Container.*\"}[2m])) by (namespace,pod)* on(namespace,pod) group_right kube_pod_container_info{origin_prometheus=~\"$origin_prometheus\",namespace=~\"$NameSpace\"}) by(namespace,pod) *8",
           "hide": true,
           "interval": "",
           "intervalFactor": 1,
@@ -4486,7 +4502,7 @@
         "h": 9,
         "w": 8,
         "x": 0,
-        "y": 59
+        "y": 63
       },
       "id": 82,
       "options": {
@@ -4621,7 +4637,7 @@
         "h": 9,
         "w": 8,
         "x": 8,
-        "y": 59
+        "y": 63
       },
       "id": 84,
       "options": {
@@ -4739,7 +4755,7 @@
         "h": 9,
         "w": 8,
         "x": 16,
-        "y": 59
+        "y": 63
       },
       "id": 83,
       "options": {
@@ -4783,7 +4799,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 68
+        "y": 72
       },
       "id": 61,
       "panels": [
@@ -5665,7 +5681,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(sum(irate(container_network_receive_bytes_total{origin_prometheus=~\"$origin_prometheus\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}[2m])) by (pod)* on(pod) group_right kube_pod_container_info{origin_prometheus=~\"$origin_prometheus\",namespace=~\"$NameSpace\",container =~\"$Container\"}) by(container) *8",
+              "expr": "sum(sum(irate(container_network_receive_bytes_total{origin_prometheus=~\"$origin_prometheus\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}[2m])) by (namespace,pod)* on(namespace,pod) group_right kube_pod_container_info{origin_prometheus=~\"$origin_prometheus\",namespace=~\"$NameSpace\",container =~\"$Container\"}) by(container) *8",
               "hide": false,
               "interval": "",
               "intervalFactor": 1,
@@ -5679,7 +5695,7 @@
               "datasource": "Prometheus",
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(sum(irate(container_network_transmit_bytes_total{origin_prometheus=~\"$origin_prometheus\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}[2m])) by (pod)* on(pod) group_right kube_pod_container_info{origin_prometheus=~\"$origin_prometheus\",namespace=~\"$NameSpace\",container =~\"$Container\"}) by(container) *8",
+              "expr": "sum(sum(irate(container_network_transmit_bytes_total{origin_prometheus=~\"$origin_prometheus\",node=~\"^$Node$\",namespace=~\"$NameSpace\"}[2m])) by (namespace,pod)* on(namespace,pod) group_right kube_pod_container_info{origin_prometheus=~\"$origin_prometheus\",namespace=~\"$NameSpace\",container =~\"$Container\"}) by(container) *8",
               "interval": "",
               "intervalFactor": 1,
               "legendFormat": "Outflow:{{ container }}",
@@ -5690,22 +5706,22 @@
             },
             {
               "datasource": "Prometheus",
-              "expr": "sum (rate (container_network_receive_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",image!=\"\",name=~\"^k8s_.*\",node=~\"^$Node$\",namespace=~\"$NameSpace\",pod=~\".*$Container.*\"}[2m])) by (pod)",
+              "expr": "sum (rate (container_network_receive_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",image!=\"\",name=~\"^k8s_.*\",node=~\"^$Node$\",namespace=~\"$NameSpace\",pod=~\".*$Container.*\"}[2m])) by (namespace,pod)",
               "hide": true,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "-> {{ pod }}",
+              "legendFormat": "-> {{ namespace }}/{{ pod }}",
               "metric": "network",
               "refId": "C",
               "step": 10
             },
             {
               "datasource": "Prometheus",
-              "expr": "- sum (rate (container_network_transmit_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",image!=\"\",name=~\"^k8s_.*\",node=~\"^$Node$\",namespace=~\"$NameSpace\",pod=~\".*$Container.*\"}[2m])) by (pod)",
+              "expr": "- sum (rate (container_network_transmit_bytes_total{origin_prometheus=~\"$origin_prometheus\",pod=~\"$Pod\",image!=\"\",name=~\"^k8s_.*\",node=~\"^$Node$\",namespace=~\"$NameSpace\",pod=~\".*$Container.*\"}[2m])) by (namespace,pod)",
               "hide": true,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "<- {{ pod }}",
+              "legendFormat": "<- {{ namespace }}/{{ pod }}",
               "metric": "network",
               "refId": "D",
               "step": 10

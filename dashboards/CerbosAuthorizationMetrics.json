@@ -25,6 +25,22 @@
     "links": [],
     "panels": [
       {
+        "id": 4,
+        "type": "text",
+        "title": "About this dashboard",
+        "transparent": true,
+        "gridPos": {
+          "h": 4,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "options": {
+          "mode": "markdown",
+          "content": "# Cerbos authorization metrics\nUse this dashboard to monitor authorization decisions made by Cerbos in this deployment. It shows request rate by service, decision results, and the resources most often denied. Investigate an unexpected access problem by comparing the affected service’s request rate and denial results with the denied-resource panel."
+        }
+      },
+      {
         "datasource": "Prometheus",
         "fieldConfig": {
           "defaults": {
@@ -86,7 +102,7 @@
           "h": 10,
           "w": 12,
           "x": 0,
-          "y": 0
+          "y": 4
         },
         "id": 1,
         "options": {
@@ -181,7 +197,7 @@
           "h": 10,
           "w": 12,
           "x": 12,
-          "y": 0
+          "y": 4
         },
         "id": 2,
         "options": {
@@ -262,7 +278,7 @@
           "h": 10,
           "w": 24,
           "x": 0,
-          "y": 10
+          "y": 14
         },
         "id": 3,
         "options": {

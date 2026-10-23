@@ -20,6 +20,22 @@
   "links": [],
   "panels": [
     {
+      "id": 66,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Druid\nUse this dashboard for detailed diagnosis of the local Druid data platform. It covers service availability, ingestion and query activity, JVM and process resources, segment and datasource behavior, and coordinator or historical-node health. Start with the affected service or query signal, then use the component-specific panels to distinguish data availability, ingestion, query performance, and capacity issues."
+      }
+    },
+    {
       "aliasColors": {},
       "bars": true,
       "dashLength": 10,
@@ -30,7 +46,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 65,
       "legend": {
@@ -147,7 +163,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 12
       },
       "id": 63,
       "panels": [],
@@ -165,7 +181,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 13
       },
       "id": 58,
       "legend": {
@@ -257,7 +273,7 @@
         "h": 4,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 21
       },
       "id": 59,
       "legend": {
@@ -344,7 +360,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 25
       },
       "id": 51,
       "panels": [
@@ -1481,7 +1497,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 26
       },
       "id": 52,
       "panels": [
@@ -2806,7 +2822,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 27
       },
       "id": 53,
       "panels": [],
@@ -2825,7 +2841,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 24
+        "y": 28
       },
       "id": 20,
       "legend": {
@@ -2910,7 +2926,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 24
+        "y": 28
       },
       "id": 19,
       "legend": {
@@ -2995,7 +3011,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 24
+        "y": 28
       },
       "id": 45,
       "legend": {
@@ -3080,7 +3096,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 31
+        "y": 35
       },
       "id": 46,
       "legend": {
@@ -3173,7 +3189,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 31
+        "y": 35
       },
       "id": 49,
       "legend": {
@@ -3258,7 +3274,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 31
+        "y": 35
       },
       "id": 50,
       "legend": {
@@ -3338,7 +3354,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 42
       },
       "id": 54,
       "panels": [
@@ -3438,7 +3454,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 43
       },
       "id": 55,
       "panels": [],
@@ -3457,7 +3473,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 40
+        "y": 44
       },
       "id": 1,
       "legend": {
@@ -3558,7 +3574,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 40
+        "y": 44
       },
       "id": 2,
       "legend": {
@@ -3657,7 +3673,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 40
+        "y": 44
       },
       "id": 3,
       "legend": {
@@ -3758,7 +3774,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 47
+        "y": 51
       },
       "id": 4,
       "legend": {
@@ -3867,7 +3883,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 47
+        "y": 51
       },
       "id": 5,
       "legend": {
@@ -3963,7 +3979,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 54
+        "y": 58
       },
       "id": 56,
       "panels": [],
@@ -3982,7 +3998,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 55
+        "y": 59
       },
       "id": 6,
       "legend": {
@@ -4069,7 +4085,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 55
+        "y": 59
       },
       "id": 7,
       "legend": {
@@ -4155,7 +4171,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 55
+        "y": 59
       },
       "id": 8,
       "legend": {
@@ -4241,7 +4257,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 62
+        "y": 66
       },
       "id": 9,
       "legend": {
@@ -4336,7 +4352,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 62
+        "y": 66
       },
       "id": 10,
       "legend": {

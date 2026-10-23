@@ -72,12 +72,28 @@
   "liveNow": false,
   "panels": [
     {
+      "id": 36,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Ingestion\nUse this dashboard to investigate end-to-end data ingestion in this deployment. It brings together ingestion volume, processing rates, backlog and delay indicators, and supporting service activity. Start with the signal that changed, then compare input, output, and error or lag panels to determine whether data is delayed upstream, queued in the pipeline, or failing during processing."
+      }
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 34,
       "panels": [],
@@ -147,7 +163,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 1
+        "y": 5
       },
       "id": 29,
       "options": {
@@ -281,7 +297,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 1
+        "y": 5
       },
       "id": 30,
       "options": {
@@ -380,7 +396,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 9
+        "y": 13
       },
       "id": 32,
       "options": {
@@ -479,7 +495,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 9
+        "y": 13
       },
       "id": 33,
       "options": {
@@ -578,7 +594,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 17
+        "y": 21
       },
       "id": 31,
       "options": {
@@ -728,7 +744,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 17
+        "y": 21
       },
       "id": 35,
       "options": {
@@ -774,7 +790,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 29
       },
       "id": 13,
       "panels": [
@@ -1123,7 +1139,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 30
       },
       "id": 4,
       "panels": [

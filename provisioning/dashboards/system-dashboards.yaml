@@ -9,5 +9,27 @@ providers:
   disableDeletion: false
   editable: true
   options:
-    path: /var/lib/grafana/dashboards
+    path: /var/lib/grafana/dashboards/general
     foldersFromFilesStructure: true
+
+- name: 'customer-k8s'
+  orgId: 1
+  folder: 'Customer (k8s)'
+  folderUid: 'pca-customer-k8s'
+  type: file
+  allowUiUpdates: true
+  disableDeletion: false
+  editable: true
+  options:
+    path: /var/lib/grafana/dashboards/Customer (k8s)
+
+- name: 'customer-swarm'
+  orgId: 1
+  folder: 'Customer (swarm)'
+  folderUid: 'pca-customer-swarm'
+  type: file
+  allowUiUpdates: true
+  disableDeletion: false
+  editable: true
+  options:
+    path: /var/lib/grafana/dashboards/Customer (swarm)

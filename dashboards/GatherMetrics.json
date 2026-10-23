@@ -26,6 +26,22 @@
   "liveNow": false,
   "panels": [
     {
+      "id": 22,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# GatherMetrics\nThis dashboard monitors the GatherMetrics collection service for this deployment. It shows the service’s workload and operational signals so operators can identify reduced collection throughput, delivery delays, or processing failures. Use it with the selected time range and available labels to compare normal collection behavior with the period in which data became missing or delayed."
+      }
+    },
+    {
       "datasource": "Prometheus",
       "description": "Number of violations of ingestion profile & dictionary validation rules",
       "fieldConfig": {
@@ -86,7 +102,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 20,
       "options": {
@@ -175,7 +191,7 @@
         "h": 8,
         "w": 11,
         "x": 0,
-        "y": 8
+        "y": 12
       },
       "id": 18,
       "options": {
@@ -251,7 +267,7 @@
         "h": 10,
         "w": 12,
         "x": 11,
-        "y": 8
+        "y": 12
       },
       "hiddenSeries": false,
       "id": 12,
@@ -338,7 +354,7 @@
         "h": 10,
         "w": 11,
         "x": 0,
-        "y": 16
+        "y": 20
       },
       "hiddenSeries": false,
       "id": 8,
@@ -421,7 +437,7 @@
         "h": 10,
         "w": 11,
         "x": 11,
-        "y": 18
+        "y": 22
       },
       "hiddenSeries": false,
       "id": 21,
@@ -504,7 +520,7 @@
         "h": 9,
         "w": 11,
         "x": 0,
-        "y": 26
+        "y": 30
       },
       "hiddenSeries": false,
       "id": 16,
@@ -584,7 +600,7 @@
         "h": 9,
         "w": 12,
         "x": 11,
-        "y": 28
+        "y": 32
       },
       "hiddenSeries": false,
       "id": 14,
@@ -671,7 +687,7 @@
         "h": 9,
         "w": 11,
         "x": 0,
-        "y": 35
+        "y": 39
       },
       "hiddenSeries": false,
       "id": 10,
@@ -754,7 +770,7 @@
         "h": 9,
         "w": 12,
         "x": 11,
-        "y": 37
+        "y": 41
       },
       "hiddenSeries": false,
       "id": 4,
@@ -875,7 +891,7 @@
         "h": 9,
         "w": 11,
         "x": 0,
-        "y": 44
+        "y": 48
       },
       "hiddenSeries": false,
       "id": 2,
@@ -964,7 +980,7 @@
         "h": 9,
         "w": 12,
         "x": 11,
-        "y": 46
+        "y": 50
       },
       "hiddenSeries": false,
       "id": 6,

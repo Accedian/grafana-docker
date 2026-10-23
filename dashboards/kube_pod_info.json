@@ -22,6 +22,22 @@
   "links": [],
   "panels": [
     {
+      "id": 61,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Kubernetes pod information\nUse this dashboard to inspect Kubernetes pod inventory and status information for this deployment. It helps operators locate pods by namespace, node, workload, or lifecycle state before moving to the resource and networking dashboards for performance diagnosis. Filter to the affected scope when investigating a missing, restarting, or unexpectedly scheduled pod."
+      }
+    },
+    {
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -214,7 +230,7 @@
         "h": 17,
         "w": 16,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 9,
       "options": {
@@ -314,7 +330,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 21
       },
       "id": 8,
       "panels": [],
@@ -491,7 +507,7 @@
         "h": 15,
         "w": 16,
         "x": 0,
-        "y": 18
+        "y": 22
       },
       "id": 2,
       "options": {
@@ -781,7 +797,7 @@
         "h": 15,
         "w": 16,
         "x": 0,
-        "y": 33
+        "y": 37
       },
       "id": 12,
       "options": {
@@ -930,7 +946,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 48
+        "y": 52
       },
       "id": 6,
       "maxPerRow": 12,
@@ -1042,7 +1058,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 59
+        "y": 63
       },
       "id": 14,
       "options": {
@@ -1198,7 +1214,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 69
+        "y": 73
       },
       "id": 11,
       "maxPerRow": 12,
@@ -1378,7 +1394,7 @@
         "h": 16,
         "w": 12,
         "x": 0,
-        "y": 102
+        "y": 106
       },
       "id": 3,
       "options": {
@@ -1513,7 +1529,7 @@
         "h": 16,
         "w": 12,
         "x": 12,
-        "y": 102
+        "y": 106
       },
       "id": 5,
       "options": {

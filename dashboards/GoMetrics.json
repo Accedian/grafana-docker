@@ -20,6 +20,22 @@
   "links": [],
   "panels": [
     {
+      "id": 15,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Go metrics\nThis dashboard monitors Go runtime behavior for the selected service. It shows goroutines, garbage collection, heap size and objects, allocations and releases, and stack memory. Use it to identify increasing memory use, excess goroutines, or garbage-collection pressure that may explain service latency or instability."
+      }
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -30,7 +46,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 2,
       "legend": {
@@ -112,7 +128,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 9
+        "y": 13
       },
       "id": 8,
       "legend": {
@@ -191,7 +207,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 9
+        "y": 13
       },
       "id": 10,
       "legend": {
@@ -270,7 +286,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 18
+        "y": 22
       },
       "id": 4,
       "legend": {
@@ -368,7 +384,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 18
+        "y": 22
       },
       "id": 6,
       "legend": {
@@ -450,7 +466,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 31
       },
       "id": 14,
       "legend": {
@@ -535,7 +551,7 @@
         "h": 9,
         "w": 12,
         "x": 5,
-        "y": 36
+        "y": 40
       },
       "id": 12,
       "legend": {

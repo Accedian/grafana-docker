@@ -19,6 +19,22 @@
   "links": [],
   "panels": [
     {
+      "id": 31,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Alerts processing\nUse this dashboard to understand alert-processing volume and failures across the local deployment. It shows alert errors, input and output lag, MQTT and Kafka traffic, gathered alert types, checkpointing, divergence, and Spark-generated alerts by tenant and policy. Compare rates and error panels over the same period to locate where alerts are delayed, dropped, or failing to parse."
+      }
+    },
+    {
       "cacheTimeout": null,
       "colorBackground": true,
       "colorValue": false,
@@ -40,7 +56,7 @@
         "h": 4,
         "w": 3,
         "x": 8,
-        "y": 0
+        "y": 4
       },
       "id": 8,
       "interval": null,
@@ -122,7 +138,7 @@
         "h": 4,
         "w": 3,
         "x": 11,
-        "y": 0
+        "y": 4
       },
       "hideTimeOverride": false,
       "id": 30,
@@ -206,7 +222,7 @@
         "h": 4,
         "w": 3,
         "x": 14,
-        "y": 0
+        "y": 4
       },
       "hideTimeOverride": false,
       "id": 25,
@@ -292,7 +308,7 @@
         "h": 4,
         "w": 3,
         "x": 17,
-        "y": 0
+        "y": 4
       },
       "hideTimeOverride": false,
       "id": 6,
@@ -376,7 +392,7 @@
         "h": 4,
         "w": 3,
         "x": 20,
-        "y": 0
+        "y": 4
       },
       "hideTimeOverride": false,
       "id": 14,
@@ -460,7 +476,7 @@
         "h": 4,
         "w": 3,
         "x": 8,
-        "y": 4
+        "y": 8
       },
       "hideTimeOverride": false,
       "id": 15,
@@ -544,7 +560,7 @@
         "h": 4,
         "w": 3,
         "x": 11,
-        "y": 4
+        "y": 8
       },
       "hideTimeOverride": false,
       "id": 18,
@@ -628,7 +644,7 @@
         "h": 4,
         "w": 3,
         "x": 14,
-        "y": 4
+        "y": 8
       },
       "hideTimeOverride": false,
       "id": 13,
@@ -712,7 +728,7 @@
         "h": 4,
         "w": 3,
         "x": 17,
-        "y": 4
+        "y": 8
       },
       "hideTimeOverride": false,
       "id": 17,
@@ -796,7 +812,7 @@
         "h": 4,
         "w": 3,
         "x": 20,
-        "y": 4
+        "y": 8
       },
       "hideTimeOverride": false,
       "id": 19,
@@ -869,7 +885,7 @@
         "h": 13,
         "w": 13,
         "x": 0,
-        "y": 8
+        "y": 12
       },
       "id": 20,
       "legend": {
@@ -979,7 +995,7 @@
         "h": 13,
         "w": 11,
         "x": 13,
-        "y": 8
+        "y": 12
       },
       "id": 2,
       "legend": {
@@ -1075,7 +1091,7 @@
         "h": 13,
         "w": 13,
         "x": 0,
-        "y": 21
+        "y": 25
       },
       "id": 21,
       "legend": {
@@ -1171,7 +1187,7 @@
         "h": 13,
         "w": 11,
         "x": 13,
-        "y": 21
+        "y": 25
       },
       "id": 12,
       "legend": {
@@ -1279,7 +1295,7 @@
         "h": 8,
         "w": 13,
         "x": 0,
-        "y": 34
+        "y": 38
       },
       "id": 22,
       "legend": {
@@ -1401,7 +1417,7 @@
         "h": 8,
         "w": 11,
         "x": 13,
-        "y": 34
+        "y": 38
       },
       "id": 10,
       "legend": {
@@ -1497,7 +1513,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 42
+        "y": 46
       },
       "id": 24,
       "legend": {
@@ -1590,7 +1606,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 42
+        "y": 46
       },
       "id": 26,
       "legend": {
@@ -1683,7 +1699,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 51
+        "y": 55
       },
       "id": 28,
       "legend": {
@@ -1769,7 +1785,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 51
+        "y": 55
       },
       "id": 27,
       "legend": {
@@ -1889,7 +1905,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 60
+        "y": 64
       },
       "id": 4,
       "legend": {
@@ -2001,7 +2017,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 60
+        "y": 64
       },
       "id": 29,
       "legend": {

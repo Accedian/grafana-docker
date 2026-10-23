@@ -20,6 +20,22 @@
   "links": [],
   "panels": [
     {
+      "id": 20,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Server certificates\nUse this dashboard to track the expiry horizon of monitored server certificates. It shows remaining days and expiry dates so operators can prioritize renewals before a service is affected. Review certificates with the shortest remaining lifetime first; missing data may indicate that a certificate is not covered by the configured exporter rather than a valid certificate state."
+      }
+    },
+    {
       "cacheTimeout": null,
       "colorBackground": true,
       "colorValue": false,
@@ -41,7 +57,7 @@
         "h": 5,
         "w": 4,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 6,
       "interval": null,
@@ -129,7 +145,7 @@
         "h": 5,
         "w": 8,
         "x": 4,
-        "y": 0
+        "y": 4
       },
       "id": 2,
       "interval": null,
@@ -243,7 +259,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 5
+        "y": 9
       },
       "hiddenSeries": false,
       "id": 4,

@@ -20,6 +20,22 @@
   "liveNow": false,
   "panels": [
     {
+      "id": 41,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Alert service metrics\nThis dashboard monitors the alert service’s availability and message-processing path in this deployment. Key signals include service instances, Kafka consumption, MQTT publishing and errors, active alerts, API latency, alert rates, and consumed-versus-published divergence. Use it to identify whether an alerting issue originates with ingestion, processing, publishing, or the service runtime."
+      }
+    },
+    {
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
@@ -48,7 +64,7 @@
         "h": 4,
         "w": 3,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 8,
       "interval": "5m",
@@ -116,7 +132,7 @@
         "h": 4,
         "w": 3,
         "x": 3,
-        "y": 0
+        "y": 4
       },
       "hideTimeOverride": false,
       "id": 13,
@@ -184,7 +200,7 @@
         "h": 4,
         "w": 3,
         "x": 6,
-        "y": 0
+        "y": 4
       },
       "hideTimeOverride": false,
       "id": 15,
@@ -251,7 +267,7 @@
         "h": 4,
         "w": 3,
         "x": 9,
-        "y": 0
+        "y": 4
       },
       "hideTimeOverride": false,
       "id": 17,
@@ -319,7 +335,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "id": 27,
       "interval": "5m",
@@ -385,7 +401,7 @@
         "h": 4,
         "w": 3,
         "x": 0,
-        "y": 4
+        "y": 8
       },
       "id": 32,
       "interval": "5m",
@@ -452,7 +468,7 @@
         "h": 4,
         "w": 3,
         "x": 3,
-        "y": 4
+        "y": 8
       },
       "hideTimeOverride": false,
       "id": 14,
@@ -519,7 +535,7 @@
         "h": 4,
         "w": 3,
         "x": 6,
-        "y": 4
+        "y": 8
       },
       "hideTimeOverride": false,
       "id": 18,
@@ -586,7 +602,7 @@
         "h": 4,
         "w": 3,
         "x": 9,
-        "y": 4
+        "y": 8
       },
       "hideTimeOverride": false,
       "id": 19,
@@ -652,7 +668,7 @@
         "h": 4,
         "w": 3,
         "x": 0,
-        "y": 8
+        "y": 12
       },
       "id": 33,
       "interval": "5m",
@@ -719,7 +735,7 @@
         "h": 4,
         "w": 3,
         "x": 3,
-        "y": 8
+        "y": 12
       },
       "hideTimeOverride": false,
       "id": 6,
@@ -774,7 +790,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 12
+        "y": 16
       },
       "hiddenSeries": false,
       "id": 26,
@@ -909,7 +925,7 @@
         "h": 4,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 23
       },
       "id": 29,
       "options": {
@@ -965,7 +981,7 @@
         "h": 5,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 27
       },
       "id": 31,
       "interval": "5m",
@@ -1016,7 +1032,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 32
       },
       "hiddenSeries": false,
       "id": 4,
@@ -1138,7 +1154,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 40
       },
       "hiddenSeries": false,
       "id": 20,
@@ -1264,7 +1280,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 47
       },
       "hiddenSeries": false,
       "id": 21,
@@ -1374,7 +1390,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 51
+        "y": 55
       },
       "hiddenSeries": false,
       "id": 10,
@@ -1470,7 +1486,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 59
+        "y": 63
       },
       "hiddenSeries": false,
       "id": 2,
@@ -1618,7 +1634,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 68
+        "y": 72
       },
       "id": 35,
       "options": {
@@ -1715,7 +1731,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 75
+        "y": 79
       },
       "id": 36,
       "options": {

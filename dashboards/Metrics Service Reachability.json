@@ -1,0 +1,18 @@
+{
+  "annotations": {"list": []},
+  "description": "Local metrics-service reachability for active data.",
+  "editable": true,
+  "panels": [
+    {"id": 1, "type": "text", "title": "About this dashboard", "transparent": true, "gridPos": {"h": 4, "w": 24, "x": 0, "y": 0}, "options": {"mode": "markdown", "content": "# Metrics service reachability\nThis dashboard shows whether the local metrics service can reach the active data required by the product. A value below one means access is degraded or unavailable, commonly because a Druid historical node or related Druid service is unhealthy. Review Druid status, historical capacity, and service logs when the signal stays below one. Absence of this metric is intentionally not a service alert; use the Prometheus availability alert for global scrape failures."}},
+    {"id": 2, "type": "stat", "title": "Current reachability", "datasource": {"type": "prometheus", "uid": "prometheus"}, "gridPos": {"h": 6, "w": 8, "x": 0, "y": 4}, "options": {"colorMode": "value", "graphMode": "area", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}}, "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "Unavailable", "color": "red"}, "1": {"text": "Reachable", "color": "green"}}}]}, "overrides": []}, "targets": [{"refId": "A", "expr": "metricsService_health_status", "instant": true, "range": false, "editorMode": "code", "datasource": {"type": "prometheus", "uid": "prometheus"}}]},
+    {"id": 3, "type": "timeseries", "title": "Reachability trend", "datasource": {"type": "prometheus", "uid": "prometheus"}, "gridPos": {"h": 10, "w": 16, "x": 8, "y": 4}, "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi"}}, "fieldConfig": {"defaults": {"min": 0, "max": 1}, "overrides": []}, "targets": [{"refId": "A", "expr": "metricsService_health_status", "legendFormat": "{{instance}}", "range": true, "editorMode": "code", "datasource": {"type": "prometheus", "uid": "prometheus"}}]}
+  ],
+  "schemaVersion": 41,
+  "tags": ["metrics-service", "data-collection"],
+  "templating": {"list": []},
+  "time": {"from": "now-6h", "to": "now"},
+  "timezone": "browser",
+  "title": "Metrics Service Reachability",
+  "uid": "pca-metrics-service-reachability",
+  "version": 1
+}

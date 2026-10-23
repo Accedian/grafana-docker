@@ -21,6 +21,22 @@
   "links": [],
   "panels": [
     {
+      "id": 25,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Node exporter server metrics\nUse this dashboard for detailed operating-system metrics from a selected node. It shows CPU, memory, load, disk space and I/O, context switches, network traffic, socket statistics, UDP, and conntrack signals. Compare the selected node with its normal baseline when diagnosing service performance or host-resource saturation."
+      }
+    },
+    {
       "content": "",
       "editable": true,
       "error": false,
@@ -28,7 +44,7 @@
         "h": 1,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 11,
       "minSpan": 4,
@@ -53,7 +69,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 1
+        "y": 5
       },
       "id": 7,
       "legend": {
@@ -84,7 +100,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum by (mode)(irate(node_cpu{mode=\"system\",instance=~'$node'}[5m]))",
+          "expr": "sum by (mode)(irate(node_cpu_seconds_total{mode=\"system\",instance=~'$node'}[5m]))",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{mode}}",
@@ -94,7 +110,7 @@
           "target": ""
         },
         {
-          "expr": "sum by (mode)(irate(node_cpu{mode='user',instance=~'$node'}[5m]))",
+          "expr": "sum by (mode)(irate(node_cpu_seconds_total{mode='user',instance=~'$node'}[5m]))",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "user",
@@ -102,7 +118,7 @@
           "step": 1200
         },
         {
-          "expr": "sum by (mode)(irate(node_cpu{mode='nice',instance=~'$node'}[5m]))",
+          "expr": "sum by (mode)(irate(node_cpu_seconds_total{mode='nice',instance=~'$node'}[5m]))",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "nice",
@@ -110,7 +126,7 @@
           "step": 1200
         },
         {
-          "expr": "sum by (mode)(irate(node_cpu{mode='iowait',instance=~'$node'}[5m]))",
+          "expr": "sum by (mode)(irate(node_cpu_seconds_total{mode='iowait',instance=~'$node'}[5m]))",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "iowait",
@@ -118,14 +134,14 @@
           "step": 1200
         },
         {
-          "expr": "sum by (mode)(irate(node_cpu{mode='steal',instance=~'$node'}[5m]))",
+          "expr": "sum by (mode)(irate(node_cpu_seconds_total{mode='steal',instance=~'$node'}[5m]))",
           "intervalFactor": 2,
           "legendFormat": "steal",
           "refId": "H",
           "step": 1200
         },
         {
-          "expr": "sum by (mode)(irate(node_cpu{mode='idle',instance=~'$node'}[5m]))",
+          "expr": "sum by (mode)(irate(node_cpu_seconds_total{mode='idle',instance=~'$node'}[5m]))",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "idle",
@@ -133,7 +149,7 @@
           "step": 1200
         },
         {
-          "expr": "sum by (mode)(irate(node_cpu{mode='irq',instance=~'$node'}[5m]))",
+          "expr": "sum by (mode)(irate(node_cpu_seconds_total{mode='irq',instance=~'$node'}[5m]))",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "irq",
@@ -141,7 +157,7 @@
           "step": 1200
         },
         {
-          "expr": "sum by (mode)(irate(node_cpu{mode='softirq',instance=~'$node'}[5m]))",
+          "expr": "sum by (mode)(irate(node_cpu_seconds_total{mode='softirq',instance=~'$node'}[5m]))",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "softirq",
@@ -149,7 +165,7 @@
           "step": 1200
         },
         {
-          "expr": "sum by (mode)(irate(node_cpu{mode='guest',instance=~'$node'}[5m]))",
+          "expr": "sum by (mode)(irate(node_cpu_seconds_total{mode='guest',instance=~'$node'}[5m]))",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "guest",
@@ -219,7 +235,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 12
       },
       "id": 17,
       "legend": {
@@ -258,7 +274,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "( node_memory_MemTotal{instance=~'$node'} - node_memory_MemFree{instance=~'$node'} - node_memory_Buffers{instance=~'$node'} - node_memory_Cached{instance=~'$node'} - node_memory_SwapCached{instance=~'$node'} - node_memory_Slab{instance=~'$node'} - node_memory_PageTables{instance=~'$node'} - node_memory_VmallocUsed{instance=~'$node'} )",
+          "expr": "( node_memory_MemTotal_bytes{instance=~'$node'} - node_memory_MemFree_bytes{instance=~'$node'} - node_memory_Buffers_bytes{instance=~'$node'} - node_memory_Cached_bytes{instance=~'$node'} - node_memory_SwapCached_bytes{instance=~'$node'} - node_memory_Slab_bytes{instance=~'$node'} - node_memory_PageTables_bytes{instance=~'$node'} - node_memory_VmallocUsed_bytes{instance=~'$node'} )",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Apps",
@@ -268,7 +284,7 @@
           "target": ""
         },
         {
-          "expr": "node_memory_Buffers{instance=~'$node'}",
+          "expr": "node_memory_Buffers_bytes{instance=~'$node'}",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Buffers",
@@ -276,7 +292,7 @@
           "step": 1200
         },
         {
-          "expr": "node_memory_Cached{instance=~'$node'}",
+          "expr": "node_memory_Cached_bytes{instance=~'$node'}",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Cached",
@@ -284,7 +300,7 @@
           "step": 1200
         },
         {
-          "expr": "node_memory_MemFree{instance=~'$node'}",
+          "expr": "node_memory_MemFree_bytes{instance=~'$node'}",
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
@@ -293,7 +309,7 @@
           "step": 1200
         },
         {
-          "expr": "node_memory_Slab{instance=~'$node'}",
+          "expr": "node_memory_Slab_bytes{instance=~'$node'}",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Slab",
@@ -301,7 +317,7 @@
           "step": 1200
         },
         {
-          "expr": "node_memory_SwapCached{instance=~'$node'}",
+          "expr": "node_memory_SwapCached_bytes{instance=~'$node'}",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "SwapCached",
@@ -309,7 +325,7 @@
           "step": 1200
         },
         {
-          "expr": "node_memory_PageTables{instance=~'$node'}",
+          "expr": "node_memory_PageTables_bytes{instance=~'$node'}",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "PageTables",
@@ -317,7 +333,7 @@
           "step": 1200
         },
         {
-          "expr": "node_memory_VmallocUsed{instance=~'$node'}",
+          "expr": "node_memory_VmallocUsed_bytes{instance=~'$node'}",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "VmallocUsed",
@@ -326,7 +342,7 @@
           "step": 1200
         },
         {
-          "expr": "(node_memory_SwapTotal{instance=~'$node'} - node_memory_SwapFree{instance=~'$node'})",
+          "expr": "(node_memory_SwapTotal_bytes{instance=~'$node'} - node_memory_SwapFree_bytes{instance=~'$node'})",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Swap",
@@ -335,7 +351,7 @@
           "step": 1200
         },
         {
-          "expr": "node_memory_Committed_AS{instance=~'$node'}",
+          "expr": "node_memory_Committed_AS_bytes{instance=~'$node'}",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Committed",
@@ -344,7 +360,7 @@
           "step": 1200
         },
         {
-          "expr": "node_memory_Mapped{instance=~'$node'}",
+          "expr": "node_memory_Mapped_bytes{instance=~'$node'}",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Mapped",
@@ -352,7 +368,7 @@
           "step": 1200
         },
         {
-          "expr": "node_memory_Active{instance=~'$node'}",
+          "expr": "node_memory_Active_bytes{instance=~'$node'}",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Active",
@@ -361,7 +377,7 @@
           "step": 1200
         },
         {
-          "expr": "node_memory_Inactive{instance=~'$node'}",
+          "expr": "node_memory_Inactive_bytes{instance=~'$node'}",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "Inactive",
@@ -420,7 +436,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 15
+        "y": 19
       },
       "id": 13,
       "legend": {
@@ -508,7 +524,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 22
+        "y": 26
       },
       "id": 9,
       "legend": {
@@ -536,7 +552,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "100.0 - 100 * (node_filesystem_avail{instance=~'$node',device !~'tmpfs',device!~'by-uuid'} / node_filesystem_size{instance=~'$node',device !~'tmpfs',device!~'by-uuid'})",
+          "expr": "100.0 - 100 * (node_filesystem_avail_bytes{instance=~'$node',device !~'tmpfs',device!~'by-uuid'} / node_filesystem_size_bytes{instance=~'$node',device !~'tmpfs',device!~'by-uuid'})",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{mountpoint}}",
@@ -595,7 +611,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 29
+        "y": 33
       },
       "id": 19,
       "legend": {
@@ -623,7 +639,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "irate(node_disk_io_time_ms{instance=~\"$node\"}[5m])/10",
+          "expr": "irate(node_disk_io_time_seconds_total{instance=~\"$node\"}[5m])*100",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{device}}",
@@ -682,7 +698,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 36
+        "y": 40
       },
       "id": 14,
       "legend": {
@@ -715,7 +731,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "irate(node_disk_reads_completed{instance=~'$node'}[5m])",
+          "expr": "irate(node_disk_reads_completed_total{instance=~'$node'}[5m])",
           "interval": "",
           "intervalFactor": 4,
           "legendFormat": "{{device}}_read",
@@ -725,7 +741,7 @@
           "target": ""
         },
         {
-          "expr": "irate(node_disk_writes_completed{instance=~'$node'}[5m])",
+          "expr": "irate(node_disk_writes_completed_total{instance=~'$node'}[5m])",
           "intervalFactor": 2,
           "legendFormat": "{{device}}_write",
           "metric": "",
@@ -783,7 +799,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 43
+        "y": 47
       },
       "id": 18,
       "legend": {
@@ -816,7 +832,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "irate(node_disk_sectors_read{instance=~'$node'}[5m]) * 512",
+          "expr": "irate(node_disk_read_bytes_total{instance=~'$node'}[5m])",
           "interval": "",
           "intervalFactor": 4,
           "legendFormat": "{{device}}_read",
@@ -824,7 +840,7 @@
           "step": 2400
         },
         {
-          "expr": "irate(node_disk_sectors_written{instance=~'$node'}[5m]) * 512",
+          "expr": "irate(node_disk_written_bytes_total{instance=~'$node'}[5m])",
           "interval": "",
           "intervalFactor": 4,
           "legendFormat": "{{device}}_write",
@@ -884,7 +900,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 50
+        "y": 54
       },
       "id": 22,
       "legend": {
@@ -912,7 +928,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "irate(node_context_switches{instance=~\"$node\"}[5m])",
+          "expr": "irate(node_context_switches_total{instance=~\"$node\"}[5m])",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "context switches",
@@ -971,7 +987,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 57
+        "y": 61
       },
       "id": 12,
       "legend": {
@@ -1004,7 +1020,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "irate(node_network_receive_bytes{instance=~'$node'}[5m])*8",
+          "expr": "irate(node_network_receive_bytes_total{instance=~'$node'}[5m])*8",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{device}}_in",
@@ -1014,7 +1030,7 @@
           "target": ""
         },
         {
-          "expr": "irate(node_network_transmit_bytes{instance=~'$node'}[5m])*8",
+          "expr": "irate(node_network_transmit_bytes_total{instance=~'$node'}[5m])*8",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{device}}_out",
@@ -1072,7 +1088,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 64
+        "y": 68
       },
       "id": 21,
       "legend": {
@@ -1157,7 +1173,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 71
+        "y": 75
       },
       "id": 23,
       "legend": {
@@ -1273,7 +1289,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 78
+        "y": 82
       },
       "id": 24,
       "legend": {
@@ -1365,7 +1381,7 @@
         "multiFormat": "regex values",
         "name": "node",
         "options": [],
-        "query": "label_values(node_boot_time, instance)",
+        "query": "label_values(node_boot_time_seconds, instance)",
         "refresh": 1,
         "regex": "",
         "sort": 1,

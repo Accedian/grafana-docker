@@ -19,6 +19,22 @@
   "links": [],
   "panels": [
     {
+      "id": 20,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Kafka broker overview\nUse this dashboard to assess Kafka broker health and performance through JMX metrics. It provides visibility into broker resources, request and network behavior, replication, and message-processing activity. Use it with the consumer overview to determine whether an ingestion delay is caused by consumers or broker capacity and availability."
+      }
+    },
+    {
       "cacheTimeout": null,
       "colorBackground": false,
       "colorValue": true,
@@ -43,7 +59,7 @@
         "h": 3,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 3,
       "interval": null,
@@ -130,7 +146,7 @@
         "h": 3,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "id": 1,
       "interval": null,
@@ -206,7 +222,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 3
+        "y": 7
       },
       "id": 2,
       "isNew": true,
@@ -306,7 +322,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 3
+        "y": 7
       },
       "id": 6,
       "isNew": true,
@@ -394,7 +410,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 11
+        "y": 15
       },
       "id": 4,
       "isNew": true,
@@ -483,7 +499,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 11
+        "y": 15
       },
       "id": 7,
       "isNew": true,
@@ -582,7 +598,7 @@
         "h": 7,
         "w": 4,
         "x": 0,
-        "y": 18
+        "y": 22
       },
       "id": 9,
       "interval": null,
@@ -668,7 +684,7 @@
         "h": 7,
         "w": 4,
         "x": 4,
-        "y": 18
+        "y": 22
       },
       "id": 10,
       "interval": null,
@@ -744,7 +760,7 @@
         "h": 7,
         "w": 4,
         "x": 8,
-        "y": 18
+        "y": 22
       },
       "id": 14,
       "isNew": true,
@@ -803,7 +819,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 18
+        "y": 22
       },
       "id": 11,
       "isNew": true,
@@ -893,7 +909,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 25
+        "y": 29
       },
       "id": 12,
       "isNew": true,
@@ -982,7 +998,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 25
+        "y": 29
       },
       "id": 13,
       "isNew": true,
@@ -1084,7 +1100,7 @@
         "h": 7,
         "w": 20,
         "x": 0,
-        "y": 32
+        "y": 36
       },
       "id": 5,
       "interval": null,

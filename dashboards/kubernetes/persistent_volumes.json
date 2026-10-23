@@ -34,6 +34,22 @@
   ],
   "panels": [
     {
+      "id": 24,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Kubernetes persistent volumes\nThis dashboard monitors Kubernetes persistent-volume capacity and inode consumption. It shows volume space and inode usage so operators can identify mounts approaching a limit before workloads fail. Filter to the affected namespace or volume and investigate sustained growth with the workload that owns the claim."
+      }
+    },
+    {
       "datasource": {
         "type": "datasource",
         "uid": "-- Mixed --"
@@ -98,7 +114,7 @@
         "h": 7,
         "w": 18,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 1,
       "interval": "1m",
@@ -179,7 +195,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 0
+        "y": 4
       },
       "id": 2,
       "interval": "1m",
@@ -278,7 +294,7 @@
         "h": 7,
         "w": 18,
         "x": 0,
-        "y": 7
+        "y": 11
       },
       "id": 3,
       "interval": "1m",
@@ -359,7 +375,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 7
+        "y": 11
       },
       "id": 4,
       "interval": "1m",

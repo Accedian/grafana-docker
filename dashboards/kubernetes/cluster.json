@@ -34,6 +34,22 @@
   ],
   "panels": [
     {
+      "id": 23,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Kubernetes cluster resources\nUse this dashboard for a cluster-level view of Kubernetes resource health. It summarizes CPU, memory, storage, pod, and workload usage across the deployment. Start here to identify resource pressure or imbalance, then use the node, namespace, workload, or pod dashboards to locate the responsible scope."
+      }
+    },
+    {
       "datasource": {
         "type": "datasource",
         "uid": "-- Mixed --"
@@ -62,7 +78,7 @@
         "h": 3,
         "w": 4,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 1,
       "interval": "1m",
@@ -127,7 +143,7 @@
         "h": 3,
         "w": 4,
         "x": 4,
-        "y": 0
+        "y": 4
       },
       "id": 2,
       "interval": "1m",
@@ -192,7 +208,7 @@
         "h": 3,
         "w": 4,
         "x": 8,
-        "y": 0
+        "y": 4
       },
       "id": 3,
       "interval": "1m",
@@ -257,7 +273,7 @@
         "h": 3,
         "w": 4,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "id": 4,
       "interval": "1m",
@@ -322,7 +338,7 @@
         "h": 3,
         "w": 4,
         "x": 16,
-        "y": 0
+        "y": 4
       },
       "id": 5,
       "interval": "1m",
@@ -387,7 +403,7 @@
         "h": 3,
         "w": 4,
         "x": 20,
-        "y": 0
+        "y": 4
       },
       "id": 6,
       "interval": "1m",
@@ -487,7 +503,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 3
+        "y": 7
       },
       "id": 7,
       "interval": "1m",
@@ -586,7 +602,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 13
       },
       "id": 8,
       "options": {
@@ -793,7 +809,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 15
+        "y": 19
       },
       "id": 9,
       "interval": "1m",
@@ -928,7 +944,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 25
       },
       "id": 10,
       "options": {
@@ -1147,7 +1163,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 31
       },
       "id": 11,
       "options": {
@@ -1340,7 +1356,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 37
       },
       "id": 12,
       "interval": "1m",
@@ -1439,7 +1455,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 43
       },
       "id": 13,
       "interval": "1m",
@@ -1538,7 +1554,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 49
       },
       "id": 14,
       "interval": "1m",
@@ -1637,7 +1653,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 51
+        "y": 55
       },
       "id": 15,
       "interval": "1m",
@@ -1736,7 +1752,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 57
+        "y": 61
       },
       "id": 16,
       "interval": "1m",
@@ -1835,7 +1851,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 63
+        "y": 67
       },
       "id": 17,
       "interval": "1m",
@@ -1934,7 +1950,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 69
+        "y": 73
       },
       "id": 18,
       "interval": "1m",
@@ -2033,7 +2049,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 75
+        "y": 79
       },
       "id": 19,
       "interval": "1m",
@@ -2132,7 +2148,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 81
+        "y": 85
       },
       "id": 20,
       "interval": "1m",
@@ -2231,7 +2247,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 87
+        "y": 91
       },
       "id": 21,
       "interval": "1m",
@@ -2342,7 +2358,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 93
+        "y": 97
       },
       "id": 22,
       "options": {

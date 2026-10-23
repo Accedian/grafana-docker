@@ -22,6 +22,22 @@
     "links": [],
     "panels": [
       {
+        "id": 58,
+        "type": "text",
+        "title": "About this dashboard",
+        "transparent": true,
+        "gridPos": {
+          "h": 4,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "options": {
+          "mode": "markdown",
+          "content": "# Sky Topo\nUse this dashboard to monitor Sky Topo topology-processing activity in this deployment. It shows current and historical node counts, processing errors and records, provisioning duration, and Druid supervisor state and health. Review changes in node or record volume alongside errors and supervisor status to diagnose delayed or incomplete topology updates."
+        }
+      },
+      {
         "datasource": "Prometheus",
         "description": "",
         "fieldConfig": {
@@ -55,7 +71,7 @@
           "h": 8,
           "w": 24,
           "x": 0,
-          "y": 0
+          "y": 4
         },
         "id": 8,
         "options": {
@@ -188,7 +204,7 @@
           "h": 8,
           "w": 12,
           "x": 0,
-          "y": 8
+          "y": 12
         },
         "id": 2,
         "options": {
@@ -294,7 +310,7 @@
           "h": 8,
           "w": 12,
           "x": 12,
-          "y": 8
+          "y": 12
         },
         "id": 4,
         "options": {
@@ -390,7 +406,7 @@
           "h": 8,
           "w": 12,
           "x": 0,
-          "y": 16
+          "y": 20
         },
         "id": 1,
         "options": {
@@ -482,7 +498,7 @@
           "h": 8,
           "w": 12,
           "x": 12,
-          "y": 16
+          "y": 20
         },
         "id": 5,
         "options": {
@@ -576,7 +592,7 @@
           "h": 8,
           "w": 24,
           "x": 0,
-          "y": 24
+          "y": 28
         },
         "id": 7,
         "options": {
@@ -679,7 +695,7 @@
           "h": 10,
           "w": 24,
           "x": 0,
-          "y": 32
+          "y": 36
         },
         "id": 6,
         "options": {

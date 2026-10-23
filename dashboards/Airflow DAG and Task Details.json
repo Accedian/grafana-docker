@@ -12,7 +12,7 @@
       }
     ]
   },
-  "description": "Phase 1 dashboard",
+  "description": "Detailed investigation of an individual Airflow DAG and its task status.",
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
@@ -20,6 +20,22 @@
   "iteration": 1597852010970,
   "links": [],
   "panels": [
+    {
+      "id": 5,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Airflow\nUse this dashboard to observe Airflow workflow activity in this deployment. It summarizes task and DAG execution information so operators can identify failed, delayed, or unexpectedly inactive workflows. Select the relevant workflow and time range, then correlate its state with the ingestion or data-processing dashboard for the downstream service it supports."
+      }
+    },
     {
       "aliasColors": {},
       "bars": false,
@@ -31,7 +47,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 2,
       "legend": {
@@ -115,7 +131,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 6
+        "y": 10
       },
       "id": 3,
       "legend": {
@@ -199,7 +215,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 12
+        "y": 16
       },
       "id": 4,
       "legend": {
@@ -340,20 +356,10 @@
       "2h",
       "1d"
     ],
-    "time_options": [
-      "5m",
-      "15m",
-      "1h",
-      "6h",
-      "12h",
-      "24h",
-      "2d",
-      "7d",
-      "30d"
-    ]
+    "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
   },
   "timezone": "",
-  "title": "Airflow",
+  "title": "Airflow DAG & Task Details",
   "uid": "vrJSQunM3",
   "version": 5
 }

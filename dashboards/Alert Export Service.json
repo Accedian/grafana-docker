@@ -20,6 +20,22 @@
   "links": [],
   "panels": [
     {
+      "id": 32,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Alert export service\nUse this dashboard to assess the service that submits alerts for export from this deployment. It shows submission latency, successful and failed submissions, and the service CPU and memory footprint. Investigate sustained failures or rising latency alongside the downstream export endpoint and service logs; brief low-volume periods can be normal when no alerts are produced."
+      }
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "cacheTimeout": null,
@@ -32,7 +48,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 10,
@@ -124,7 +140,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 4,
@@ -212,7 +228,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 12
       },
       "hiddenSeries": false,
       "id": 6,
@@ -303,7 +319,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 9
+        "y": 13
       },
       "hiddenSeries": false,
       "id": 2,
@@ -395,7 +411,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 16
+        "y": 20
       },
       "hiddenSeries": false,
       "id": 8,

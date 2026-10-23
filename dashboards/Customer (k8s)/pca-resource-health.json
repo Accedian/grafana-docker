@@ -1,0 +1,2531 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Node and cluster resource-pressure (sluggishness) dashboard for PCA: CPU, memory, disk and I/O-wait at cluster/node/pod level, plus saturation signals (CPU throttling, OOM kills, load-per-core). Uses node-exporter, cAdvisor/kubelet, and kube-prometheus recording rules.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "panels": [
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# PCA Node & Cluster Resource Health\n\nDiagnoses **system sluggishness** caused by resource pressure \u2013 CPU, memory, disk, and I/O-wait \u2013 at three levels: **whole cluster**, **individual node**, and **individual pod**. It also surfaces the saturation signals that actually make things slow: **CPU throttling**, **OOM kills**, and **load average vs. cores**.\n\n**How to read it**\n- **Cluster overview** gauges: at-a-glance utilisation. Green = healthy, orange = warning, red = critical (CPU 80/90%, memory 85/95%, disk 80/90%, I/O-wait 5/10%, load-per-core 1/2).\n- **Per-node**: compare nodes to find the hot one. A node pinned red on CPU/memory/I/O-wait or with load-per-core > 1\u20132 is a sluggishness source.\n- **Per-pod**: top consumers (who is eating CPU/memory), CPU throttling (capped by its limit), OOM kills, and a `$pod` picker to compare a pod's usage against its requests/limits.\n\n**Triage flow:** cluster gauge red \u2192 find the node(s) in Per-node \u2192 find the pod(s) on that node in Per-pod. High **I/O-wait** = disk is the bottleneck (check Disk IO %); high **throttling** = the pod is CPU-limited (raise its CPU limit); **OOMKilled** = raise the memory limit or fix a leak.\n\nShows the Kubernetes cluster monitored by this deployment's Prometheus datasource.\n\n**Filters:** `$node` (per-node), `$namespace` (default `pca`) and `$pod` (per-pod).",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.1.0",
+      "title": "",
+      "type": "text"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 2,
+      "panels": [],
+      "title": "Cluster Overview (now)",
+      "type": "row"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Average CPU used across all nodes (1 - idle). Orange >=80%, red >=90% \u2013 the cluster is CPU-bound; find the hot node(s) in Per-node.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 1,
+          "max": 100,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 0,
+        "y": 9
+      },
+      "id": 3,
+      "options": {
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\"}[$__rate_interval])))",
+          "range": false,
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Cluster CPU utilisation",
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Used memory across all nodes (1 - MemAvailable/MemTotal). Orange >=85%, red >=95% \u2013 risk of OOM kills and swapping/sluggishness.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 85
+              },
+              {
+                "color": "red",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 1,
+          "max": 100,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 4,
+        "y": 9
+      },
+      "id": 4,
+      "options": {
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "100 * (1 - sum(node_memory_MemAvailable_bytes{job=\"node-exporter\"}) / sum(node_memory_MemTotal_bytes{job=\"node-exporter\"}))",
+          "range": false,
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Cluster memory utilisation",
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Highest filesystem usage on any node/mount. Orange >=80%, red >=90% \u2013 a full disk stalls writes (HDFS/MinIO/Postgres/Kafka) and can crash services.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 1,
+          "max": 100,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 8,
+        "y": 9
+      },
+      "id": 5,
+      "options": {
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "max(100 * (1 - node_filesystem_avail_bytes{job=\"node-exporter\",fstype!=\"\",fstype!~\"^(tmpfs|overlay|squashfs)$\",mountpoint!=\"\",mountpoint!~\"^/var/lib/(docker|containerd)(/.*)?$\"} / node_filesystem_size_bytes{job=\"node-exporter\",fstype!=\"\",fstype!~\"^(tmpfs|overlay|squashfs)$\",mountpoint!=\"\",mountpoint!~\"^/var/lib/(docker|containerd)(/.*)?$\"}))",
+          "range": false,
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Fullest filesystem",
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Average CPU time waiting on disk I/O across nodes. Orange >=5%, red >=10% \u2013 the disk subsystem is the bottleneck; CPU is idle waiting for storage.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 1,
+          "max": 50,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 12,
+        "y": 9
+      },
+      "id": 6,
+      "options": {
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "100 * avg(rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"iowait\"}[$__rate_interval]))",
+          "range": false,
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Cluster I/O-wait",
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Total 1-min load average / total logical cores. Orange >=1, red >=2 \u2013 more runnable work than CPUs = queuing/slowness.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "unit": "short",
+          "decimals": 2,
+          "max": 4,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 16,
+        "y": 9
+      },
+      "id": 7,
+      "options": {
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(node_load1{job=\"node-exporter\"}) / count(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\"})",
+          "range": false,
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Load per core (cluster)",
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Number of nodes reporting node-exporter metrics in this cluster.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 20,
+        "y": 9
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calc": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "count(node_uname_info{job=\"node-exporter\"})",
+          "range": false,
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Nodes",
+      "type": "stat"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 15,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "The busiest nodes by CPU right now. Orange \u2265 80%, red \u2265 90% \u2013 a node near 100% will throttle/queue its pods; check the Top pods CPU panel to see which pods are driving it, or reschedule/scale.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent",
+              "decimals": 1
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 16
+          },
+          "id": 25,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, 100 * (1 - avg by (instance)(rate(node_cpu_seconds_total{job=\"node-exporter\",instance=~\"$node\",mode=\"idle\"}[$__rate_interval]))))",
+              "legendFormat": "{{instance}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Top nodes \u2013 CPU utilisation %",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "The fullest nodes by memory right now. Orange \u2265 80%, red \u2265 90% \u2013 a node near 100% risks kernel OOM-kills of its pods; identify heavy pods (Top pods memory) or add capacity.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent",
+              "decimals": 1
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 16
+          },
+          "id": 26,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, 100 * (1 - sum by (instance)(node_memory_MemAvailable_bytes{job=\"node-exporter\",instance=~\"$node\"}) / sum by (instance)(node_memory_MemTotal_bytes{job=\"node-exporter\",instance=~\"$node\"})))",
+              "legendFormat": "{{instance}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Top nodes \u2013 memory utilisation %",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Absolute CPU cores consumed per node right now. Compare against each node's core count to spot imbalance across the cluster. Not threshold-coloured (core counts differ by node).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short",
+              "decimals": 2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 16
+          },
+          "id": 27,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, sum by (instance)(rate(node_cpu_seconds_total{job=\"node-exporter\",instance=~\"$node\",mode!=\"idle\"}[$__rate_interval])))",
+              "legendFormat": "{{instance}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Top nodes \u2013 CPU cores used",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Absolute memory used per node right now (total \u2212 available). Use with memory % to see both pressure and raw footprint. Not threshold-coloured (node sizes differ).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes",
+              "decimals": 2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 24
+          },
+          "id": 28,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, sum by (instance)(node_memory_MemTotal_bytes{job=\"node-exporter\",instance=~\"$node\"} - node_memory_MemAvailable_bytes{job=\"node-exporter\",instance=~\"$node\"}))",
+              "legendFormat": "{{instance}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Top nodes \u2013 memory used",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Nodes spending the most CPU time waiting on disk. Orange \u2265 10%, red \u2265 25% \u2013 high I/O-wait means storage is the bottleneck; see the disk I/O utilisation panel and the Disk/PVC consumers row.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 10
+                  },
+                  {
+                    "color": "red",
+                    "value": 25
+                  }
+                ]
+              },
+              "unit": "percent",
+              "decimals": 1
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 24
+          },
+          "id": 29,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, 100 * avg by (instance)(rate(node_cpu_seconds_total{job=\"node-exporter\",instance=~\"$node\",mode=\"iowait\"}[$__rate_interval])))",
+              "legendFormat": "{{instance}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Top nodes \u2013 I/O-wait %",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Run-queue pressure normalised by core count (load1 / cores). Orange \u2265 1 (fully committed), red \u2265 2 (over-subscribed) \u2013 sustained > 1 means processes are waiting for CPU on that node.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 1
+                  },
+                  {
+                    "color": "red",
+                    "value": 2
+                  }
+                ]
+              },
+              "unit": "short",
+              "decimals": 2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 24
+          },
+          "id": 30,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, sum by (instance)(node_load1{job=\"node-exporter\",instance=~\"$node\"}) / count by (instance)(node_cpu_seconds_total{job=\"node-exporter\",instance=~\"$node\",mode=\"idle\"}))",
+              "legendFormat": "{{instance}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Top nodes \u2013 load per core",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Per-node CPU used (1 - idle). Dashed lines mark the 80%/90% thresholds. A node pinned near/over the red line is CPU-bound \u2013 drill into Per-pod to see which pods on it are heaviest.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent",
+              "max": 100,
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 32
+          },
+          "id": 9,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "100 * (1 - avg by (instance)(rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",instance=~\"$node\"}[$__rate_interval])))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{instance}}"
+            }
+          ],
+          "title": "Node \u2013 CPU utilisation %",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Per-node used memory (1 - MemAvailable/MemTotal). Thresholds 85%/95%. A node near red is at OOM risk \u2013 pods there may be OOMKilled (see Per-pod).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 85
+                  },
+                  {
+                    "color": "red",
+                    "value": 95
+                  }
+                ]
+              },
+              "unit": "percent",
+              "max": 100,
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 32
+          },
+          "id": 10,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "100 * (1 - sum by (instance)(node_memory_MemAvailable_bytes{job=\"node-exporter\",instance=~\"$node\"}) / sum by (instance)(node_memory_MemTotal_bytes{job=\"node-exporter\",instance=~\"$node\"}))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{instance}}"
+            }
+          ],
+          "title": "Node \u2013 memory utilisation %",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Per-node CPU time spent waiting on disk I/O. Thresholds 5%/10%. Sustained high I/O-wait = the node's disks cannot keep up; correlate with Disk IO % below and the storage pods (HDFS/MinIO/Kafka/Postgres).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 5
+                  },
+                  {
+                    "color": "red",
+                    "value": 10
+                  }
+                ]
+              },
+              "unit": "percent",
+              "max": 50,
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 40
+          },
+          "id": 11,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "100 * avg by (instance)(rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"iowait\",instance=~\"$node\"}[$__rate_interval]))",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{instance}}"
+            }
+          ],
+          "title": "Node \u2013 I/O-wait %",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Per-node 1-min load average divided by that node's logical cores. Thresholds 1/2. > 1 per core = more runnable work than CPUs (queuing). Compare with CPU% \u2013 high load with moderate CPU often means I/O-wait. (Fixed: load1 is summed by instance so it matches the per-node core count.)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 1
+                  },
+                  {
+                    "color": "red",
+                    "value": 2
+                  }
+                ]
+              },
+              "unit": "short",
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 40
+          },
+          "id": 12,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (instance)(node_load1{job=\"node-exporter\",instance=~\"$node\"}) / count by (instance)(node_cpu_seconds_total{job=\"node-exporter\",instance=~\"$node\",mode=\"idle\"})",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{instance}}"
+            }
+          ],
+          "title": "Node \u2013 load average per core",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Per-node, per-mount filesystem usage. Thresholds 80%/90%. A mount near red will stop accepting writes \u2013 identify the node/mount and free space or expand the volume.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent",
+              "max": 100,
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 48
+          },
+          "id": 13,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "100 * (1 - node_filesystem_avail_bytes{job=\"node-exporter\",instance=~\"$node\",fstype!=\"\",fstype!~\"^(tmpfs|overlay|squashfs)$\",mountpoint!=\"\",mountpoint!~\"^/var/lib/(docker|containerd)(/.*)?$\"} / node_filesystem_size_bytes{job=\"node-exporter\",instance=~\"$node\",fstype!=\"\",fstype!~\"^(tmpfs|overlay|squashfs)$\",mountpoint!=\"\",mountpoint!~\"^/var/lib/(docker|containerd)(/.*)?$\"})",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{instance}}:{{mountpoint}}"
+            }
+          ],
+          "title": "Node \u2013 filesystem usage % (by mount)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Fraction of time each disk device was busy (node_disk_io_time_seconds_total rate). ~100% = the device is saturated and is the bottleneck behind high I/O-wait. Correlate with the storage services on that node.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent",
+              "max": 100,
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 48
+          },
+          "id": 14,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "100 * rate(node_disk_io_time_seconds_total{job=\"node-exporter\",instance=~\"$node\",device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\"}[$__rate_interval])",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{instance}}:{{device}}"
+            }
+          ],
+          "title": "Node \u2013 disk I/O utilisation % (by device)",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Per-node Resource Health",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "id": 22,
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "The 15 pods using the most CPU right now (cores). Use this to find who is driving a node's CPU% up. Not threshold-coloured (absolute cores vary by pod).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short",
+              "decimals": 2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 8,
+            "x": 0,
+            "y": 17
+          },
+          "id": 16,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, sum by (namespace,pod)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace=~\"$namespace\",container!=\"\"}))",
+              "range": false,
+              "instant": true,
+              "refId": "A",
+              "legendFormat": "{{namespace}}/{{pod}}"
+            }
+          ],
+          "title": "Top pods \u2013 CPU (cores)",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "The 15 pods using the most memory right now (working set). Watch pods approaching their memory limit \u2013 they are the OOM-kill candidates.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes",
+              "decimals": 2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 8,
+            "x": 8,
+            "y": 17
+          },
+          "id": 17,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, sum by (namespace,pod)(container_memory_working_set_bytes{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",namespace=~\"$namespace\",container!=\"\",image!=\"\"}))",
+              "range": false,
+              "instant": true,
+              "refId": "A",
+              "legendFormat": "{{namespace}}/{{pod}}"
+            }
+          ],
+          "title": "Top pods \u2013 memory",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Pods being CPU-throttled (share of CFS periods throttled). Only pods with a CPU limit can throttle. Orange >=25%, red >=50% \u2013 a throttled pod is slow because it is capped; raise its CPU limit or reduce load.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 25
+                  },
+                  {
+                    "color": "red",
+                    "value": 50
+                  }
+                ]
+              },
+              "unit": "percent",
+              "decimals": 1
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 8,
+            "x": 16,
+            "y": 17
+          },
+          "id": 18,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, 100 * sum by (namespace,pod)(rate(container_cpu_cfs_throttled_periods_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",namespace=~\"$namespace\",container!=\"\"}[$__rate_interval])) / sum by (namespace,pod)(rate(container_cpu_cfs_periods_total{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",namespace=~\"$namespace\",container!=\"\"}[$__rate_interval])))",
+              "range": false,
+              "instant": true,
+              "refId": "A",
+              "legendFormat": "{{namespace}}/{{pod}}"
+            }
+          ],
+          "title": "Top pods \u2013 CPU throttling %",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Pods whose most recent container termination was OOMKilled (out of memory). A series at 1 = that pod was OOM-killed \u2013 it hit its memory limit (or the node ran out). Fix by raising the memory limit or addressing a leak; correlate with node memory% above.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short",
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 24,
+            "x": 0,
+            "y": 33
+          },
+          "id": 19,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "max by (namespace,pod)(kube_pod_container_status_last_terminated_reason{namespace=~\"$namespace\",reason=\"OOMKilled\"}) > 0",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{namespace}}/{{pod}}"
+            }
+          ],
+          "title": "Pods OOMKilled (last termination reason)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "For the pod(s) chosen in $pod: actual CPU usage vs its configured request and limit (cores). Usage riding the limit \u2192 expect throttling (see Top throttling); usage far below request \u2192 over-provisioned.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short",
+              "min": 0
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 40
+          },
+          "id": 20,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (namespace,pod)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace=~\"$namespace\",pod=~\"$pod\",container!=\"\"})",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{namespace}}/{{pod}} usage"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (namespace,pod)(cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{namespace=~\"$namespace\",pod=~\"$pod\"})",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "{{namespace}}/{{pod}} request"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (namespace,pod)(cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{namespace=~\"$namespace\",pod=~\"$pod\"})",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "{{namespace}}/{{pod}} limit"
+            }
+          ],
+          "title": "Selected pod \u2013 CPU vs requests/limits",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "For the pod(s) chosen in $pod: working-set memory vs its request and limit (bytes). Usage approaching the limit \u2192 OOM-kill risk; raise the limit or fix the leak.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes",
+              "min": 0,
+              "decimals": 2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 40
+          },
+          "id": 21,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "max",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (namespace,pod)(container_memory_working_set_bytes{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",namespace=~\"$namespace\",pod=~\"$pod\",container!=\"\",image!=\"\"})",
+              "range": true,
+              "instant": false,
+              "refId": "A",
+              "legendFormat": "{{namespace}}/{{pod}} usage"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (namespace,pod)(cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{namespace=~\"$namespace\",pod=~\"$pod\"})",
+              "range": true,
+              "instant": false,
+              "refId": "B",
+              "legendFormat": "{{namespace}}/{{pod}} request"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum by (namespace,pod)(cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{namespace=~\"$namespace\",pod=~\"$pod\"})",
+              "range": true,
+              "instant": false,
+              "refId": "C",
+              "legendFormat": "{{namespace}}/{{pod}} limit"
+            }
+          ],
+          "title": "Selected pod \u2013 memory vs requests/limits",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "The 15 pods closest to their CPU limit (usage / limit). Pods with no CPU limit are excluded. Orange >=80%, red >=90% \u2013 a pod near 100% of its CPU limit is being (or about to be) throttled; raise its limit or reduce load. Complements 'Top pods \u2013 CPU (cores)', which shows absolute usage.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent",
+              "decimals": 1,
+              "max": 100
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 25
+          },
+          "id": 23,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, 100 * sum by (namespace,pod)(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace=~\"$namespace\",container!=\"\"}) / sum by (namespace,pod)(cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{namespace=~\"$namespace\"}))",
+              "range": false,
+              "instant": true,
+              "refId": "A",
+              "legendFormat": "{{namespace}}/{{pod}}"
+            }
+          ],
+          "title": "Top pods \u2013 CPU vs limit %",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "The 15 pods closest to their memory limit (working set / limit). Pods with no memory limit are excluded. Orange >=80%, red >=90% \u2013 a pod near 100% of its memory limit is an OOM-kill candidate; raise its limit or fix the leak. Complements 'Top pods \u2013 memory', which shows absolute usage.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent",
+              "decimals": 1,
+              "max": 100
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 25
+          },
+          "id": 24,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, 100 * sum by (namespace,pod)(container_memory_working_set_bytes{job=\"kubelet\",metrics_path=\"/metrics/cadvisor\",namespace=~\"$namespace\",container!=\"\",image!=\"\"}) / sum by (namespace,pod)(cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{namespace=~\"$namespace\"}))",
+              "range": false,
+              "instant": true,
+              "refId": "A",
+              "legendFormat": "{{namespace}}/{{pod}}"
+            }
+          ],
+          "title": "Top pods \u2013 memory vs limit %",
+          "type": "bargauge"
+        }
+      ],
+      "title": "Per-pod Resource Health",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "type": "row",
+      "id": 36,
+      "title": "Top Disk / PVC Consumers (now)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "Fullest node-local filesystems (root/ephemeral), by node:mount. Orange \u2265 80%, red \u2265 90% \u2013 a full node disk stops container writes, image pulls and logging. This is node-local storage; SAN-backed PVCs are in the PVC panels. On this embedded cluster the OpenEBS hostpath PVCs live on these same node filesystems, so this node-disk fullness is the true capacity limit for PVCs as well.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent",
+              "decimals": 1
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 1
+          },
+          "id": 31,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, 100 * (1 - node_filesystem_avail_bytes{job=\"node-exporter\",instance=~\"$node\",fstype!=\"\",fstype!~\"^(tmpfs|overlay|squashfs)$\",mountpoint!=\"\",mountpoint!~\"^/var/lib/(docker|containerd)(/.*)?$\"} / node_filesystem_size_bytes{job=\"node-exporter\",instance=~\"$node\",fstype!=\"\",fstype!~\"^(tmpfs|overlay|squashfs)$\",mountpoint!=\"\",mountpoint!~\"^/var/lib/(docker|containerd)(/.*)?$\"}))",
+              "legendFormat": "{{instance}}:{{mountpoint}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Top nodes \u2013 filesystem usage % (node-local disk)",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Total real PVC disk usage per node, from the du-exporter mapped PVC\u2192pod\u2192node. Shows which nodes carry the heaviest local-volume load. NOTE: this is an embedded cluster using the OpenEBS hostpath provisioner \u2013 PVCs are directories on the node's local disk, so kubelet_volume_stats_* reports the whole node filesystem for EVERY PVC (identical values). This panel instead uses the openebs_hostpath_volume_used_bytes du-exporter, which measures real per-volume usage.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes",
+              "decimals": 2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 1
+          },
+          "id": 32,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, sum by (node) (\n(\nopenebs_hostpath_volume_used_bytes\n  * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n    label_replace(kube_persistentvolumeclaim_info{namespace=~\"$namespace\"}, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n)\n  * on(namespace, persistentvolumeclaim) group_left(node)\n    max by (namespace, persistentvolumeclaim, node) (\n      kube_pod_spec_volumes_persistentvolumeclaims_info\n        * on(namespace, pod) group_left(node) kube_pod_info\n    )\n))",
+              "legendFormat": "{{node}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Top nodes \u2013 PVC disk usage (bytes)",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "The pods whose PVCs consume the most real disk, from the du-exporter mapped PVC\u2192pod. Finds the storage-hungry workloads. NOTE: this is an embedded cluster using the OpenEBS hostpath provisioner \u2013 PVCs are directories on the node's local disk, so kubelet_volume_stats_* reports the whole node filesystem for EVERY PVC (identical values). This panel instead uses the openebs_hostpath_volume_used_bytes du-exporter, which measures real per-volume usage.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes",
+              "decimals": 2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 1
+          },
+          "id": 33,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, sum by (namespace, pod) (\n(\nopenebs_hostpath_volume_used_bytes\n  * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n    label_replace(kube_persistentvolumeclaim_info{namespace=~\"$namespace\"}, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n)\n  * on(namespace, persistentvolumeclaim) group_left(pod)\n    kube_pod_spec_volumes_persistentvolumeclaims_info{namespace=~\"$namespace\"}\n))",
+              "legendFormat": "{{namespace}}/{{pod}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Top pods \u2013 PVC disk usage (bytes)",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Each PVC's real usage as a share of the node disk it lives on (openebs du-exporter used / kubelet-reported filesystem capacity). On hostpath there is no per-PVC quota, so 'how full is the PVC' is not a real number \u2013 the binding limit is node-disk fullness (see the node filesystem panel). This shows which PVCs dominate a node's disk. Orange \u2265 60%, red \u2265 80% of a single disk. NOTE: this is an embedded cluster using the OpenEBS hostpath provisioner \u2013 PVCs are directories on the node's local disk, so kubelet_volume_stats_* reports the whole node filesystem for EVERY PVC (identical values). This panel instead uses the openebs_hostpath_volume_used_bytes du-exporter, which measures real per-volume usage.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 60
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percent",
+              "decimals": 1
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 9
+          },
+          "id": 34,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, 100 * (\nopenebs_hostpath_volume_used_bytes\n  * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n    label_replace(kube_persistentvolumeclaim_info{namespace=~\"$namespace\"}, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n) / on(namespace, persistentvolumeclaim) group_left() kubelet_volume_stats_capacity_bytes)",
+              "legendFormat": "{{namespace}}/{{persistentvolumeclaim}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Top PVCs \u2013 % of node disk consumed",
+          "type": "bargauge"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Real disk consumed per PVC, from the per-directory du-exporter (openebs_hostpath_volume_used_bytes) mapped to its PVC name. Pair with the node filesystem panel to see headroom. NOTE: this is an embedded cluster using the OpenEBS hostpath provisioner \u2013 PVCs are directories on the node's local disk, so kubelet_volume_stats_* reports the whole node filesystem for EVERY PVC (identical values). This panel instead uses the openebs_hostpath_volume_used_bytes du-exporter, which measures real per-volume usage.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes",
+              "decimals": 2
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 9
+          },
+          "id": 35,
+          "options": {
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "valueMode": "color",
+            "reduceOptions": {
+              "calc": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "topk(15, sum by (namespace, persistentvolumeclaim) (\nopenebs_hostpath_volume_used_bytes\n  * on(persistentvolume) group_left(namespace, persistentvolumeclaim)\n    label_replace(kube_persistentvolumeclaim_info{namespace=~\"$namespace\"}, \"persistentvolume\", \"$1\", \"volumename\", \"(.+)\")\n))",
+              "legendFormat": "{{namespace}}/{{persistentvolumeclaim}}",
+              "range": false,
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Top PVCs \u2013 used bytes",
+          "type": "bargauge"
+        }
+      ]
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 41,
+  "tags": [
+    "pca",
+    "kubernetes",
+    "resources",
+    "nodes"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(node_uname_info{job=\"node-exporter\"}, instance)",
+        "includeAll": true,
+        "label": "node",
+        "multi": true,
+        "name": "node",
+        "options": [],
+        "query": {
+          "query": "label_values(node_uname_info{job=\"node-exporter\"}, instance)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "pca",
+          "value": "pca"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(kube_pod_info, namespace)",
+        "includeAll": true,
+        "label": "namespace",
+        "multi": true,
+        "name": "namespace",
+        "options": [],
+        "query": {
+          "query": "label_values(kube_pod_info, namespace)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(kube_pod_info{namespace=~\"$namespace\"}, pod)",
+        "includeAll": true,
+        "label": "pod",
+        "multi": true,
+        "name": "pod",
+        "options": [],
+        "query": {
+          "query": "label_values(kube_pod_info{namespace=~\"$namespace\"}, pod)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "PCA Node & Cluster Resource Health",
+  "uid": "pca-resource-health",
+  "version": 1
+}

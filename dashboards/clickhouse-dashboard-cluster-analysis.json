@@ -29,6 +29,22 @@
   "liveNow": false,
   "panels": [
     {
+      "id": 39,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# ClickHouse cluster analysis\nThis dashboard focuses on ClickHouse cluster health and coordination. It shows node, replica, and cluster-level signals used to identify unavailable members, replication issues, and resource imbalance. Use it when the overall ClickHouse dashboard indicates a platform problem, then compare affected nodes and replicas to determine the scope."
+      }
+    },
+    {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
         "uid": "${datasource}"
@@ -69,7 +85,7 @@
         "h": 5,
         "w": 4,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 2,
       "options": {
@@ -173,7 +189,7 @@
         "h": 5,
         "w": 4,
         "x": 4,
-        "y": 0
+        "y": 4
       },
       "id": 4,
       "options": {
@@ -251,7 +267,7 @@
         "h": 5,
         "w": 4,
         "x": 8,
-        "y": 0
+        "y": 4
       },
       "id": 6,
       "options": {
@@ -317,7 +333,7 @@
         "h": 5,
         "w": 4,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "id": 7,
       "options": {
@@ -383,7 +399,7 @@
         "h": 5,
         "w": 4,
         "x": 16,
-        "y": 0
+        "y": 4
       },
       "id": 8,
       "options": {
@@ -449,7 +465,7 @@
         "h": 5,
         "w": 4,
         "x": 20,
-        "y": 0
+        "y": 4
       },
       "id": 9,
       "options": {
@@ -618,7 +634,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 5
+        "y": 9
       },
       "id": 20,
       "options": {
@@ -677,7 +693,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -720,7 +736,7 @@
         "h": 7,
         "w": 5,
         "x": 0,
-        "y": 15
+        "y": 19
       },
       "id": 13,
       "options": {
@@ -742,7 +758,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -979,7 +995,7 @@
         "h": 7,
         "w": 19,
         "x": 5,
-        "y": 15
+        "y": 19
       },
       "id": 11,
       "options": {
@@ -1048,7 +1064,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1085,7 +1101,7 @@
         "h": 7,
         "w": 5,
         "x": 0,
-        "y": 22
+        "y": 26
       },
       "id": 14,
       "options": {
@@ -1107,7 +1123,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -1333,7 +1349,7 @@
         "h": 7,
         "w": 19,
         "x": 5,
-        "y": 22
+        "y": 26
       },
       "id": 15,
       "options": {
@@ -1431,7 +1447,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ClickHouse"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1454,7 +1470,7 @@
         "h": 8,
         "w": 5,
         "x": 0,
-        "y": 29
+        "y": 33
       },
       "id": 18,
       "options": {
@@ -1476,7 +1492,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ClickHouse"
+            "uid": "${datasource}"
           },
           "format": 1,
           "meta": {
@@ -1608,7 +1624,7 @@
         "h": 8,
         "w": 19,
         "x": 5,
-        "y": 29
+        "y": 33
       },
       "id": 17,
       "options": {
@@ -1699,7 +1715,7 @@
       {
         "datasource": {
           "type": "grafana-clickhouse-datasource",
-          "uid": "y-Ka8y37k"
+          "uid": "${datasource}"
         },
         "filters": [],
         "hide": 0,

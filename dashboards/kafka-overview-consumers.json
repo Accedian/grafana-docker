@@ -22,6 +22,22 @@
   "links": [],
   "panels": [
     {
+      "id": 19,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Kafka consumer overview\nThis dashboard monitors Kafka consumer groups and their progress in this deployment. It shows consumer activity, offsets, and lag-related signals that help identify consumers that are delayed, stopped, or unable to keep up with incoming data. Focus on the affected topic or consumer group, then compare its lag with throughput and broker health."
+      }
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -32,7 +48,7 @@
         "h": 10,
         "w": 10,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 14,
       "legend": {
@@ -121,7 +137,7 @@
         "h": 10,
         "w": 10,
         "x": 10,
-        "y": 0
+        "y": 4
       },
       "id": 12,
       "legend": {
@@ -211,7 +227,7 @@
         "h": 10,
         "w": 10,
         "x": 0,
-        "y": 10
+        "y": 14
       },
       "id": 16,
       "legend": {
@@ -299,7 +315,7 @@
         "h": 10,
         "w": 10,
         "x": 10,
-        "y": 10
+        "y": 14
       },
       "id": 18,
       "legend": {
@@ -388,7 +404,7 @@
         "h": 7,
         "w": 20,
         "x": 0,
-        "y": 20
+        "y": 24
       },
       "id": 8,
       "legend": {

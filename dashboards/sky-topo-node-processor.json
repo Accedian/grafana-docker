@@ -22,6 +22,22 @@
     "links": [],
     "panels": [
       {
+        "id": 9,
+        "type": "text",
+        "title": "About this dashboard",
+        "transparent": true,
+        "gridPos": {
+          "h": 4,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "options": {
+          "mode": "markdown",
+          "content": "# Sky Topo node processor\nThis dashboard focuses on the node-processor portion of Sky Topo. It shows the availability of supported routing-analytics agents, total and targeted segments, and segments that remain unassigned. Use it to identify gaps between discovered, assigned, and targeted topology data, then verify agent configuration and routing-analytics setup for the affected scope."
+        }
+      },
+      {
         "datasource": {
           "type": "prometheus"
         },
@@ -51,7 +67,7 @@
           "h": 4,
           "w": 4,
           "x": 0,
-          "y": 0
+          "y": 4
         },
         "id": 4,
         "options": {
@@ -153,7 +169,7 @@
           "h": 4,
           "w": 20,
           "x": 7,
-          "y": 0
+          "y": 4
         },
         "id": 5,
         "options": {
@@ -215,7 +231,7 @@
           "h": 4,
           "w": 4,
           "x": 0,
-          "y": 5
+          "y": 9
         },
         "id": 1,
         "options": {
@@ -317,7 +333,7 @@
           "h": 4,
           "w": 20,
           "x": 7,
-          "y": 5
+          "y": 9
         },
         "id": 6,
         "options": {
@@ -379,7 +395,7 @@
           "h": 4,
           "w": 4,
           "x": 0,
-          "y": 10
+          "y": 14
         },
         "id": 3,
         "options": {
@@ -481,7 +497,7 @@
           "h": 4,
           "w": 20,
           "x": 7,
-          "y": 10
+          "y": 14
         },
         "id": 7,
         "options": {
@@ -544,7 +560,7 @@
           "h": 4,
           "w": 4,
           "x": 0,
-          "y": 14
+          "y": 18
         },
         "id": 2,
         "options": {
@@ -646,7 +662,7 @@
           "h": 4,
           "w": 20,
           "x": 7,
-          "y": 14
+          "y": 18
         },
         "id": 8,
         "options": {

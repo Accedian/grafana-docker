@@ -34,6 +34,22 @@
   ],
   "panels": [
     {
+      "id": 25,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Kubernetes kubelet\nThis dashboard monitors kubelet health and node-agent operations. It shows running kubelets, pods and containers; volume and cgroup operations; pod-start and PLEG timing; RPC behavior; and kubelet CPU, memory, and goroutines. Use it to diagnose node-level scheduling, storage, lifecycle, or agent-performance issues."
+      }
+    },
+    {
       "datasource": {
         "type": "datasource",
         "uid": "-- Mixed --"
@@ -62,7 +78,7 @@
         "h": 7,
         "w": 4,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 1,
       "interval": "1m",
@@ -127,7 +143,7 @@
         "h": 7,
         "w": 4,
         "x": 4,
-        "y": 0
+        "y": 4
       },
       "id": 2,
       "interval": "1m",
@@ -192,7 +208,7 @@
         "h": 7,
         "w": 4,
         "x": 8,
-        "y": 0
+        "y": 4
       },
       "id": 3,
       "interval": "1m",
@@ -257,7 +273,7 @@
         "h": 7,
         "w": 4,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "id": 4,
       "interval": "1m",
@@ -322,7 +338,7 @@
         "h": 7,
         "w": 4,
         "x": 16,
-        "y": 0
+        "y": 4
       },
       "id": 5,
       "interval": "1m",
@@ -387,7 +403,7 @@
         "h": 7,
         "w": 4,
         "x": 20,
-        "y": 0
+        "y": 4
       },
       "id": 6,
       "interval": "1m",
@@ -488,7 +504,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 7
+        "y": 11
       },
       "id": 7,
       "interval": "1m",
@@ -587,7 +603,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 7
+        "y": 11
       },
       "id": 8,
       "interval": "1m",
@@ -686,7 +702,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 18
       },
       "id": 9,
       "interval": "1m",
@@ -785,7 +801,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 21
+        "y": 25
       },
       "id": 10,
       "interval": "1m",
@@ -893,7 +909,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 21
+        "y": 25
       },
       "id": 11,
       "interval": "1m",
@@ -1001,7 +1017,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 28
+        "y": 32
       },
       "id": 12,
       "interval": "1m",
@@ -1100,7 +1116,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 28
+        "y": 32
       },
       "id": 13,
       "interval": "1m",
@@ -1199,7 +1215,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 35
+        "y": 39
       },
       "id": 14,
       "interval": "1m",
@@ -1298,7 +1314,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 42
+        "y": 46
       },
       "id": 15,
       "interval": "1m",
@@ -1397,7 +1413,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 42
+        "y": 46
       },
       "id": 16,
       "interval": "1m",
@@ -1496,7 +1512,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 49
+        "y": 53
       },
       "id": 17,
       "interval": "1m",
@@ -1595,7 +1611,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 49
+        "y": 53
       },
       "id": 18,
       "interval": "1m",
@@ -1694,7 +1710,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 56
+        "y": 60
       },
       "id": 19,
       "interval": "1m",
@@ -1793,7 +1809,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 63
+        "y": 67
       },
       "id": 20,
       "interval": "1m",
@@ -1919,7 +1935,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 70
+        "y": 74
       },
       "id": 21,
       "interval": "1m",
@@ -2018,7 +2034,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 77
+        "y": 81
       },
       "id": 22,
       "interval": "1m",
@@ -2117,7 +2133,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 77
+        "y": 81
       },
       "id": 23,
       "interval": "1m",
@@ -2216,7 +2232,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 77
+        "y": 81
       },
       "id": 24,
       "interval": "1m",

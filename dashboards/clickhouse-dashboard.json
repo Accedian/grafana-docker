@@ -19,6 +19,22 @@
   "links": [],
   "panels": [
     {
+      "id": 12,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# ClickHouse\nUse this dashboard to monitor overall ClickHouse service health and workload behavior in this deployment. It provides a starting point for investigating cluster availability, query activity, resource use, and storage behavior. When a signal is abnormal, use the companion ClickHouse cluster, query, or data-analysis dashboards for a more focused diagnosis."
+      }
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -32,7 +48,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 1,
       "isNew": true,
@@ -125,7 +141,7 @@
         "h": 7,
         "w": 16,
         "x": 8,
-        "y": 0
+        "y": 4
       },
       "id": 2,
       "isNew": true,
@@ -240,7 +256,7 @@
         "h": 7,
         "w": 6,
         "x": 0,
-        "y": 7
+        "y": 11
       },
       "id": 3,
       "isNew": true,
@@ -361,7 +377,7 @@
         "h": 7,
         "w": 2,
         "x": 6,
-        "y": 7
+        "y": 11
       },
       "id": 6,
       "interval": null,
@@ -438,7 +454,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 7
+        "y": 11
       },
       "id": 7,
       "isNew": true,
@@ -531,7 +547,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 7
+        "y": 11
       },
       "id": 8,
       "isNew": true,
@@ -634,7 +650,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 14
+        "y": 18
       },
       "id": 4,
       "isNew": true,
@@ -735,7 +751,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 14
+        "y": 18
       },
       "id": 9,
       "isNew": true,
@@ -828,7 +844,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 21
+        "y": 25
       },
       "id": 5,
       "isNew": true,
@@ -939,7 +955,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 21
+        "y": 25
       },
       "id": 10,
       "isNew": true,
@@ -1032,7 +1048,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 32
       },
       "id": 11,
       "isNew": true,
