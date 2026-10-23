@@ -439,7 +439,7 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "count(node_uname_info{job=\"node-exporter\"})",
-          "range": true,
+          "range": false,
           "instant": true,
           "refId": "A"
         }

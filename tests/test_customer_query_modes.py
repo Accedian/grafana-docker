@@ -16,7 +16,7 @@ class CustomerQueryModesTest(unittest.TestCase):
     SNAPSHOT_IDS = {
         "pca-ingestion-pipeline.json": {3, 4, 5, 6, 7, 8},
         "pca-resource-health.json": {
-            3, 4, 5, 6, 7, 16, 17, 18, 23, 24,
+            3, 4, 5, 6, 7, 8, 16, 17, 18, 23, 24,
             25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
         },
         "pca-sensor-connectivity.json": {3, 4, 5, 6, 8},

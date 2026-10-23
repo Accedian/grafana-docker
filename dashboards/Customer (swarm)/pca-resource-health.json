@@ -446,7 +446,7 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "count(node_uname_info{job=~\"sysmetrics|sysmetrics-private-cloud\"})",
-          "range": true,
+          "range": false,
           "instant": true,
           "refId": "A",
           "interval": "2m"
