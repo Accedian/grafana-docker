@@ -22,6 +22,22 @@
   "links": [],
   "panels": [
     {
+      "id": 21,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Kubernetes node resources\nThis dashboard monitors host-level CPU, memory, disk, and network usage for Kubernetes nodes. Use it to identify a node under sustained resource pressure and to compare its behavior with the rest of the deployment. Open the node-pods dashboard next to determine whether pod placement or host-level activity is responsible."
+      }
+    },
+    {
       "collapsed": false,
       "datasource": {
         "type": "prometheus",
@@ -31,7 +47,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 10,
       "panels": [],
@@ -113,7 +129,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 1
+        "y": 5
       },
       "id": 2,
       "options": {
@@ -208,7 +224,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 1
+        "y": 5
       },
       "id": 3,
       "options": {
@@ -278,7 +294,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 12
       },
       "id": 11,
       "panels": [],
@@ -359,7 +375,7 @@
         "h": 7,
         "w": 18,
         "x": 0,
-        "y": 9
+        "y": 13
       },
       "id": 4,
       "options": {
@@ -453,7 +469,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 9
+        "y": 13
       },
       "id": 5,
       "options": {
@@ -497,7 +513,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 20
       },
       "id": 12,
       "panels": [],
@@ -594,7 +610,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 17
+        "y": 21
       },
       "id": 6,
       "options": {
@@ -759,7 +775,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 17
+        "y": 21
       },
       "id": 7,
       "options": {
@@ -896,7 +912,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 28
       },
       "id": 13,
       "panels": [],
@@ -928,7 +944,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 25
+        "y": 29
       },
       "id": 8,
       "legend": {
@@ -1009,7 +1025,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 25
+        "y": 29
       },
       "id": 9,
       "legend": {

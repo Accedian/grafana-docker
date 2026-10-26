@@ -21,6 +21,22 @@
   "links": [],
   "panels": [
     {
+      "id": 21,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Docker host and container overview\nThis dashboard provides an infrastructure view of Docker hosts and containers. It shows host and container CPU, memory, disk, I/O, network traffic, load, and container counts. Use it to identify whether a service problem aligns with host resource pressure or a single container’s behavior; availability depends on the Docker and cAdvisor metrics being collected."
+      }
+    },
+    {
       "aliasColors": {
         "SENT": "#BF1B00"
       },
@@ -36,7 +52,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 19,
       "isNew": true,
@@ -134,7 +150,7 @@
         "h": 4,
         "w": 2,
         "x": 4,
-        "y": 0
+        "y": 4
       },
       "id": 7,
       "isNew": true,
@@ -247,7 +263,7 @@
         "h": 4,
         "w": 4,
         "x": 6,
-        "y": 0
+        "y": 4
       },
       "id": 5,
       "isNew": true,
@@ -375,7 +391,7 @@
         "h": 4,
         "w": 4,
         "x": 10,
-        "y": 0
+        "y": 4
       },
       "id": 13,
       "isNew": true,
@@ -472,7 +488,7 @@
         "h": 4,
         "w": 4,
         "x": 14,
-        "y": 0
+        "y": 4
       },
       "id": 20,
       "isNew": true,
@@ -678,7 +694,7 @@
         "h": 4,
         "w": 6,
         "x": 18,
-        "y": 0
+        "y": 4
       },
       "id": 3,
       "isNew": true,
@@ -777,7 +793,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 4
+        "y": 8
       },
       "id": 1,
       "isNew": true,
@@ -868,7 +884,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 4
+        "y": 8
       },
       "id": 4,
       "isNew": true,
@@ -954,7 +970,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 12
+        "y": 16
       },
       "id": 9,
       "isNew": true,
@@ -1050,7 +1066,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 12
+        "y": 16
       },
       "id": 10,
       "isNew": true,
@@ -1144,7 +1160,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 18
+        "y": 22
       },
       "id": 8,
       "isNew": true,
@@ -1238,7 +1254,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 18
+        "y": 22
       },
       "id": 11,
       "isNew": true,
@@ -1341,7 +1357,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 24
+        "y": 28
       },
       "hideTimeOverride": false,
       "id": 18,

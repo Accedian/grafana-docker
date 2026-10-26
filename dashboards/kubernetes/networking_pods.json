@@ -34,6 +34,22 @@
   ],
   "panels": [
     {
+      "id": 25,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Kubernetes pod networking\nUse this dashboard for per-pod Kubernetes network diagnostics. It shows receive and transmit traffic, bandwidth, packet rates, and dropped packets for the selected pod. Compare the affected pod with its normal baseline and related namespace traffic to identify localized connectivity or workload behavior changes."
+      }
+    },
+    {
       "datasource": {
         "type": "datasource",
         "uid": "-- Mixed --"
@@ -72,7 +88,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 1,
       "options": {
@@ -144,7 +160,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "id": 2,
       "options": {
@@ -242,7 +258,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 9
+        "y": 13
       },
       "id": 3,
       "interval": "1m",
@@ -266,7 +282,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(container_network_receive_bytes_total{cluster=\"$cluster\",namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
+          "expr": "sum(rate(container_network_receive_bytes_total{cluster=\"$cluster\",namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (namespace, pod)",
           "legendFormat": "__auto",
           "refId": "A"
         }
@@ -339,7 +355,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 9
+        "y": 13
       },
       "id": 4,
       "interval": "1m",
@@ -363,7 +379,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(container_network_transmit_bytes_total{cluster=\"$cluster\",namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
+          "expr": "sum(rate(container_network_transmit_bytes_total{cluster=\"$cluster\",namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (namespace, pod)",
           "legendFormat": "__auto",
           "refId": "A"
         }
@@ -436,7 +452,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 18
+        "y": 22
       },
       "id": 5,
       "interval": "1m",
@@ -460,7 +476,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(container_network_receive_packets_total{cluster=\"$cluster\",namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
+          "expr": "sum(rate(container_network_receive_packets_total{cluster=\"$cluster\",namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (namespace, pod)",
           "legendFormat": "__auto",
           "refId": "A"
         }
@@ -533,7 +549,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 18
+        "y": 22
       },
       "id": 6,
       "interval": "1m",
@@ -557,7 +573,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(container_network_transmit_packets_total{cluster=\"$cluster\",namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
+          "expr": "sum(rate(container_network_transmit_packets_total{cluster=\"$cluster\",namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (namespace, pod)",
           "legendFormat": "__auto",
           "refId": "A"
         }
@@ -630,7 +646,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 27
+        "y": 31
       },
       "id": 7,
       "interval": "1m",
@@ -654,7 +670,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(container_network_receive_packets_dropped_total{cluster=\"$cluster\",namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
+          "expr": "sum(rate(container_network_receive_packets_dropped_total{cluster=\"$cluster\",namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (namespace, pod)",
           "legendFormat": "__auto",
           "refId": "A"
         }
@@ -727,7 +743,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 27
+        "y": 31
       },
       "id": 8,
       "interval": "1m",
@@ -751,7 +767,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(container_network_transmit_packets_dropped_total{cluster=\"$cluster\",namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
+          "expr": "sum(rate(container_network_transmit_packets_dropped_total{cluster=\"$cluster\",namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (namespace, pod)",
           "legendFormat": "__auto",
           "refId": "A"
         }

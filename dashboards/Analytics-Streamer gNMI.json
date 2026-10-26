@@ -67,6 +67,22 @@
   "liveNow": false,
   "panels": [
     {
+      "id": 25,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Analytics Streamer gNMI\nUse this dashboard to monitor gNMI-based Analytics Streamer collection in this deployment. It shows collector activity and processing signals that help identify unavailable telemetry sources, reduced collection volume, and failures in the gNMI ingestion path. Investigate persistent drops or errors with the affected source configuration and the related collector logs."
+      }
+    },
+    {
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -109,7 +125,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 2,
       "links": [],
@@ -184,7 +200,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 10,
@@ -293,7 +309,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 7
+        "y": 11
       },
       "id": 6,
       "options": {
@@ -422,7 +438,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 7
+        "y": 11
       },
       "hiddenSeries": false,
       "id": 4,
@@ -548,7 +564,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 14
+        "y": 18
       },
       "hiddenSeries": false,
       "id": 24,
@@ -642,7 +658,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 14
+        "y": 18
       },
       "hiddenSeries": false,
       "id": 8,
@@ -739,7 +755,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 22
+        "y": 26
       },
       "hiddenSeries": false,
       "id": 20,
@@ -834,7 +850,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 22
+        "y": 26
       },
       "hiddenSeries": false,
       "id": 22,
@@ -927,7 +943,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 30
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 14,
@@ -1022,7 +1038,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 30
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 12,
@@ -1117,7 +1133,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 38
+        "y": 42
       },
       "hiddenSeries": false,
       "id": 18,
@@ -1210,7 +1226,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 38
+        "y": 42
       },
       "hiddenSeries": false,
       "id": 16,

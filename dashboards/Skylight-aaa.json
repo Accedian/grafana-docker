@@ -23,12 +23,28 @@
   "liveNow": false,
   "panels": [
     {
+      "id": 10,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Skylight AAA\nUse this dashboard to monitor the Skylight AAA service, including client and OCSP certificate status, tenant certificate-expiry horizons, API traffic and duration, and cache activity. Review certificate panels before investigating authentication failures, then use request and cache signals to determine whether the issue is isolated to a tenant, certificate path, or service performance."
+      }
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 5,
       "panels": [],
@@ -99,7 +115,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 1
+        "y": 5
       },
       "id": 2,
       "options": {
@@ -233,7 +249,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 1
+        "y": 5
       },
       "id": 9,
       "options": {
@@ -335,7 +351,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 13
       },
       "id": 1,
       "options": {
@@ -377,7 +393,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 20
       },
       "id": 6,
       "panels": [],
@@ -447,7 +463,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 17
+        "y": 21
       },
       "id": 3,
       "options": {
@@ -565,7 +581,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 17
+        "y": 21
       },
       "id": 4,
       "options": {
@@ -682,7 +698,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 25
+        "y": 29
       },
       "id": 7,
       "options": {
@@ -782,7 +798,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 25
+        "y": 29
       },
       "id": 8,
       "options": {

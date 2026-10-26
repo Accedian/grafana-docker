@@ -25,6 +25,22 @@
     "links": [],
     "panels": [
       {
+        "id": 73,
+        "type": "text",
+        "title": "About this dashboard",
+        "transparent": true,
+        "gridPos": {
+          "h": 4,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "options": {
+          "mode": "markdown",
+          "content": "# Stitchit metrics\nThis dashboard tracks request latency for the Stitchit service in this deployment. It shows API-call duration alongside Dgraph-call duration so operators can distinguish service-side delay from graph-database dependency latency. Compare both panels over the same time range when requests become slow or time out."
+        }
+      },
+      {
         "datasource": "Prometheus",
         "fieldConfig": {
           "defaults": {
@@ -86,7 +102,7 @@
           "h": 10,
           "w": 11,
           "x": 0,
-          "y": 0
+          "y": 4
         },
         "id": 8,
         "options": {
@@ -181,7 +197,7 @@
           "h": 10,
           "w": 11,
           "x": 11,
-          "y": 0
+          "y": 4
         },
         "id": 21,
         "options": {

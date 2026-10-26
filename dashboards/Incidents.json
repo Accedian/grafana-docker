@@ -19,13 +19,29 @@
   "links": [],
   "panels": [
     {
+      "id": 28,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Incidents\nUse this dashboard to investigate the incident-processing workflow in this deployment. It brings together batch throughput and rows, heartbeat and lag signals, Dgraph latency, alert statistics, Kafka lag, and JVM resource indicators. Start with the affected workflow signal, then use the surrounding throughput, lag, and resource panels to distinguish an upstream data delay from a processing or capacity issue."
+      }
+    },
+    {
       "collapsed": false,
       "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 12,
       "panels": [],
@@ -38,20 +54,14 @@
         "conditions": [
           {
             "evaluator": {
-              "params": [
-                1
-              ],
+              "params": [1],
               "type": "lt"
             },
             "operator": {
               "type": "and"
             },
             "query": {
-              "params": [
-                "C",
-                "10m",
-                "now"
-              ]
+              "params": ["C", "10m", "now"]
             },
             "reducer": {
               "params": [],
@@ -65,7 +75,7 @@
         "frequency": "1m",
         "handler": 1,
         "message": "IncidentBuilder is slow",
-        "name": "Trhroughput alert",
+        "name": "Throughput alert",
         "noDataState": "no_data",
         "notifications": []
       },
@@ -80,7 +90,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 1
+        "y": 5
       },
       "hiddenSeries": false,
       "id": 10,
@@ -140,7 +150,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Trhroughput",
+      "title": "Throughput",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -189,7 +199,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 1
+        "y": 5
       },
       "hiddenSeries": false,
       "id": 14,
@@ -271,20 +281,14 @@
         "conditions": [
           {
             "evaluator": {
-              "params": [
-                1
-              ],
+              "params": [1],
               "type": "lt"
             },
             "operator": {
               "type": "and"
             },
             "query": {
-              "params": [
-                "B",
-                "10m",
-                "now"
-              ]
+              "params": ["B", "10m", "now"]
             },
             "reducer": {
               "params": [],
@@ -301,11 +305,7 @@
               "type": "or"
             },
             "query": {
-              "params": [
-                "B",
-                "10m",
-                "now"
-              ]
+              "params": ["B", "10m", "now"]
             },
             "reducer": {
               "params": [],
@@ -319,7 +319,7 @@
         "frequency": "1m",
         "handler": 1,
         "message": "IncidentBuilder is down",
-        "name": "heartbeat alert",
+        "name": "Heartbeat alert",
         "noDataState": "alerting",
         "notifications": []
       },
@@ -334,7 +334,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 7
+        "y": 11
       },
       "hiddenSeries": false,
       "id": 16,
@@ -388,7 +388,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "heartbeat",
+      "title": "Heartbeat",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -437,7 +437,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 7
+        "y": 11
       },
       "hiddenSeries": false,
       "id": 18,
@@ -520,7 +520,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 17
       },
       "id": 20,
       "panels": [],
@@ -539,7 +539,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 14
+        "y": 18
       },
       "hiddenSeries": false,
       "id": 22,
@@ -633,7 +633,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 14
+        "y": 18
       },
       "hiddenSeries": false,
       "id": 24,
@@ -735,7 +735,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 20
+        "y": 24
       },
       "hiddenSeries": false,
       "id": 26,
@@ -830,7 +830,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 20
+        "y": 24
       },
       "hiddenSeries": false,
       "id": 27,
@@ -915,7 +915,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 32
       },
       "id": 4,
       "panels": [],
@@ -934,7 +934,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 29
+        "y": 33
       },
       "hiddenSeries": false,
       "id": 2,
@@ -1022,7 +1022,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 29
+        "y": 33
       },
       "hiddenSeries": false,
       "id": 6,
@@ -1110,7 +1110,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 36
+        "y": 40
       },
       "hiddenSeries": false,
       "id": 8,

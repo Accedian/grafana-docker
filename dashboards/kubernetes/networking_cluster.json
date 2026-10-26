@@ -34,6 +34,22 @@
   ],
   "panels": [
     {
+      "id": 14,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Kubernetes cluster networking\nUse this dashboard to assess aggregate Kubernetes network behavior across the deployment. It shows receive and transmit traffic, bandwidth, packets and drops, TCP retransmits, and current network status. Investigate sustained drops, retransmits, or unusual traffic by comparing the cluster trend with the namespace and pod networking dashboards."
+      }
+    },
+    {
       "datasource": {
         "type": "datasource",
         "uid": "-- Mixed --"
@@ -98,7 +114,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 1,
       "interval": "1m",
@@ -195,7 +211,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "id": 2,
       "interval": "1m",
@@ -304,7 +320,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 13
       },
       "id": 3,
       "options": {
@@ -525,7 +541,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 18
+        "y": 22
       },
       "id": 4,
       "interval": "1m",
@@ -622,7 +638,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 18
+        "y": 22
       },
       "id": 5,
       "interval": "1m",
@@ -719,7 +735,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 27
+        "y": 31
       },
       "id": 6,
       "interval": "1m",
@@ -816,7 +832,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 27
+        "y": 31
       },
       "id": 7,
       "interval": "1m",
@@ -913,7 +929,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 36
+        "y": 40
       },
       "id": 8,
       "interval": "1m",
@@ -1010,7 +1026,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 36
+        "y": 40
       },
       "id": 9,
       "interval": "1m",
@@ -1107,7 +1123,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 45
+        "y": 49
       },
       "id": 10,
       "interval": "1m",
@@ -1204,7 +1220,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 45
+        "y": 49
       },
       "id": 11,
       "interval": "1m",
@@ -1301,7 +1317,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 54
+        "y": 58
       },
       "id": 12,
       "interval": "1m",
@@ -1398,7 +1414,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 54
+        "y": 58
       },
       "id": 13,
       "interval": "1m",

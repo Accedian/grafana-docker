@@ -34,6 +34,22 @@
   ],
   "panels": [
     {
+      "id": 12,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Kubernetes node pod resources\nThis dashboard shows the CPU and memory consumption of pods scheduled on each Kubernetes node. Use it when a node is constrained to identify the pods contributing most to utilization or quota pressure. Drill into the relevant pod or namespace after locating the workload."
+      }
+    },
+    {
       "datasource": {
         "type": "datasource",
         "uid": "-- Mixed --"
@@ -137,7 +153,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 1,
       "interval": "1m",
@@ -245,7 +261,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 6
+        "y": 10
       },
       "id": 2,
       "options": {
@@ -451,7 +467,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 12
+        "y": 16
       },
       "id": 3,
       "interval": "1m",
@@ -560,7 +576,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 22
       },
       "id": 4,
       "options": {

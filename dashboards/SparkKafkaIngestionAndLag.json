@@ -25,6 +25,22 @@
   "links": [],
   "panels": [
     {
+      "id": 23,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Spark ingestion and lag\nUse this dashboard to monitor Spark streaming ingestion and backlog behavior in this deployment. It shows record counts and ingestion rate, contemporary and latent lag, dropped records, batch partitions and duration, forecasting activity, and Spark local disk use. Compare intake, lag, and batch duration to determine whether data delay originates upstream, from Spark processing capacity, or from local storage pressure."
+      }
+    },
+    {
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
@@ -86,16 +102,13 @@
         "h": 14,
         "w": 11,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 16,
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull"
-          ],
+          "calcs": ["mean", "lastNotNull"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -204,16 +217,13 @@
         "h": 14,
         "w": 11,
         "x": 11,
-        "y": 0
+        "y": 4
       },
       "id": 21,
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull"
-          ],
+          "calcs": ["mean", "lastNotNull"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -248,7 +258,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "kafka_consumergroup_lag_sum{consumergroup=\"alertStreaming\", topic=~\"ignite.contemporary.*\"}",
@@ -261,7 +271,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"ignite.contemporary.*\"}[2m])",
@@ -274,7 +284,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=\"alert-events\"}[2m])",
@@ -350,16 +360,13 @@
         "h": 10,
         "w": 11,
         "x": 0,
-        "y": 14
+        "y": 18
       },
       "id": 2,
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull"
-          ],
+          "calcs": ["mean", "lastNotNull"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -447,16 +454,13 @@
         "h": 14,
         "w": 11,
         "x": 11,
-        "y": 14
+        "y": 18
       },
       "id": 22,
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull"
-          ],
+          "calcs": ["mean", "lastNotNull"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -471,7 +475,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"latentapp\", topic=~\"ignite.latent.*\"}",
+          "expr": "kafka_consumergroup_lag_sum{consumergroup=\"ignite\", topic=~\"latent_raw_in\\\\..*\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -482,7 +486,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "kafka_consumergroup_lag_sum{consumergroup=\"alertStreaming\", topic=~\"ignite.latent.*\"}",
@@ -496,7 +500,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "avg_over_time(spark_kafkaProcessingLag{job=\"SparkKafkaLagMonitor\", topic=~\"ignite.latent.*\"}[2m])",
@@ -542,7 +546,7 @@
         "h": 9,
         "w": 11,
         "x": 0,
-        "y": 24
+        "y": 28
       },
       "id": 8,
       "options": {
@@ -550,9 +554,7 @@
         "footer": {
           "countRows": false,
           "fields": "",
-          "reducer": [
-            "sum"
-          ],
+          "reducer": ["sum"],
           "show": false
         },
         "showHeader": true
@@ -562,7 +564,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum by(job, tenant,objectType, cause) (spark_AccedianStreamingMetrics_streaming_droppedRecCount_total)",
+          "expr": "sum by(job, tenant, objectType, cause) (spark_AccedianStreamingMetrics_streaming_droppedRecCount_total) or (0 * absent(spark_AccedianStreamingMetrics_streaming_droppedRecCount_total))",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -645,7 +647,7 @@
         "h": 9,
         "w": 11,
         "x": 11,
-        "y": 28
+        "y": 32
       },
       "id": 19,
       "options": {
@@ -736,17 +738,13 @@
         "h": 13,
         "w": 11,
         "x": 0,
-        "y": 33
+        "y": 37
       },
       "id": 14,
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "min"
-          ],
+          "calcs": ["mean", "max", "min"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -848,15 +846,13 @@
         "h": 13,
         "w": 11,
         "x": 11,
-        "y": 37
+        "y": 41
       },
       "id": 20,
       "interval": "2m",
       "options": {
         "legend": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true,
@@ -946,7 +942,7 @@
         "h": 13,
         "w": 11,
         "x": 11,
-        "y": 50
+        "y": 54
       },
       "id": 12,
       "options": {
@@ -968,7 +964,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "100.0 - 100 * (node_filesystem_avail_bytes{instance=~'.*sparkworker.*|.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"} / node_filesystem_size_bytes{instance=~'.*sparkworker.*|.*hdfsdata.*', device !~'tmpfs',device!~'by-uuid', mountpoint=\"/mnt/spark\"})",
+          "expr": "100 * kubelet_volume_stats_used_bytes{namespace=\"pca\",persistentvolumeclaim=~\"data-sparkworker-.*\"} / kubelet_volume_stats_capacity_bytes{namespace=\"pca\",persistentvolumeclaim=~\"data-sparkworker-.*\"}",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -982,9 +978,7 @@
   "preload": false,
   "refresh": "",
   "schemaVersion": 41,
-  "tags": [
-    "spark"
-  ],
+  "tags": ["spark"],
   "templating": {
     "list": []
   },

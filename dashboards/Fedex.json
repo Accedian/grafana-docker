@@ -29,6 +29,22 @@
   "liveNow": false,
   "panels": [
     {
+      "id": 32,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# FedEx service\nThis dashboard monitors the FedEx data-processing service and its Roadrunner and Kafka interactions. It shows WebSocket teardown and rejection activity, rejected batches, read and acknowledgement timing, file and message processing times, Kafka byte counts, producer-channel timing, and Roadrunner activity. Use the panels to locate whether a delivery problem is caused by connection handling, batch acceptance, processing latency, or Kafka publishing."
+      }
+    },
+    {
       "datasource": "Prometheus",
       "description": "",
       "fieldConfig": {
@@ -87,7 +103,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 19,
       "options": {
@@ -184,7 +200,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 11
+        "y": 15
       },
       "id": 20,
       "options": {
@@ -240,7 +256,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 26
       },
       "hiddenSeries": false,
       "id": 8,
@@ -338,7 +354,7 @@
         "h": 13,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 37
       },
       "hiddenSeries": false,
       "id": 4,
@@ -427,7 +443,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 46
+        "y": 50
       },
       "hiddenSeries": false,
       "id": 6,
@@ -515,7 +531,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 58
+        "y": 62
       },
       "hiddenSeries": false,
       "id": 12,
@@ -644,7 +660,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 68
+        "y": 72
       },
       "id": 2,
       "options": {
@@ -691,7 +707,7 @@
         "h": 14,
         "w": 24,
         "x": 0,
-        "y": 79
+        "y": 83
       },
       "hiddenSeries": false,
       "id": 10,
@@ -816,7 +832,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 93
+        "y": 97
       },
       "id": 16,
       "links": [],

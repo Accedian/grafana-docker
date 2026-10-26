@@ -23,6 +23,22 @@
   "liveNow": false,
   "panels": [
     {
+      "id": 15,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Routing Analytics Collector\nUse this dashboard to monitor the Routing Analytics Collector and the data it gathers for this deployment. It provides collection and processing signals that help diagnose missing, delayed, or incomplete routing-analytics data. Review the relevant source and time range, then correlate errors or declining volume with agent configuration and downstream ingestion health."
+      }
+    },
+    {
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
@@ -83,7 +99,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 12,
       "options": {
@@ -177,7 +193,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "id": 10,
       "options": {
@@ -271,7 +287,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 12
       },
       "id": 11,
       "options": {
@@ -365,7 +381,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 14
+        "y": 18
       },
       "id": 13,
       "options": {
@@ -460,7 +476,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 14
+        "y": 18
       },
       "id": 14,
       "options": {
@@ -555,7 +571,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 26
       },
       "id": 9,
       "options": {
@@ -776,7 +792,7 @@
         "h": 4,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 32
       },
       "id": 8,
       "options": {
@@ -1012,7 +1028,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 32
+        "y": 36
       },
       "id": 1,
       "options": {
@@ -1113,7 +1129,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 32
+        "y": 36
       },
       "id": 2,
       "options": {
@@ -1214,7 +1230,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 38
+        "y": 42
       },
       "id": 4,
       "options": {
@@ -1315,7 +1331,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 38
+        "y": 42
       },
       "id": 3,
       "options": {
@@ -1416,7 +1432,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 46
+        "y": 50
       },
       "id": 6,
       "options": {
@@ -1517,7 +1533,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 46
+        "y": 50
       },
       "id": 7,
       "options": {

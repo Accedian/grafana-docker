@@ -70,12 +70,28 @@
   "liveNow": false,
   "panels": [
     {
+      "id": 128,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# VictoriaMetrics vmagent\nThis dashboard monitors vmagent, which scrapes and forwards Prometheus-compatible metrics for this deployment. It shows scrape targets, ingestion and forwarding activity, errors, queue behavior, and resource usage. Use it when dashboards are missing or delayed metrics to determine whether the issue is target scraping, local buffering, remote write, or vmagent capacity."
+      }
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 105,
       "panels": [],
@@ -107,7 +123,7 @@
         "h": 3,
         "w": 4,
         "x": 0,
-        "y": 1
+        "y": 5
       },
       "id": 103,
       "links": [
@@ -174,7 +190,7 @@
         "h": 3,
         "w": 4,
         "x": 4,
-        "y": 1
+        "y": 5
       },
       "id": 102,
       "links": [
@@ -241,7 +257,7 @@
         "h": 3,
         "w": 4,
         "x": 8,
-        "y": 1
+        "y": 5
       },
       "id": 9,
       "options": {
@@ -304,7 +320,7 @@
         "h": 3,
         "w": 4,
         "x": 12,
-        "y": 1
+        "y": 5
       },
       "id": 72,
       "links": [
@@ -375,7 +391,7 @@
         "h": 3,
         "w": 4,
         "x": 16,
-        "y": 1
+        "y": 5
       },
       "id": 16,
       "links": [
@@ -446,7 +462,7 @@
         "h": 3,
         "w": 4,
         "x": 20,
-        "y": 1
+        "y": 5
       },
       "id": 56,
       "options": {
@@ -542,7 +558,7 @@
         "h": 5,
         "w": 8,
         "x": 0,
-        "y": 4
+        "y": 8
       },
       "id": 101,
       "options": {
@@ -638,7 +654,7 @@
         "h": 5,
         "w": 16,
         "x": 8,
-        "y": 4
+        "y": 8
       },
       "id": 13,
       "options": {
@@ -686,7 +702,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 13
       },
       "id": 24,
       "panels": [],
@@ -784,7 +800,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 10
+        "y": 14
       },
       "id": 5,
       "options": {
@@ -907,7 +923,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 10
+        "y": 14
       },
       "id": 17,
       "links": [
@@ -1018,7 +1034,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 18
+        "y": 22
       },
       "id": 107,
       "links": [],
@@ -1127,7 +1143,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 18
+        "y": 22
       },
       "id": 49,
       "links": [
@@ -1235,7 +1251,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 26
+        "y": 30
       },
       "id": 15,
       "links": [],
@@ -1337,7 +1353,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 26
+        "y": 30
       },
       "id": 69,
       "links": [
@@ -1439,7 +1455,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 34
+        "y": 38
       },
       "id": 45,
       "panels": [
@@ -2269,7 +2285,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 35
+        "y": 39
       },
       "id": 94,
       "panels": [
@@ -3130,7 +3146,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 40
       },
       "id": 28,
       "panels": [
@@ -3817,7 +3833,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 37
+        "y": 41
       },
       "id": 71,
       "panels": [
@@ -4072,7 +4088,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 42
       },
       "id": 58,
       "panels": [
@@ -4800,7 +4816,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 43
       },
       "id": 113,
       "panels": [

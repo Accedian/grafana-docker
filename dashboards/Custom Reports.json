@@ -19,6 +19,22 @@
   "links": [],
   "panels": [
     {
+      "id": 43,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Custom reports\nUse this dashboard to monitor the custom-reports service in this deployment. It shows total report requests, report downloads, and storage-related usage. Compare request and download trends to understand service adoption, and review storage behavior when report generation or retrieval becomes slow or unreliable."
+      }
+    },
+    {
       "aliasColors": {},
       "bars": true,
       "dashLength": 10,
@@ -30,7 +46,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 2,
@@ -118,7 +134,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 4,
@@ -206,7 +222,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 9
+        "y": 13
       },
       "hiddenSeries": false,
       "id": 6,

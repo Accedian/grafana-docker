@@ -21,6 +21,22 @@
   "links": [],
   "panels": [
     {
+      "id": 26,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Pyloth\nThis dashboard monitors Pyloth request traffic and runtime resource use. It shows requests per minute, CPU and memory, total requests, error and requested routes by tenant, average response time, and response status trends. Use it to identify a tenant or route that is producing errors or latency and compare it with service resource consumption."
+      }
+    },
+    {
       "aliasColors": {
         "GET none": "red",
         "none": "red"
@@ -42,7 +58,7 @@
         "h": 6,
         "w": 8,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 20,
@@ -145,7 +161,7 @@
         "h": 6,
         "w": 8,
         "x": 8,
-        "y": 0
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 14,
@@ -244,7 +260,7 @@
         "h": 6,
         "w": 8,
         "x": 16,
-        "y": 0
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 16,
@@ -337,7 +353,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 6
+        "y": 10
       },
       "hiddenSeries": false,
       "id": 4,
@@ -433,7 +449,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 6
+        "y": 10
       },
       "hiddenSeries": false,
       "id": 6,
@@ -528,7 +544,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 6
+        "y": 10
       },
       "hiddenSeries": false,
       "id": 5,
@@ -623,7 +639,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 13
+        "y": 17
       },
       "hiddenSeries": false,
       "id": 18,
@@ -729,7 +745,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 13
+        "y": 17
       },
       "hiddenSeries": false,
       "id": 12,

@@ -30,6 +30,22 @@
     "liveNow": false,
     "panels": [
       {
+        "id": 25,
+        "type": "text",
+        "title": "About this dashboard",
+        "transparent": true,
+        "gridPos": {
+          "h": 4,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "options": {
+          "mode": "markdown",
+          "content": "# Foxtrot service\nThis dashboard monitors the Foxtrot service’s availability and request-processing behavior. It shows instance status, REST API and database call duration, WebSocket message volume and duration, and unhandled WebSocket messages. Use it to determine whether a client-facing issue is caused by service availability, API performance, database latency, or WebSocket processing."
+        }
+      },
+      {
         "datasource": "Prometheus",
         "description": "Drops means the service was not running",
         "fieldConfig": {
@@ -87,7 +103,7 @@
           "h": 5,
           "w": 24,
           "x": 0,
-          "y": 0
+          "y": 4
         },
         "id": 12,
         "options": {
@@ -174,7 +190,7 @@
           "h": 9,
           "w": 24,
           "x": 0,
-          "y": 6
+          "y": 10
         },
         "id": 24,
         "options": {
@@ -260,7 +276,7 @@
           "h": 5,
           "w": 24,
           "x": 0,
-          "y": 5
+          "y": 9
         },
         "id": 20,
         "options": {
@@ -351,7 +367,7 @@
           "h": 8,
           "w": 24,
           "x": 0,
-          "y": 10
+          "y": 14
         },
         "id": 17,
         "options": {
@@ -445,7 +461,7 @@
           "h": 8,
           "w": 24,
           "x": 0,
-          "y": 18
+          "y": 22
         },
         "id": 18,
         "options": {
@@ -532,7 +548,7 @@
           "h": 8,
           "w": 24,
           "x": 0,
-          "y": 26
+          "y": 30
         },
         "id": 1,
         "links": [],

@@ -34,6 +34,22 @@
   ],
   "panels": [
     {
+      "id": 18,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Kubernetes API server\nThis dashboard monitors the Kubernetes API server for this deployment. It shows API availability and request behavior, latency, error rates, and related control-plane signals. The displayed SLO and related metrics are informational; use sustained changes in availability, latency, or errors to guide investigation of control-plane or client request issues."
+      }
+    },
+    {
       "datasource": {
         "type": "datasource",
         "uid": "-- Mixed --"
@@ -43,7 +59,7 @@
         "h": 2,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 1,
       "options": {
@@ -90,7 +106,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 2
+        "y": 6
       },
       "id": 2,
       "interval": "1m",
@@ -192,7 +208,7 @@
         "h": 7,
         "w": 16,
         "x": 8,
-        "y": 2
+        "y": 6
       },
       "id": 3,
       "interval": "1m",
@@ -255,7 +271,7 @@
         "h": 7,
         "w": 6,
         "x": 0,
-        "y": 9
+        "y": 13
       },
       "id": 4,
       "interval": "1m",
@@ -405,7 +421,7 @@
         "h": 7,
         "w": 6,
         "x": 6,
-        "y": 9
+        "y": 13
       },
       "id": 5,
       "interval": "1m",
@@ -504,7 +520,7 @@
         "h": 7,
         "w": 6,
         "x": 12,
-        "y": 9
+        "y": 13
       },
       "id": 6,
       "interval": "1m",
@@ -602,7 +618,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 9
+        "y": 13
       },
       "id": 7,
       "interval": "1m",
@@ -665,7 +681,7 @@
         "h": 7,
         "w": 6,
         "x": 0,
-        "y": 16
+        "y": 20
       },
       "id": 8,
       "interval": "1m",
@@ -815,7 +831,7 @@
         "h": 7,
         "w": 6,
         "x": 6,
-        "y": 16
+        "y": 20
       },
       "id": 9,
       "interval": "1m",
@@ -914,7 +930,7 @@
         "h": 7,
         "w": 6,
         "x": 12,
-        "y": 16
+        "y": 20
       },
       "id": 10,
       "interval": "1m",
@@ -1012,7 +1028,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 16
+        "y": 20
       },
       "id": 11,
       "interval": "1m",
@@ -1060,7 +1076,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 23
+        "y": 27
       },
       "id": 12,
       "interval": "1m",
@@ -1105,7 +1121,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 23
+        "y": 27
       },
       "id": 13,
       "interval": "1m",
@@ -1150,7 +1166,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 30
+        "y": 34
       },
       "id": 14,
       "interval": "1m",
@@ -1197,7 +1213,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 37
+        "y": 41
       },
       "id": 15,
       "interval": "1m",
@@ -1242,7 +1258,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 37
+        "y": 41
       },
       "id": 16,
       "interval": "1m",
@@ -1286,7 +1302,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 37
+        "y": 41
       },
       "id": 17,
       "interval": "1m",

@@ -70,6 +70,22 @@
     ],
     "panels": [
         {
+          "id": 31,
+          "type": "text",
+          "title": "About this dashboard",
+          "transparent": true,
+          "gridPos": {
+            "h": 4,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "options": {
+            "mode": "markdown",
+            "content": "# Traefik\nUse this dashboard to monitor the Traefik ingress and routing service in this deployment. It shows request traffic, response outcomes, latency, and service-level health signals needed to investigate client access problems. Compare errors and response duration by route or backend to distinguish an ingress issue from an unhealthy upstream service."
+          }
+        },
+        {
             "cacheTimeout": null,
             "colorBackground": false,
             "colorValue": false,
@@ -91,7 +107,7 @@
                 "h": 6,
                 "w": 3,
                 "x": 0,
-                "y": 0
+                "y": 4
             },
             "id": 22,
             "interval": null,
@@ -173,7 +189,7 @@
                 "h": 6,
                 "w": 3,
                 "x": 3,
-                "y": 0
+                "y": 4
             },
             "id": 26,
             "interval": null,
@@ -250,7 +266,7 @@
                 "h": 6,
                 "w": 7,
                 "x": 6,
-                "y": 0
+                "y": 4
             },
             "id": 18,
             "interval": null,
@@ -303,7 +319,7 @@
                 "h": 6,
                 "w": 4,
                 "x": 13,
-                "y": 0
+                "y": 4
             },
             "id": 20,
             "interval": null,
@@ -374,7 +390,7 @@
                 "h": 6,
                 "w": 7,
                 "x": 17,
-                "y": 0
+                "y": 4
             },
             "id": 14,
             "legend": {
@@ -465,7 +481,7 @@
                 "h": 6,
                 "w": 12,
                 "x": 0,
-                "y": 6
+                "y": 10
             },
             "id": 10,
             "legend": {
@@ -559,7 +575,7 @@
                 "h": 6,
                 "w": 12,
                 "x": 12,
-                "y": 6
+                "y": 10
             },
             "hideTimeOverride": false,
             "id": 4,
@@ -653,7 +669,7 @@
                 "h": 6,
                 "w": 10,
                 "x": 0,
-                "y": 12
+                "y": 16
             },
             "id": 8,
             "legend": {
@@ -745,7 +761,7 @@
                 "h": 6,
                 "w": 14,
                 "x": 10,
-                "y": 12
+                "y": 16
             },
             "id": 24,
             "legend": {
@@ -839,7 +855,7 @@
                 "h": 7,
                 "w": 12,
                 "x": 0,
-                "y": 18
+                "y": 22
             },
             "id": 30,
             "legend": {
@@ -932,7 +948,7 @@
                 "h": 7,
                 "w": 12,
                 "x": 12,
-                "y": 18
+                "y": 22
             },
             "id": 28,
             "legend": {
@@ -1026,7 +1042,7 @@
                 "h": 7,
                 "w": 24,
                 "x": 0,
-                "y": 25
+                "y": 29
             },
             "id": 12,
             "legend": {

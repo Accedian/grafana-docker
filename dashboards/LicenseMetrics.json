@@ -20,6 +20,22 @@
   "links": [],
   "panels": [
     {
+      "id": 11,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# License metrics\nThis dashboard shows usage signals that relate to licensed product capacity and enabled functionality in this deployment. It includes active and archived session counts, feature flags, flow-analysis activity, retention metrics, and row counts per session. Use it to understand current consumption and to investigate whether a usage limit or feature configuration is affecting expected behavior."
+      }
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -31,7 +47,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 4,
@@ -119,7 +135,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 6,
@@ -207,7 +223,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 12
       },
       "hiddenSeries": false,
       "id": 8,
@@ -295,7 +311,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 8
+        "y": 12
       },
       "hiddenSeries": false,
       "id": 2,
@@ -383,7 +399,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 16
+        "y": 20
       },
       "hiddenSeries": false,
       "id": 10,

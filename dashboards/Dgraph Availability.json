@@ -1,0 +1,17 @@
+{
+  "annotations": {"list": []},
+  "description": "Local Dgraph alpha communications health.",
+  "editable": true,
+  "panels": [
+    {"id": 1, "type": "text", "title": "About this dashboard", "transparent": true, "gridPos": {"h": 4, "w": 24, "x": 0, "y": 0}, "options": {"mode": "markdown", "content": "# Dgraph availability\nUse this dashboard to identify Dgraph alpha communication errors in this deployment. The individual series identify the affected source and the total aggregates the error signal. A value of zero is healthy; a non-zero value warrants checking Dgraph service health and connectivity. If no series are present, verify the global Prometheus availability safeguard before treating it as an application failure."}},
+    {"id": 2, "type": "timeseries", "title": "Dgraph alpha communications errors", "datasource": {"type": "prometheus", "uid": "prometheus"}, "gridPos": {"h": 12, "w": 24, "x": 0, "y": 4}, "options": {"legend": {"calcs": ["lastNotNull", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi"}}, "fieldConfig": {"defaults": {"min": 0}, "overrides": []}, "targets": [{"refId": "A", "expr": "stitchit_dgraph_alpha_availability", "legendFormat": "{{instance}}", "range": true, "editorMode": "code", "datasource": {"type": "prometheus", "uid": "prometheus"}}, {"refId": "B", "expr": "sum(stitchit_dgraph_alpha_availability)", "legendFormat": "Total errors", "range": true, "editorMode": "code", "datasource": {"type": "prometheus", "uid": "prometheus"}}]}
+  ],
+  "schemaVersion": 41,
+  "tags": ["dgraph", "data-platform"],
+  "templating": {"list": []},
+  "time": {"from": "now-24h", "to": "now"},
+  "timezone": "browser",
+  "title": "Dgraph Availability",
+  "uid": "pca-dgraph-availability",
+  "version": 1
+}

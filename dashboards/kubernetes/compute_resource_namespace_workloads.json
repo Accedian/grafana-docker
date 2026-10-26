@@ -34,6 +34,22 @@
   ],
   "panels": [
     {
+      "id": 15,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Kubernetes namespace workload resources\nUse this dashboard to compare Kubernetes workload resource consumption within a namespace. It shows CPU, memory, and workload-level capacity signals that help identify a deployment, daemon set, or stateful workload driving pressure. Narrow the namespace and time range, then use workload and pod details to investigate the source."
+      }
+    },
+    {
       "datasource": {
         "type": "datasource",
         "uid": "-- Mixed --"
@@ -148,7 +164,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 1,
       "interval": "1m",
@@ -277,7 +293,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 11
       },
       "id": 2,
       "options": {
@@ -533,7 +549,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 18
       },
       "id": 3,
       "interval": "1m",
@@ -663,7 +679,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 25
       },
       "id": 4,
       "options": {
@@ -880,7 +896,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 32
       },
       "id": 5,
       "options": {
@@ -1073,7 +1089,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 35
+        "y": 39
       },
       "id": 6,
       "interval": "1m",
@@ -1172,7 +1188,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 35
+        "y": 39
       },
       "id": 7,
       "interval": "1m",
@@ -1271,7 +1287,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 42
+        "y": 46
       },
       "id": 8,
       "interval": "1m",
@@ -1370,7 +1386,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 42
+        "y": 46
       },
       "id": 9,
       "interval": "1m",
@@ -1469,7 +1485,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 49
+        "y": 53
       },
       "id": 10,
       "interval": "1m",
@@ -1568,7 +1584,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 49
+        "y": 53
       },
       "id": 11,
       "interval": "1m",
@@ -1667,7 +1683,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 56
+        "y": 60
       },
       "id": 12,
       "interval": "1m",
@@ -1766,7 +1782,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 56
+        "y": 60
       },
       "id": 13,
       "interval": "1m",

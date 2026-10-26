@@ -34,6 +34,22 @@
   ],
   "panels": [
     {
+      "id": 17,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Kubernetes pod resources\nUse this dashboard for detailed resource diagnostics of an individual Kubernetes pod. It shows CPU, throttling and quota, memory and working-set usage, network traffic and drops, and storage I/O. Select the affected pod and compare requests, limits, and actual use to identify throttling, memory pressure, networking, or storage bottlenecks."
+      }
+    },
+    {
       "datasource": {
         "type": "datasource",
         "uid": "-- Mixed --"
@@ -148,7 +164,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 1,
       "interval": "1m",
@@ -299,7 +315,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 11
       },
       "id": 2,
       "interval": "1m",
@@ -381,7 +397,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 18
       },
       "id": 3,
       "options": {
@@ -611,7 +627,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 25
       },
       "id": 4,
       "interval": "1m",
@@ -712,7 +728,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 32
       },
       "id": 5,
       "options": {
@@ -933,7 +949,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 35
+        "y": 39
       },
       "id": 6,
       "interval": "1m",
@@ -1032,7 +1048,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 35
+        "y": 39
       },
       "id": 7,
       "interval": "1m",
@@ -1131,7 +1147,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 42
+        "y": 46
       },
       "id": 8,
       "interval": "1m",
@@ -1230,7 +1246,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 42
+        "y": 46
       },
       "id": 9,
       "interval": "1m",
@@ -1284,7 +1300,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 49
+        "y": 53
       },
       "id": 10,
       "interval": "1m",
@@ -1337,7 +1353,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 49
+        "y": 53
       },
       "id": 11,
       "interval": "1m",
@@ -1390,7 +1406,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 56
+        "y": 60
       },
       "id": 12,
       "interval": "1m",
@@ -1452,7 +1468,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 56
+        "y": 60
       },
       "id": 13,
       "interval": "1m",
@@ -1514,7 +1530,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 63
+        "y": 67
       },
       "id": 14,
       "interval": "1m",
@@ -1567,7 +1583,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 63
+        "y": 67
       },
       "id": 15,
       "interval": "1m",
@@ -1638,7 +1654,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 70
+        "y": 74
       },
       "id": 16,
       "pluginVersion": "v11.0.0",

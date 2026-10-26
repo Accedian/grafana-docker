@@ -19,6 +19,22 @@
   "links": [],
   "panels": [
     {
+      "id": 5,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Session limits\nThis dashboard monitors current and archived session counts, configured session limits, and sessions dropped because limits were reached. Use it to understand whether capacity controls are affecting users and to distinguish normal session churn from a sustained limit condition. Compare active counts with the configured limits and dropped-session trend."
+      }
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -31,7 +47,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 1,
@@ -126,7 +142,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "hiddenSeries": false,
       "id": 2,
@@ -221,7 +237,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 12
       },
       "hiddenSeries": false,
       "id": 3,
@@ -316,7 +332,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 8
+        "y": 12
       },
       "hiddenSeries": false,
       "id": 4,

@@ -19,12 +19,28 @@
   "links": [],
   "panels": [
     {
+      "id": 53,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Alert policies\nUse this dashboard to monitor alert-policy configuration and policy-management operations for this deployment. It summarizes policy counts by category and status, configured limits, enabled policies, and create, update, delete, and bulk-delete errors. Review error panels together with the corresponding policy category when an expected policy change does not take effect."
+      }
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 14,
       "panels": [],
@@ -60,7 +76,7 @@
         "h": 6,
         "w": 3,
         "x": 0,
-        "y": 1
+        "y": 5
       },
       "id": 15,
       "options": {
@@ -127,7 +143,7 @@
         "h": 6,
         "w": 3,
         "x": 3,
-        "y": 1
+        "y": 5
       },
       "id": 21,
       "options": {
@@ -193,7 +209,7 @@
         "h": 6,
         "w": 3,
         "x": 6,
-        "y": 1
+        "y": 5
       },
       "id": 22,
       "options": {
@@ -254,7 +270,7 @@
         "h": 6,
         "w": 15,
         "x": 9,
-        "y": 1
+        "y": 5
       },
       "id": 33,
       "options": {
@@ -311,7 +327,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 11
       },
       "id": 3,
       "panels": [],
@@ -345,7 +361,7 @@
         "h": 5,
         "w": 3,
         "x": 0,
-        "y": 8
+        "y": 12
       },
       "id": 34,
       "maxPerRow": 3,
@@ -414,7 +430,7 @@
         "h": 5,
         "w": 3,
         "x": 3,
-        "y": 8
+        "y": 12
       },
       "id": 9,
       "maxPerRow": 3,
@@ -483,7 +499,7 @@
         "h": 5,
         "w": 3,
         "x": 6,
-        "y": 8
+        "y": 12
       },
       "id": 10,
       "maxPerRow": 3,
@@ -551,7 +567,7 @@
         "h": 5,
         "w": 3,
         "x": 9,
-        "y": 8
+        "y": 12
       },
       "id": 11,
       "maxPerRow": 3,
@@ -620,7 +636,7 @@
         "h": 5,
         "w": 3,
         "x": 12,
-        "y": 8
+        "y": 12
       },
       "id": 12,
       "maxPerRow": 3,
@@ -689,7 +705,7 @@
         "h": 5,
         "w": 3,
         "x": 15,
-        "y": 8
+        "y": 12
       },
       "id": 13,
       "maxPerRow": 3,
@@ -737,7 +753,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 17
       },
       "id": 16,
       "panels": [],
@@ -805,7 +821,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 18
       },
       "id": 28,
       "options": {
@@ -899,7 +915,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 23
+        "y": 27
       },
       "id": 25,
       "options": {
@@ -993,7 +1009,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 23
+        "y": 27
       },
       "id": 29,
       "options": {
@@ -1086,7 +1102,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 29
+        "y": 33
       },
       "id": 30,
       "options": {
@@ -1179,7 +1195,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 29
+        "y": 33
       },
       "id": 32,
       "options": {

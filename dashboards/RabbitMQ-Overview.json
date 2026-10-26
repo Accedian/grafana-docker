@@ -40,6 +40,28 @@
   "liveNow": false,
   "panels": [
     {
+      "id": 70,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# RabbitMQ overview\nThis dashboard provides an operational view of RabbitMQ messaging in this deployment. It shows broker and queue health, connection and channel activity, message rates, queue depth, and resource use. Use it to identify whether delayed processing is associated with growing queues, unavailable consumers, connection issues, or broker capacity."
+      }
+    },
+    {
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 0,
+        "y": 4
+      },
       "datasource": {
         "type": "datasource",
         "uid": "grafana"
@@ -91,9 +113,7 @@
         "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -165,7 +185,7 @@
         "h": 3,
         "w": 6,
         "x": 6,
-        "y": 0
+        "y": 4
       },
       "id": 62,
       "links": [],
@@ -176,9 +196,7 @@
         "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -249,7 +267,7 @@
         "h": 3,
         "w": 4,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "id": 66,
       "links": [],
@@ -260,9 +278,7 @@
         "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -333,7 +349,7 @@
         "h": 3,
         "w": 4,
         "x": 16,
-        "y": 0
+        "y": 4
       },
       "id": 37,
       "links": [],
@@ -344,9 +360,7 @@
         "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -417,7 +431,7 @@
         "h": 3,
         "w": 4,
         "x": 20,
-        "y": 0
+        "y": 4
       },
       "id": 40,
       "links": [],
@@ -428,9 +442,7 @@
         "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -501,7 +513,7 @@
         "h": 3,
         "w": 6,
         "x": 0,
-        "y": 3
+        "y": 7
       },
       "id": 65,
       "links": [],
@@ -512,9 +524,7 @@
         "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -586,7 +596,7 @@
         "h": 3,
         "w": 6,
         "x": 6,
-        "y": 3
+        "y": 7
       },
       "id": 63,
       "links": [],
@@ -597,9 +607,7 @@
         "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -671,7 +679,7 @@
         "h": 3,
         "w": 4,
         "x": 12,
-        "y": 3
+        "y": 7
       },
       "id": 41,
       "links": [],
@@ -682,9 +690,7 @@
         "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -755,7 +761,7 @@
         "h": 3,
         "w": 4,
         "x": 16,
-        "y": 3
+        "y": 7
       },
       "id": 38,
       "links": [],
@@ -766,9 +772,7 @@
         "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -839,7 +843,7 @@
         "h": 3,
         "w": 4,
         "x": 20,
-        "y": 3
+        "y": 7
       },
       "id": 67,
       "links": [],
@@ -850,9 +854,7 @@
         "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -886,7 +888,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 6
+        "y": 10
       },
       "id": 4,
       "panels": [],
@@ -913,7 +915,7 @@
         "h": 4,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 11
       },
       "id": 69,
       "links": [],
@@ -936,9 +938,7 @@
           "link": false,
           "mappingType": 1,
           "pattern": "erlang_version",
-          "thresholds": [
-            ""
-          ],
+          "thresholds": [""],
           "type": "string",
           "unit": "none"
         },
@@ -955,9 +955,7 @@
           "link": false,
           "mappingType": 1,
           "pattern": "rabbitmq_version",
-          "thresholds": [
-            ""
-          ],
+          "thresholds": [""],
           "type": "string",
           "unit": "none"
         },
@@ -993,9 +991,7 @@
           "link": false,
           "mappingType": 1,
           "pattern": "rabbitmq_node",
-          "thresholds": [
-            ""
-          ],
+          "thresholds": [""],
           "type": "string",
           "unit": "short"
         },
@@ -1135,7 +1131,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 11
+        "y": 15
       },
       "hiddenSeries": false,
       "id": 7,
@@ -1290,7 +1286,7 @@
         "h": 8,
         "w": 8,
         "x": 12,
-        "y": 11
+        "y": 15
       },
       "hiddenSeries": false,
       "id": 8,
@@ -1456,7 +1452,7 @@
         "h": 4,
         "w": 4,
         "x": 20,
-        "y": 11
+        "y": 15
       },
       "id": 2,
       "links": [],
@@ -1466,9 +1462,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -1514,7 +1508,7 @@
         "h": 4,
         "w": 4,
         "x": 20,
-        "y": 15
+        "y": 19
       },
       "hiddenSeries": false,
       "id": 5,
@@ -1657,7 +1651,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 23
       },
       "id": 27,
       "panels": [],
@@ -1695,7 +1689,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 20
+        "y": 24
       },
       "hiddenSeries": false,
       "id": 9,
@@ -1848,7 +1842,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 20
+        "y": 24
       },
       "hiddenSeries": false,
       "id": 19,
@@ -1977,7 +1971,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 29
       },
       "id": 11,
       "panels": [],
@@ -2015,7 +2009,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 26
+        "y": 30
       },
       "hiddenSeries": false,
       "id": 13,
@@ -2156,7 +2150,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 26
+        "y": 30
       },
       "hiddenSeries": false,
       "id": 18,
@@ -2297,7 +2291,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 31
+        "y": 35
       },
       "hiddenSeries": false,
       "id": 61,
@@ -2438,7 +2432,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 31
+        "y": 35
       },
       "hiddenSeries": false,
       "id": 12,
@@ -2579,7 +2573,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 36
+        "y": 40
       },
       "hiddenSeries": false,
       "id": 34,
@@ -2692,7 +2686,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 36
+        "y": 40
       },
       "hiddenSeries": false,
       "id": 16,
@@ -2793,7 +2787,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 45
       },
       "id": 29,
       "panels": [],
@@ -2831,7 +2825,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 42
+        "y": 46
       },
       "hiddenSeries": false,
       "id": 14,
@@ -2972,7 +2966,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 42
+        "y": 46
       },
       "hiddenSeries": false,
       "id": 15,
@@ -3129,7 +3123,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 47
+        "y": 51
       },
       "hiddenSeries": false,
       "id": 20,
@@ -3270,7 +3264,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 47
+        "y": 51
       },
       "hiddenSeries": false,
       "id": 21,
@@ -3411,7 +3405,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 52
+        "y": 56
       },
       "hiddenSeries": false,
       "id": 22,
@@ -3552,7 +3546,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 52
+        "y": 56
       },
       "hiddenSeries": false,
       "id": 24,
@@ -3665,7 +3659,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 57
+        "y": 61
       },
       "hiddenSeries": false,
       "id": 25,
@@ -3779,7 +3773,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 57
+        "y": 61
       },
       "hiddenSeries": false,
       "id": 23,
@@ -3880,7 +3874,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 62
+        "y": 66
       },
       "id": 53,
       "panels": [],
@@ -4082,7 +4076,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 63
+        "y": 67
       },
       "id": 57,
       "links": [],
@@ -4092,9 +4086,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -4140,7 +4132,7 @@
         "h": 5,
         "w": 4,
         "x": 12,
-        "y": 63
+        "y": 67
       },
       "hiddenSeries": false,
       "id": 58,
@@ -4297,7 +4289,7 @@
         "h": 5,
         "w": 4,
         "x": 16,
-        "y": 63
+        "y": 67
       },
       "hiddenSeries": false,
       "id": 60,
@@ -4454,7 +4446,7 @@
         "h": 5,
         "w": 4,
         "x": 20,
-        "y": 63
+        "y": 67
       },
       "hiddenSeries": false,
       "id": 59,
@@ -4599,7 +4591,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 68
+        "y": 72
       },
       "id": 51,
       "panels": [],
@@ -4647,7 +4639,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 69
+        "y": 73
       },
       "id": 54,
       "links": [],
@@ -4657,9 +4649,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -4705,7 +4695,7 @@
         "h": 5,
         "w": 6,
         "x": 12,
-        "y": 69
+        "y": 73
       },
       "hiddenSeries": false,
       "id": 55,
@@ -4862,7 +4852,7 @@
         "h": 5,
         "w": 6,
         "x": 18,
-        "y": 69
+        "y": 73
       },
       "hiddenSeries": false,
       "id": 56,
@@ -5007,7 +4997,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 74
+        "y": 78
       },
       "id": 46,
       "panels": [],
@@ -5055,7 +5045,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 75
+        "y": 79
       },
       "id": 47,
       "links": [],
@@ -5065,9 +5055,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -5113,7 +5101,7 @@
         "h": 5,
         "w": 6,
         "x": 12,
-        "y": 75
+        "y": 79
       },
       "hiddenSeries": false,
       "id": 48,
@@ -5271,7 +5259,7 @@
         "h": 5,
         "w": 6,
         "x": 18,
-        "y": 75
+        "y": 79
       },
       "hiddenSeries": false,
       "id": 49,
@@ -5410,9 +5398,7 @@
   "refresh": "15s",
   "schemaVersion": 37,
   "style": "dark",
-  "tags": [
-    "rabbitmq-prometheus"
-  ],
+  "tags": ["rabbitmq-prometheus"],
   "templating": {
     "list": [
       {
@@ -5450,24 +5436,8 @@
     "to": "now"
   },
   "timepicker": {
-    "refresh_intervals": [
-      "15s",
-      "30s",
-      "1m",
-      "5m",
-      "10m"
-    ],
-    "time_options": [
-      "5m",
-      "15m",
-      "1h",
-      "6h",
-      "12h",
-      "24h",
-      "2d",
-      "7d",
-      "30d"
-    ]
+    "refresh_intervals": ["15s", "30s", "1m", "5m", "10m"],
+    "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
   },
   "timezone": "",
   "title": "RabbitMQ-Overview",

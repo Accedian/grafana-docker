@@ -87,7 +87,19 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
     cp -R /tmp/provisioning/. "$GF_PATHS_PROVISIONING/"
 
   echo "Copying stock dashboards"
-    cp -R /tmp/dashboards/. "$GF_PATHS_DATA/dashboards/"
+    # Keep providers disjoint so the general recursive reader cannot claim
+    # customer dashboards before their stable folder UIDs are provisioned.
+    mkdir -p "$GF_PATHS_DATA/dashboards/general"
+    for stock_path in /tmp/dashboards/*; do
+      case "$(basename "$stock_path")" in
+        'Customer (k8s)'|'Customer (swarm)')
+          cp -R "$stock_path" "$GF_PATHS_DATA/dashboards/"
+          ;;
+        *)
+          cp -R "$stock_path" "$GF_PATHS_DATA/dashboards/general/"
+          ;;
+      esac
+    done
 fi
 
 # Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced.

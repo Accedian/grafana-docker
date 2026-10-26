@@ -23,12 +23,28 @@
   "links": [],
   "panels": [
     {
+      "id": 125,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Roadrunner detailed diagnostics\nUse this dashboard for in-depth diagnosis of the Roadrunner ingestion pipeline. It combines container resource usage with data-gateway batch, parse, normalization, and pipeline timing; filewatcher and persistence-service state; FedEx acknowledgements; and sensor-agent connections. Begin with the affected stage, then compare throughput, pending work, timing, and error counters to isolate a capacity, connectivity, or processing problem."
+      }
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 76,
       "panels": [],
@@ -96,7 +112,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 1
+        "y": 5
       },
       "id": 75,
       "options": {
@@ -192,7 +208,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 13
       },
       "id": 74,
       "options": {
@@ -290,7 +306,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 22
       },
       "id": 79,
       "options": {
@@ -389,7 +405,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 32
       },
       "id": 19,
       "options": {
@@ -427,7 +443,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 40
       },
       "id": 77,
       "panels": [],
@@ -495,7 +511,7 @@
         "h": 8,
         "w": 11,
         "x": 0,
-        "y": 37
+        "y": 41
       },
       "id": 71,
       "options": {
@@ -589,7 +605,7 @@
         "h": 8,
         "w": 13,
         "x": 11,
-        "y": 37
+        "y": 41
       },
       "id": 70,
       "options": {
@@ -683,7 +699,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 49
       },
       "id": 69,
       "options": {
@@ -777,7 +793,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 54
+        "y": 58
       },
       "id": 73,
       "options": {
@@ -871,7 +887,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 62
+        "y": 66
       },
       "id": 68,
       "options": {
@@ -965,7 +981,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 71
+        "y": 75
       },
       "id": 72,
       "options": {
@@ -1102,7 +1118,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 80
+        "y": 84
       },
       "id": 21,
       "options": {
@@ -1197,7 +1213,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 87
+        "y": 91
       },
       "id": 39,
       "options": {
@@ -1288,7 +1304,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 95
+        "y": 99
       },
       "id": 57,
       "options": {
@@ -1379,7 +1395,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 95
+        "y": 99
       },
       "id": 59,
       "options": {
@@ -1472,7 +1488,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 103
+        "y": 107
       },
       "id": 41,
       "options": {
@@ -1563,7 +1579,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 103
+        "y": 107
       },
       "id": 63,
       "options": {
@@ -1690,7 +1706,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 111
+        "y": 115
       },
       "id": 45,
       "options": {
@@ -1783,7 +1799,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 111
+        "y": 115
       },
       "id": 61,
       "options": {
@@ -1875,7 +1891,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 119
+        "y": 123
       },
       "id": 37,
       "options": {
@@ -1967,7 +1983,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 127
+        "y": 131
       },
       "id": 33,
       "options": {
@@ -2061,7 +2077,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 127
+        "y": 131
       },
       "id": 35,
       "options": {
@@ -2099,7 +2115,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 135
+        "y": 139
       },
       "id": 78,
       "panels": [

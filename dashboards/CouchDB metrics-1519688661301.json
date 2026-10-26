@@ -22,9 +22,25 @@
   "links": [],
   "panels": [
     {
+      "id": 46,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# CouchDB metrics\nThis dashboard monitors the CouchDB service used by this deployment. It presents service and database activity signals that support investigation of availability, request behavior, and resource-related degradation. Use the selected time range and database or instance labels to isolate an affected node, then compare workload changes with errors or latency."
+      }
+    },
+    {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -86,16 +102,12 @@
         "h": 8,
         "w": 22,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 4,
       "options": {
         "legend": {
-          "calcs": [
-            "lastNotNull",
-            "max",
-            "min"
-          ],
+          "calcs": ["lastNotNull", "max", "min"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -111,7 +123,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "expr": "rate(couchdb_httpd_request_methods{method=~\".+\"}[5m])",
           "format": "time_series",
@@ -127,7 +139,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -189,7 +201,7 @@
         "h": 7,
         "w": 10,
         "x": 0,
-        "y": 8
+        "y": 12
       },
       "id": 2,
       "options": {
@@ -210,7 +222,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "expr": "couchdb_httpd_clients_requesting_changes",
           "format": "time_series",
@@ -225,7 +237,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -287,7 +299,7 @@
         "h": 7,
         "w": 12,
         "x": 10,
-        "y": 8
+        "y": 12
       },
       "id": 6,
       "options": {
@@ -308,7 +320,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "expr": "couchdb_httpd_request_time",
           "format": "time_series",
@@ -323,7 +335,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -387,7 +399,7 @@
         "h": 6,
         "w": 10,
         "x": 0,
-        "y": 15
+        "y": 19
       },
       "id": 7,
       "options": {
@@ -407,48 +419,14 @@
       "targets": [
         {
           "datasource": {
-            "name": "Expression",
-            "type": "__expr__",
-            "uid": "__expr__"
-          },
-          "expression": "$A-$B",
-          "hide": false,
-          "refId": "couchdb_httpd_open_os_files - couchdb_httpd_open_databases",
-          "type": "math"
-        },
-        {
-          "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "couchdb_httpd_open_os_files",
-          "fullMetaSearch": false,
-          "hide": false,
-          "includeNullMetadata": true,
+          "expr": "couchdb_httpd_open_os_files - couchdb_httpd_open_databases",
+          "editorMode": "code",
           "instant": false,
-          "legendFormat": "{{label_name}}",
           "range": true,
-          "refId": "A",
-          "useBackend": false
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "couchdb_httpd_open_databases",
-          "fullMetaSearch": false,
-          "hide": false,
-          "includeNullMetadata": true,
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "B",
-          "useBackend": false
+          "refId": "A"
         }
       ],
       "title": "CouchDB Open Files Count",

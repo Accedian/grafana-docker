@@ -29,9 +29,25 @@
   "liveNow": false,
   "panels": [
     {
+      "id": 63,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Weld watcher\nUse this dashboard to monitor the Weld watcher scheduled job and its HTTP behavior. It shows cron-job errors and HTTP response status trends, allowing operators to distinguish job failures from downstream HTTP failures. Investigate recurring errors with the associated job configuration and target service logs."
+      }
+    },
+    {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -89,7 +105,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 12,
       "options": {
@@ -108,7 +124,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(weld_watcher_cron_http_status) by (tenant_id, statusCode, error)",
@@ -123,7 +139,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -175,7 +191,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "id": 6,
       "options": {
@@ -202,7 +218,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "weld_watcher_cron_http_status",
@@ -217,7 +233,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -275,7 +291,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 12
       },
       "id": 10,
       "options": {
@@ -294,7 +310,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(weld_watcher_http_status) by (tenant_id, statusCode, route, method)",
@@ -309,7 +325,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "000000001"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -331,7 +347,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 8
+        "y": 12
       },
       "id": 8,
       "options": {
@@ -357,7 +373,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "000000001"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(weld_watcher_http_status) by (tenant_id, statusCode, route, method)",

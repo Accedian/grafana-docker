@@ -24,9 +24,7 @@
       "asDropdown": true,
       "includeVars": true,
       "keepTime": true,
-      "tags": [
-        "kubernetes-mixin"
-      ],
+      "tags": ["kubernetes-mixin"],
       "targetBlank": false,
       "title": "Kubernetes",
       "type": "dashboards"
@@ -34,6 +32,28 @@
   ],
   "panels": [
     {
+      "id": 19,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Kubernetes namespace pod resources\nThis dashboard shows pod resource use grouped by Kubernetes namespace. It includes CPU, memory, and related workload signals so operators can identify a namespace whose pods are consuming unexpected capacity. Select the relevant namespace and compare pods before opening the pod-level dashboard for detailed investigation."
+      }
+    },
+    {
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 0,
+        "y": 4
+      },
       "datasource": {
         "type": "datasource",
         "uid": "-- Mixed --"
@@ -67,9 +87,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -121,7 +139,7 @@
         "h": 3,
         "w": 6,
         "x": 6,
-        "y": 0
+        "y": 4
       },
       "id": 2,
       "interval": "1m",
@@ -132,9 +150,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -186,7 +202,7 @@
         "h": 3,
         "w": 6,
         "x": 12,
-        "y": 0
+        "y": 4
       },
       "id": 3,
       "interval": "1m",
@@ -197,9 +213,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -251,7 +265,7 @@
         "h": 3,
         "w": 6,
         "x": 18,
-        "y": 0
+        "y": 4
       },
       "id": 4,
       "interval": "1m",
@@ -262,9 +276,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -402,16 +414,14 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 3
+        "y": 7
       },
       "id": 5,
       "interval": "1m",
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -519,7 +529,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 14
       },
       "id": 6,
       "options": {
@@ -527,9 +537,7 @@
         "footer": {
           "countRows": false,
           "fields": "",
-          "reducer": [
-            "sum"
-          ],
+          "reducer": ["sum"],
           "show": false
         },
         "showHeader": true
@@ -749,16 +757,14 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 21
       },
       "id": 7,
       "interval": "1m",
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -867,7 +873,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 28
       },
       "id": 8,
       "options": {
@@ -875,9 +881,7 @@
         "footer": {
           "countRows": false,
           "fields": "",
-          "reducer": [
-            "sum"
-          ],
+          "reducer": ["sum"],
           "show": false
         },
         "showHeader": true
@@ -1100,7 +1104,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 31
+        "y": 35
       },
       "id": 9,
       "options": {
@@ -1108,9 +1112,7 @@
         "footer": {
           "countRows": false,
           "fields": "",
-          "reducer": [
-            "sum"
-          ],
+          "reducer": ["sum"],
           "show": false
         },
         "showHeader": true
@@ -1293,16 +1295,14 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 38
+        "y": 42
       },
       "id": 10,
       "interval": "1m",
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -1392,16 +1392,14 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 38
+        "y": 42
       },
       "id": 11,
       "interval": "1m",
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -1491,16 +1489,14 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 45
+        "y": 49
       },
       "id": 12,
       "interval": "1m",
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -1590,16 +1586,14 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 45
+        "y": 49
       },
       "id": 13,
       "interval": "1m",
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -1689,16 +1683,14 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 52
+        "y": 56
       },
       "id": 14,
       "interval": "1m",
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -1788,16 +1780,14 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 52
+        "y": 56
       },
       "id": 15,
       "interval": "1m",
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -1887,16 +1877,14 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 59
+        "y": 63
       },
       "id": 16,
       "interval": "1m",
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -1986,16 +1974,14 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 59
+        "y": 63
       },
       "id": 17,
       "interval": "1m",
       "options": {
         "legend": {
           "asTable": true,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -2097,7 +2083,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 66
+        "y": 70
       },
       "id": 18,
       "options": {
@@ -2105,9 +2091,7 @@
         "footer": {
           "countRows": false,
           "fields": "",
-          "reducer": [
-            "sum"
-          ],
+          "reducer": ["sum"],
           "show": false
         },
         "showHeader": true
@@ -2228,9 +2212,7 @@
   ],
   "refresh": "10s",
   "schemaVersion": 39,
-  "tags": [
-    "kubernetes-mixin"
-  ],
+  "tags": ["kubernetes-mixin"],
   "templating": {
     "list": [
       {

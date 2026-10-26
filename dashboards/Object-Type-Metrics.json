@@ -30,6 +30,22 @@
   "liveNow": false,
   "panels": [
     {
+      "id": 44,
+      "type": "text",
+      "title": "About this dashboard",
+      "transparent": true,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# Object type metrics\nThis dashboard shows processing activity by tenant and object type for this deployment. Use it to compare record counts and trends between object types when investigating an unexpected drop, imbalance, or spike in collected data. Empty series can be normal for object types that have no matching traffic in the selected period; compare with the data source and ingestion dashboards before concluding that collection failed."
+      }
+    },
+    {
       "bgColor": "#65c5db",
       "clockType": "24 hour",
       "countdownSettings": {
@@ -50,7 +66,7 @@
         "h": 3,
         "w": 4,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 8,
       "links": [],
@@ -136,7 +152,7 @@
         "h": 3,
         "w": 4,
         "x": 9,
-        "y": 0
+        "y": 4
       },
       "id": 4,
       "links": [],
@@ -224,7 +240,7 @@
         "h": 3,
         "w": 4,
         "x": 18,
-        "y": 0
+        "y": 4
       },
       "id": 6,
       "links": [],
@@ -316,7 +332,7 @@
         "h": 11,
         "w": 23,
         "x": 0,
-        "y": 3
+        "y": 7
       },
       "id": 2,
       "links": [],
@@ -545,7 +561,7 @@
         "h": 10,
         "w": 23,
         "x": 0,
-        "y": 14
+        "y": 18
       },
       "hiddenSeries": false,
       "id": 16,
@@ -630,7 +646,7 @@
         "h": 12,
         "w": 8,
         "x": 0,
-        "y": 24
+        "y": 28
       },
       "id": 12,
       "links": [],
