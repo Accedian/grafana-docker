@@ -1,0 +1,11 @@
+{{- if .Values.grafana.renderer.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "grafana.fullname" . }}-renderer-startup
+  labels:
+    {{- include "grafana.labels" . | nindent 4 }}
+data:
+  run-renderer.sh: |
+    {{- .Files.Get "files/run-renderer.sh" | nindent 4 }}
+{{- end }}
