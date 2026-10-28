@@ -22,6 +22,7 @@ jobs:
       - run:
           name: "Create a temp directory for artifacts"
           command: |
+            echo "Hello World!"
             mkdir -p /tmp/artifacts
 
       - run:
