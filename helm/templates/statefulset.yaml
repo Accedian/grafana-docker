@@ -24,18 +24,7 @@ spec:
         {{- include "grafana.selectorLabels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ include "grafana.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.grafana.podSecurityContext | nindent 8 }}
       imagePullSecrets: {{ toYaml .Values.global.images.pullSecrets | nindent 14 }}
-    {{- if eq .Values.global.deployment_type "dev" }}
-      nodeSelector:
-        size: dev-pool
-      tolerations:
-      - effect: NoSchedule
-        key: dedicated
-        operator: Equal
-        value: devpool
-    {{- end }}        
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -65,10 +54,6 @@ spec:
 
       {{- with .Values.grafana.nodeSelector }}
       nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.grafana.affinity }}
-      affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.grafana.tolerations }}
