@@ -5,6 +5,7 @@ import copy
 import json
 from pathlib import Path
 
+from generate_pcaueni_dashboard import DASHBOARD_NAME as PCAUE_DASHBOARD, build as build_pcaueni
 
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / "dashboards/Customer (k8s)"
@@ -123,6 +124,8 @@ def resource_health(dashboard):
 
 
 def build(name):
+    if name == PCAUE_DASHBOARD:
+        return build_pcaueni()
     dashboard = copy.deepcopy(json.loads((SOURCE / name).read_text()))
     dashboard["uid"] = dashboard["uid"] + "-swarm"
     dashboard["id"] = None
@@ -150,6 +153,7 @@ def main():
         "pca-sensor-connectivity.json",
         "pca-application-speed.json",
         "pca-resource-health.json",
+        PCAUE_DASHBOARD,
     ):
         (DESTINATION / name).write_text(json.dumps(build(name), indent=2) + "\n")
 

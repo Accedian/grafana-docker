@@ -25,6 +25,16 @@ jobs:
             mkdir -p /tmp/artifacts
 
       - run:
+          name: Validate dashboards and PromQL behaviour
+          command: |
+            # Match the Swarm Prometheus version without a host package install.
+            promtool_dir=$(mktemp -d)
+            promtool_container=$(docker create quay.io/prometheus/prometheus:v2.54.1)
+            trap 'docker rm -f "$promtool_container" >/dev/null; rm -rf "$promtool_dir"' EXIT
+            docker cp "$promtool_container:/bin/promtool" "$promtool_dir/promtool"
+            PATH="$promtool_dir:$PATH" make test
+
+      - run:
           name: Building Docker Container
           command: make build
 
