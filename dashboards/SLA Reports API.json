@@ -196,7 +196,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sla_reports_api_http_requests_in_flight",
+          "expr": "sum(sla_reports_api_http_requests_in_flight)",
           "instant": false,
           "legendFormat": "In-Flight",
           "refId": "A"
@@ -1092,7 +1092,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(sla_reports_api_import_bytes_total[5m])",
+          "expr": "sum(rate(sla_reports_api_import_bytes_total[5m]))",
           "legendFormat": "Ingested Throughput",
           "refId": "A"
         }
