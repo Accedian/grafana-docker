@@ -1544,7 +1544,7 @@
           },
           "editorMode": "code",
           "expr": "go_goroutines{job=~\"sla-reports-api|sla_reports_api\"}",
-          "legendFormat": "Goroutines",
+          "legendFormat": "{{instance}}",
           "refId": "A"
         }
       ],
@@ -1598,7 +1598,7 @@
           },
           "editorMode": "code",
           "expr": "go_memstats_alloc_bytes{job=~\"sla-reports-api|sla_reports_api\"}",
-          "legendFormat": "Allocated",
+          "legendFormat": "Allocated ({{instance}})",
           "refId": "A"
         },
         {
@@ -1608,7 +1608,7 @@
           },
           "editorMode": "code",
           "expr": "go_memstats_heap_inuse_bytes{job=~\"sla-reports-api|sla_reports_api\"}",
-          "legendFormat": "Heap In-Use",
+          "legendFormat": "Heap In-Use ({{instance}})",
           "refId": "B"
         },
         {
@@ -1618,7 +1618,7 @@
           },
           "editorMode": "code",
           "expr": "go_memstats_sys_bytes{job=~\"sla-reports-api|sla_reports_api\"}",
-          "legendFormat": "Sys Memory",
+          "legendFormat": "Sys Memory ({{instance}})",
           "refId": "C"
         }
       ],
@@ -1671,8 +1671,8 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(container_cpu_user_seconds_total{container_label_com_docker_swarm_service_name=~\".*sla-reports-api.*\"}[5m]) * 100",
-          "legendFormat": "CPU Usage %",
+          "expr": "rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=~\".*sla-reports-api.*\"}[5m]) * 100",
+          "legendFormat": "{{name}}",
           "refId": "A"
         }
       ],
@@ -1726,7 +1726,7 @@
           },
           "editorMode": "code",
           "expr": "container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~\".*sla-reports-api.*\"}",
-          "legendFormat": "Memory Used",
+          "legendFormat": "{{name}}",
           "refId": "A"
         }
       ],
