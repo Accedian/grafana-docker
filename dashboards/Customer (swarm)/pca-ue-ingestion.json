@@ -1,0 +1,1484 @@
+{
+  "id": null,
+  "uid": "pca-ue-ingestion-swarm",
+  "title": "PCA UE \u00b7 EDR Ingestion",
+  "description": "Docker Swarm PCA UE EDR ingestion: scrape health, tenant/schema row and dataset counters, invalid input, Kafka lag, and ClickHouse pressure. Supports Analytics Lite without Spark or Druid.",
+  "tags": [
+    "pca",
+    "pcaue",
+    "swarm",
+    "clickhouse",
+    "kafka"
+  ],
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "schemaVersion": 41,
+  "version": 1,
+  "refresh": "30s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "weekStart": "",
+  "annotations": {
+    "list": []
+  },
+  "links": [
+    {
+      "type": "link",
+      "title": "Roadrunner",
+      "url": "/grafana/d/PNGklt9ik",
+      "targetBlank": false,
+      "keepTime": true,
+      "includeVars": false
+    },
+    {
+      "type": "link",
+      "title": "Fedex",
+      "url": "/grafana/d/crA9QWAVk",
+      "targetBlank": false,
+      "keepTime": true,
+      "includeVars": false
+    },
+    {
+      "type": "link",
+      "title": "Kafka consumers",
+      "url": "/grafana/d/jwPKIsniz",
+      "targetBlank": false,
+      "keepTime": true,
+      "includeVars": false
+    },
+    {
+      "type": "link",
+      "title": "ClickHouse",
+      "url": "/grafana/d/NL8v6NlZk",
+      "targetBlank": false,
+      "keepTime": true,
+      "includeVars": false
+    },
+    {
+      "type": "link",
+      "title": "ClickHouse data / disk",
+      "url": "/grafana/d/-B3tt7a7z",
+      "targetBlank": false,
+      "keepTime": true,
+      "includeVars": false
+    },
+    {
+      "type": "link",
+      "title": "ClickHouse cluster",
+      "url": "/grafana/d/_hAsuzBnz",
+      "targetBlank": false,
+      "keepTime": true,
+      "includeVars": false
+    },
+    {
+      "type": "link",
+      "title": "Swarm resources",
+      "url": "/grafana/d/pca-resource-health-swarm",
+      "targetBlank": false,
+      "keepTime": true,
+      "includeVars": false
+    }
+  ],
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "How to read this dashboard",
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# PCA UE \u00b7 EDR ingestion on Docker Swarm\n\n**Path covered:** Fedex \u2192 Kafka `pcaue.<tenant UUID>.<schema>.json` \u2192 PVStorage `--pcaueni` \u2192 ClickHouse. The separate session-metrics path through Ignite/Spark/Druid is not measured here and is absent in Analytics Lite.\n\n**Read telemetry health first.** UP means the metrics endpoint was scraped, not that ingestion or the customer API is ready. DOWN means a scrape failed; No targets means the expected scrape jobs are missing/disabled. Inserter and Kafka panels omit samples from DOWN targets rather than displaying an old value as healthy.\n\n**Idle versus missing data:** PVStorage creates labelled counters lazily. An idle tenant can have no row counters until its first insert; error counters can be absent until the first failed insert/malformed row. \u2018No counter yet\u2019 is not a failure and is not proof of zero errors. A real zero rate means an existing counter did not increase while telemetry remained available.\n\n**Filters:** tenant and schema are discovered from PCA UE Kafka topics. They filter row/dataset counters and Kafka panels; health and ClickHouse pressure always cover the deployment. Consumer group defaults to All groups with offsets for those topics (the standard inserter uses `pv_storage.db`). Lag is Kafka messages, not EDR rows; an uncommitted offset of -1 is unknown, not zero lag. Message/row rates need not match.\n\nThe counters measure inserted EDR rows, not distinct subscribers or network bytes. They do not prove end-to-end freshness or collector connectivity. Use the linked Roadrunner/Fedex and ClickHouse dashboards for deeper diagnosis."
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "PCA UE inserter scrapes",
+      "description": "Worst current scrape state across this component's configured targets. No result means no matching jobs, not healthy. Independent of tenant/schema filters; up measures scrape availability only.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 9
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN",
+                  "color": "red",
+                  "index": 0
+                },
+                "1": {
+                  "text": "UP",
+                  "color": "green",
+                  "index": 1
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short",
+          "noValue": "No targets",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto",
+        "wideLayout": true,
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "min(up{job=~\"pcaueni_inserter.*\"})",
+          "legendFormat": "",
+          "refId": "A",
+          "range": false,
+          "instant": true,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Kafka topic exporter scrape",
+      "description": "Worst current scrape state across this component's configured targets. No result means no matching jobs, not healthy. Independent of tenant/schema filters; up measures scrape availability only.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 9
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN",
+                  "color": "red",
+                  "index": 0
+                },
+                "1": {
+                  "text": "UP",
+                  "color": "green",
+                  "index": 1
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short",
+          "noValue": "No targets",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto",
+        "wideLayout": true,
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "min(up{job=\"kafka-topic-metrics\"})",
+          "legendFormat": "",
+          "refId": "A",
+          "range": false,
+          "instant": true,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "ClickHouse native scrapes",
+      "description": "Worst current scrape state across this component's configured targets. No result means no matching jobs, not healthy. Independent of tenant/schema filters; up measures scrape availability only.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 9
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN",
+                  "color": "red",
+                  "index": 0
+                },
+                "1": {
+                  "text": "UP",
+                  "color": "green",
+                  "index": 1
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short",
+          "noValue": "No targets",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto",
+        "wideLayout": true,
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "min(up{job=~\"clickhouse[0-9]+[a-z]+\"})",
+          "legendFormat": "",
+          "refId": "A",
+          "range": false,
+          "instant": true,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "ClickHouse table exporter scrapes",
+      "description": "Worst current scrape state across this component's configured targets. No result means no matching jobs, not healthy. Independent of tenant/schema filters; up measures scrape availability only.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 9
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN",
+                  "color": "red",
+                  "index": 0
+                },
+                "1": {
+                  "text": "UP",
+                  "color": "green",
+                  "index": 1
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short",
+          "noValue": "No targets",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto",
+        "wideLayout": true,
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "min(up{job=~\"ch_prometheus_exporter.*\"})",
+          "legendFormat": "",
+          "refId": "A",
+          "range": false,
+          "instant": true,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Scrape state by target",
+      "description": "0 = failed scrape, 1 = successful scrape. Missing targets leave a gap; inspect Prometheus /targets and the deployed profile. Includes Prometheus self-scrape.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short",
+          "noValue": "No data",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "up{job=~\"pcaueni_inserter.*|kafka-topic-metrics|clickhouse[0-9]+[a-z]+|ch_prometheus_exporter.*|prometheus\"}",
+          "legendFormat": "{{job}} / {{instance}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "EDR rows inserted / second",
+      "description": "Successful inserted EDR rows per second, summed over inserters, scoped by tenant/schema. Counter starts on the first successful insert. A zero rate can be normal when idle. Only currently UP inserters contribute; compare the health panels before interpreting a partial total.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 18
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "ops",
+          "noValue": "No counter yet",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by (tenant_id, schema) (rate(pcaueni_inserted_rows_total{job=~\"pcaueni_inserter.*\",tenant_id=~\"${tenant:regex}\",schema=~\"${schema:regex}\"}[$__rate_interval]) and on (job, instance) (up{job=~\"pcaueni_inserter.*\"} == 1))",
+          "legendFormat": "{{tenant_id}} / {{schema}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Datasets inserted / second",
+      "description": "Successful dataset insertions per second (batches, not Kafka messages or EDR rows). Lazily initialized after the first insert; UP inserters only.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 18
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "ops",
+          "noValue": "No counter yet",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by (tenant_id, schema) (rate(pcaueni_inserted_datasets_total{job=~\"pcaueni_inserter.*\",tenant_id=~\"${tenant:regex}\",schema=~\"${schema:regex}\"}[$__rate_interval]) and on (job, instance) (up{job=~\"pcaueni_inserter.*\"} == 1))",
+          "legendFormat": "{{tenant_id}} / {{schema}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Failed dataset insert attempts \u00b7 current counters",
+      "description": "Current cumulative insertion failures across UP inserters, including failed retry attempts; not permanently lost datasets. Each process restart resets its counter. The raw count makes the first-ever failure visible even when rate cannot observe a prior zero sample. Missing counter before the first failure is normal. Inspect inserter logs and ClickHouse pressure when this increases.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 26
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short",
+          "noValue": "No counter yet",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by (tenant_id, schema) (pcaueni_invalid_datasets_total{job=~\"pcaueni_inserter.*\",tenant_id=~\"${tenant:regex}\",schema=~\"${schema:regex}\"} and on (job, instance) (up{job=~\"pcaueni_inserter.*\"} == 1))",
+          "legendFormat": "{{tenant_id}} / {{schema}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "Malformed rows \u00b7 current counters",
+      "description": "Current malformed-row counters across UP inserters, summed over the version label; reset per process restart. Raw values expose the first-ever event. The PCA UE JSON insert path can reject a dataset without incrementing this row-level counter; inspect failed dataset attempts too. Missing counter is not proof of no malformed input.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 26
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short",
+          "noValue": "No counter yet",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by (tenant_id, schema) (pcaueni_invalid_rows_total{job=~\"pcaueni_inserter.*\",tenant_id=~\"${tenant:regex}\",schema=~\"${schema:regex}\"} and on (job, instance) (up{job=~\"pcaueni_inserter.*\"} == 1))",
+          "legendFormat": "{{tenant_id}} / {{schema}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Kafka consumer lag \u00b7 messages",
+      "description": "Sum of non-negative lag over partitions for selected PCA UE topics/groups. Kafka message counts differ from EDR row counts. Read with the uncommitted-partition panel: no committed offset (-1) makes lag unknown. Only currently UP topic exporters contribute.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 34
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short",
+          "noValue": "No data",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by (consumergroup, topic) ((kafka_consumergroup_lag{job=\"kafka-topic-metrics\",topic=~\"pcaue[.](${tenant:regex})[.](${schema:regex})[.]json\",consumergroup=~\"${consumerGroup:regex}\"} >= 0) and on (job, instance, consumergroup, topic, partition) (kafka_consumergroup_current_offset{job=\"kafka-topic-metrics\",topic=~\"pcaue[.](${tenant:regex})[.](${schema:regex})[.]json\",consumergroup=~\"${consumerGroup:regex}\"} >= 0) and on (job, instance) (up{job=\"kafka-topic-metrics\"} == 1))",
+          "legendFormat": "{{consumergroup}} / {{topic}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "PCA UE Kafka topic offset movement / second",
+      "description": "Positive movement of the partition end offsets, summed by PCA UE topic. Offsets are gauges, so this uses deriv rather than counter rate; topic recreation/offset resets can make this estimate inaccurate. This is Kafka messages per second, not EDR rows or network bytes.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 34
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "ops",
+          "noValue": "No data",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by (topic) (clamp_min(deriv(kafka_topic_partition_current_offset{job=\"kafka-topic-metrics\",topic=~\"pcaue[.](${tenant:regex})[.](${schema:regex})[.]json\"}[$__rate_interval]), 0) and on (job, instance) (up{job=\"kafka-topic-metrics\"} == 1))",
+          "legendFormat": "{{topic}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Kafka partitions with no committed consumer offset",
+      "description": "Number of partitions reporting offset -1. Nonzero means consumer progress/lag cannot yet be established for those partitions. No series may mean the group has not registered, an exporter problem, or no topics; it is not a zero-lag guarantee.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 42
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short",
+          "noValue": "No data",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by (consumergroup, topic) ((kafka_consumergroup_current_offset{job=\"kafka-topic-metrics\",topic=~\"pcaue[.](${tenant:regex})[.](${schema:regex})[.]json\",consumergroup=~\"${consumerGroup:regex}\"} < bool 0) and on (job, instance) (up{job=\"kafka-topic-metrics\"} == 1))",
+          "legendFormat": "{{consumergroup}} / {{topic}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "ClickHouse exporter query failures / second",
+      "description": "Exporter HTTP scrape can be UP even when its database queries fail. Rising failures require investigation of credentials, ClickHouse reachability and exporter query support. Deployment-wide; not filtered by tenant or schema.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 42
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "ops",
+          "noValue": "No counter yet",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "(rate(ClickHousePVX_exporter_scrape_failures_total{job=~\"ch_prometheus_exporter.*\"}[$__rate_interval]) and on (job, instance) (up{job=~\"ch_prometheus_exporter.*\"} == 1))",
+          "legendFormat": "{{job}} / {{instance}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "type": "timeseries",
+      "title": "ClickHouse tracked memory \u00b7 all databases",
+      "description": "Current ClickHouse tracked memory per node, across all databases. This is backend pressure, not PCA UE tenant memory attribution.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 50
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes",
+          "noValue": "No data",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "(ClickHouseMetrics_MemoryTracking{job=~\"clickhouse[0-9]+[a-z]+\"} and on (job, instance) (up{job=~\"clickhouse[0-9]+[a-z]+\"} == 1))",
+          "legendFormat": "{{job}} / {{instance}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "type": "timeseries",
+      "title": "ClickHouse background merges \u00b7 all databases",
+      "description": "Currently running background merges per node, across all databases. High merge load with rising Kafka lag can indicate storage pressure. Follow the ClickHouse data/cluster analysis links for table parts and disk detail.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 50
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short",
+          "noValue": "No data",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "(ClickHouseMetrics_Merge{job=~\"clickhouse[0-9]+[a-z]+\"} and on (job, instance) (up{job=~\"clickhouse[0-9]+[a-z]+\"} == 1))",
+          "legendFormat": "{{job}} / {{instance}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "type": "timeseries",
+      "title": "PCA UE table storage \u00b7 bytes per replica",
+      "description": "Bytes in active system.parts for the pcaueni database, one series per table and replica. Schema selects tables; tenant does not filter this panel because these metrics have no tenant label. Do not sum replicas as logical storage. Check exporter query failures too: a reachable exporter can retain a previous table gauge after a failed collection.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 58
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes",
+          "noValue": "No data",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "(ClickHousePVX_table_parts_bytes{job=~\"ch_prometheus_exporter.*\",database=\"pcaueni\",table=~\"${schema:regex}\"} and on (job, instance) (up{job=~\"ch_prometheus_exporter.*\"} == 1))",
+          "legendFormat": "{{job}} / {{table}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "type": "timeseries",
+      "title": "ClickHouse default disk used \u00b7 per node",
+      "description": "Used percentage of the default ClickHouse disk per node, across all databases. On a one-VM lab, multiple replicas can report the same underlying disk. Never sum these percentages. Tenant/schema filters do not apply.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 58
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent",
+          "noValue": "No data",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "(100 * (1 - ClickHouseAsyncMetrics_DiskAvailable_default{job=~\"clickhouse[0-9]+[a-z]+\"} / (ClickHouseAsyncMetrics_DiskTotal_default{job=~\"clickhouse[0-9]+[a-z]+\"} > 0))) and on (job, instance) (up{job=~\"clickhouse[0-9]+[a-z]+\"} == 1)",
+          "legendFormat": "{{job}} / {{instance}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "label_values(kafka_topic_partitions{job=\"kafka-topic-metrics\",topic=~\"pcaue[.][^.]+[.][^.]+[.]json\"},topic)",
+        "includeAll": true,
+        "label": "Tenant UUID",
+        "multi": true,
+        "name": "tenant",
+        "options": [],
+        "query": {
+          "query": "label_values(kafka_topic_partitions{job=\"kafka-topic-metrics\",topic=~\"pcaue[.][^.]+[.][^.]+[.]json\"},topic)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "/^pcaue[.]([^.]+)[.].*[.]json$/",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "label_values(kafka_topic_partitions{job=\"kafka-topic-metrics\",topic=~\"pcaue[.](${tenant:regex})[.][^.]+[.]json\"},topic)",
+        "includeAll": true,
+        "label": "EDR schema",
+        "multi": true,
+        "name": "schema",
+        "options": [],
+        "query": {
+          "query": "label_values(kafka_topic_partitions{job=\"kafka-topic-metrics\",topic=~\"pcaue[.](${tenant:regex})[.][^.]+[.]json\"},topic)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "/^pcaue[.][^.]+[.]([^.]+)[.]json$/",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "label_values(kafka_consumergroup_lag{job=\"kafka-topic-metrics\",topic=~\"pcaue[.](${tenant:regex})[.](${schema:regex})[.]json\"},consumergroup)",
+        "includeAll": true,
+        "label": "PCA UE consumer group",
+        "multi": true,
+        "name": "consumerGroup",
+        "options": [],
+        "query": {
+          "query": "label_values(kafka_consumergroup_lag{job=\"kafka-topic-metrics\",topic=~\"pcaue[.](${tenant:regex})[.](${schema:regex})[.]json\"},consumergroup)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  }
+}
