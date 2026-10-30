@@ -125,7 +125,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "max(up{job=~\"sla-reports-api|sla_reports_api\"}) or vector(1)",
+          "expr": "max(up{job=~\"sla-reports-api|sla_reports_api\"})",
           "instant": true,
           "legendFormat": "Status",
           "range": false,
@@ -457,7 +457,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(sum(rate(sla_reports_api_consolidation_runs_total{result=\"success\"}[1h])) / (sum(rate(sla_reports_api_consolidation_runs_total[1h])) > 0)) * 100 or vector(100)",
+          "expr": "(((sum(rate(sla_reports_api_consolidation_runs_total{result=\"success\"}[1h])) or vector(0)) / (sum(rate(sla_reports_api_consolidation_runs_total[1h])) > 0)) * 100) or vector(100)",
           "legendFormat": "Success %",
           "refId": "A"
         }
