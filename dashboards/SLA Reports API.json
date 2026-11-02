@@ -32,7 +32,7 @@
       },
       "id": 1,
       "options": {
-        "content": "# End-to-End SLA Report Generation & Troubleshooting Dashboard\nTracks the entire SLA report lifecycle: **Request Enqueue** (`sla-report-trigger-api`) \u2192 **Worker Execution** (`sla-report-generator` / Celery) \u2192 **Parquet Export & Storage** (`sla-reports-api` / MinIO) \u2192 **Progress & Trace Polling** (`slapg` Redis) \u2192 **Data Consolidation** (DuckDB) \u2192 **PDF Generation & Storage** (`weld-data` / `report-service`). Use this dashboard to pinpoint failures, latencies, or resource bottlenecks at any stage from initial request to getting a PDF.",
+        "content": "# End-to-End SLA Report Generation & Troubleshooting Dashboard\nTracks the entire SLA report lifecycle: **Request Enqueue** (`sla-report-trigger-api`) \u2192 **Worker Execution** (`sla-report-generator` / Celery) \u2192 **Parquet Export & Storage** (`sla-reports-api` / MinIO) \u2192 **Progress & Trace Polling** (`slapg` Redis) \u2192 **Data Consolidation** (DuckDB) \u2192 **PDF Generation & Storage** (`weld-data` / `report-service`). Hover over (i) on any chart for diagnostic guidance.",
         "mode": "markdown"
       },
       "pluginVersion": "10.0.0",
@@ -53,6 +53,7 @@
       "type": "row"
     },
     {
+      "description": "Liveness of the report trigger API. Good: UP (green). Bad: DOWN (red), new reports cannot be queued.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -133,6 +134,7 @@
       "type": "stat"
     },
     {
+      "description": "Active Celery worker container count for sla-report-generator. Good: Stable at 3 (green). Bad: <3 or 0 (yellow/red), indicates worker crash or OOM-kill.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -200,6 +202,7 @@
       "type": "stat"
     },
     {
+      "description": "Liveness of the SLA Reports API service. Good: UP (green). Bad: DOWN (red), parquet imports, consolidation, and dashboard queries fail.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -280,6 +283,7 @@
       "type": "stat"
     },
     {
+      "description": "Active HTTP requests currently handled concurrently by SLA Reports API. Good: Near zero (green). Bad: Sustained high values (yellow/red), indicates server backlog.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -346,6 +350,7 @@
       "type": "stat"
     },
     {
+      "description": "Count of report bundles imported in the last hour. Good: Positive count matching generation volume. Bad: Flat zero when reports were expected.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -395,6 +400,7 @@
       "type": "stat"
     },
     {
+      "description": "Percentage of successful DuckDB consolidation runs in the past hour. Good: 100% (green). Bad: Drops below 90% (yellow/red), indicates failed cutovers or schema errors.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -474,6 +480,7 @@
       "type": "row"
     },
     {
+      "description": "Rate of incoming report generation and status requests. Good: Normal spikes corresponding to report triggers. Bad: Flat zero during scheduled generation.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -526,6 +533,7 @@
       "type": "timeseries"
     },
     {
+      "description": "Trigger API response status codes. Good: Mostly 202 Accepted (green). Bad: 4xx (validation/auth failure) or 5xx (Celery enqueue failure) in yellow/red.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -629,6 +637,7 @@
       "type": "timeseries"
     },
     {
+      "description": "Trigger API latency percentiles. Good: Sub-second p95 (<100ms). Bad: Latency >1s, indicates Redis/Celery broker connection delays.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -715,6 +724,7 @@
       "type": "row"
     },
     {
+      "description": "CPU usage per worker container during report generation. Good: Activity peaks during generation that return to baseline. Bad: 100% saturation per core causing task stalls.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -768,6 +778,7 @@
       "type": "timeseries"
     },
     {
+      "description": "Worker memory usage during chart rendering and WeasyPrint PDF compilation. Good: Memory stays well below limit. Bad: Rapid climb to limit followed by sudden drop, indicating OOM kill.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -834,6 +845,7 @@
       "type": "row"
     },
     {
+      "description": "Rate of Parquet report imports into SLA Reports API. Good: Green success line tracks generation completions. Bad: Red error line appears, indicates schema or upload failure.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -918,6 +930,7 @@
       "type": "timeseries"
     },
     {
+      "description": "Byte rate of Parquet datasets uploaded into MinIO via the API. Good: Bursts of throughput during report exports. Bad: Flat zero during report generation runs.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -970,6 +983,7 @@
       "type": "timeseries"
     },
     {
+      "description": "Median (p50) and 95th percentile (p95) sizes of uploaded Parquet files. Good: Stable sizes matching report dataset volume. Bad: Abnormally small sizes indicating truncated data.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1033,6 +1047,7 @@
       "type": "timeseries"
     },
     {
+      "description": "Latency for S3 Put, Copy, Delete, List, and Stat operations. Good: Low latency (<50ms). Bad: Latency >1s, indicates MinIO saturation or storage I/O bottleneck.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1085,6 +1100,7 @@
       "type": "timeseries"
     },
     {
+      "description": "Failure rate of S3 storage operations. Good: Flat zero. Bad: Non-zero values, indicates bucket access errors, disk space issues, or network drops.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1150,6 +1166,7 @@
       "type": "row"
     },
     {
+      "description": "Polling traffic on /status and /trace endpoints. Good: Activity aligns with active report generation. Bad: Rapid continuous polling without task progression.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1202,6 +1219,7 @@
       "type": "timeseries"
     },
     {
+      "description": "Latency for Redis-backed progress and trace queries. Good: Fast (<20ms). Bad: Latency >100ms, indicates Redis contention or thread starvation.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1268,6 +1286,7 @@
       "type": "row"
     },
     {
+      "description": "Executions of the DuckDB Parquet consolidation pipeline. Good: Green success line tracks scheduled runs. Bad: Red error line appears, indicates failed consolidation cutover.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1352,6 +1371,7 @@
       "type": "timeseries"
     },
     {
+      "description": "Wall-clock duration of Parquet consolidation. Good: Stable runtime (<30s). Bad: Upward drift or spikes >60s, indicates data growth or slow S3 object transfers.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1415,6 +1435,7 @@
       "type": "timeseries"
     },
     {
+      "description": "Query execution time across dashboard read operations. Good: Fast (<200ms). Bad: Sustained latency >1s, indicates inefficient parquet reads or heavy grouping.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1468,6 +1489,7 @@
       "type": "timeseries"
     },
     {
+      "description": "Failure rate for DuckDB query operations. Good: Flat zero. Bad: Non-zero values, indicates missing columns, corrupted parquet files, or S3 read 404s.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1520,6 +1542,7 @@
       "type": "timeseries"
     },
     {
+      "description": "Rate of parquet rows scanned by DuckDB queries. Good: Proportional to active dashboard requests. Bad: Sudden sharp spikes indicating full-scan queries.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1585,6 +1608,7 @@
       "type": "row"
     },
     {
+      "description": "Cluster-wide S3 HTTP request rate into MinIO. Good: Request spikes align with PDF uploads and Parquet ingestion. Bad: Sudden complete drop to zero.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1637,6 +1661,7 @@
       "type": "timeseries"
     },
     {
+      "description": "Cluster disk space for PDF and Parquet artifacts. Good: Available capacity remains high with gradual used growth. Bad: Available capacity trends to zero.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1713,6 +1738,7 @@
       "type": "row"
     },
     {
+      "description": "Correlated error rates across all pipeline stages. Good: All series flat at zero. Bad: Any non-zero series immediately pinpoints where the report failed.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1815,6 +1841,7 @@
       "type": "timeseries"
     },
     {
+      "description": "Total CPU cores used across Trigger API, Generator Workers, and SLA Reports API. Good: Bursts during generation that return to idle. Bad: Sustained high core usage.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1888,6 +1915,7 @@
       "type": "timeseries"
     },
     {
+      "description": "Total memory used across Trigger API, Generator Workers, and SLA Reports API. Good: Predictable usage plateaus. Bad: Continuous upward memory ramp without release (memory leak).",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -2016,5 +2044,5 @@
   "timezone": "browser",
   "title": "SLA Reports API",
   "uid": "sla-reports-api",
-  "version": 2
+  "version": 5
 }
