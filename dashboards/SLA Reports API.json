@@ -724,7 +724,7 @@
       "type": "row"
     },
     {
-      "description": "CPU usage per worker container during report generation. Good: Activity peaks during generation that return to baseline. Bad: 100% saturation per core causing task stalls.",
+      "description": "CPU cores used per worker container during report generation. Good: Activity peaks during generation that return to baseline. Bad: Sustained high core usage causing task stalls.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -736,7 +736,7 @@
             "fillOpacity": 15,
             "lineWidth": 2
           },
-          "unit": "percent"
+          "unit": "none"
         }
       },
       "gridPos": {
@@ -769,12 +769,12 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}[5m]) * 100",
+          "expr": "rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}[5m])",
           "legendFormat": "Worker {{name}}",
           "refId": "A"
         }
       ],
-      "title": "Generator Worker CPU Usage % (per Replica)",
+      "title": "Generator Worker CPU Core Usage (per Replica)",
       "type": "timeseries"
     },
     {
