@@ -1633,7 +1633,7 @@
           "refId": "A"
         }
       ],
-      "title": "MinIO S3 HTTP Requests (Artifact Upload/Download)",
+      "title": "MinIO S3 Cluster HTTP Request Rate (All Operations)",
       "type": "timeseries"
     },
     {
@@ -1681,8 +1681,8 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "minio_disk_storage_available_bytes",
-          "legendFormat": "Storage Available",
+          "expr": "sum(minio_disk_storage_available_bytes)",
+          "legendFormat": "Total Storage Available",
           "refId": "A"
         },
         {
@@ -1691,12 +1691,12 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "minio_disk_storage_used_bytes",
-          "legendFormat": "Storage Used",
+          "expr": "sum(minio_disk_storage_used_bytes)",
+          "legendFormat": "Total Storage Used",
           "refId": "B"
         }
       ],
-      "title": "MinIO Artifact Storage Capacity",
+      "title": "MinIO Cluster Total Storage Capacity",
       "type": "timeseries"
     },
     {
