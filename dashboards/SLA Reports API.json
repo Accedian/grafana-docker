@@ -1799,6 +1799,16 @@
           "expr": "sum(rate(sla_reports_api_postgres_query_errors_total[5m])) or vector(0)",
           "legendFormat": "PostgreSQL Query Errors",
           "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(sla_reports_api_http_requests_total{status=~\"[45]..\"}[5m])) or vector(0)",
+          "legendFormat": "SLA Reports API HTTP Errors",
+          "refId": "F"
         }
       ],
       "title": "Cross-Pipeline Error Matrix",
