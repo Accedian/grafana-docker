@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "Observability dashboard for the SLA Reports API service covering HTTP endpoints, DuckDB analytical queries, MinIO storage operations, report imports, consolidation pipelines, PostgreSQL errors, and system resources.",
+  "description": "End-to-end observability and troubleshooting dashboard for the SLA Report Generation pipeline from request enqueue (Trigger API) to generator execution (Celery/PDF rendering), Parquet storage (SLA Reports API/MinIO), and delivery.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -32,11 +32,11 @@
       },
       "id": 1,
       "options": {
-        "content": "# SLA Reports API Service Monitoring\nMonitors the SLA Reports API microservice (`sla-reports-api`). It tracks HTTP traffic and latency, DuckDB analytical query execution, MinIO/S3 storage operations, Parquet report ingestion, consolidation runs, PostgreSQL errors, and container runtime resources.",
+        "content": "# End-to-End SLA Report Generation & Troubleshooting Dashboard\nTracks the entire SLA report lifecycle: **Request Enqueue** (`sla-report-trigger-api`) \u2192 **Worker Execution** (`sla-report-generator` / Celery) \u2192 **Parquet Export & Storage** (`sla-reports-api` / MinIO) \u2192 **Progress & Trace Polling** (`slapg` Redis) \u2192 **Data Consolidation** (DuckDB) \u2192 **PDF Generation & Storage** (`weld-data` / `report-service`). Use this dashboard to pinpoint failures, latencies, or resource bottlenecks at any stage from initial request to getting a PDF.",
         "mode": "markdown"
       },
       "pluginVersion": "10.0.0",
-      "title": "About Dashboard",
+      "title": "Pipeline Architecture & Diagnostics Guide",
       "type": "text"
     },
     {
@@ -49,7 +49,7 @@
       },
       "id": 2,
       "panels": [],
-      "title": "Service Health Overview",
+      "title": "Pipeline Health & Architecture Overview",
       "type": "row"
     },
     {
@@ -93,8 +93,7 @@
             ]
           },
           "unit": "none"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 4,
@@ -117,7 +116,6 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.0",
       "targets": [
         {
           "datasource": {
@@ -125,14 +123,13 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "max(up{job=~\"sla-reports-api|sla_reports_api\"})",
+          "expr": "max(up{job=\"sla_report_trigger\"})",
           "instant": true,
-          "legendFormat": "Status",
-          "range": false,
+          "legendFormat": "Trigger Status",
           "refId": "A"
         }
       ],
-      "title": "Service Status",
+      "title": "Trigger API Status",
       "type": "stat"
     },
     {
@@ -145,7 +142,153 @@
           "color": {
             "mode": "thresholds"
           },
-          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "green",
+                "value": 3
+              }
+            ]
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 4
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "count(container_last_seen{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}) or vector(0)",
+          "instant": true,
+          "legendFormat": "Replicas",
+          "refId": "A"
+        }
+      ],
+      "title": "Generator Replicas",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 0,
+                  "text": "DOWN"
+                },
+                "1": {
+                  "color": "green",
+                  "index": 1,
+                  "text": "UP"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 4
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "max(up{job=~\"sla-reports-api|sla_reports_api\"})",
+          "instant": true,
+          "legendFormat": "Reports API Status",
+          "refId": "A"
+        }
+      ],
+      "title": "SLA Reports API Status",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -164,139 +307,7 @@
             ]
           },
           "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 4,
-        "y": 4
-      },
-      "id": 4,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "10.0.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum(sla_reports_api_http_requests_in_flight)",
-          "instant": false,
-          "legendFormat": "In-Flight",
-          "refId": "A"
         }
-      ],
-      "title": "In-Flight Requests",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "reqps"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 8,
-        "y": 4
-      },
-      "id": 5,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "10.0.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate(sla_reports_api_http_requests_total[5m]))",
-          "legendFormat": "Req/s",
-          "refId": "A"
-        }
-      ],
-      "title": "Request Throughput",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 1
-              },
-              {
-                "color": "red",
-                "value": 5
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
       },
       "gridPos": {
         "h": 4,
@@ -319,7 +330,6 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.0",
       "targets": [
         {
           "datasource": {
@@ -327,12 +337,12 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(sum(rate(sla_reports_api_http_requests_total{status=~\"[45]..\"}[5m])) / (sum(rate(sla_reports_api_http_requests_total[5m])) > 0)) * 100 or vector(0)",
-          "legendFormat": "Error Rate %",
+          "expr": "sum(sla_reports_api_http_requests_in_flight)",
+          "legendFormat": "In-Flight",
           "refId": "A"
         }
       ],
-      "title": "HTTP Error Rate",
+      "title": "In-Flight API Requests",
       "type": "stat"
     },
     {
@@ -345,19 +355,8 @@
           "color": {
             "mode": "palette-classic"
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": null
-              }
-            ]
-          },
           "unit": "short"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 4,
@@ -380,7 +379,6 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.0",
       "targets": [
         {
           "datasource": {
@@ -389,7 +387,7 @@
           },
           "editorMode": "code",
           "expr": "sum(increase(sla_reports_api_import_reports_total[1h])) or vector(0)",
-          "legendFormat": "Imports (1h)",
+          "legendFormat": "Ingested",
           "refId": "A"
         }
       ],
@@ -406,7 +404,6 @@
           "color": {
             "mode": "thresholds"
           },
-          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -425,8 +422,7 @@
             ]
           },
           "unit": "percent"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 4,
@@ -449,7 +445,6 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.0",
       "targets": [
         {
           "datasource": {
@@ -462,7 +457,7 @@
           "refId": "A"
         }
       ],
-      "title": "Consolidation Success Rate",
+      "title": "Consolidation Success %",
       "type": "stat"
     },
     {
@@ -475,7 +470,7 @@
       },
       "id": 9,
       "panels": [],
-      "title": "HTTP Traffic & Latency",
+      "title": "Stage 1: Report Request & Ingestion (Trigger API)",
       "type": "row"
     },
     {
@@ -488,20 +483,14 @@
           "custom": {
             "drawStyle": "line",
             "fillOpacity": 15,
-            "lineWidth": 2,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            }
+            "lineWidth": 2
           },
           "unit": "reqps"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 8,
         "x": 0,
         "y": 9
       },
@@ -528,12 +517,12 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (route) (rate(sla_reports_api_http_requests_total[5m]))",
-          "legendFormat": "{{route}}",
+          "expr": "sum by (endpoint, method) (rate(http_requests_total{job=\"sla_report_trigger\"}[5m]))",
+          "legendFormat": "{{method}} {{endpoint}}",
           "refId": "A"
         }
       ],
-      "title": "HTTP Request Rate by Route",
+      "title": "Report Request Ingestion Rate",
       "type": "timeseries"
     },
     {
@@ -545,7 +534,7 @@
         "defaults": {
           "custom": {
             "drawStyle": "bars",
-            "fillOpacity": 40,
+            "fillOpacity": 35,
             "lineWidth": 1,
             "stacking": {
               "group": "A",
@@ -604,8 +593,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
+        "w": 8,
+        "x": 8,
         "y": 9
       },
       "id": 11,
@@ -631,12 +620,12 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (status) (rate(sla_reports_api_http_requests_total[5m]))",
-          "legendFormat": "Status {{status}}",
+          "expr": "sum by (http_status) (rate(http_requests_total{job=\"sla_report_trigger\"}[5m]))",
+          "legendFormat": "HTTP {{http_status}}",
           "refId": "A"
         }
       ],
-      "title": "HTTP Response Status Code Breakdown",
+      "title": "Trigger HTTP Response Status",
       "type": "timeseries"
     },
     {
@@ -652,14 +641,13 @@
             "lineWidth": 2
           },
           "unit": "s"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 17
+        "w": 8,
+        "x": 16,
+        "y": 9
       },
       "id": 12,
       "options": {
@@ -685,7 +673,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.50, sum by (le) (rate(sla_reports_api_http_request_duration_seconds_bucket[5m])))",
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"sla_report_trigger\"}[5m])))",
           "legendFormat": "p50 Median",
           "refId": "A"
         },
@@ -695,8 +683,8 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.90, sum by (le) (rate(sla_reports_api_http_request_duration_seconds_bucket[5m])))",
-          "legendFormat": "p90",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"sla_report_trigger\"}[5m])))",
+          "legendFormat": "p95",
           "refId": "B"
         },
         {
@@ -705,76 +693,12 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(sla_reports_api_http_request_duration_seconds_bucket[5m])))",
-          "legendFormat": "p95",
-          "refId": "C"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.99, sum by (le) (rate(sla_reports_api_http_request_duration_seconds_bucket[5m])))",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"sla_report_trigger\"}[5m])))",
           "legendFormat": "p99",
-          "refId": "D"
+          "refId": "C"
         }
       ],
-      "title": "HTTP Latency Quantiles",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "lineWidth": 2
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 17
-      },
-      "id": 13,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "last"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le, route) (rate(sla_reports_api_http_request_duration_seconds_bucket[5m])))",
-          "legendFormat": "{{route}} (p95)",
-          "refId": "A"
-        }
-      ],
-      "title": "HTTP Latency (p95) by Route",
+      "title": "Trigger Request Latency Quantiles",
       "type": "timeseries"
     },
     {
@@ -783,11 +707,11 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 17
       },
-      "id": 14,
+      "id": 13,
       "panels": [],
-      "title": "DuckDB Analytical Query Layer",
+      "title": "Stage 2: Report Generator Workers (Celery Execution)",
       "type": "row"
     },
     {
@@ -799,20 +723,19 @@
         "defaults": {
           "custom": {
             "drawStyle": "line",
-            "fillOpacity": 10,
+            "fillOpacity": 15,
             "lineWidth": 2
           },
-          "unit": "s"
-        },
-        "overrides": []
+          "unit": "percent"
+        }
       },
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 26
+        "y": 18
       },
-      "id": 15,
+      "id": 14,
       "options": {
         "legend": {
           "calcs": [
@@ -825,8 +748,8 @@
           "showLegend": true
         },
         "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "targets": [
@@ -836,65 +759,12 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le, operation) (rate(sla_reports_api_duckdb_query_duration_seconds_bucket[5m])))",
-          "legendFormat": "{{operation}} (p95)",
+          "expr": "rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}[5m]) * 100",
+          "legendFormat": "Worker {{name}}",
           "refId": "A"
         }
       ],
-      "title": "DuckDB Query Duration (p95) by Operation",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "bars",
-            "fillOpacity": 30,
-            "lineWidth": 1
-          },
-          "unit": "ops"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 12,
-        "y": 26
-      },
-      "id": 16,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum by (operation) (rate(sla_reports_api_duckdb_query_errors_total[5m]))",
-          "legendFormat": "{{operation}} errors/s",
-          "refId": "A"
-        }
-      ],
-      "title": "DuckDB Query Error Rate",
+      "title": "Generator Worker CPU Usage % (per Replica)",
       "type": "timeseries"
     },
     {
@@ -909,30 +779,30 @@
             "fillOpacity": 15,
             "lineWidth": 2
           },
-          "unit": "rows/s"
-        },
-        "overrides": []
+          "unit": "bytes"
+        }
       },
       "gridPos": {
         "h": 8,
-        "w": 6,
-        "x": 18,
-        "y": 26
+        "w": 12,
+        "x": 12,
+        "y": 18
       },
-      "id": 17,
+      "id": 15,
       "options": {
         "legend": {
           "calcs": [
             "mean",
-            "max"
+            "max",
+            "last"
           ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "targets": [
@@ -942,12 +812,12 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (operation) (rate(sla_reports_api_duckdb_rows_scanned_sum[5m]))",
-          "legendFormat": "{{operation}} rows/s",
+          "expr": "container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}",
+          "legendFormat": "Worker {{name}}",
           "refId": "A"
         }
       ],
-      "title": "DuckDB Rows Scanned Rate",
+      "title": "Generator Worker Memory Usage (PDF/Chart Rendering OOM Detection)",
       "type": "timeseries"
     },
     {
@@ -956,11 +826,11 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 34
+        "y": 26
       },
-      "id": 18,
+      "id": 16,
       "panels": [],
-      "title": "Ingestion & Storage (MinIO S3 & Parquet)",
+      "title": "Stage 3: Parquet Export & Storage (SLA Reports API & MinIO)",
       "type": "row"
     },
     {
@@ -1014,9 +884,9 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 35
+        "y": 27
       },
-      "id": 19,
+      "id": 17,
       "options": {
         "legend": {
           "calcs": [
@@ -1040,11 +910,11 @@
           },
           "editorMode": "code",
           "expr": "sum by (result) (rate(sla_reports_api_import_reports_total[5m]))",
-          "legendFormat": "{{result}}",
+          "legendFormat": "Import {{result}}",
           "refId": "A"
         }
       ],
-      "title": "Report Ingestion Rate",
+      "title": "Parquet Report Ingestion Rate (/import-report)",
       "type": "timeseries"
     },
     {
@@ -1060,16 +930,15 @@
             "lineWidth": 2
           },
           "unit": "Bps"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 35
+        "y": 27
       },
-      "id": 20,
+      "id": 18,
       "options": {
         "legend": {
           "calcs": [
@@ -1093,11 +962,11 @@
           },
           "editorMode": "code",
           "expr": "sum(rate(sla_reports_api_import_bytes_total[5m]))",
-          "legendFormat": "Ingested Throughput",
+          "legendFormat": "Throughput",
           "refId": "A"
         }
       ],
-      "title": "Ingested Data Throughput",
+      "title": "Ingested Parquet Data Throughput",
       "type": "timeseries"
     },
     {
@@ -1113,16 +982,15 @@
             "lineWidth": 2
           },
           "unit": "bytes"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 35
+        "y": 27
       },
-      "id": 21,
+      "id": 19,
       "options": {
         "legend": {
           "calcs": [
@@ -1177,16 +1045,15 @@
             "lineWidth": 2
           },
           "unit": "s"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 43
+        "y": 35
       },
-      "id": 22,
+      "id": 20,
       "options": {
         "legend": {
           "calcs": [
@@ -1210,7 +1077,7 @@
           },
           "editorMode": "code",
           "expr": "histogram_quantile(0.95, sum by (le, operation) (rate(sla_reports_api_storage_operation_duration_seconds_bucket[5m])))",
-          "legendFormat": "{{operation}} (p95)",
+          "legendFormat": "MinIO {{operation}} (p95)",
           "refId": "A"
         }
       ],
@@ -1230,14 +1097,78 @@
             "lineWidth": 1
           },
           "unit": "ops"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
+        "y": 35
+      },
+      "id": 21,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (operation) (rate(sla_reports_api_storage_operation_errors_total[5m]))",
+          "legendFormat": "MinIO {{operation}} errors/s",
+          "refId": "A"
+        }
+      ],
+      "title": "MinIO Storage Operation Errors",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
         "y": 43
+      },
+      "id": 22,
+      "panels": [],
+      "title": "Stage 4: Progress Tracking & Status Polling (Redis & API)",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2
+          },
+          "unit": "reqps"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 44
       },
       "id": 23,
       "options": {
@@ -1262,12 +1193,65 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (operation) (rate(sla_reports_api_storage_operation_errors_total[5m]))",
-          "legendFormat": "{{operation}} errors/s",
+          "expr": "sum by (route) (rate(sla_reports_api_http_requests_total{route=~\".*reports.*\"}[5m]))",
+          "legendFormat": "{{route}}",
           "refId": "A"
         }
       ],
-      "title": "MinIO Storage Operation Errors",
+      "title": "Report Progress Status/Trace Polling Request Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 2
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 44
+      },
+      "id": 24,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le, route) (rate(sla_reports_api_http_request_duration_seconds_bucket{route=~\".*reports.*\"}[5m])))",
+          "legendFormat": "{{route}} (p95)",
+          "refId": "A"
+        }
+      ],
+      "title": "Report Progress Polling Latency (p95)",
       "type": "timeseries"
     },
     {
@@ -1276,11 +1260,11 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 51
+        "y": 52
       },
-      "id": 24,
+      "id": 25,
       "panels": [],
-      "title": "Consolidation Pipeline & Database",
+      "title": "Stage 5: Data Consolidation & DuckDB Analytics (SLA Reports API)",
       "type": "row"
     },
     {
@@ -1334,9 +1318,9 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 52
+        "y": 53
       },
-      "id": 25,
+      "id": 26,
       "options": {
         "legend": {
           "calcs": [
@@ -1360,7 +1344,7 @@
           },
           "editorMode": "code",
           "expr": "sum by (result) (rate(sla_reports_api_consolidation_runs_total[5m]))",
-          "legendFormat": "{{result}}",
+          "legendFormat": "Consolidation {{result}}",
           "refId": "A"
         }
       ],
@@ -1380,16 +1364,15 @@
             "lineWidth": 2
           },
           "unit": "s"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 52
+        "y": 53
       },
-      "id": 26,
+      "id": 27,
       "options": {
         "legend": {
           "calcs": [
@@ -1424,11 +1407,64 @@
           },
           "editorMode": "code",
           "expr": "histogram_quantile(0.50, sum by (le) (rate(sla_reports_api_consolidation_duration_seconds_bucket[5m])))",
-          "legendFormat": "p50 Median Duration",
+          "legendFormat": "p50 Duration",
           "refId": "B"
         }
       ],
-      "title": "Consolidation Duration",
+      "title": "Consolidation Wall-Clock Duration",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 2
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 53
+      },
+      "id": 28,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le, operation) (rate(sla_reports_api_duckdb_query_duration_seconds_bucket[5m])))",
+          "legendFormat": "{{operation}} (p95)",
+          "refId": "A"
+        }
+      ],
+      "title": "DuckDB Query Duration (p95) by Operation",
       "type": "timeseries"
     },
     {
@@ -1444,16 +1480,15 @@
             "lineWidth": 1
           },
           "unit": "ops"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 52
+        "w": 12,
+        "x": 0,
+        "y": 61
       },
-      "id": 27,
+      "id": 29,
       "options": {
         "legend": {
           "calcs": [
@@ -1476,12 +1511,64 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (operation) (rate(sla_reports_api_postgres_query_errors_total[5m]))",
+          "expr": "sum by (operation) (rate(sla_reports_api_duckdb_query_errors_total[5m]))",
           "legendFormat": "{{operation}} errors/s",
           "refId": "A"
         }
       ],
-      "title": "PostgreSQL Query Errors",
+      "title": "DuckDB Query Errors",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2
+          },
+          "unit": "rows/s"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 61
+      },
+      "id": 30,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (operation) (rate(sla_reports_api_duckdb_rows_scanned_sum[5m]))",
+          "legendFormat": "{{operation}} rows/s",
+          "refId": "A"
+        }
+      ],
+      "title": "DuckDB Rows Scanned Rate",
       "type": "timeseries"
     },
     {
@@ -1490,11 +1577,11 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 60
+        "y": 69
       },
-      "id": 28,
+      "id": 31,
       "panels": [],
-      "title": "Go Runtime & Container Resources",
+      "title": "Stage 6: PDF Artifact Generation & Delivery (Weld Data & Storage)",
       "type": "row"
     },
     {
@@ -1509,17 +1596,68 @@
             "fillOpacity": 15,
             "lineWidth": 2
           },
-          "unit": "short"
-        },
-        "overrides": []
+          "unit": "reqps"
+        }
       },
       "gridPos": {
         "h": 8,
-        "w": 6,
+        "w": 12,
         "x": 0,
-        "y": 61
+        "y": 70
       },
-      "id": 29,
+      "id": 32,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(minio_http_requests_duration_seconds_count[5m])) or vector(0)",
+          "legendFormat": "MinIO HTTP Requests/s",
+          "refId": "A"
+        }
+      ],
+      "title": "MinIO S3 HTTP Requests (Artifact Upload/Download)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineWidth": 2
+          },
+          "unit": "bytes"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 70
+      },
+      "id": 33,
       "options": {
         "legend": {
           "calcs": [
@@ -1543,12 +1681,127 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "go_goroutines{job=~\"sla-reports-api|sla_reports_api\"}",
-          "legendFormat": "{{instance}}",
+          "expr": "minio_disk_storage_available_bytes",
+          "legendFormat": "Storage Available",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "minio_disk_storage_used_bytes",
+          "legendFormat": "Storage Used",
+          "refId": "B"
         }
       ],
-      "title": "Goroutines Count",
+      "title": "MinIO Artifact Storage Capacity",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 78
+      },
+      "id": 34,
+      "panels": [],
+      "title": "End-to-End Pipeline Troubleshooting & Bottlenecks",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 40,
+            "lineWidth": 1
+          },
+          "unit": "ops"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 79
+      },
+      "id": 35,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(http_requests_total{job=\"sla_report_trigger\", http_status=~\"[45]..\"}[5m])) or vector(0)",
+          "legendFormat": "Trigger Enqueue Errors",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(sla_reports_api_import_reports_total{result=\"error\"}[5m])) or vector(0)",
+          "legendFormat": "Parquet Import Errors",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(sla_reports_api_storage_operation_errors_total[5m])) or vector(0)",
+          "legendFormat": "MinIO Storage Errors",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(sla_reports_api_duckdb_query_errors_total[5m])) or vector(0)",
+          "legendFormat": "DuckDB Query Errors",
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(sla_reports_api_postgres_query_errors_total[5m])) or vector(0)",
+          "legendFormat": "PostgreSQL Query Errors",
+          "refId": "E"
+        }
+      ],
+      "title": "Cross-Pipeline Error Matrix",
       "type": "timeseries"
     },
     {
@@ -1563,17 +1816,16 @@
             "fillOpacity": 15,
             "lineWidth": 2
           },
-          "unit": "bytes"
-        },
-        "overrides": []
+          "unit": "percent"
+        }
       },
       "gridPos": {
         "h": 8,
-        "w": 6,
-        "x": 6,
-        "y": 61
+        "w": 8,
+        "x": 8,
+        "y": 79
       },
-      "id": 30,
+      "id": 36,
       "options": {
         "legend": {
           "calcs": [
@@ -1597,8 +1849,8 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "go_memstats_alloc_bytes{job=~\"sla-reports-api|sla_reports_api\"}",
-          "legendFormat": "Allocated ({{instance}})",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-trigger\"}[5m])) * 100",
+          "legendFormat": "Trigger API CPU",
           "refId": "A"
         },
         {
@@ -1607,8 +1859,8 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "go_memstats_heap_inuse_bytes{job=~\"sla-reports-api|sla_reports_api\"}",
-          "legendFormat": "Heap In-Use ({{instance}})",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}[5m])) * 100",
+          "legendFormat": "Generator Workers CPU (Total)",
           "refId": "B"
         },
         {
@@ -1617,12 +1869,12 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "go_memstats_sys_bytes{job=~\"sla-reports-api|sla_reports_api\"}",
-          "legendFormat": "Sys Memory ({{instance}})",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"}[5m])) * 100",
+          "legendFormat": "SLA Reports API CPU",
           "refId": "C"
         }
       ],
-      "title": "Go Memory Stats",
+      "title": "Pipeline Services CPU Saturation",
       "type": "timeseries"
     },
     {
@@ -1634,74 +1886,19 @@
         "defaults": {
           "custom": {
             "drawStyle": "line",
-            "fillOpacity": 20,
-            "lineWidth": 2
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 12,
-        "y": 61
-      },
-      "id": 31,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "last"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=~\".*sla-reports-api.*\"}[5m]) * 100",
-          "legendFormat": "{{name}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Container CPU Usage",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 20,
+            "fillOpacity": 15,
             "lineWidth": 2
           },
           "unit": "bytes"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 8,
-        "w": 6,
-        "x": 18,
-        "y": 61
+        "w": 8,
+        "x": 16,
+        "y": 79
       },
-      "id": 32,
+      "id": 37,
       "options": {
         "legend": {
           "calcs": [
@@ -1714,8 +1911,8 @@
           "showLegend": true
         },
         "tooltip": {
-          "mode": "single",
-          "sort": "none"
+          "mode": "multi",
+          "sort": "desc"
         }
       },
       "targets": [
@@ -1725,12 +1922,32 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~\".*sla-reports-api.*\"}",
-          "legendFormat": "{{name}}",
+          "expr": "sum(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-trigger\"})",
+          "legendFormat": "Trigger API Memory",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"})",
+          "legendFormat": "Generator Workers Memory (Total)",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"})",
+          "legendFormat": "SLA Reports API Memory",
+          "refId": "C"
         }
       ],
-      "title": "Container Memory Usage",
+      "title": "Pipeline Services Memory Consumption",
       "type": "timeseries"
     }
   ],
@@ -1740,10 +1957,11 @@
   "tags": [
     "sla",
     "sla-reports",
-    "sla-reports-api",
+    "sla-report-pipeline",
+    "report-generation",
     "microservice",
-    "go",
-    "monitoring"
+    "celery",
+    "pdf"
   ],
   "templating": {
     "list": [
@@ -1788,5 +2006,5 @@
   "timezone": "browser",
   "title": "SLA Reports API",
   "uid": "sla-reports-api",
-  "version": 1
+  "version": 2
 }
