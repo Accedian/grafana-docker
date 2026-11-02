@@ -1826,7 +1826,7 @@
             "fillOpacity": 15,
             "lineWidth": 2
           },
-          "unit": "percent"
+          "unit": "none"
         }
       },
       "gridPos": {
@@ -1859,8 +1859,8 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-trigger\"}[5m])) * 100",
-          "legendFormat": "Trigger API CPU",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-trigger\"}[5m]))",
+          "legendFormat": "Trigger API (Cores)",
           "refId": "A"
         },
         {
@@ -1869,8 +1869,8 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}[5m])) * 100",
-          "legendFormat": "Generator Workers CPU (Total)",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}[5m]))",
+          "legendFormat": "Generator Workers (Cores)",
           "refId": "B"
         },
         {
@@ -1879,12 +1879,12 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"}[5m])) * 100",
-          "legendFormat": "SLA Reports API CPU",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"}[5m]))",
+          "legendFormat": "SLA Reports API (Cores)",
           "refId": "C"
         }
       ],
-      "title": "Pipeline Services CPU Saturation",
+      "title": "Pipeline Services Aggregate CPU Core Usage",
       "type": "timeseries"
     },
     {
