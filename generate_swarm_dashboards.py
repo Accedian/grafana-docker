@@ -122,6 +122,22 @@ def resource_health(dashboard):
     compact(dashboard["panels"])
 
 
+def sla_reports(dashboard):
+    dashboard["description"] += " Swarm: existing application metrics only."
+    dashboard["panels"][0]["options"]["content"] += NO_DATA_NOTE
+    for panel in walk(dashboard["panels"]):
+        for target in panel.get("targets", []):
+            expr = target["expr"]
+            expr = expr.replace('count(kube_pod_status_phase{pod=~".*sla-report-generator.*", phase="Running"})', 'count(container_last_seen{container_label_com_docker_swarm_service_name="aod_sla-report-generator"})')
+            expr = expr.replace('container="sla-report-generator"', 'container_label_com_docker_swarm_service_name="aod_sla-report-generator"')
+            expr = expr.replace('container="sla-report-trigger"', 'container_label_com_docker_swarm_service_name="aod_sla-report-trigger"')
+            expr = expr.replace('container="sla-reports-api"', 'container_label_com_docker_swarm_service_name="aod_sla-reports-api"')
+            expr = expr.replace('container_memory_working_set_bytes', 'container_memory_usage_bytes')
+            target["expr"] = expr
+            if "legendFormat" in target:
+                target["legendFormat"] = target["legendFormat"].replace("{{pod}}", "{{name}}")
+
+
 def build(name):
     dashboard = copy.deepcopy(json.loads((SOURCE / name).read_text()))
     dashboard["uid"] = dashboard["uid"] + "-swarm"
@@ -130,6 +146,8 @@ def build(name):
     dashboard["tags"] = sorted(set(dashboard.get("tags", [])) - {"k8s", "kubernetes"} | {"swarm"})
     if name == "pca-resource-health.json":
         resource_health(dashboard)
+    elif name == "pca-sla-reports.json":
+        sla_reports(dashboard)
     else:
         dashboard["description"] += " Swarm: existing application metrics only."
         dashboard["panels"][0]["options"]["content"] += NO_DATA_NOTE

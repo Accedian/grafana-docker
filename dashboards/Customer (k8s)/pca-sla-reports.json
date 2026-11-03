@@ -181,7 +181,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "count(container_last_seen{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}) or vector(0)",
+          "expr": "count(kube_pod_status_phase{pod=~\".*sla-report-generator.*\", phase=\"Running\"})",
           "instant": true,
           "legendFormat": "Replicas",
           "refId": "A",
@@ -722,8 +722,8 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}[5m])",
-          "legendFormat": "Worker {{name}}",
+          "expr": "rate(container_cpu_usage_seconds_total{container=\"sla-report-generator\"}[5m])",
+          "legendFormat": "Worker {{pod}}",
           "refId": "A",
           "instant": false,
           "range": true
@@ -772,8 +772,8 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}",
-          "legendFormat": "Worker {{name}}",
+          "expr": "container_memory_working_set_bytes{container=\"sla-report-generator\"}",
+          "legendFormat": "Worker {{pod}}",
           "refId": "A",
           "instant": false,
           "range": true
@@ -1668,7 +1668,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(http_requests_total{job=\"sla_report_trigger\", http_status=~\"[45]..\"}[5m])) or vector(0)",
+          "expr": "sum(rate(http_requests_total{job=\"sla_report_trigger\", http_status=~\"[45]..\"}[5m]))",
           "legendFormat": "Trigger Enqueue Errors",
           "refId": "A",
           "instant": false,
@@ -1677,7 +1677,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(sla_reports_api_import_reports_total{result=\"error\"}[5m])) or vector(0)",
+          "expr": "sum(rate(sla_reports_api_import_reports_total{result=\"error\"}[5m]))",
           "legendFormat": "Parquet Import Errors",
           "refId": "B",
           "instant": false,
@@ -1686,7 +1686,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(sla_reports_api_storage_operation_errors_total[5m])) or vector(0)",
+          "expr": "sum(rate(sla_reports_api_storage_operation_errors_total[5m]))",
           "legendFormat": "MinIO Storage Errors",
           "refId": "C",
           "instant": false,
@@ -1695,7 +1695,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(sla_reports_api_duckdb_query_errors_total[5m])) or vector(0)",
+          "expr": "sum(rate(sla_reports_api_duckdb_query_errors_total[5m]))",
           "legendFormat": "DuckDB Query Errors",
           "refId": "D",
           "instant": false,
@@ -1704,7 +1704,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(sla_reports_api_postgres_query_errors_total[5m])) or vector(0)",
+          "expr": "sum(rate(sla_reports_api_postgres_query_errors_total[5m]))",
           "legendFormat": "PostgreSQL Query Errors",
           "refId": "E",
           "instant": false,
@@ -1713,7 +1713,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(sla_reports_api_http_requests_total{status=~\"[45]..\"}[5m])) or vector(0)",
+          "expr": "sum(rate(sla_reports_api_http_requests_total{status=~\"[45]..\"}[5m]))",
           "legendFormat": "SLA Reports API HTTP Errors",
           "refId": "F",
           "instant": false,
@@ -1763,7 +1763,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-trigger\"}[5m]))",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"sla-report-trigger\"}[5m]))",
           "legendFormat": "Trigger API (Cores)",
           "refId": "A",
           "instant": false,
@@ -1772,7 +1772,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}[5m]))",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"sla-report-generator\"}[5m]))",
           "legendFormat": "Generator Workers (Cores)",
           "refId": "B",
           "instant": false,
@@ -1781,7 +1781,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"}[5m]))",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"sla-reports-api\"}[5m]))",
           "legendFormat": "SLA Reports API (Cores)",
           "refId": "C",
           "instant": false,
@@ -1831,7 +1831,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-trigger\"})",
+          "expr": "sum(container_memory_working_set_bytes{container=\"sla-report-trigger\"})",
           "legendFormat": "Trigger API Memory",
           "refId": "A",
           "instant": false,
@@ -1840,7 +1840,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"})",
+          "expr": "sum(container_memory_working_set_bytes{container=\"sla-report-generator\"})",
           "legendFormat": "Generator Workers Memory (Total)",
           "refId": "B",
           "instant": false,
@@ -1849,7 +1849,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"})",
+          "expr": "sum(container_memory_working_set_bytes{container=\"sla-reports-api\"})",
           "legendFormat": "SLA Reports API Memory",
           "refId": "C",
           "instant": false,
