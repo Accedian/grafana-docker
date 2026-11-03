@@ -1,9 +1,9 @@
+import json
+import re
 import shutil
 import subprocess
 import unittest
 from pathlib import Path
-
-import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,9 +18,11 @@ def render_datasource(*set_args):
     for arg in set_args:
         command += ["--set", arg]
     result = subprocess.run(command, capture_output=True, text=True, check=True)
-    config_map = yaml.safe_load(result.stdout)
-    provisioning = yaml.safe_load(config_map["data"]["prometheus-datasource.yaml"])
-    (datasource,) = provisioning["datasources"]
+    # Flat "key: value" fields of the single datasource; stdlib only (no PyYAML).
+    datasource = dict(re.findall(r"^\s+-?\s*(\w+): (.*)$", result.stdout, re.MULTILINE))
+    # The url is rendered with Helm's quote, i.e. a JSON-compatible string literal.
+    datasource["url"] = json.loads(datasource["url"])
+    datasource["isDefault"] = datasource["isDefault"] == "true"
     return datasource
 
 
