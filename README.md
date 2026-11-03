@@ -19,6 +19,12 @@ The AP dashboard uses existing Ignite metrics on port 8090 and Gather metrics on
 
 Ignite's sent counter counts normalized-row Kafka publishes, not individual KPI values or completed Druid inserts. Gather counters count asynchronous requests/tasks, and its Druid row inventory covers the previous completed clock hour and refreshes periodically. Confirm a test run through a real authenticated data query. Missing counters remain missing; DOWN scrape targets do not contribute old application samples to the data panels.
 
+The AP CSV error panel uses `ignite_normalizer_csv_parse_errors_total` from the
+matching instrumented Ignite image. It counts rejected Fedex batches; malformed
+CSV does not allow a reliable row count. A missing lazy counter is not a healthy
+zero. The existing `ignite_kafka_total_dropped` counter does not cover this
+parser failure in the original 0.70.0 image.
+
 Regenerate checked-in JSON with `python3 generate_pcaueni_dashboard.py` or `python3 generate_pcaue_ap_dashboard.py`. Run `make test` with `promtool` installed to check the actual PromQL under traffic, idle, missing-data, failed-scrape and tenant-isolation scenarios.
 
 ## Running your Grafana container
