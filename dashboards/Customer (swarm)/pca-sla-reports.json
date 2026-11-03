@@ -366,7 +366,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(increase(sla_reports_api_import_reports_total[1h])) or vector(0)",
+          "expr": "sum(increase(sla_reports_api_import_reports_total{result=\"success\"}[1h])) or (0 * sum(sla_reports_api_import_reports_total))",
           "legendFormat": "Ingested",
           "refId": "A",
           "instant": true,
