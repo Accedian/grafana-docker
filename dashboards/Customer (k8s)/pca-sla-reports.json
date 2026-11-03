@@ -1547,7 +1547,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(minio_http_requests_duration_seconds_count[5m])) or vector(0)",
+          "expr": "sum(rate(minio_http_requests_duration_seconds_count[5m]))",
           "legendFormat": "MinIO HTTP Requests/s",
           "refId": "A",
           "instant": false,
