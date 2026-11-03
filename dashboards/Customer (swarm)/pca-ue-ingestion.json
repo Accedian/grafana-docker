@@ -2,7 +2,7 @@
   "id": null,
   "uid": "pca-ue-ingestion-swarm",
   "title": "PCA UE \u00b7 EDR Ingestion",
-  "description": "Docker Swarm PCA UE EDR ingestion: scrape health, tenant/schema row and dataset counters, invalid input, Kafka lag, and ClickHouse pressure. Supports Analytics Lite without Spark or Druid.",
+  "description": "Docker Swarm PCA UE EDR ingestion: scrape health, tenant/schema row and dataset counters, dedicated attempt/stage timings, in-progress writes, batch size, Kafka lag, and ClickHouse pressure. Supports Analytics Lite without Spark or Druid.",
   "tags": [
     "pca",
     "pcaue",
@@ -101,7 +101,7 @@
       },
       "options": {
         "mode": "markdown",
-        "content": "# PCA UE \u00b7 EDR ingestion on Docker Swarm\n\n**Path covered:** Fedex \u2192 Kafka `pcaue.<tenant UUID>.<schema>.json` \u2192 PVStorage `--pcaueni` \u2192 ClickHouse. The separate session-metrics path through Ignite/Spark/Druid is not measured here and is absent in Analytics Lite.\n\n**Read telemetry health first.** UP means the metrics endpoint was scraped, not that ingestion or the customer API is ready. DOWN means a scrape failed; No targets means the expected scrape jobs are missing/disabled. Inserter and Kafka panels omit samples from DOWN targets rather than displaying an old value as healthy.\n\n**Idle versus missing data:** PVStorage creates labelled counters lazily. An idle tenant can have no row counters until its first insert; error counters can be absent until the first failed insert/malformed row. \u2018No counter yet\u2019 is not a failure and is not proof of zero errors. A real zero rate means an existing counter did not increase while telemetry remained available.\n\n**Filters:** tenant and schema are discovered from PCA UE Kafka topics. They filter row/dataset counters and Kafka panels; health and ClickHouse pressure always cover the deployment. Consumer group defaults to All groups with offsets for those topics (the standard inserter uses `pv_storage.db`). Lag is Kafka messages, not EDR rows; an uncommitted offset of -1 is unknown, not zero lag. Message/row rates need not match.\n\nThe counters measure inserted EDR rows, not distinct subscribers or network bytes. They do not prove end-to-end freshness or collector connectivity. Use the linked Roadrunner/Fedex and ClickHouse dashboards for deeper diagnosis."
+        "content": "# PCA UE \u00b7 EDR ingestion on Docker Swarm\n\n**Path covered:** Fedex \u2192 Kafka `pcaue.<tenant UUID>.<schema>.json` \u2192 PVStorage `--pcaueni` \u2192 ClickHouse. The separate session-metrics path through Ignite/Spark/Druid is not measured here and is absent in Analytics Lite.\n\n**Read telemetry health first.** UP means the metrics endpoint was scraped, not that ingestion or the customer API is ready. DOWN means a scrape failed; No targets means the expected scrape jobs are missing/disabled. Inserter and Kafka panels omit samples from DOWN targets rather than displaying an old value as healthy.\n\n**Idle versus missing data:** PVStorage creates labelled counters lazily. An idle tenant can have no row counters until its first insert; error counters can be absent until the first failed attempt. \u2018No counter yet\u2019 is not a failure and is not proof of zero errors. A real zero rate means an existing counter did not increase while telemetry remained available.\n\n**PCA UE write diagnostics:** an attempt is one completed inserter call; retries count as separate attempts and cancellations count as errors. Attempt duration includes open, readiness checks, write and close; stage timings separate readiness waits from the ClickHouse write. p95 is a histogram estimate over completed attempts in the rate window, and is left empty while idle. Batch rows are ClickHouse-reported written rows for successful attempts, not input rows or individual malformed rows.\n\nThese write diagnostics require the matching instrumented PVStorage image. An older image can be UP and expose row counters while the new panels have no series; confirm the deployed image before interpreting absence.\n\n**Filters:** tenant and schema are discovered from PCA UE Kafka topics. They filter inserter diagnostics and Kafka panels; health and ClickHouse pressure always cover the deployment. Consumer group defaults to All groups with offsets for those topics (the standard inserter uses `pv_storage.db`). Lag is Kafka messages, not EDR rows; an uncommitted offset of -1 is unknown, not zero lag. Message/row rates need not match.\n\nThe counters measure inserted EDR rows, not distinct subscribers or network bytes. They do not prove end-to-end freshness or collector connectivity. Use the linked Roadrunner/Fedex and ClickHouse dashboards for deeper diagnosis."
       }
     },
     {
@@ -747,8 +747,8 @@
     {
       "id": 10,
       "type": "timeseries",
-      "title": "Malformed rows \u00b7 current counters",
-      "description": "Current malformed-row counters across UP inserters, summed over the version label; reset per process restart. Raw values expose the first-ever event. The PCA UE JSON insert path can reject a dataset without incrementing this row-level counter; inspect failed dataset attempts too. Missing counter is not proof of no malformed input.",
+      "title": "PCA UE insert attempts / second \u00b7 by result",
+      "description": "Completed PCA UE insertion attempts per second, split by success/error. A retry is another attempt; errors include cancellation and can include input rejection, readiness or ClickHouse failures. This is not a malformed-row count or permanently lost datasets. First-ever errors are also shown by the current failed-attempt counter. Requires the instrumented PVStorage image; older images expose no series.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -774,7 +774,7 @@
               }
             ]
           },
-          "unit": "short",
+          "unit": "ops",
           "noValue": "No counter yet",
           "custom": {
             "drawStyle": "line",
@@ -808,8 +808,8 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (tenant_id, schema) (pcaueni_invalid_rows_total{job=~\"pcaueni_inserter.*\",tenant_id=~\"${tenant:regex}\",schema=~\"${schema:regex}\"} and on (job, instance) (up{job=~\"pcaueni_inserter.*\"} == 1))",
-          "legendFormat": "{{tenant_id}} / {{schema}}",
+          "expr": "sum by (tenant_id, schema, result) (rate(pcaueni_insert_attempts_total{job=~\"pcaueni_inserter.*\",tenant_id=~\"${tenant:regex}\",schema=~\"${schema:regex}\"}[$__rate_interval]) and on (job, instance) (up{job=~\"pcaueni_inserter.*\"} == 1))",
+          "legendFormat": "{{tenant_id}} / {{schema}} / {{result}}",
           "refId": "A",
           "range": true,
           "instant": false,
@@ -1394,6 +1394,371 @@
           "editorMode": "code",
           "expr": "(100 * (1 - ClickHouseAsyncMetrics_DiskAvailable_default{job=~\"clickhouse[0-9]+[a-z]+\"} / (ClickHouseAsyncMetrics_DiskTotal_default{job=~\"clickhouse[0-9]+[a-z]+\"} > 0))) and on (job, instance) (up{job=~\"clickhouse[0-9]+[a-z]+\"} == 1)",
           "legendFormat": "{{job}} / {{instance}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "type": "timeseries",
+      "title": "PCA UE completed attempt duration \u00b7 p95",
+      "description": "Estimated p95 duration of completed success/error attempts, including open, readiness waits, ClickHouse write and close. Retries are separate attempts. Histogram buckets are summed across currently UP inserters for the selected tenant/schema. An idle rate window is empty, not zero; open attempts are only visible in the in-progress gauge. Requires instrumented PVStorage.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 66
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "s",
+          "noValue": "No completed attempts in window",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le, tenant_id, schema) (rate(pcaueni_insert_duration_seconds_bucket{job=~\"pcaueni_inserter.*\",tenant_id=~\"${tenant:regex}\",schema=~\"${schema:regex}\"}[$__rate_interval]) and on (job, instance) (up{job=~\"pcaueni_inserter.*\"} == 1))) and on (tenant_id, schema) (sum by (tenant_id, schema) (rate(pcaueni_insert_duration_seconds_count{job=~\"pcaueni_inserter.*\",tenant_id=~\"${tenant:regex}\",schema=~\"${schema:regex}\"}[$__rate_interval]) and on (job, instance) (up{job=~\"pcaueni_inserter.*\"} == 1)) > 0)",
+          "legendFormat": "{{tenant_id}} / {{schema}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "type": "timeseries",
+      "title": "PCA UE ClickHouse write duration \u00b7 p95",
+      "description": "Estimated p95 of completed ClickHouse client.execute calls, including successful and failed calls. Excludes readiness waits, opening/closing input and Kafka transport. Empty when no write call completed in the rate window. Requires instrumented PVStorage.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 66
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "s",
+          "noValue": "No completed writes in window",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le, tenant_id, schema) (rate(pcaueni_insert_stage_duration_seconds_bucket{job=~\"pcaueni_inserter.*\",tenant_id=~\"${tenant:regex}\",schema=~\"${schema:regex}\",stage=\"write\"}[$__rate_interval]) and on (job, instance) (up{job=~\"pcaueni_inserter.*\"} == 1))) and on (tenant_id, schema) (sum by (tenant_id, schema) (rate(pcaueni_insert_stage_duration_seconds_count{job=~\"pcaueni_inserter.*\",tenant_id=~\"${tenant:regex}\",schema=~\"${schema:regex}\",stage=\"write\"}[$__rate_interval]) and on (job, instance) (up{job=~\"pcaueni_inserter.*\"} == 1)) > 0)",
+          "legendFormat": "{{tenant_id}} / {{schema}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "type": "timeseries",
+      "title": "PCA UE readiness waits \u00b7 p95",
+      "description": "Estimated p95 of the table-existence, write-access and merge-partition readiness checks combined, including failures. No write-stage observation exists when readiness fails before the write. Empty when idle. Requires instrumented PVStorage.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 74
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "s",
+          "noValue": "No completed readiness checks in window",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le, tenant_id, schema) (rate(pcaueni_insert_stage_duration_seconds_bucket{job=~\"pcaueni_inserter.*\",tenant_id=~\"${tenant:regex}\",schema=~\"${schema:regex}\",stage=\"readiness\"}[$__rate_interval]) and on (job, instance) (up{job=~\"pcaueni_inserter.*\"} == 1))) and on (tenant_id, schema) (sum by (tenant_id, schema) (rate(pcaueni_insert_stage_duration_seconds_count{job=~\"pcaueni_inserter.*\",tenant_id=~\"${tenant:regex}\",schema=~\"${schema:regex}\",stage=\"readiness\"}[$__rate_interval]) and on (job, instance) (up{job=~\"pcaueni_inserter.*\"} == 1)) > 0)",
+          "legendFormat": "{{tenant_id}} / {{schema}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "type": "timeseries",
+      "title": "PCA UE inserts in progress",
+      "description": "Current insertion attempts in progress across UP inserters. The gauge is initialized for a tenant/schema at its first attempt and returns to zero after success/error, including cancellation. It is not Kafka backlog or a queued-dataset count. Requires instrumented PVStorage.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 74
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short",
+          "noValue": "No attempt yet",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by (tenant_id, schema) (pcaueni_insert_in_progress{job=~\"pcaueni_inserter.*\",tenant_id=~\"${tenant:regex}\",schema=~\"${schema:regex}\"} and on (job, instance) (up{job=~\"pcaueni_inserter.*\"} == 1))",
+          "legendFormat": "{{tenant_id}} / {{schema}}",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "interval": "30s"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "type": "timeseries",
+      "title": "PCA UE mean successful batch \u00b7 EDR rows",
+      "description": "Mean ClickHouse-reported written rows per successful insertion attempt in the rate window: rate(histogram sum) / rate(histogram count). A successful zero-row write contributes zero; failed attempts do not contribute. Does not parse or count individual malformed input rows. No completed successful batch leaves the panel empty. Requires instrumented PVStorage.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 82
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short",
+          "noValue": "No successful batches in window",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "(sum by (tenant_id, schema) (rate(pcaueni_insert_batch_rows_sum{job=~\"pcaueni_inserter.*\",tenant_id=~\"${tenant:regex}\",schema=~\"${schema:regex}\"}[$__rate_interval]) and on (job, instance) (up{job=~\"pcaueni_inserter.*\"} == 1))) / (sum by (tenant_id, schema) (rate(pcaueni_insert_batch_rows_count{job=~\"pcaueni_inserter.*\",tenant_id=~\"${tenant:regex}\",schema=~\"${schema:regex}\"}[$__rate_interval]) and on (job, instance) (up{job=~\"pcaueni_inserter.*\"} == 1)) > 0)",
+          "legendFormat": "{{tenant_id}} / {{schema}}",
           "refId": "A",
           "range": true,
           "instant": false,

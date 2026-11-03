@@ -30,8 +30,18 @@ def healthy_metric(metric, selectors, rate=False, group=None):
     return expression
 
 
-def inserter_metric(metric, rate=True):
-    return healthy_metric(metric, f"{INSERTER},{FILTERS}", rate, "tenant_id, schema")
+def inserter_metric(metric, rate=True, group="tenant_id, schema", selectors=""):
+    return healthy_metric(metric, f"{INSERTER},{FILTERS}{selectors}", rate, group)
+
+
+def inserter_quantile(metric, selectors=""):
+    """Leave idle histograms empty, rather than exposing NaN or a healthy zero."""
+    buckets = inserter_metric(metric + "_bucket", group="le, tenant_id, schema", selectors=selectors)
+    count = inserter_metric(metric + "_count", selectors=selectors)
+    return (
+        f"histogram_quantile(0.95, {buckets}) "
+        f"and on (tenant_id, schema) ({count} > 0)"
+    )
 
 
 def kafka_metric(metric, rate=False, group="consumergroup, topic"):
@@ -115,11 +125,21 @@ def build():
         "displaying an old value as healthy.\n\n"
         "**Idle versus missing data:** PVStorage creates labelled counters lazily. "
         "An idle tenant can have no row counters until its first insert; error counters "
-        "can be absent until the first failed insert/malformed row. ‘No counter yet’ "
+        "can be absent until the first failed attempt. ‘No counter yet’ "
         "is not a failure and is not proof of zero errors. A real zero rate means an "
         "existing counter did not increase while telemetry remained available.\n\n"
+        "**PCA UE write diagnostics:** an attempt is one completed inserter call; "
+        "retries count as separate attempts and cancellations count as errors. "
+        "Attempt duration includes open, readiness checks, write and close; stage "
+        "timings separate readiness waits from the ClickHouse write. p95 is a "
+        "histogram estimate over completed attempts in the rate window, and is "
+        "left empty while idle. Batch rows are ClickHouse-reported written rows "
+        "for successful attempts, not input rows or individual malformed rows.\n\n"
+        "These write diagnostics require the matching instrumented PVStorage image. "
+        "An older image can be UP and expose row counters while the new panels "
+        "have no series; confirm the deployed image before interpreting absence.\n\n"
         "**Filters:** tenant and schema are discovered from PCA UE Kafka topics. "
-        "They filter row/dataset counters and Kafka panels; health and ClickHouse "
+        "They filter inserter diagnostics and Kafka panels; health and ClickHouse "
         "pressure always cover the deployment. Consumer group defaults to All groups "
         "with offsets for those topics (the standard inserter uses `pv_storage.db`). "
         "Lag is Kafka messages, not EDR rows; an uncommitted offset of -1 is unknown, "
@@ -156,9 +176,9 @@ def build():
         panel(9, "Failed dataset insert attempts · current counters", inserter_metric("pcaueni_invalid_datasets_total", rate=False), "{{tenant_id}} / {{schema}}", 0, 26,
               no_value="No counter yet",
               description="Current cumulative insertion failures across UP inserters, including failed retry attempts; not permanently lost datasets. Each process restart resets its counter. The raw count makes the first-ever failure visible even when rate cannot observe a prior zero sample. Missing counter before the first failure is normal. Inspect inserter logs and ClickHouse pressure when this increases."),
-        panel(10, "Malformed rows · current counters", inserter_metric("pcaueni_invalid_rows_total", rate=False), "{{tenant_id}} / {{schema}}", 12, 26,
+        panel(10, "PCA UE insert attempts / second · by result", inserter_metric("pcaueni_insert_attempts_total", group="tenant_id, schema, result"), "{{tenant_id}} / {{schema}} / {{result}}", 12, 26,
               no_value="No counter yet",
-              description="Current malformed-row counters across UP inserters, summed over the version label; reset per process restart. Raw values expose the first-ever event. The PCA UE JSON insert path can reject a dataset without incrementing this row-level counter; inspect failed dataset attempts too. Missing counter is not proof of no malformed input."),
+              unit="ops", description="Completed PCA UE insertion attempts per second, split by success/error. A retry is another attempt; errors include cancellation and can include input rejection, readiness or ClickHouse failures. This is not a malformed-row count or permanently lost datasets. First-ever errors are also shown by the current failed-attempt counter. Requires the instrumented PVStorage image; older images expose no series."),
         panel(11, "Kafka consumer lag · messages", kafka_metric("kafka_consumergroup_lag"), "{{consumergroup}} / {{topic}}", 0, 34,
               description="Sum of non-negative lag over partitions for selected PCA UE topics/groups. Kafka message counts differ from EDR row counts. Read with the uncommitted-partition panel: no committed offset (-1) makes lag unknown. Only currently UP topic exporters contribute."),
         panel(12, "PCA UE Kafka topic offset movement / second", kafka_metric("kafka_topic_partition_current_offset", rate=True, group="topic"), "{{topic}}", 12, 34,
@@ -175,6 +195,16 @@ def build():
               unit="bytes", description="Bytes in active system.parts for the pcaueni database, one series per table and replica. Schema selects tables; tenant does not filter this panel because these metrics have no tenant label. Do not sum replicas as logical storage. Check exporter query failures too: a reachable exporter can retain a previous table gauge after a failed collection."),
         panel(18, "ClickHouse default disk used · per node", f'(100 * (1 - ClickHouseAsyncMetrics_DiskAvailable_default{{{CLICKHOUSE}}} / (ClickHouseAsyncMetrics_DiskTotal_default{{{CLICKHOUSE}}} > 0))) and on (job, instance) (up{{{CLICKHOUSE}}} == 1)', "{{job}} / {{instance}}", 12, 58,
               unit="percent", description="Used percentage of the default ClickHouse disk per node, across all databases. On a one-VM lab, multiple replicas can report the same underlying disk. Never sum these percentages. Tenant/schema filters do not apply."),
+        panel(19, "PCA UE completed attempt duration · p95", inserter_quantile("pcaueni_insert_duration_seconds"), "{{tenant_id}} / {{schema}}", 0, 66,
+              unit="s", no_value="No completed attempts in window", description="Estimated p95 duration of completed success/error attempts, including open, readiness waits, ClickHouse write and close. Retries are separate attempts. Histogram buckets are summed across currently UP inserters for the selected tenant/schema. An idle rate window is empty, not zero; open attempts are only visible in the in-progress gauge. Requires instrumented PVStorage."),
+        panel(20, "PCA UE ClickHouse write duration · p95", inserter_quantile("pcaueni_insert_stage_duration_seconds", ',stage="write"'), "{{tenant_id}} / {{schema}}", 12, 66,
+              unit="s", no_value="No completed writes in window", description="Estimated p95 of completed ClickHouse client.execute calls, including successful and failed calls. Excludes readiness waits, opening/closing input and Kafka transport. Empty when no write call completed in the rate window. Requires instrumented PVStorage."),
+        panel(21, "PCA UE readiness waits · p95", inserter_quantile("pcaueni_insert_stage_duration_seconds", ',stage="readiness"'), "{{tenant_id}} / {{schema}}", 0, 74,
+              unit="s", no_value="No completed readiness checks in window", description="Estimated p95 of the table-existence, write-access and merge-partition readiness checks combined, including failures. No write-stage observation exists when readiness fails before the write. Empty when idle. Requires instrumented PVStorage."),
+        panel(22, "PCA UE inserts in progress", inserter_metric("pcaueni_insert_in_progress", rate=False), "{{tenant_id}} / {{schema}}", 12, 74,
+              no_value="No attempt yet", description="Current insertion attempts in progress across UP inserters. The gauge is initialized for a tenant/schema at its first attempt and returns to zero after success/error, including cancellation. It is not Kafka backlog or a queued-dataset count. Requires instrumented PVStorage."),
+        panel(23, "PCA UE mean successful batch · EDR rows", f'({inserter_metric("pcaueni_insert_batch_rows_sum")}) / ({inserter_metric("pcaueni_insert_batch_rows_count")} > 0)', "{{tenant_id}} / {{schema}}", 0, 82, w=24,
+              no_value="No successful batches in window", description="Mean ClickHouse-reported written rows per successful insertion attempt in the rate window: rate(histogram sum) / rate(histogram count). A successful zero-row write contributes zero; failed attempts do not contribute. Does not parse or count individual malformed input rows. No completed successful batch leaves the panel empty. Requires instrumented PVStorage."),
     ]
     # A negative offset is an uninitialized consumer; exclude its reported lag
     # instead of letting a clamp turn it into an apparently healthy zero.
@@ -190,7 +220,7 @@ def build():
     schema_topics = f'label_values(kafka_topic_partitions{{{KAFKA},topic=~"pcaue[.](${{tenant:regex}})[.][^.]+[.]json"}},topic)'
     return {
         "id": None, "uid": "pca-ue-ingestion-swarm", "title": "PCA UE · EDR Ingestion",
-        "description": "Docker Swarm PCA UE EDR ingestion: scrape health, tenant/schema row and dataset counters, invalid input, Kafka lag, and ClickHouse pressure. Supports Analytics Lite without Spark or Druid.",
+        "description": "Docker Swarm PCA UE EDR ingestion: scrape health, tenant/schema row and dataset counters, dedicated attempt/stage timings, in-progress writes, batch size, Kafka lag, and ClickHouse pressure. Supports Analytics Lite without Spark or Druid.",
         "tags": ["pca", "pcaue", "swarm", "clickhouse", "kafka"],
         "editable": True, "fiscalYearStartMonth": 0, "graphTooltip": 1,
         "schemaVersion": 41, "version": 1, "refresh": "30s",

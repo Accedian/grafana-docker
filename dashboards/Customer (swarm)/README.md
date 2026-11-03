@@ -107,14 +107,60 @@ that customize that prefix must adjust those links.
 
 PVStorage metrics are `pcaueni_inserted_rows_total`,
 `pcaueni_inserted_datasets_total`, `pcaueni_invalid_datasets_total` (labels
-`tenant_id`, `schema`), and `pcaueni_invalid_rows_total` (also `version`).
+`tenant_id`, `schema`).
 These labelled counters are created lazily: before the first applicable event,
 there can be no series. An absent invalid counter is normal and is not proof
 of zero errors. The dashboard leaves it absent, labelled **No counter yet**,
 rather than inventing a healthy zero or declaring a failure. Invalid-data
-panels show current counters (reset per process restart) so the first error
-is visible even without the prior zero sample that a rate needs. Row-level errors
-do not cover every rejected JSON dataset; inspect failed dataset attempts too.
+panel shows current counters (reset per process restart) so the first error
+is visible even without the prior zero sample that a rate needs. The PCA UE
+JSON path does not emit `pcaueni_invalid_rows_total`; the dashboard deliberately
+has no malformed-row panel. A dataset error can mean invalid input, an unavailable
+table, denied writes or a ClickHouse write failure. It is not a count of malformed
+rows or permanently lost data. A retry is another attempt.
+
+### Dedicated PCA UE inserter instrumentation
+
+The matching PVStorage image adds five metric families, all scoped by
+`tenant_id` and `schema`:
+
+- `pcaueni_insert_attempts_total`, with `result="success"` or `result="error"`,
+  counts completed insertion calls. Errors include cancellations and failed
+  retry attempts. The dashboard shows the rate by result in addition to the
+  existing cumulative failed-attempt counter.
+- `pcaueni_insert_duration_seconds` is a histogram with the same result label.
+  It measures the full attempt, including opening input, readiness checks,
+  the write and closing input. The dashboard shows a p95 estimate over both
+  successful and failed completed attempts.
+- `pcaueni_insert_stage_duration_seconds` is a histogram with `result` and
+  `stage="readiness"` or `stage="write"`. Readiness combines the table-existence,
+  write-access and merge-partition waits. Write measures `client.execute`
+  alone. Separate p95 panels show where completed attempts spent their time.
+- `pcaueni_insert_in_progress` is the current number of active insertion
+  attempts. It returns to zero on success, error or cancellation. It is not
+  Kafka lag or a queue size.
+- `pcaueni_insert_batch_rows` is a histogram of ClickHouse-reported written rows
+  for successful attempts, including a legitimate zero-row write. The panel
+  divides the histogram sum rate by its positive count rate to show mean batch
+  rows. This does not parse input rows or count individually malformed rows.
+
+Classic histograms expose `_bucket`, `_count` and `_sum` series. Duration
+buckets in seconds are `0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60,
+300, 900, +Inf`; row buckets are `0, 1, 10, 100, 1000, 10000, 100000, 1000000,
+10000000, +Inf`. Histogram p95 values are estimates, aggregated across currently
+UP inserters before the quantile is calculated. They have no result or stage
+breakdown beyond the panel's named stage.
+
+No observations in the rate window leave p95 and mean-batch panels empty;
+they do not display NaN or an invented zero. Timings include completed attempts
+only, so a blocked attempt appears in the in-progress gauge before it can affect
+a duration histogram. No insertion timestamps or end-to-end freshness metrics
+are implied.
+
+These panels require the instrumented PVStorage image. An older image can be
+UP and expose the original row/dataset counters while the new diagnostics are
+absent. Ship PVStorage, Grafana and the matching aod-deployer scrape configuration
+together; missing diagnostics on an older image do not prove idle traffic.
 
 Tenant and schema variables come from Kafka topics
 `pcaue.<tenant UUID>.<schema>.json`. The consumer-group variable is discovered
@@ -145,7 +191,9 @@ extracts Prometheus 2.54.1's tool from its official container and runs this
 before building the Grafana image. The checks include real PromQL evaluation
 for traffic, idle initialized counters, lazy absent error counters, failed
 scrapes with old samples, missing targets, the first lazy error event, tenant/schema isolation,
-row-version aggregation and unknown Kafka consumer offsets. They also verify
+separate success/error outcomes, dedicated duration/batch histograms, genuine
+zero-row writes, in-progress gauges, old-image absence and unknown Kafka
+consumer offsets. They also verify
 that linked dashboard UIDs exist in the image and that all queries parse.
 
 For runtime acceptance, start the built image on a fresh data volume, confirm
