@@ -26,7 +26,7 @@ class CustomerSwarmDashboardsTest(unittest.TestCase):
         self.assertEqual(set(self.dashboards), {
             "pca-ingestion-pipeline.json", "pca-sensor-connectivity.json",
             "pca-application-speed.json", "pca-resource-health.json",
-            "pca-ue-ingestion.json",
+            "pca-ue-ingestion.json", "pca-ue-ap-ingestion.json",
         })
         for name, dashboard in self.dashboards.items():
             with self.subTest(name=name):
