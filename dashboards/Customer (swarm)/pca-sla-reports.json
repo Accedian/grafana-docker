@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "End-to-end observability and troubleshooting dashboard for the SLA Report Generation pipeline from request enqueue (Trigger API) to generator execution (Celery/PDF rendering), Parquet storage (SLA Reports API/MinIO), and delivery.",
+  "description": "End-to-end observability and troubleshooting dashboard for the SLA Report Generation pipeline from request enqueue (Trigger API) to generator execution (Celery/PDF rendering), Parquet storage (SLA Reports API/MinIO), and delivery. Swarm: existing application metrics only.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -32,7 +32,7 @@
       },
       "id": 1,
       "options": {
-        "content": "# End-to-End SLA Report Generation & Troubleshooting Dashboard\nTracks the entire SLA report lifecycle: **Request Enqueue** (`sla-report-trigger-api`) \u2192 **Worker Execution** (`sla-report-generator` / Celery) \u2192 **Parquet Export & Storage** (`sla-reports-api` / MinIO) \u2192 **Progress & Trace Polling** (`slapg` Redis) \u2192 **Data Consolidation** (DuckDB) \u2192 **PDF Generation & Storage** (`weld-data` / `report-service`). Hover over (i) on any chart for diagnostic guidance.",
+        "content": "# End-to-End SLA Report Generation & Troubleshooting Dashboard\nTracks the entire SLA report lifecycle: **Request Enqueue** (`sla-report-trigger-api`) \u2192 **Worker Execution** (`sla-report-generator` / Celery) \u2192 **Parquet Export & Storage** (`sla-reports-api` / MinIO) \u2192 **Progress & Trace Polling** (`slapg` Redis) \u2192 **Data Consolidation** (DuckDB) \u2192 **PDF Generation & Storage** (`weld-data` / `report-service`). Hover over (i) on any chart for diagnostic guidance.\n\n**Swarm availability:** Uses existing application/exporter metrics only. Optional services and inactive data paths may have no data. Missing metrics are not evidence that a service is healthy; zero traffic can also be normal.",
         "mode": "markdown"
       },
       "pluginVersion": "10.0.0",
@@ -54,10 +54,7 @@
     },
     {
       "description": "Liveness of the report trigger API. Good: UP (green). Bad: DOWN (red), new reports cannot be queued.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -119,15 +116,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "max(up{job=\"sla_report_trigger\"})",
           "instant": true,
           "legendFormat": "Trigger Status",
-          "refId": "A"
+          "refId": "A",
+          "range": false
         }
       ],
       "title": "Trigger API Status",
@@ -135,10 +130,7 @@
     },
     {
       "description": "Active Celery worker container count for sla-report-generator. Good: Stable at 3 (green). Bad: <3 or 0 (yellow/red), indicates worker crash or OOM-kill.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -187,15 +179,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "count(container_last_seen{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}) or vector(0)",
           "instant": true,
           "legendFormat": "Replicas",
-          "refId": "A"
+          "refId": "A",
+          "range": false
         }
       ],
       "title": "Generator Replicas",
@@ -203,10 +193,7 @@
     },
     {
       "description": "Liveness of the SLA Reports API service. Good: UP (green). Bad: DOWN (red), parquet imports, consolidation, and dashboard queries fail.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -268,15 +255,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "max(up{job=~\"sla-reports-api|sla_reports_api\"})",
           "instant": true,
           "legendFormat": "Reports API Status",
-          "refId": "A"
+          "refId": "A",
+          "range": false
         }
       ],
       "title": "SLA Reports API Status",
@@ -284,10 +269,7 @@
     },
     {
       "description": "Active HTTP requests currently handled concurrently by SLA Reports API. Good: Near zero (green). Bad: Sustained high values (yellow/red), indicates server backlog.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -336,14 +318,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(sla_reports_api_http_requests_in_flight)",
           "legendFormat": "In-Flight",
-          "refId": "A"
+          "refId": "A",
+          "instant": true,
+          "range": false
         }
       ],
       "title": "In-Flight API Requests",
@@ -351,10 +332,7 @@
     },
     {
       "description": "Count of report bundles imported in the last hour. Good: Positive count matching generation volume. Bad: Flat zero when reports were expected.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -386,14 +364,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(increase(sla_reports_api_import_reports_total[1h])) or vector(0)",
           "legendFormat": "Ingested",
-          "refId": "A"
+          "refId": "A",
+          "instant": true,
+          "range": false
         }
       ],
       "title": "Report Ingestions (1h)",
@@ -401,10 +378,7 @@
     },
     {
       "description": "Percentage of successful DuckDB consolidation runs in the past hour. Good: 100% (green). Bad: Drops below 90% (yellow/red), indicates failed cutovers or schema errors.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -453,14 +427,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "(((sum(rate(sla_reports_api_consolidation_runs_total{result=\"success\"}[1h])) or vector(0)) / (sum(rate(sla_reports_api_consolidation_runs_total[1h])) > 0)) * 100) or vector(100)",
           "legendFormat": "Success %",
-          "refId": "A"
+          "refId": "A",
+          "instant": true,
+          "range": false
         }
       ],
       "title": "Consolidation Success %",
@@ -481,10 +454,7 @@
     },
     {
       "description": "Rate of incoming report generation and status requests. Good: Normal spikes corresponding to report triggers. Bad: Flat zero during scheduled generation.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -519,14 +489,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum by (endpoint, method) (rate(http_requests_total{job=\"sla_report_trigger\"}[5m]))",
           "legendFormat": "{{method}} {{endpoint}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "Report Request Ingestion Rate",
@@ -534,10 +503,7 @@
     },
     {
       "description": "Trigger API response status codes. Good: Mostly 202 Accepted (green). Bad: 4xx (validation/auth failure) or 5xx (Celery enqueue failure) in yellow/red.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -623,14 +589,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum by (http_status) (rate(http_requests_total{job=\"sla_report_trigger\"}[5m]))",
           "legendFormat": "HTTP {{http_status}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "Trigger HTTP Response Status",
@@ -638,10 +603,7 @@
     },
     {
       "description": "Trigger API latency percentiles. Good: Sub-second p95 (<100ms). Bad: Latency >1s, indicates Redis/Celery broker connection delays.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -677,34 +639,31 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"sla_report_trigger\"}[5m])))",
           "legendFormat": "p50 Median",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"sla_report_trigger\"}[5m])))",
           "legendFormat": "p95",
-          "refId": "B"
+          "refId": "B",
+          "instant": false,
+          "range": true
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"sla_report_trigger\"}[5m])))",
           "legendFormat": "p99",
-          "refId": "C"
+          "refId": "C",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "Trigger Request Latency Quantiles",
@@ -725,10 +684,7 @@
     },
     {
       "description": "CPU cores used per worker container during report generation. Good: Activity peaks during generation that return to baseline. Bad: Sustained high core usage causing task stalls.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -764,14 +720,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}[5m])",
           "legendFormat": "Worker {{name}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "Generator Worker CPU Core Usage (per Replica)",
@@ -779,10 +734,7 @@
     },
     {
       "description": "Worker memory usage during chart rendering and WeasyPrint PDF compilation. Good: Memory stays well below limit. Bad: Rapid climb to limit followed by sudden drop, indicating OOM kill.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -818,14 +770,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}",
           "legendFormat": "Worker {{name}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "Generator Worker Memory Usage (PDF/Chart Rendering OOM Detection)",
@@ -846,10 +797,7 @@
     },
     {
       "description": "Rate of Parquet report imports into SLA Reports API. Good: Green success line tracks generation completions. Bad: Red error line appears, indicates schema or upload failure.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -916,14 +864,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum by (result) (rate(sla_reports_api_import_reports_total[5m]))",
           "legendFormat": "Import {{result}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "Parquet Report Ingestion Rate (/import-report)",
@@ -931,10 +878,7 @@
     },
     {
       "description": "Byte rate of Parquet datasets uploaded into MinIO via the API. Good: Bursts of throughput during report exports. Bad: Flat zero during report generation runs.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -969,14 +913,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(sla_reports_api_import_bytes_total[5m]))",
           "legendFormat": "Throughput",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "Ingested Parquet Data Throughput",
@@ -984,10 +927,7 @@
     },
     {
       "description": "Median (p50) and 95th percentile (p95) sizes of uploaded Parquet files. Good: Stable sizes matching report dataset volume. Bad: Abnormally small sizes indicating truncated data.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1023,24 +963,22 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "histogram_quantile(0.95, sum by (le) (rate(sla_reports_api_storage_upload_bytes_bucket[5m])))",
           "legendFormat": "p95 Upload Size",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "histogram_quantile(0.50, sum by (le) (rate(sla_reports_api_storage_upload_bytes_bucket[5m])))",
           "legendFormat": "p50 Upload Size",
-          "refId": "B"
+          "refId": "B",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "MinIO Upload Object Size",
@@ -1048,10 +986,7 @@
     },
     {
       "description": "Latency for S3 Put, Copy, Delete, List, and Stat operations. Good: Low latency (<50ms). Bad: Latency >1s, indicates MinIO saturation or storage I/O bottleneck.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1086,14 +1021,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "histogram_quantile(0.95, sum by (le, operation) (rate(sla_reports_api_storage_operation_duration_seconds_bucket[5m])))",
           "legendFormat": "MinIO {{operation}} (p95)",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "MinIO Storage Operation Latency (p95)",
@@ -1101,10 +1035,7 @@
     },
     {
       "description": "Failure rate of S3 storage operations. Good: Flat zero. Bad: Non-zero values, indicates bucket access errors, disk space issues, or network drops.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1139,14 +1070,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum by (operation) (rate(sla_reports_api_storage_operation_errors_total[5m]))",
           "legendFormat": "MinIO {{operation}} errors/s",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "MinIO Storage Operation Errors",
@@ -1167,10 +1097,7 @@
     },
     {
       "description": "Polling traffic on /status and /trace endpoints. Good: Activity aligns with active report generation. Bad: Rapid continuous polling without task progression.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1205,14 +1132,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum by (route) (rate(sla_reports_api_http_requests_total{route=~\".*reports.*\"}[5m]))",
           "legendFormat": "{{route}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "Report Progress Status/Trace Polling Request Rate",
@@ -1220,10 +1146,7 @@
     },
     {
       "description": "Latency for Redis-backed progress and trace queries. Good: Fast (<20ms). Bad: Latency >100ms, indicates Redis contention or thread starvation.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1259,14 +1182,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "histogram_quantile(0.95, sum by (le, route) (rate(sla_reports_api_http_request_duration_seconds_bucket{route=~\".*reports.*\"}[5m])))",
           "legendFormat": "{{route}} (p95)",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "Report Progress Polling Latency (p95)",
@@ -1287,10 +1209,7 @@
     },
     {
       "description": "Executions of the DuckDB Parquet consolidation pipeline. Good: Green success line tracks scheduled runs. Bad: Red error line appears, indicates failed consolidation cutover.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1357,14 +1276,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum by (result) (rate(sla_reports_api_consolidation_runs_total[5m]))",
           "legendFormat": "Consolidation {{result}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "Consolidation Runs by Result",
@@ -1372,10 +1290,7 @@
     },
     {
       "description": "Wall-clock duration of Parquet consolidation. Good: Stable runtime (<30s). Bad: Upward drift or spikes >60s, indicates data growth or slow S3 object transfers.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1411,24 +1326,22 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "histogram_quantile(0.95, sum by (le) (rate(sla_reports_api_consolidation_duration_seconds_bucket[5m])))",
           "legendFormat": "p95 Duration",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "histogram_quantile(0.50, sum by (le) (rate(sla_reports_api_consolidation_duration_seconds_bucket[5m])))",
           "legendFormat": "p50 Duration",
-          "refId": "B"
+          "refId": "B",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "Consolidation Wall-Clock Duration",
@@ -1436,10 +1349,7 @@
     },
     {
       "description": "Query execution time across dashboard read operations. Good: Fast (<200ms). Bad: Sustained latency >1s, indicates inefficient parquet reads or heavy grouping.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1475,14 +1385,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "histogram_quantile(0.95, sum by (le, operation) (rate(sla_reports_api_duckdb_query_duration_seconds_bucket[5m])))",
           "legendFormat": "{{operation}} (p95)",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "DuckDB Query Duration (p95) by Operation",
@@ -1490,10 +1399,7 @@
     },
     {
       "description": "Failure rate for DuckDB query operations. Good: Flat zero. Bad: Non-zero values, indicates missing columns, corrupted parquet files, or S3 read 404s.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1528,14 +1434,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum by (operation) (rate(sla_reports_api_duckdb_query_errors_total[5m]))",
           "legendFormat": "{{operation}} errors/s",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "DuckDB Query Errors",
@@ -1543,10 +1448,7 @@
     },
     {
       "description": "Rate of parquet rows scanned by DuckDB queries. Good: Proportional to active dashboard requests. Bad: Sudden sharp spikes indicating full-scan queries.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1581,14 +1483,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum by (operation) (rate(sla_reports_api_duckdb_rows_scanned_sum[5m]))",
           "legendFormat": "{{operation}} rows/s",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "DuckDB Rows Scanned Rate",
@@ -1609,10 +1510,7 @@
     },
     {
       "description": "Cluster-wide S3 HTTP request rate into MinIO. Good: Request spikes align with PDF uploads and Parquet ingestion. Bad: Sudden complete drop to zero.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1647,14 +1545,13 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(minio_http_requests_duration_seconds_count[5m])) or vector(0)",
           "legendFormat": "MinIO HTTP Requests/s",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "MinIO S3 Cluster HTTP Request Rate (All Operations)",
@@ -1662,10 +1559,7 @@
     },
     {
       "description": "Cluster disk space for PDF and Parquet artifacts. Good: Available capacity remains high with gradual used growth. Bad: Available capacity trends to zero.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1701,24 +1595,22 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(minio_disk_storage_available_bytes)",
           "legendFormat": "Total Storage Available",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(minio_disk_storage_used_bytes)",
           "legendFormat": "Total Storage Used",
-          "refId": "B"
+          "refId": "B",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "MinIO Cluster Total Storage Capacity",
@@ -1739,10 +1631,7 @@
     },
     {
       "description": "Correlated error rates across all pipeline stages. Good: All series flat at zero. Bad: Any non-zero series immediately pinpoints where the report failed.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1777,64 +1666,58 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(http_requests_total{job=\"sla_report_trigger\", http_status=~\"[45]..\"}[5m])) or vector(0)",
           "legendFormat": "Trigger Enqueue Errors",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(sla_reports_api_import_reports_total{result=\"error\"}[5m])) or vector(0)",
           "legendFormat": "Parquet Import Errors",
-          "refId": "B"
+          "refId": "B",
+          "instant": false,
+          "range": true
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(sla_reports_api_storage_operation_errors_total[5m])) or vector(0)",
           "legendFormat": "MinIO Storage Errors",
-          "refId": "C"
+          "refId": "C",
+          "instant": false,
+          "range": true
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(sla_reports_api_duckdb_query_errors_total[5m])) or vector(0)",
           "legendFormat": "DuckDB Query Errors",
-          "refId": "D"
+          "refId": "D",
+          "instant": false,
+          "range": true
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(sla_reports_api_postgres_query_errors_total[5m])) or vector(0)",
           "legendFormat": "PostgreSQL Query Errors",
-          "refId": "E"
+          "refId": "E",
+          "instant": false,
+          "range": true
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(sla_reports_api_http_requests_total{status=~\"[45]..\"}[5m])) or vector(0)",
           "legendFormat": "SLA Reports API HTTP Errors",
-          "refId": "F"
+          "refId": "F",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "Cross-Pipeline Error Matrix",
@@ -1842,10 +1725,7 @@
     },
     {
       "description": "Total CPU cores used across Trigger API, Generator Workers, and SLA Reports API. Good: Bursts during generation that return to idle. Bad: Sustained high core usage.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1881,34 +1761,31 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-trigger\"}[5m]))",
           "legendFormat": "Trigger API (Cores)",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}[5m]))",
           "legendFormat": "Generator Workers (Cores)",
-          "refId": "B"
+          "refId": "B",
+          "instant": false,
+          "range": true
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"}[5m]))",
           "legendFormat": "SLA Reports API (Cores)",
-          "refId": "C"
+          "refId": "C",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "Pipeline Services Aggregate CPU Core Usage",
@@ -1916,10 +1793,7 @@
     },
     {
       "description": "Total memory used across Trigger API, Generator Workers, and SLA Reports API. Good: Predictable usage plateaus. Bad: Continuous upward memory ramp without release (memory leak).",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1955,34 +1829,31 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-trigger\"})",
           "legendFormat": "Trigger API Memory",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"})",
           "legendFormat": "Generator Workers Memory (Total)",
-          "refId": "B"
+          "refId": "B",
+          "instant": false,
+          "range": true
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"})",
           "legendFormat": "SLA Reports API Memory",
-          "refId": "C"
+          "refId": "C",
+          "instant": false,
+          "range": true
         }
       ],
       "title": "Pipeline Services Memory Consumption",
@@ -1993,35 +1864,14 @@
   "schemaVersion": 38,
   "style": "dark",
   "tags": [
+    "customer",
+    "pca",
+    "reports",
     "sla",
-    "sla-reports",
-    "sla-report-pipeline",
-    "report-generation",
-    "microservice",
-    "celery",
-    "pdf"
+    "swarm"
   ],
   "templating": {
-    "list": [
-      {
-        "current": {
-          "selected": false,
-          "text": "Prometheus",
-          "value": "Prometheus"
-        },
-        "hide": 0,
-        "includeAll": false,
-        "label": "Datasource",
-        "multi": false,
-        "name": "DS_PROMETHEUS",
-        "options": [],
-        "query": "prometheus",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "type": "datasource"
-      }
-    ]
+    "list": []
   },
   "time": {
     "from": "now-6h",
@@ -2042,7 +1892,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "SLA Reports API",
-  "uid": "sla-reports-api",
-  "version": 5
+  "title": "PCA SLA Reports",
+  "uid": "pca-sla-reports-swarm",
+  "version": 1
 }

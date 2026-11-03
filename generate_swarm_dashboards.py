@@ -150,6 +150,7 @@ def main():
         "pca-sensor-connectivity.json",
         "pca-application-speed.json",
         "pca-resource-health.json",
+        "pca-sla-reports.json",
     ):
         (DESTINATION / name).write_text(json.dumps(build(name), indent=2) + "\n")
 
