@@ -1,3 +1,4 @@
+* Fix - Grafana's Prometheus datasource queries the bundled kube-prometheus-stack under its `/prometheus` route prefix, so dashboard panels no longer fail with "404 page not found". The URL can be overridden with the new `prometheusUrl` value (e.g. for an existing/external Prometheus).
 ## Current Release
 ### 0.233.0
 **Release Date:** Mon Oct 26 17:12:04 UTC 2026
