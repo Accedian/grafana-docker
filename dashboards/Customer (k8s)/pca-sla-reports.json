@@ -181,7 +181,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "count(kube_pod_status_phase{pod=~\".*sla-report-generator.*\", phase=\"Running\"})",
+          "expr": "sum(kube_pod_status_phase{pod=~\".*sla-report-generator.*\", phase=\"Running\"})",
           "instant": true,
           "legendFormat": "Replicas",
           "refId": "A",
@@ -429,7 +429,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "(((sum(rate(sla_reports_api_consolidation_runs_total{result=\"success\"}[1h])) or vector(0)) / (sum(rate(sla_reports_api_consolidation_runs_total[1h])) > 0)) * 100) or vector(100)",
+          "expr": "(((sum(rate(sla_reports_api_consolidation_runs_total{result=\"success\"}[1h])) or vector(0)) / (sum(rate(sla_reports_api_consolidation_runs_total[1h])) > 0)) * 100) or (0 * sum(sla_reports_api_consolidation_runs_total) + 100)",
           "legendFormat": "Success %",
           "refId": "A",
           "instant": true,
