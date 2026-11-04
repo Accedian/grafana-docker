@@ -1447,7 +1447,7 @@
       "type": "timeseries"
     },
     {
-      "description": "Rate of parquet rows scanned by DuckDB queries. Good: Proportional to active dashboard requests. Bad: Sudden sharp spikes indicating full-scan queries.",
+      "description": "Rate of rows returned by DuckDB query operations. Good: Proportional to active dashboard requests. Bad: Sudden sharp drops or unexpected spikes.",
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
@@ -1485,14 +1485,14 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum by (operation) (rate(sla_reports_api_duckdb_rows_scanned_sum[5m]))",
+          "expr": "sum by (operation) (rate(sla_reports_api_duckdb_rows_returned_sum[5m]))",
           "legendFormat": "{{operation}} rows/s",
           "refId": "A",
           "instant": false,
           "range": true
         }
       ],
-      "title": "DuckDB Rows Scanned Rate",
+      "title": "DuckDB Rows Returned Rate",
       "type": "timeseries"
     },
     {
