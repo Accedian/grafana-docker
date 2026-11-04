@@ -125,9 +125,11 @@ def resource_health(dashboard):
 def sla_reports(dashboard):
     dashboard["description"] += " Swarm: existing application metrics only."
     dashboard["panels"][0]["options"]["content"] += NO_DATA_NOTE
+    dashboard["templating"]["list"] = []
     for panel in walk(dashboard["panels"]):
         for target in panel.get("targets", []):
             expr = target["expr"]
+            expr = expr.replace('namespace=~"$namespace", ', '')
             expr = expr.replace('sum(kube_pod_status_phase{pod=~".*sla-report-generator.*", phase="Running"})', 'count(container_last_seen{container_label_com_docker_swarm_service_name="aod_sla-report-generator"})')
             expr = expr.replace('container="sla-report-generator"', 'container_label_com_docker_swarm_service_name="aod_sla-report-generator"')
             expr = expr.replace('container="sla-report-trigger"', 'container_label_com_docker_swarm_service_name="aod_sla-report-trigger"')

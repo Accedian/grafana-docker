@@ -181,7 +181,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(kube_pod_status_phase{pod=~\".*sla-report-generator.*\", phase=\"Running\"})",
+          "expr": "sum(kube_pod_status_phase{namespace=~\"$namespace\", pod=~\".*sla-report-generator.*\", phase=\"Running\"})",
           "instant": true,
           "legendFormat": "Replicas",
           "refId": "A",
@@ -722,7 +722,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "rate(container_cpu_usage_seconds_total{container=\"sla-report-generator\"}[5m])",
+          "expr": "rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\", container=\"sla-report-generator\"}[5m])",
           "legendFormat": "Worker {{pod}}",
           "refId": "A",
           "instant": false,
@@ -772,7 +772,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "container_memory_working_set_bytes{container=\"sla-report-generator\"}",
+          "expr": "container_memory_working_set_bytes{namespace=~\"$namespace\", container=\"sla-report-generator\"}",
           "legendFormat": "Worker {{pod}}",
           "refId": "A",
           "instant": false,
@@ -1763,7 +1763,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"sla-report-trigger\"}[5m]))",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\", container=\"sla-report-trigger\"}[5m]))",
           "legendFormat": "Trigger API (Cores)",
           "refId": "A",
           "instant": false,
@@ -1772,7 +1772,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"sla-report-generator\"}[5m]))",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\", container=\"sla-report-generator\"}[5m]))",
           "legendFormat": "Generator Workers (Cores)",
           "refId": "B",
           "instant": false,
@@ -1781,7 +1781,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"sla-reports-api\"}[5m]))",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\", container=\"sla-reports-api\"}[5m]))",
           "legendFormat": "SLA Reports API (Cores)",
           "refId": "C",
           "instant": false,
@@ -1831,7 +1831,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(container_memory_working_set_bytes{container=\"sla-report-trigger\"})",
+          "expr": "sum(container_memory_working_set_bytes{namespace=~\"$namespace\", container=\"sla-report-trigger\"})",
           "legendFormat": "Trigger API Memory",
           "refId": "A",
           "instant": false,
@@ -1840,7 +1840,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(container_memory_working_set_bytes{container=\"sla-report-generator\"})",
+          "expr": "sum(container_memory_working_set_bytes{namespace=~\"$namespace\", container=\"sla-report-generator\"})",
           "legendFormat": "Generator Workers Memory (Total)",
           "refId": "B",
           "instant": false,
@@ -1849,7 +1849,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(container_memory_working_set_bytes{container=\"sla-reports-api\"})",
+          "expr": "sum(container_memory_working_set_bytes{namespace=~\"$namespace\", container=\"sla-reports-api\"})",
           "legendFormat": "SLA Reports API Memory",
           "refId": "C",
           "instant": false,
@@ -1870,7 +1870,30 @@
     "customer"
   ],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(kube_pod_info, namespace)",
+        "includeAll": true,
+        "label": "namespace",
+        "multi": true,
+        "name": "namespace",
+        "options": [],
+        "query": {
+          "query": "label_values(kube_pod_info, namespace)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      }
+    ]
   },
   "time": {
     "from": "now-6h",
