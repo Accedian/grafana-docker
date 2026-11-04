@@ -1,3 +1,4 @@
+* Security - Refresh the Debian 12 runtime and add CloudOps build ownership. [Asana](https://app.asana.com/1/5557457880942/project/1212521992347795/task/1218511895480747?focus=true)
 ## Current Release
 ### 0.233.0
 **Release Date:** Mon Oct 26 17:12:04 UTC 2026
