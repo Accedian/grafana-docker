@@ -40,6 +40,7 @@ url-file:
 all: build
 
 .PHONY: build
+build: docker
 
 docker:
 	@echo "Building Grafana image: $(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)"
