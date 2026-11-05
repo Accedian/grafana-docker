@@ -118,7 +118,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "min(up{job=~\"sla.*\"})",
+          "expr": "(clamp_max(sum(up{job=\"sla_report_trigger\"}), 1) or vector(0)) * (clamp_max(sum(up{job=~\"sla-reports-api|sla_reports_api\"}), 1) or vector(0))",
           "instant": true,
           "range": false,
           "legendFormat": "Status",
