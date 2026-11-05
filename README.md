@@ -2,7 +2,31 @@
 
 [![CircleCI](https://circleci.com/gh/Accedian/grafana-docker.svg?style=svg)](https://circleci.com/gh/Accedian/grafana-docker)
  
-This project builds a Docker image with the latest master build of Grafana.
+This project builds the PCA Grafana Docker image.
+
+## System OpenSSL updates
+
+`OPENSSL_VERSION` in the Dockerfile pins both `openssl` and `libssl3` to the
+same Debian package version. Update this value to upgrade both packages;
+changing it also refreshes their cached installation layer.
+
+## Image rendering
+
+The Helm chart replaces the deprecated Image Renderer plugin with a supported
+HTTP renderer sidecar from the PCA mirror. Grafana and the renderer communicate
+over loopback with a shared Kubernetes Secret. The renderer callback uses
+`/grafana/`; aod-deployer must preserve this subpath.
+
+Set `grafana.renderer.existingSecret` and `secretKey` for an externally managed
+token. Use a random token of at least 32 characters and restart both containers
+after rotation. Configure `grafana.renderer.resources` for the rendering load.
+
+For standalone Docker/Swarm, configure `GF_RENDERING_SERVER_URL`,
+`GF_RENDERING_CALLBACK_URL` and `GF_RENDERING_RENDERER_TOKEN` for your renderer
+service. Existing HTTP renderer settings remain authoritative. Copies of the
+retired plugin on persistent volumes are bypassed without deleting user data.
+Alert screenshots require their separate Grafana setting.
+
 ## Important Notes
 If you've modified any of the dashboards that come with packged in this repository, 
 make sure to save them as copies of the originals. If you don't do this, you will
@@ -118,4 +142,3 @@ Supported variables:
 
 ### v3.1.1
 * Make it possible to install specific plugin version https://github.com/grafana/grafana-docker/issues/59#issuecomment-260584026
-
