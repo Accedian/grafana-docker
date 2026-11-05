@@ -192,7 +192,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "count(container_last_seen{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}) or vector(0)",
+          "expr": "count(container_last_seen{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"})",
           "instant": true,
           "legendFormat": "Replicas",
           "refId": "A"
@@ -823,7 +823,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}",
+          "expr": "container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}",
           "legendFormat": "Worker {{name}}",
           "refId": "A"
         }
@@ -1960,7 +1960,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-trigger\"})",
+          "expr": "sum(container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-trigger\"})",
           "legendFormat": "Trigger API Memory",
           "refId": "A"
         },
@@ -1970,7 +1970,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"})",
+          "expr": "sum(container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"})",
           "legendFormat": "Generator Workers Memory (Total)",
           "refId": "B"
         },
@@ -1980,7 +1980,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"})",
+          "expr": "sum(container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"})",
           "legendFormat": "SLA Reports API Memory",
           "refId": "C"
         }
