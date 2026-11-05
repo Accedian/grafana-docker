@@ -90,7 +90,7 @@
       "type": "text",
       "title": "How to read this dashboard",
       "gridPos": {
-        "h": 9,
+        "h": 5,
         "w": 24,
         "x": 0,
         "y": 0
@@ -101,7 +101,7 @@
       },
       "options": {
         "mode": "markdown",
-        "content": "# PCA UE \u00b7 EDR ingestion on Docker Swarm\n\n**Path covered:** Fedex \u2192 Kafka `pcaue.<tenant UUID>.<schema>.json` \u2192 PVStorage `--pcaueni` \u2192 ClickHouse. The separate session-metrics path through Ignite/Spark/Druid is not measured here and is absent in Analytics Lite.\n\n**Read telemetry health first.** UP means the metrics endpoint was scraped, not that ingestion or the customer API is ready. DOWN means a scrape failed; No targets means the expected scrape jobs are missing/disabled. Inserter and Kafka panels omit samples from DOWN targets rather than displaying an old value as healthy.\n\n**Idle versus missing data:** PVStorage creates labelled counters lazily. An idle tenant can have no row counters until its first insert; error counters can be absent until the first failed attempt. \u2018No counter yet\u2019 is not a failure and is not proof of zero errors. A real zero rate means an existing counter did not increase while telemetry remained available.\n\n**PCA UE write diagnostics:** an attempt is one completed inserter call; retries count as separate attempts and cancellations count as errors. Attempt duration includes open, readiness checks, write and close; stage timings separate readiness waits from the ClickHouse write. p95 is a histogram estimate over completed attempts in the rate window, and is left empty while idle. Batch rows are ClickHouse-reported written rows for successful attempts, not input rows or individual malformed rows.\n\nThese write diagnostics require the matching instrumented PVStorage image. An older image can be UP and expose row counters while the new panels have no series; confirm the deployed image before interpreting absence.\n\n**Filters:** tenant and schema are discovered from PCA UE Kafka topics. They filter inserter diagnostics and Kafka panels; health and ClickHouse pressure always cover the deployment. Consumer group defaults to All groups with offsets for those topics (the standard inserter uses `pv_storage.db`). Lag is Kafka messages, not EDR rows; an uncommitted offset of -1 is unknown, not zero lag. Message/row rates need not match.\n\nThe counters measure inserted EDR rows, not distinct subscribers or network bytes. They do not prove end-to-end freshness or collector connectivity. Use the linked Roadrunner/Fedex and ClickHouse dashboards for deeper diagnosis."
+        "content": "# PCA UE \u00b7 EDR ingestion on Docker Swarm\n\nFedex \u2192 Kafka `pcaue.<tenant UUID>.<schema>.json` \u2192 PVStorage `--pcaueni` \u2192 ClickHouse.\n\n**Start with scrape health:** UP confirms telemetry availability, not successful end-to-end ingestion. `No counter yet` is normal before the first event; Kafka offset `-1` means unknown.\n\nWrite diagnostics require the instrumented PVStorage image from `pv-back#1986`."
       }
     },
     {
@@ -117,7 +117,7 @@
         "h": 4,
         "w": 6,
         "x": 0,
-        "y": 9
+        "y": 5
       },
       "fieldConfig": {
         "defaults": {
@@ -204,7 +204,7 @@
         "h": 4,
         "w": 6,
         "x": 6,
-        "y": 9
+        "y": 5
       },
       "fieldConfig": {
         "defaults": {
@@ -291,7 +291,7 @@
         "h": 4,
         "w": 6,
         "x": 12,
-        "y": 9
+        "y": 5
       },
       "fieldConfig": {
         "defaults": {
@@ -378,7 +378,7 @@
         "h": 4,
         "w": 6,
         "x": 18,
-        "y": 9
+        "y": 5
       },
       "fieldConfig": {
         "defaults": {
@@ -465,7 +465,7 @@
         "h": 5,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 9
       },
       "fieldConfig": {
         "defaults": {
@@ -538,7 +538,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 18
+        "y": 14
       },
       "fieldConfig": {
         "defaults": {
@@ -611,7 +611,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 18
+        "y": 14
       },
       "fieldConfig": {
         "defaults": {
@@ -684,7 +684,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 26
+        "y": 22
       },
       "fieldConfig": {
         "defaults": {
@@ -757,7 +757,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 26
+        "y": 22
       },
       "fieldConfig": {
         "defaults": {
@@ -830,7 +830,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 34
+        "y": 30
       },
       "fieldConfig": {
         "defaults": {
@@ -903,7 +903,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 34
+        "y": 30
       },
       "fieldConfig": {
         "defaults": {
@@ -976,7 +976,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 42
+        "y": 38
       },
       "fieldConfig": {
         "defaults": {
@@ -1049,7 +1049,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 42
+        "y": 38
       },
       "fieldConfig": {
         "defaults": {
@@ -1122,7 +1122,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 50
+        "y": 46
       },
       "fieldConfig": {
         "defaults": {
@@ -1195,7 +1195,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 50
+        "y": 46
       },
       "fieldConfig": {
         "defaults": {
@@ -1268,7 +1268,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 58
+        "y": 54
       },
       "fieldConfig": {
         "defaults": {
@@ -1341,7 +1341,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 58
+        "y": 54
       },
       "fieldConfig": {
         "defaults": {
@@ -1414,7 +1414,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 66
+        "y": 62
       },
       "fieldConfig": {
         "defaults": {
@@ -1487,7 +1487,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 66
+        "y": 62
       },
       "fieldConfig": {
         "defaults": {
@@ -1560,7 +1560,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 74
+        "y": 70
       },
       "fieldConfig": {
         "defaults": {
@@ -1633,7 +1633,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 74
+        "y": 70
       },
       "fieldConfig": {
         "defaults": {
@@ -1706,7 +1706,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 82
+        "y": 78
       },
       "fieldConfig": {
         "defaults": {
