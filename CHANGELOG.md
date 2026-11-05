@@ -1,8 +1,10 @@
 ## Current Release
+### 0.234.0
+**Release Date:** Thu Nov  5 19:09:52 UTC 2026
+## Previous Releases
 * Feat - Add PCA SLA Reports customer dashboard
 ### 0.233.0
 **Release Date:** Mon Oct 26 17:12:04 UTC 2026
-## Previous Releases
 ### 0.232.0
 **Release Date:** Fri Sep 18 14:06:52 UTC 2026
 ### 0.231.0
