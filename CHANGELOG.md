@@ -1,4 +1,5 @@
 ## Current Release
+* Feat - Add PCA SLA Reports customer dashboard and SLA Report Pipeline Diagnostics developer dashboard
 ### 0.233.0
 **Release Date:** Mon Oct 26 17:12:04 UTC 2026
 ## Previous Releases

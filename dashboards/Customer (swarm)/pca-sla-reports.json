@@ -1,0 +1,1184 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Executive and operational health dashboard for Provider Connectivity Assurance (PCA) SLA reporting. Tracks report generation requests, processing outcomes, report delivery throughput, and storage capacity. Swarm: existing application metrics only.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "content": "# PCA SLA Reports Overview\nExecutive and operational health dashboard for Provider Connectivity Assurance (PCA) SLA reporting. Tracks report generation requests, processing outcomes, report delivery throughput, and storage capacity.\n\n**Swarm availability:** Uses existing application/exporter metrics only. Optional services and inactive data paths may have no data. Missing metrics are not evidence that a service is healthy; zero traffic can also be normal.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "10.0.0",
+      "title": "SLA Reporting Overview",
+      "type": "text"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 3
+      },
+      "id": 2,
+      "panels": [],
+      "title": "Executive Summary",
+      "type": "row"
+    },
+    {
+      "description": "Overall availability of SLA reporting services. Good: UP (green). Bad: DOWN (red), reporting services are unreachable.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 0,
+                  "text": "DOWN"
+                },
+                "1": {
+                  "color": "green",
+                  "index": 1,
+                  "text": "UP"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 4
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "(clamp_max(sum(up{job=\"sla_report_trigger\"}), 1) or vector(0)) * (clamp_max(sum(up{job=~\"sla-reports-api|sla_reports_api\"}), 1) or vector(0))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Status",
+          "refId": "A"
+        }
+      ],
+      "title": "Reporting System Status",
+      "type": "stat"
+    },
+    {
+      "description": "Active report generator workers. Good: 3 workers available (green). Bad: <3 or 0 (yellow/red), degraded capacity.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "green",
+                "value": 3
+              }
+            ]
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 4
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "count(container_last_seen{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"})",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Workers",
+          "refId": "A"
+        }
+      ],
+      "title": "Active Generator Workers",
+      "type": "stat"
+    },
+    {
+      "description": "Total successfully generated and imported SLA report bundles in the past 24 hours. Good: Matches expected generation schedule. Bad: 0 when reports were expected.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 4
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(sla_reports_api_import_reports_total{result=\"success\"}[24h])) or (0 * sum(sla_reports_api_import_reports_total))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Reports",
+          "refId": "A"
+        }
+      ],
+      "title": "Reports Generated (24h)",
+      "type": "stat"
+    },
+    {
+      "description": "Percentage of report imports that completed successfully in the past 24 hours. Good: 100% (green). Bad: <95% (yellow/red), report generation failures.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 98
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 4
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "(((sum(rate(sla_reports_api_import_reports_total{result=\"success\"}[24h])) or vector(0)) / (sum(rate(sla_reports_api_import_reports_total[24h])) > 0)) * 100) or (0 * sum(sla_reports_api_import_reports_total) + 100)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Success %",
+          "refId": "A"
+        }
+      ],
+      "title": "Report Success Rate (24h)",
+      "type": "stat"
+    },
+    {
+      "description": "Median (p50) report data consolidation duration. Good: Under 30 seconds. Bad: Over 60 seconds.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 30
+              },
+              {
+                "color": "red",
+                "value": 60
+              }
+            ]
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 4
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(sla_reports_api_consolidation_duration_seconds_bucket[1h])))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Median Duration",
+          "refId": "A"
+        }
+      ],
+      "title": "Median Processing Time",
+      "type": "stat"
+    },
+    {
+      "description": "Total storage consumed by report datasets and artifacts in MinIO. Good: Steady, gradual storage growth.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "bytes"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 4
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(minio_disk_storage_used_bytes)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Used Storage",
+          "refId": "A"
+        }
+      ],
+      "title": "Report Archive Used",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 9,
+      "panels": [],
+      "title": "Report Generation Activity",
+      "type": "row"
+    },
+    {
+      "description": "Rate of report generation requests per minute categorized by outcome. Good: Green success line tracks requests. Bad: Spikes of yellow (client errors) or red (service errors).",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineWidth": 2
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Success"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Client Request Error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Service Error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 9
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(http_requests_total{job=\"sla_report_trigger\", http_status=~\"2..\"}[5m])) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Success",
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(http_requests_total{job=\"sla_report_trigger\", http_status=~\"4..\"}[5m])) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Client Request Error",
+          "refId": "B"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(http_requests_total{job=\"sla_report_trigger\", http_status=~\"5..\"}[5m])) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Service Error",
+          "refId": "C"
+        }
+      ],
+      "title": "Report Requests by Outcome (req/min)",
+      "type": "timeseries"
+    },
+    {
+      "description": "Hourly count of completed SLA report deliveries. Good: Green success bars represent generated reports. Bad: Red error bars indicate failed report imports.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 40,
+            "lineWidth": 1
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Successful Reports"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed Reports"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 9
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(sla_reports_api_import_reports_total{result=\"success\"}[1h]))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Successful Reports",
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(sla_reports_api_import_reports_total{result=\"error\"}[1h]))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Failed Reports",
+          "refId": "B"
+        }
+      ],
+      "title": "Report Deliveries (Reports/Hour)",
+      "type": "timeseries"
+    },
+    {
+      "description": "Time taken to process and consolidate report data. Good: Stable duration (<30s). Bad: Upward drift or spikes >60s.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 9
+      },
+      "id": 12,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(sla_reports_api_consolidation_duration_seconds_bucket[5m])))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "p95 Duration",
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(sla_reports_api_consolidation_duration_seconds_bucket[5m])))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Median Duration",
+          "refId": "B"
+        }
+      ],
+      "title": "Report Processing Duration (s)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 13,
+      "panels": [],
+      "title": "SLA Report Access & Dashboard Performance",
+      "type": "row"
+    },
+    {
+      "description": "Rate of client requests accessing SLA reports and dashboards per minute. Good: Dominantly green success. Bad: Yellow or red error spikes.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineWidth": 2
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Success"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Client Request Error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Service Error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 18
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(sla_reports_api_http_requests_total{route=~\".*sla/(period|periods).*\", status=~\"2..\"}[5m])) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Success",
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(sla_reports_api_http_requests_total{route=~\".*sla/(period|periods).*\", status=~\"4..\"}[5m])) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Client Request Error",
+          "refId": "B"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(sla_reports_api_http_requests_total{route=~\".*sla/(period|periods).*\", status=~\"5..\"}[5m])) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Service Error",
+          "refId": "C"
+        }
+      ],
+      "title": "SLA Data Queries by Outcome (req/min)",
+      "type": "timeseries"
+    },
+    {
+      "description": "Response time for SLA dashboard read operations. Good: Fast response (<200ms). Bad: Latency >1s.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 2
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 18
+      },
+      "id": 15,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(sla_reports_api_duckdb_query_duration_seconds_bucket[5m])))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "p95 Query Latency",
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(sla_reports_api_duckdb_query_duration_seconds_bucket[5m])))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Median Query Latency",
+          "refId": "B"
+        }
+      ],
+      "title": "Query Response Time (s)",
+      "type": "timeseries"
+    },
+    {
+      "description": "Throughput of report datasets imported into storage. Good: Bursts of activity during report delivery. Bad: Flat zero during active generation.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineWidth": 2
+          },
+          "unit": "Bps"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 18
+      },
+      "id": 16,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(sla_reports_api_import_bytes_total[5m]))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Throughput",
+          "refId": "A"
+        }
+      ],
+      "title": "Report Ingested Throughput",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 26
+      },
+      "id": 17,
+      "panels": [],
+      "title": "System Reliability & Storage",
+      "type": "row"
+    },
+    {
+      "description": "Consolidated error rates across SLA reporting subsystems. Good: All lines flat at zero. Bad: Any non-zero line indicates which stage experienced errors.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 35,
+            "lineWidth": 1
+          },
+          "unit": "ops"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 27
+      },
+      "id": 18,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(http_requests_total{job=\"sla_report_trigger\", http_status=~\"[45]..\"}[5m]))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Trigger Request Errors",
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(sla_reports_api_import_reports_total{result=\"error\"}[5m]))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Report Ingestion Errors",
+          "refId": "B"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(sla_reports_api_storage_operation_errors_total[5m]))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Storage Errors",
+          "refId": "C"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(sla_reports_api_duckdb_query_errors_total[5m]))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Calculation Engine Errors",
+          "refId": "D"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(sla_reports_api_http_requests_total{route=~\".*sla/(period|periods).*\", status=~\"[45]..\"}[5m]))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Dashboard Access Errors",
+          "refId": "E"
+        }
+      ],
+      "title": "Subsystem Errors Overview",
+      "type": "timeseries"
+    },
+    {
+      "description": "Available vs used disk storage in the report artifact repository. Good: High available storage with gradual used growth.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineWidth": 2
+          },
+          "unit": "bytes"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 27
+      },
+      "id": 19,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(minio_disk_storage_available_bytes)",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Total Storage Available",
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(minio_disk_storage_used_bytes)",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Total Storage Used",
+          "refId": "B"
+        }
+      ],
+      "title": "Report Archive Storage Capacity",
+      "type": "timeseries"
+    },
+    {
+      "description": "Total CPU cores utilized across SLA reporting components. Good: Activity peaks during generation that return to idle. Bad: Sustained high core consumption.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 27
+      },
+      "id": 20,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-trigger\"}[5m]))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Trigger Service (Cores)",
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}[5m]))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Report Generator (Cores)",
+          "refId": "B"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"}[5m]))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Analytics API (Cores)",
+          "refId": "C"
+        }
+      ],
+      "title": "Reporting System CPU Core Usage",
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "refresh": "30s",
+  "schemaVersion": 41,
+  "style": "dark",
+  "tags": [
+    "customer",
+    "pca",
+    "reports",
+    "sla",
+    "swarm"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "browser",
+  "title": "PCA SLA Reports",
+  "uid": "pca-sla-reports-swarm",
+  "version": 10
+}
