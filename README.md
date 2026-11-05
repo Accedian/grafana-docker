@@ -8,6 +8,25 @@ If you've modified any of the dashboards that come with packged in this reposito
 make sure to save them as copies of the originals. If you don't do this, you will
 lose your changes when you redeploy.
 
+## PCA UE dashboards on Swarm
+
+The image provisions two separate dashboards in `Customer (swarm)`:
+
+- **PCA UE · EDR Ingestion** (`pca-ue-ingestion-swarm`) observes the NI path from Fedex/Kafka through the `--pcaueni` inserter to ClickHouse.
+- **PCA UE · AP Ingestion** (`pca-ue-ap-ingestion-swarm`) observes the access-endpoint/session path through the Telemetry Collector, Ignite and Gather/Druid. This path requires full analytics with Spark and HDFS.
+
+The AP dashboard uses existing Ignite metrics on port 8090 and Gather metrics on port 9191. Its optional agent panels require a Prometheus job named `pcaue-ap-agent`, pointing at actual reachable Telemetry Collector `/metrics` endpoints on port 2112. Keep the collector metrics private to the monitoring network. The lab-qualified agent `r25.07` exports `telegraf_status` and `received_data_total`; the latter counts payload bytes, including embedded Telegraf's internal metrics.
+
+Ignite's sent counter counts normalized-row Kafka publishes, not individual KPI values or completed Druid inserts. Gather counters count asynchronous requests/tasks, and its Druid row inventory covers the previous completed clock hour and refreshes periodically. Confirm a test run through a real authenticated data query. Missing counters remain missing; DOWN scrape targets do not contribute old application samples to the data panels.
+
+The AP CSV error panel uses `ignite_normalizer_csv_parse_errors_total` from the
+matching instrumented Ignite image. It counts rejected Fedex batches; malformed
+CSV does not allow a reliable row count. A missing lazy counter is not a healthy
+zero. The existing `ignite_kafka_total_dropped` counter does not cover this
+parser failure in the original 0.70.0 image.
+
+Regenerate checked-in JSON with `python3 generate_pcaueni_dashboard.py` or `python3 generate_pcaue_ap_dashboard.py`. Run `make test` with `promtool` installed to check the actual PromQL under traffic, idle, missing-data, failed-scrape and tenant-isolation scenarios.
+
 ## Running your Grafana container
 
 Start your container binding the external port `3000`.
@@ -118,4 +137,3 @@ Supported variables:
 
 ### v3.1.1
 * Make it possible to install specific plugin version https://github.com/grafana/grafana-docker/issues/59#issuecomment-260584026
-

@@ -82,6 +82,14 @@
       "targetBlank": false,
       "keepTime": true,
       "includeVars": false
+    },
+    {
+      "type": "link",
+      "title": "PCA UE AP / Druid path",
+      "url": "/grafana/d/pca-ue-ap-ingestion-swarm",
+      "targetBlank": false,
+      "keepTime": true,
+      "includeVars": false
     }
   ],
   "panels": [
