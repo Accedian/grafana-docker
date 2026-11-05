@@ -101,9 +101,6 @@ def build():
         panel(15, "Telemetry by backend target", 'up{job=~"ignite|gather|prometheus-gateway|pcaue-ap-agent|druid-.*-jmx"}',
               "{{job}} / {{instance}}", 12, 45,
               description="Deployment telemetry only: 0 failed, 1 successful scrape. Spark application metrics use the Pushgateway; its UP alone does not establish a live Spark application or fresh pushed samples."),
-        panel(16, "AP CSV batches rejected · current counters", ignite("ignite_normalizer_csv_parse_errors_total"),
-              "{{tenantId}} / {{objectType}}", 0, 53, w=24, no_value="No error counter yet",
-              description="Fedex batches rejected by Ignite's CSV parser, not rows. Malformed quoting or column counts can make the entire batch unreadable. Requires the matching instrumented Ignite image; a missing lazy counter is not proof of zero rejected batches. UP targets only; process restarts reset counters."),
     ]
     return {
         "id": None, "uid": "pca-ue-ap-ingestion-swarm", "title": "PCA UE · AP Ingestion",

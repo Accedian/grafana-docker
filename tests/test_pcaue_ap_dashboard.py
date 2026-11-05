@@ -55,24 +55,15 @@ class PCAUEAPDashboardTest(unittest.TestCase):
         for i in (0, 1, 2):
             down_series[i]["values"] = "0x20"
         down = {"name": "Failed scrapes hide old application values", "interval": "30s", "input_series": down_series,
-                "promql_expr_test": [query(i, []) for i in (3, 6, 7, 9, 12, 14, 16)]}
+                "promql_expr_test": [query(i, []) for i in (3, 6, 7, 9, 12, 14)]}
         missing = {"name": "Absent counters and targets do not become zero", "interval": "30s", "input_series": [],
-                   "promql_expr_test": [query(i, []) for i in range(2, 17)]}
+                   "promql_expr_test": [query(i, []) for i in range(2, 16)]}
         errors = {"name": "A first lazy dropped-input counter remains visible", "interval": "30s", "input_series": series + [
             {"series": 'ignite_kafka_total_dropped{' + source + ',reason="missing_dictionary"}', "values": "_ _ _ _ _ _ _ _ 1x12"},
         ], "promql_expr_test": [query(7, [sample('{objectType="CiscoUE-edr-access-endpoint",reason="missing_dictionary",tenantId="tenant-a"}', 1)])]}
-        malformed = {"name": "A rejected CSV batch stays visible without any published rows", "interval": "30s", "input_series": [
-            {"series": 'up{job="ignite",instance="ignite:8090"}', "values": "1x20"},
-            {"series": 'ignite_normalizer_csv_parse_errors_total{' + source + '}', "values": "_ _ _ _ _ _ _ _ 1x12"},
-            {"series": 'ignite_normalizer_csv_parse_errors_total{job="ignite",instance="ignite:8090",tenantId="tenant-b",objectType="CiscoUE-edr-access-endpoint"}', "values": "10x20"},
-        ], "promql_expr_test": [query(6, []), query(16, [sample(labels, 1)])]}
-        malformed_down = {"name": "Failed scrape hides stale CSV error counts", "interval": "30s", "input_series": [
-            {"series": 'up{job="ignite",instance="ignite:8090"}', "values": "0x20"},
-            {"series": 'ignite_normalizer_csv_parse_errors_total{' + source + '}', "values": "1x20"},
-        ], "promql_expr_test": [query(16, [])]}
         with tempfile.TemporaryDirectory() as directory:
             p = Path(directory) / "ap-promql.json"
-            p.write_text(json.dumps({"rule_files": [], "evaluation_interval": "30s", "tests": [live, idle, down, missing, errors, malformed, malformed_down]}))
+            p.write_text(json.dumps({"rule_files": [], "evaluation_interval": "30s", "tests": [live, idle, down, missing, errors]}))
             result = subprocess.run([PROMTOOL, "test", "rules", str(p)], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
