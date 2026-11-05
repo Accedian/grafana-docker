@@ -12,7 +12,8 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus-data:/prometheus
+    tmpfs:
+      - /prometheus:uid=65534,gid=65534,mode=0770
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:9090/prometheus/-/healthy"]
       interval: 5s
@@ -31,9 +32,5 @@ services:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: grafana-local-only
       GF_USERS_ALLOW_SIGN_UP: "false"
-    volumes:
-      - grafana-data:/var/lib/grafana
-
-volumes:
-  prometheus-data:
-  grafana-data:
+    tmpfs:
+      - /var/lib/grafana

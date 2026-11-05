@@ -127,12 +127,13 @@ curl -fsS \
       | {health, lastError, scrapeUrl}'
 ```
 
-Stop the demonstration and remove its local data volumes:
+Stop the demonstration. Its Grafana and Prometheus data directories are
+temporary memory-backed filesystems, so no demonstration data is retained:
 
 ```bash
 docker compose \
   -f examples/sla-report-generator/compose.yml \
-  down -v
+  down
 ```
 
 ## Configuring your Grafana container
