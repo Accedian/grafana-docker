@@ -18,11 +18,122 @@ docker run -d --name=grafana -p 3000:3000 grafana/grafana
 
 Try it out, default admin user is admin/admin.
 
-In case port 3000 is closed for external clients or you there is no access 
+In case port 3000 is closed for external clients or there is no access
 to the browser - you may test it by issuing:
   curl -i localhost:3000/login
 Make sure that you are getting "...200 OK" in response.
 After that continue testing by modifying your client request to grafana.
+
+### How production connects to Prometheus
+
+Dashboards refer to the Prometheus datasource by its stable UID, `prometheus`.
+They do not contain the Prometheus server URL. Grafana obtains that URL from a
+provisioned datasource file when the container starts.
+
+For a Docker Swarm deployment, the image includes
+`provisioning/datasources/prometheus-datasource.yaml`. The Dockerfile copies the
+`provisioning` directory into the image, and `run.sh` installs it into Grafana's
+runtime provisioning directory. Its Prometheus URL is:
+
+```text
+http://prometheus:9090/prometheus
+```
+
+The `prometheus` hostname is resolved through the deployment's Docker network.
+The `/prometheus` path is the route exposed by the production Prometheus
+service.
+
+For a Kubernetes deployment, the Helm chart mounts the
+`prometheus-datasource` ConfigMap over the image's datasource file. That
+ConfigMap points to the in-cluster Prometheus service:
+
+```text
+http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
+```
+
+
+### Testing this repository image locally using examples/sla-report-generator
+
+The `grafana/grafana` command above starts the upstream image. It does not
+include the dashboards and provisioning stored in this repository. To test the
+same image contents that will be deployed, build this repository's image and
+run it alongside a Prometheus container.
+
+The self-contained example in `examples/sla-report-generator` starts both
+Prometheus and the Grafana image built from this repository. It does not require
+the SLA Report Generator source repository.
+
+Build the production Grafana image. The explicit platform also allows the
+production architecture to be tested from an Apple Silicon development
+machine:
+
+```bash
+make docker \
+  DOCKER_VER=sla-dashboard-local \
+  LOCAL_BUILD_PLATFORM=linux/amd64
+```
+
+The build uses a private GCR base image, so authenticate Docker with GCR first
+if the base image cannot be pulled.
+
+Start the demonstration stack:
+
+```bash
+docker compose \
+  -f examples/sla-report-generator/compose.yml \
+  up -d
+```
+
+Open <http://localhost:3001> and sign in with username `admin` and password
+`grafana-local-only`.
+
+The example Prometheus server is available at
+<http://localhost:9091/prometheus>. It deliberately uses the production
+`/prometheus` route prefix, so the unmodified Swarm datasource packaged in the
+Grafana image connects to it at `http://prometheus:9090/prometheus`.
+
+Confirm that Grafana loaded the local Prometheus datasource successfully:
+
+```bash
+curl -fsS \
+  -u admin:grafana-local-only \
+  http://localhost:3001/api/datasources/uid/prometheus/health | jq
+```
+
+Confirm that the SLA Report Generator dashboard was provisioned from the
+image:
+
+```bash
+curl -fsS \
+  -u admin:grafana-local-only \
+  http://localhost:3001/api/dashboards/uid/sla-report-generator \
+  | jq '.dashboard | {title, uid, panels: (.panels | length)}'
+```
+
+The SLA Report Generator worker and its metrics endpoint must also be running
+on the host at port `8000` for the dashboard to receive real application
+metrics. This is not required to verify that Grafana, Prometheus, datasource
+provisioning, and dashboard provisioning work. Empty charts or zero values are
+expected until `http://host.docker.internal:8000/metrics` can be scraped and the
+related report operation has occurred.
+
+Check the SLA Report Generator scrape target:
+
+```bash
+curl -fsS \
+  http://localhost:9091/prometheus/api/v1/targets \
+  | jq '.data.activeTargets[]
+      | select(.labels.job == "sla-report-generator")
+      | {health, lastError, scrapeUrl}'
+```
+
+Stop the demonstration and remove its local data volumes:
+
+```bash
+docker compose \
+  -f examples/sla-report-generator/compose.yml \
+  down -v
+```
 
 ## Configuring your Grafana container
 
