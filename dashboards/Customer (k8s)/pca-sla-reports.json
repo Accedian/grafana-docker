@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "datasource",
-          "uid": "grafana"
+          "type": "grafana",
+          "uid": "-- Grafana --"
         },
         "enable": true,
         "hide": true,
@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "End-to-end observability and troubleshooting dashboard for the SLA Report Generation pipeline from request enqueue (Trigger API) to generator execution (Celery/PDF rendering), Parquet storage (SLA Reports API/MinIO), and delivery.",
+  "description": "Executive and operational health dashboard for Provider Connectivity Assurance (PCA) SLA reporting. Tracks report generation requests, processing outcomes, report delivery throughput, and storage capacity.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -32,11 +32,11 @@
       },
       "id": 1,
       "options": {
-        "content": "# End-to-End SLA Report Generation & Troubleshooting Dashboard\nTracks the entire SLA report lifecycle: **Request Enqueue** (`sla-report-trigger-api`) \u2192 **Worker Execution** (`sla-report-generator` / Celery) \u2192 **Parquet Export & Storage** (`sla-reports-api` / MinIO) \u2192 **Progress & Trace Polling** (`slapg` Redis) \u2192 **Data Consolidation** (DuckDB) \u2192 **PDF Generation & Storage** (`weld-data` / `report-service`). Hover over (i) on any chart for diagnostic guidance.",
+        "content": "# PCA SLA Reports Overview\nExecutive and operational health dashboard for Provider Connectivity Assurance (PCA) SLA reporting. Tracks report generation requests, processing outcomes, report delivery throughput, and storage capacity.",
         "mode": "markdown"
       },
       "pluginVersion": "10.0.0",
-      "title": "Pipeline Architecture & Diagnostics Guide",
+      "title": "SLA Reporting Overview",
       "type": "text"
     },
     {
@@ -49,11 +49,11 @@
       },
       "id": 2,
       "panels": [],
-      "title": "Pipeline Health & Architecture Overview",
+      "title": "Executive Summary",
       "type": "row"
     },
     {
-      "description": "Liveness of the report trigger API. Good: UP (green). Bad: DOWN (red), new reports cannot be queued.",
+      "description": "Overall availability of SLA reporting services. Good: UP (green). Bad: DOWN (red), reporting services are unreachable.",
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
@@ -118,18 +118,18 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "max(up{job=\"sla_report_trigger\"})",
+          "expr": "min(up{job=~\"sla.*\"})",
           "instant": true,
-          "legendFormat": "Trigger Status",
-          "refId": "A",
-          "range": false
+          "range": false,
+          "legendFormat": "Status",
+          "refId": "A"
         }
       ],
-      "title": "Trigger API Status",
+      "title": "Reporting System Status",
       "type": "stat"
     },
     {
-      "description": "Active Celery worker container count for sla-report-generator. Good: Stable at 3 (green). Bad: <3 or 0 (yellow/red), indicates worker crash or OOM-kill.",
+      "description": "Active report generator workers. Good: 3 workers available (green). Bad: <3 or 0 (yellow/red), degraded capacity.",
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
@@ -183,155 +183,16 @@
           "editorMode": "code",
           "expr": "sum(kube_pod_status_phase{namespace=~\"$namespace\", pod=~\".*sla-report-generator.*\", phase=\"Running\"})",
           "instant": true,
-          "legendFormat": "Replicas",
-          "refId": "A",
-          "range": false
+          "range": false,
+          "legendFormat": "Workers",
+          "refId": "A"
         }
       ],
-      "title": "Generator Replicas",
+      "title": "Active Generator Workers",
       "type": "stat"
     },
     {
-      "description": "Liveness of the SLA Reports API service. Good: UP (green). Bad: DOWN (red), parquet imports, consolidation, and dashboard queries fail.",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "color": "red",
-                  "index": 0,
-                  "text": "DOWN"
-                },
-                "1": {
-                  "color": "green",
-                  "index": 1,
-                  "text": "UP"
-                }
-              },
-              "type": "value"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "green",
-                "value": 1
-              }
-            ]
-          },
-          "unit": "none"
-        }
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 8,
-        "y": 4
-      },
-      "id": 5,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "max(up{job=~\"sla-reports-api|sla_reports_api\"})",
-          "instant": true,
-          "legendFormat": "Reports API Status",
-          "refId": "A",
-          "range": false
-        }
-      ],
-      "title": "SLA Reports API Status",
-      "type": "stat"
-    },
-    {
-      "description": "Active HTTP requests currently handled concurrently by SLA Reports API. Good: Near zero (green). Bad: Sustained high values (yellow/red), indicates server backlog.",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 10
-              },
-              {
-                "color": "red",
-                "value": 50
-              }
-            ]
-          },
-          "unit": "none"
-        }
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 12,
-        "y": 4
-      },
-      "id": 6,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum(sla_reports_api_http_requests_in_flight)",
-          "legendFormat": "In-Flight",
-          "refId": "A",
-          "instant": true,
-          "range": false
-        }
-      ],
-      "title": "In-Flight API Requests",
-      "type": "stat"
-    },
-    {
-      "description": "Count of report bundles imported in the last hour. Good: Positive count matching generation volume. Bad: Flat zero when reports were expected.",
+      "description": "Total successfully generated and imported SLA report bundles in the past 24 hours. Good: Matches expected generation schedule. Bad: 0 when reports were expected.",
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
@@ -344,10 +205,10 @@
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 16,
+        "x": 8,
         "y": 4
       },
-      "id": 7,
+      "id": 5,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -366,18 +227,18 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(increase(sla_reports_api_import_reports_total{result=\"success\"}[1h])) or (0 * sum(sla_reports_api_import_reports_total))",
-          "legendFormat": "Ingested",
-          "refId": "A",
+          "expr": "sum(increase(sla_reports_api_import_reports_total{result=\"success\"}[24h])) or (0 * sum(sla_reports_api_import_reports_total))",
           "instant": true,
-          "range": false
+          "range": false,
+          "legendFormat": "Reports",
+          "refId": "A"
         }
       ],
-      "title": "Report Ingestions (1h)",
+      "title": "Reports Generated (24h)",
       "type": "stat"
     },
     {
-      "description": "Percentage of successful DuckDB consolidation runs in the past hour. Good: 100% (green). Bad: Drops below 90% (yellow/red), indicates failed cutovers or schema errors.",
+      "description": "Percentage of report imports that completed successfully in the past 24 hours. Good: 100% (green). Bad: <95% (yellow/red), report generation failures.",
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
@@ -397,7 +258,7 @@
               },
               {
                 "color": "green",
-                "value": 99
+                "value": 98
               }
             ]
           },
@@ -407,10 +268,10 @@
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 20,
+        "x": 12,
         "y": 4
       },
-      "id": 8,
+      "id": 6,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
@@ -429,14 +290,123 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "(((sum(rate(sla_reports_api_consolidation_runs_total{result=\"success\"}[1h])) or vector(0)) / (sum(rate(sla_reports_api_consolidation_runs_total[1h])) > 0)) * 100) or (0 * sum(sla_reports_api_consolidation_runs_total) + 100)",
-          "legendFormat": "Success %",
-          "refId": "A",
+          "expr": "(((sum(rate(sla_reports_api_import_reports_total{result=\"success\"}[24h])) or vector(0)) / (sum(rate(sla_reports_api_import_reports_total[24h])) > 0)) * 100) or (0 * sum(sla_reports_api_import_reports_total) + 100)",
           "instant": true,
-          "range": false
+          "range": false,
+          "legendFormat": "Success %",
+          "refId": "A"
         }
       ],
-      "title": "Consolidation Success %",
+      "title": "Report Success Rate (24h)",
+      "type": "stat"
+    },
+    {
+      "description": "Median (p50) report data consolidation duration. Good: Under 30 seconds. Bad: Over 60 seconds.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 30
+              },
+              {
+                "color": "red",
+                "value": 60
+              }
+            ]
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 4
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(sla_reports_api_consolidation_duration_seconds_bucket[1h])))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Avg Duration",
+          "refId": "A"
+        }
+      ],
+      "title": "Avg Processing Time",
+      "type": "stat"
+    },
+    {
+      "description": "Total storage consumed by report datasets and artifacts in MinIO. Good: Steady, gradual storage growth.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "bytes"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 4
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(minio_disk_storage_used_bytes)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Used Storage",
+          "refId": "A"
+        }
+      ],
+      "title": "Report Archive Used",
       "type": "stat"
     },
     {
@@ -449,21 +419,68 @@
       },
       "id": 9,
       "panels": [],
-      "title": "Stage 1: Report Request & Ingestion (Trigger API)",
+      "title": "Report Generation Activity",
       "type": "row"
     },
     {
-      "description": "Rate of incoming report generation and status requests. Good: Normal spikes corresponding to report triggers. Bad: Flat zero during scheduled generation.",
+      "description": "Rate of report generation requests per minute categorized by outcome. Good: Green success line tracks requests. Bad: Spikes of yellow (client errors) or red (service errors).",
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
             "drawStyle": "line",
-            "fillOpacity": 15,
+            "fillOpacity": 20,
             "lineWidth": 2
           },
-          "unit": "reqps"
-        }
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Success"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Client Request Error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Service Error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -491,37 +508,51 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum by (endpoint, method) (rate(http_requests_total{job=\"sla_report_trigger\"}[5m]))",
-          "legendFormat": "{{method}} {{endpoint}}",
-          "refId": "A",
+          "expr": "sum(rate(http_requests_total{job=\"sla_report_trigger\", http_status=~\"2..\"}[5m])) * 60",
           "instant": false,
-          "range": true
+          "range": true,
+          "legendFormat": "Success",
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(http_requests_total{job=\"sla_report_trigger\", http_status=~\"4..\"}[5m])) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Client Request Error",
+          "refId": "B"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(http_requests_total{job=\"sla_report_trigger\", http_status=~\"5..\"}[5m])) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Service Error",
+          "refId": "C"
         }
       ],
-      "title": "Report Request Ingestion Rate",
+      "title": "Report Requests by Outcome (req/min)",
       "type": "timeseries"
     },
     {
-      "description": "Trigger API response status codes. Good: Mostly 202 Accepted (green). Bad: 4xx (validation/auth failure) or 5xx (Celery enqueue failure) in yellow/red.",
+      "description": "Hourly count of completed SLA report deliveries. Good: Green success bars represent generated reports. Bad: Red error bars indicate failed report imports.",
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
             "drawStyle": "bars",
-            "fillOpacity": 35,
-            "lineWidth": 1,
-            "stacking": {
-              "group": "A",
-              "mode": "normal"
-            }
+            "fillOpacity": 40,
+            "lineWidth": 1
           },
-          "unit": "reqps"
+          "unit": "short"
         },
         "overrides": [
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "2.."
+              "id": "byName",
+              "options": "Successful Reports"
             },
             "properties": [
               {
@@ -535,23 +566,8 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "4.."
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "yellow",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "5.."
+              "id": "byName",
+              "options": "Failed Reports"
             },
             "properties": [
               {
@@ -576,7 +592,7 @@
         "legend": {
           "calcs": [
             "mean",
-            "last"
+            "max"
           ],
           "displayMode": "table",
           "placement": "bottom",
@@ -591,24 +607,33 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum by (http_status) (rate(http_requests_total{job=\"sla_report_trigger\"}[5m]))",
-          "legendFormat": "HTTP {{http_status}}",
-          "refId": "A",
+          "expr": "sum(increase(sla_reports_api_import_reports_total{result=\"success\"}[1h]))",
           "instant": false,
-          "range": true
+          "range": true,
+          "legendFormat": "Successful Reports",
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(sla_reports_api_import_reports_total{result=\"error\"}[1h]))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Failed Reports",
+          "refId": "B"
         }
       ],
-      "title": "Trigger HTTP Response Status",
+      "title": "Report Deliveries (Reports/Hour)",
       "type": "timeseries"
     },
     {
-      "description": "Trigger API latency percentiles. Good: Sub-second p95 (<100ms). Bad: Latency >1s, indicates Redis/Celery broker connection delays.",
+      "description": "Time taken to process and consolidate report data. Good: Stable duration (<30s). Bad: Upward drift or spikes >60s.",
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
             "drawStyle": "line",
-            "fillOpacity": 10,
+            "fillOpacity": 15,
             "lineWidth": 2
           },
           "unit": "s"
@@ -641,32 +666,23 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"sla_report_trigger\"}[5m])))",
-          "legendFormat": "p50 Median",
-          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(sla_reports_api_consolidation_duration_seconds_bucket[5m])))",
           "instant": false,
-          "range": true
+          "range": true,
+          "legendFormat": "p95 Duration",
+          "refId": "A"
         },
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"sla_report_trigger\"}[5m])))",
-          "legendFormat": "p95",
-          "refId": "B",
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(sla_reports_api_consolidation_duration_seconds_bucket[5m])))",
           "instant": false,
-          "range": true
-        },
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"sla_report_trigger\"}[5m])))",
-          "legendFormat": "p99",
-          "refId": "C",
-          "instant": false,
-          "range": true
+          "range": true,
+          "legendFormat": "Median Duration",
+          "refId": "B"
         }
       ],
-      "title": "Trigger Request Latency Quantiles",
+      "title": "Report Processing Duration (s)",
       "type": "timeseries"
     },
     {
@@ -679,139 +695,26 @@
       },
       "id": 13,
       "panels": [],
-      "title": "Stage 2: Report Generator Workers (Celery Execution)",
+      "title": "SLA Report Access & Dashboard Performance",
       "type": "row"
     },
     {
-      "description": "CPU cores used per worker container during report generation. Good: Activity peaks during generation that return to baseline. Bad: Sustained high core usage causing task stalls.",
+      "description": "Rate of client requests accessing SLA reports and dashboards per minute. Good: Dominantly green success. Bad: Yellow or red error spikes.",
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
             "drawStyle": "line",
-            "fillOpacity": 15,
+            "fillOpacity": 20,
             "lineWidth": 2
           },
-          "unit": "none"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 18
-      },
-      "id": 14,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "last"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\", container=\"sla-report-generator\"}[5m])",
-          "legendFormat": "Worker {{pod}}",
-          "refId": "A",
-          "instant": false,
-          "range": true
-        }
-      ],
-      "title": "Generator Worker CPU Core Usage (per Replica)",
-      "type": "timeseries"
-    },
-    {
-      "description": "Worker memory usage during chart rendering and WeasyPrint PDF compilation. Good: Memory stays well below limit. Bad: Rapid climb to limit followed by sudden drop, indicating OOM kill.",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 15,
-            "lineWidth": 2
-          },
-          "unit": "bytes"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 18
-      },
-      "id": 15,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "last"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "container_memory_working_set_bytes{namespace=~\"$namespace\", container=\"sla-report-generator\"}",
-          "legendFormat": "Worker {{pod}}",
-          "refId": "A",
-          "instant": false,
-          "range": true
-        }
-      ],
-      "title": "Generator Worker Memory Usage (PDF/Chart Rendering OOM Detection)",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 26
-      },
-      "id": 16,
-      "panels": [],
-      "title": "Stage 3: Parquet Export & Storage (SLA Reports API & MinIO)",
-      "type": "row"
-    },
-    {
-      "description": "Rate of Parquet report imports into SLA Reports API. Good: Green success line tracks generation completions. Bad: Red error line appears, indicates schema or upload failure.",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 15,
-            "lineWidth": 2
-          },
-          "unit": "ops"
+          "unit": "short"
         },
         "overrides": [
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "success"
+              "id": "byName",
+              "options": "Success"
             },
             "properties": [
               {
@@ -825,8 +728,23 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "error"
+              "id": "byName",
+              "options": "Client Request Error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Service Error"
             },
             "properties": [
               {
@@ -844,9 +762,9 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 27
+        "y": 18
       },
-      "id": 17,
+      "id": 14,
       "options": {
         "legend": {
           "calcs": [
@@ -866,18 +784,95 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum by (result) (rate(sla_reports_api_import_reports_total[5m]))",
-          "legendFormat": "Import {{result}}",
-          "refId": "A",
+          "expr": "sum(rate(sla_reports_api_http_requests_total{status=~\"2..\"}[5m])) * 60",
           "instant": false,
-          "range": true
+          "range": true,
+          "legendFormat": "Success",
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(sla_reports_api_http_requests_total{status=~\"4..\"}[5m])) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Client Request Error",
+          "refId": "B"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(sla_reports_api_http_requests_total{status=~\"5..\"}[5m])) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Service Error",
+          "refId": "C"
         }
       ],
-      "title": "Parquet Report Ingestion Rate (/import-report)",
+      "title": "SLA Data Queries by Outcome (req/min)",
       "type": "timeseries"
     },
     {
-      "description": "Byte rate of Parquet datasets uploaded into MinIO via the API. Good: Bursts of throughput during report exports. Bad: Flat zero during report generation runs.",
+      "description": "Response time for SLA dashboard read operations. Good: Fast response (<200ms). Bad: Latency >1s.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 2
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 18
+      },
+      "id": 15,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(sla_reports_api_duckdb_query_duration_seconds_bucket[5m])))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "p95 Query Latency",
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(sla_reports_api_duckdb_query_duration_seconds_bucket[5m])))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Median Query Latency",
+          "refId": "B"
+        }
+      ],
+      "title": "Query Response Time (s)",
+      "type": "timeseries"
+    },
+    {
+      "description": "Throughput of report datasets imported into storage. Good: Bursts of activity during report delivery. Bad: Flat zero during active generation.",
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
@@ -892,10 +887,10 @@
       "gridPos": {
         "h": 8,
         "w": 8,
-        "x": 8,
-        "y": 27
+        "x": 16,
+        "y": 18
       },
-      "id": 18,
+      "id": 16,
       "options": {
         "legend": {
           "calcs": [
@@ -916,94 +911,48 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(sla_reports_api_import_bytes_total[5m]))",
-          "legendFormat": "Throughput",
-          "refId": "A",
           "instant": false,
-          "range": true
+          "range": true,
+          "legendFormat": "Throughput",
+          "refId": "A"
         }
       ],
-      "title": "Ingested Parquet Data Throughput",
+      "title": "Report Ingested Throughput",
       "type": "timeseries"
     },
     {
-      "description": "Median (p50) and 95th percentile (p95) sizes of uploaded Parquet files. Good: Stable sizes matching report dataset volume. Bad: Abnormally small sizes indicating truncated data.",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 26
+      },
+      "id": 17,
+      "panels": [],
+      "title": "System Reliability & Storage",
+      "type": "row"
+    },
+    {
+      "description": "Consolidated error rates across SLA reporting subsystems. Good: All lines flat at zero. Bad: Any non-zero line indicates which stage experienced errors.",
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 15,
-            "lineWidth": 2
+            "drawStyle": "bars",
+            "fillOpacity": 35,
+            "lineWidth": 1
           },
-          "unit": "bytes"
+          "unit": "ops"
         }
       },
       "gridPos": {
         "h": 8,
         "w": 8,
-        "x": 16,
+        "x": 0,
         "y": 27
       },
-      "id": 19,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "last"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(sla_reports_api_storage_upload_bytes_bucket[5m])))",
-          "legendFormat": "p95 Upload Size",
-          "refId": "A",
-          "instant": false,
-          "range": true
-        },
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.50, sum by (le) (rate(sla_reports_api_storage_upload_bytes_bucket[5m])))",
-          "legendFormat": "p50 Upload Size",
-          "refId": "B",
-          "instant": false,
-          "range": true
-        }
-      ],
-      "title": "MinIO Upload Object Size",
-      "type": "timeseries"
-    },
-    {
-      "description": "Latency for S3 Put, Copy, Delete, List, and Stat operations. Good: Low latency (<50ms). Bad: Latency >1s, indicates MinIO saturation or storage I/O bottleneck.",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "lineWidth": 2
-          },
-          "unit": "s"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 35
-      },
-      "id": 20,
+      "id": 18,
       "options": {
         "legend": {
           "calcs": [
@@ -1023,542 +972,54 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le, operation) (rate(sla_reports_api_storage_operation_duration_seconds_bucket[5m])))",
-          "legendFormat": "MinIO {{operation}} (p95)",
-          "refId": "A",
+          "expr": "sum(rate(http_requests_total{job=\"sla_report_trigger\", http_status=~\"[45]..\"}[5m]))",
           "instant": false,
-          "range": true
-        }
-      ],
-      "title": "MinIO Storage Operation Latency (p95)",
-      "type": "timeseries"
-    },
-    {
-      "description": "Failure rate of S3 storage operations. Good: Flat zero. Bad: Non-zero values, indicates bucket access errors, disk space issues, or network drops.",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "bars",
-            "fillOpacity": 30,
-            "lineWidth": 1
-          },
-          "unit": "ops"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 35
-      },
-      "id": 21,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum by (operation) (rate(sla_reports_api_storage_operation_errors_total[5m]))",
-          "legendFormat": "MinIO {{operation}} errors/s",
-          "refId": "A",
-          "instant": false,
-          "range": true
-        }
-      ],
-      "title": "MinIO Storage Operation Errors",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 43
-      },
-      "id": 22,
-      "panels": [],
-      "title": "Stage 4: Progress Tracking & Status Polling (Redis & API)",
-      "type": "row"
-    },
-    {
-      "description": "Polling traffic on /status and /trace endpoints. Good: Activity aligns with active report generation. Bad: Rapid continuous polling without task progression.",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 15,
-            "lineWidth": 2
-          },
-          "unit": "reqps"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 44
-      },
-      "id": 23,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum by (route) (rate(sla_reports_api_http_requests_total{route=~\".*reports.*\"}[5m]))",
-          "legendFormat": "{{route}}",
-          "refId": "A",
-          "instant": false,
-          "range": true
-        }
-      ],
-      "title": "Report Progress Status/Trace Polling Request Rate",
-      "type": "timeseries"
-    },
-    {
-      "description": "Latency for Redis-backed progress and trace queries. Good: Fast (<20ms). Bad: Latency >100ms, indicates Redis contention or thread starvation.",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "lineWidth": 2
-          },
-          "unit": "s"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 44
-      },
-      "id": 24,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "last"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le, route) (rate(sla_reports_api_http_request_duration_seconds_bucket{route=~\".*reports.*\"}[5m])))",
-          "legendFormat": "{{route}} (p95)",
-          "refId": "A",
-          "instant": false,
-          "range": true
-        }
-      ],
-      "title": "Report Progress Polling Latency (p95)",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 52
-      },
-      "id": 25,
-      "panels": [],
-      "title": "Stage 5: Data Consolidation & DuckDB Analytics (SLA Reports API)",
-      "type": "row"
-    },
-    {
-      "description": "Executions of the DuckDB Parquet consolidation pipeline. Good: Green success line tracks scheduled runs. Bad: Red error line appears, indicates failed consolidation cutover.",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "bars",
-            "fillOpacity": 30,
-            "lineWidth": 1
-          },
-          "unit": "ops"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "success"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "green",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "error"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 0,
-        "y": 53
-      },
-      "id": 26,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum by (result) (rate(sla_reports_api_consolidation_runs_total[5m]))",
-          "legendFormat": "Consolidation {{result}}",
-          "refId": "A",
-          "instant": false,
-          "range": true
-        }
-      ],
-      "title": "Consolidation Runs by Result",
-      "type": "timeseries"
-    },
-    {
-      "description": "Wall-clock duration of Parquet consolidation. Good: Stable runtime (<30s). Bad: Upward drift or spikes >60s, indicates data growth or slow S3 object transfers.",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 15,
-            "lineWidth": 2
-          },
-          "unit": "s"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 53
-      },
-      "id": 27,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "last"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(sla_reports_api_consolidation_duration_seconds_bucket[5m])))",
-          "legendFormat": "p95 Duration",
-          "refId": "A",
-          "instant": false,
-          "range": true
+          "range": true,
+          "legendFormat": "Trigger Request Errors",
+          "refId": "A"
         },
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "histogram_quantile(0.50, sum by (le) (rate(sla_reports_api_consolidation_duration_seconds_bucket[5m])))",
-          "legendFormat": "p50 Duration",
-          "refId": "B",
+          "expr": "sum(rate(sla_reports_api_import_reports_total{result=\"error\"}[5m]))",
           "instant": false,
-          "range": true
-        }
-      ],
-      "title": "Consolidation Wall-Clock Duration",
-      "type": "timeseries"
-    },
-    {
-      "description": "Query execution time across dashboard read operations. Good: Fast (<200ms). Bad: Sustained latency >1s, indicates inefficient parquet reads or heavy grouping.",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "lineWidth": 2
-          },
-          "unit": "s"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 53
-      },
-      "id": 28,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "last"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
+          "range": true,
+          "legendFormat": "Report Ingestion Errors",
+          "refId": "B"
         },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le, operation) (rate(sla_reports_api_duckdb_query_duration_seconds_bucket[5m])))",
-          "legendFormat": "{{operation}} (p95)",
-          "refId": "A",
+          "expr": "sum(rate(sla_reports_api_storage_operation_errors_total[5m]))",
           "instant": false,
-          "range": true
-        }
-      ],
-      "title": "DuckDB Query Duration (p95) by Operation",
-      "type": "timeseries"
-    },
-    {
-      "description": "Failure rate for DuckDB query operations. Good: Flat zero. Bad: Non-zero values, indicates missing columns, corrupted parquet files, or S3 read 404s.",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "bars",
-            "fillOpacity": 30,
-            "lineWidth": 1
-          },
-          "unit": "ops"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 61
-      },
-      "id": 29,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
+          "range": true,
+          "legendFormat": "Storage Errors",
+          "refId": "C"
         },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum by (operation) (rate(sla_reports_api_duckdb_query_errors_total[5m]))",
-          "legendFormat": "{{operation}} errors/s",
-          "refId": "A",
+          "expr": "sum(rate(sla_reports_api_duckdb_query_errors_total[5m]))",
           "instant": false,
-          "range": true
-        }
-      ],
-      "title": "DuckDB Query Errors",
-      "type": "timeseries"
-    },
-    {
-      "description": "Rate of rows returned by DuckDB query operations. Good: Proportional to active dashboard requests. Bad: Sudden sharp drops or unexpected spikes.",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 15,
-            "lineWidth": 2
-          },
-          "unit": "rows/s"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 61
-      },
-      "id": 30,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
+          "range": true,
+          "legendFormat": "Calculation Engine Errors",
+          "refId": "D"
         },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum by (operation) (rate(sla_reports_api_duckdb_rows_returned_sum[5m]))",
-          "legendFormat": "{{operation}} rows/s",
-          "refId": "A",
+          "expr": "sum(rate(sla_reports_api_http_requests_total{status=~\"[45]..\"}[5m]))",
           "instant": false,
-          "range": true
+          "range": true,
+          "legendFormat": "Dashboard Access Errors",
+          "refId": "E"
         }
       ],
-      "title": "DuckDB Rows Returned Rate",
+      "title": "Subsystem Errors Overview",
       "type": "timeseries"
     },
     {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 69
-      },
-      "id": 31,
-      "panels": [],
-      "title": "Stage 6: PDF Artifact Generation & Delivery (Weld Data & Storage)",
-      "type": "row"
-    },
-    {
-      "description": "Cluster-wide S3 HTTP request rate into MinIO. Good: Request spikes align with PDF uploads and Parquet ingestion. Bad: Sudden complete drop to zero.",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 15,
-            "lineWidth": 2
-          },
-          "unit": "reqps"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 70
-      },
-      "id": 32,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum(rate(minio_http_requests_duration_seconds_count[5m]))",
-          "legendFormat": "MinIO HTTP Requests/s",
-          "refId": "A",
-          "instant": false,
-          "range": true
-        }
-      ],
-      "title": "MinIO S3 Cluster HTTP Request Rate (All Operations)",
-      "type": "timeseries"
-    },
-    {
-      "description": "Cluster disk space for PDF and Parquet artifacts. Good: Available capacity remains high with gradual used growth. Bad: Available capacity trends to zero.",
+      "description": "Available vs used disk storage in the report artifact repository. Good: High available storage with gradual used growth.",
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
@@ -1572,11 +1033,11 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 70
+        "w": 8,
+        "x": 8,
+        "y": 27
       },
-      "id": 33,
+      "id": 19,
       "options": {
         "legend": {
           "calcs": [
@@ -1598,133 +1059,26 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(minio_disk_storage_available_bytes)",
-          "legendFormat": "Total Storage Available",
-          "refId": "A",
           "instant": false,
-          "range": true
+          "range": true,
+          "legendFormat": "Total Storage Available",
+          "refId": "A"
         },
         {
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(minio_disk_storage_used_bytes)",
+          "instant": false,
+          "range": true,
           "legendFormat": "Total Storage Used",
-          "refId": "B",
-          "instant": false,
-          "range": true
+          "refId": "B"
         }
       ],
-      "title": "MinIO Cluster Total Storage Capacity",
+      "title": "Report Archive Storage Capacity",
       "type": "timeseries"
     },
     {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 78
-      },
-      "id": 34,
-      "panels": [],
-      "title": "End-to-End Pipeline Troubleshooting & Bottlenecks",
-      "type": "row"
-    },
-    {
-      "description": "Correlated error rates across all pipeline stages. Good: All series flat at zero. Bad: Any non-zero series immediately pinpoints where the report failed.",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "bars",
-            "fillOpacity": 40,
-            "lineWidth": 1
-          },
-          "unit": "ops"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 0,
-        "y": 79
-      },
-      "id": 35,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum(rate(http_requests_total{job=\"sla_report_trigger\", http_status=~\"[45]..\"}[5m]))",
-          "legendFormat": "Trigger Enqueue Errors",
-          "refId": "A",
-          "instant": false,
-          "range": true
-        },
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum(rate(sla_reports_api_import_reports_total{result=\"error\"}[5m]))",
-          "legendFormat": "Parquet Import Errors",
-          "refId": "B",
-          "instant": false,
-          "range": true
-        },
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum(rate(sla_reports_api_storage_operation_errors_total[5m]))",
-          "legendFormat": "MinIO Storage Errors",
-          "refId": "C",
-          "instant": false,
-          "range": true
-        },
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum(rate(sla_reports_api_duckdb_query_errors_total[5m]))",
-          "legendFormat": "DuckDB Query Errors",
-          "refId": "D",
-          "instant": false,
-          "range": true
-        },
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum(rate(sla_reports_api_postgres_query_errors_total[5m]))",
-          "legendFormat": "PostgreSQL Query Errors",
-          "refId": "E",
-          "instant": false,
-          "range": true
-        },
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum(rate(sla_reports_api_http_requests_total{status=~\"[45]..\"}[5m]))",
-          "legendFormat": "SLA Reports API HTTP Errors",
-          "refId": "F",
-          "instant": false,
-          "range": true
-        }
-      ],
-      "title": "Cross-Pipeline Error Matrix",
-      "type": "timeseries"
-    },
-    {
-      "description": "Total CPU cores used across Trigger API, Generator Workers, and SLA Reports API. Good: Bursts during generation that return to idle. Bad: Sustained high core usage.",
+      "description": "Total CPU cores utilized across SLA reporting components. Good: Activity peaks during generation that return to idle. Bad: Sustained high core consumption.",
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
@@ -1739,10 +1093,10 @@
       "gridPos": {
         "h": 8,
         "w": 8,
-        "x": 8,
-        "y": 79
+        "x": 16,
+        "y": 27
       },
-      "id": 36,
+      "id": 20,
       "options": {
         "legend": {
           "calcs": [
@@ -1764,104 +1118,37 @@
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\", container=\"sla-report-trigger\"}[5m]))",
-          "legendFormat": "Trigger API (Cores)",
-          "refId": "A",
           "instant": false,
-          "range": true
+          "range": true,
+          "legendFormat": "Trigger Service (Cores)",
+          "refId": "A"
         },
         {
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\", container=\"sla-report-generator\"}[5m]))",
-          "legendFormat": "Generator Workers (Cores)",
-          "refId": "B",
           "instant": false,
-          "range": true
+          "range": true,
+          "legendFormat": "Report Generator (Cores)",
+          "refId": "B"
         },
         {
           "datasource": "Prometheus",
           "editorMode": "code",
           "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\", container=\"sla-reports-api\"}[5m]))",
-          "legendFormat": "SLA Reports API (Cores)",
-          "refId": "C",
           "instant": false,
-          "range": true
+          "range": true,
+          "legendFormat": "Analytics API (Cores)",
+          "refId": "C"
         }
       ],
-      "title": "Pipeline Services Aggregate CPU Core Usage",
-      "type": "timeseries"
-    },
-    {
-      "description": "Total memory used across Trigger API, Generator Workers, and SLA Reports API. Good: Predictable usage plateaus. Bad: Continuous upward memory ramp without release (memory leak).",
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 15,
-            "lineWidth": 2
-          },
-          "unit": "bytes"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 79
-      },
-      "id": 37,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "last"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum(container_memory_working_set_bytes{namespace=~\"$namespace\", container=\"sla-report-trigger\"})",
-          "legendFormat": "Trigger API Memory",
-          "refId": "A",
-          "instant": false,
-          "range": true
-        },
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum(container_memory_working_set_bytes{namespace=~\"$namespace\", container=\"sla-report-generator\"})",
-          "legendFormat": "Generator Workers Memory (Total)",
-          "refId": "B",
-          "instant": false,
-          "range": true
-        },
-        {
-          "datasource": "Prometheus",
-          "editorMode": "code",
-          "expr": "sum(container_memory_working_set_bytes{namespace=~\"$namespace\", container=\"sla-reports-api\"})",
-          "legendFormat": "SLA Reports API Memory",
-          "refId": "C",
-          "instant": false,
-          "range": true
-        }
-      ],
-      "title": "Pipeline Services Memory Consumption",
+      "title": "Reporting System CPU Core Usage",
       "type": "timeseries"
     }
   ],
+  "preload": false,
   "refresh": "30s",
-  "schemaVersion": 38,
+  "schemaVersion": 41,
   "style": "dark",
   "tags": [
     "pca",
@@ -1896,12 +1183,11 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
-      "5s",
       "10s",
       "30s",
       "1m",
