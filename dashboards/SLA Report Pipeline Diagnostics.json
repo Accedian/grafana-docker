@@ -192,7 +192,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "count(container_last_seen{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"})",
+          "expr": "count(container_last_seen{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}) or sum(kube_pod_status_phase{pod=~\".*sla-report-generator.*\", phase=\"Running\"})",
           "instant": true,
           "legendFormat": "Replicas",
           "refId": "A"
@@ -736,7 +736,7 @@
             "fillOpacity": 15,
             "lineWidth": 2
           },
-          "unit": "percent"
+          "unit": "none"
         }
       },
       "gridPos": {
@@ -769,12 +769,12 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}[5m]) * 100",
-          "legendFormat": "Worker {{name}}",
+          "expr": "rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}[5m]) or rate(container_cpu_usage_seconds_total{container=\"sla-report-generator\"}[5m])",
+          "legendFormat": "Worker {{name}}{{pod}}",
           "refId": "A"
         }
       ],
-      "title": "Generator Worker CPU Usage % (per Replica)",
+      "title": "Generator Worker CPU Core Usage (per Replica)",
       "type": "timeseries"
     },
     {
@@ -823,8 +823,8 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}",
-          "legendFormat": "Worker {{name}}",
+          "expr": "container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"} or container_memory_working_set_bytes{container=\"sla-report-generator\"}",
+          "legendFormat": "Worker {{name}}{{pod}}",
           "refId": "A"
         }
       ],
@@ -1886,7 +1886,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-trigger\"}[5m]))",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-trigger\"}[5m])) or sum(rate(container_cpu_usage_seconds_total{container=\"sla-report-trigger\"}[5m]))",
           "legendFormat": "Trigger API (Cores)",
           "refId": "A"
         },
@@ -1896,7 +1896,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}[5m]))",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}[5m])) or sum(rate(container_cpu_usage_seconds_total{container=\"sla-report-generator\"}[5m]))",
           "legendFormat": "Generator Workers (Cores)",
           "refId": "B"
         },
@@ -1906,7 +1906,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"}[5m]))",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"}[5m])) or sum(rate(container_cpu_usage_seconds_total{container=\"sla-reports-api\"}[5m]))",
           "legendFormat": "SLA Reports API (Cores)",
           "refId": "C"
         }
@@ -1960,7 +1960,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-trigger\"})",
+          "expr": "sum(container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-trigger\"}) or sum(container_memory_working_set_bytes{container=\"sla-report-trigger\"})",
           "legendFormat": "Trigger API Memory",
           "refId": "A"
         },
@@ -1970,7 +1970,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"})",
+          "expr": "sum(container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-report-generator\"}) or sum(container_memory_working_set_bytes{container=\"sla-report-generator\"})",
           "legendFormat": "Generator Workers Memory (Total)",
           "refId": "B"
         },
@@ -1980,7 +1980,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"})",
+          "expr": "sum(container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"}) or sum(container_memory_working_set_bytes{container=\"sla-reports-api\"})",
           "legendFormat": "SLA Reports API Memory",
           "refId": "C"
         }
