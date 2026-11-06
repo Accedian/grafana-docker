@@ -934,7 +934,7 @@
       "type": "row"
     },
     {
-      "description": "Consolidated error rates across SLA reporting subsystems. Good: All lines flat at zero. Bad: Any non-zero line indicates which stage experienced errors.",
+      "description": "Hourly error count across SLA reporting subsystems. Good: Flat at zero across all categories. Bad: Error bars indicate the subsystem experiencing failures.",
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
@@ -943,7 +943,7 @@
             "fillOpacity": 35,
             "lineWidth": 1
           },
-          "unit": "ops"
+          "unit": "short"
         }
       },
       "gridPos": {
@@ -972,7 +972,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(http_requests_total{job=\"sla_report_trigger\", http_status=~\"[45]..\"}[5m]))",
+          "expr": "sum(increase(http_requests_total{job=\"sla_report_trigger\", http_status=~\"[45]..\"}[1h]))",
           "instant": false,
           "range": true,
           "legendFormat": "Trigger Request Errors",
@@ -981,7 +981,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(sla_reports_api_import_reports_total{result=\"error\"}[5m]))",
+          "expr": "sum(increase(sla_reports_api_import_reports_total{result=\"error\"}[1h]))",
           "instant": false,
           "range": true,
           "legendFormat": "Report Ingestion Errors",
@@ -990,7 +990,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(sla_reports_api_storage_operation_errors_total[5m]))",
+          "expr": "sum(increase(sla_reports_api_storage_operation_errors_total[1h]))",
           "instant": false,
           "range": true,
           "legendFormat": "Storage Errors",
@@ -999,7 +999,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(sla_reports_api_duckdb_query_errors_total[5m]))",
+          "expr": "sum(increase(sla_reports_api_duckdb_query_errors_total[1h]))",
           "instant": false,
           "range": true,
           "legendFormat": "Calculation Engine Errors",
@@ -1008,14 +1008,14 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(rate(sla_reports_api_http_requests_total{route=~\".*sla/(period|periods).*\", status=~\"[45]..\"}[5m]))",
+          "expr": "sum(increase(sla_reports_api_http_requests_total{route=~\".*sla/(period|periods).*\", status=~\"[45]..\"}[1h]))",
           "instant": false,
           "range": true,
           "legendFormat": "Dashboard Access Errors",
           "refId": "E"
         }
       ],
-      "title": "Subsystem Errors Overview",
+      "title": "Subsystem Errors (Errors/Hour)",
       "type": "timeseries"
     },
     {
@@ -1202,5 +1202,5 @@
   "timezone": "browser",
   "title": "PCA SLA Reports",
   "uid": "pca-sla-reports",
-  "version": 10
+  "version": 11
 }
