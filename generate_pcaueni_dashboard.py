@@ -187,6 +187,7 @@ def build():
                 ("ClickHouse data / disk", "/grafana/d/-B3tt7a7z"),
                 ("ClickHouse cluster", "/grafana/d/_hAsuzBnz"),
                 ("Swarm resources", "/grafana/d/pca-resource-health-swarm"),
+                ("PCA UE AP / Druid path", "/grafana/d/pca-ue-ap-ingestion-swarm"),
             ]
         ],
         "panels": panels,
