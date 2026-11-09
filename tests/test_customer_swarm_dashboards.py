@@ -27,7 +27,7 @@ class CustomerSwarmDashboardsTest(unittest.TestCase):
             "pca-ingestion-pipeline.json", "pca-sensor-connectivity.json",
             "pca-application-speed.json", "pca-resource-health.json",
             "pca-sla-reports.json",
-            "pca-ue-ingestion.json",
+            "pca-ue-ingestion.json", "pca-ue-ap-ingestion.json",
         })
         for name, dashboard in self.dashboards.items():
             with self.subTest(name=name):
