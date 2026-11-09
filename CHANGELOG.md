@@ -1,8 +1,10 @@
-* Fix - Grafana's Prometheus datasource queries the bundled kube-prometheus-stack under its `/prometheus` route prefix, so dashboard panels no longer fail with "404 page not found". The URL can be overridden with the new `prometheusUrl` value (e.g. for an existing/external Prometheus).
 ## Current Release
+### 0.235.0
+**Release Date:** Mon Nov  9 13:37:44 UTC 2026
+## Previous Releases
+* Fix - Grafana's Prometheus datasource queries the bundled kube-prometheus-stack under its `/prometheus` route prefix, so dashboard panels no longer fail with "404 page not found". The URL can be overridden with the new `prometheusUrl` value (e.g. for an existing/external Prometheus).
 ### 0.234.0
 **Release Date:** Thu Nov  5 19:09:52 UTC 2026
-## Previous Releases
 * Feat - Add PCA SLA Reports customer dashboard
 ### 0.233.0
 **Release Date:** Mon Oct 26 17:12:04 UTC 2026
