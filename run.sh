@@ -132,6 +132,28 @@ SQL
     fi
 fi
 
+# Repair only the obsolete bundled URL; higher database versions skip YAML provisioning.
+if [ -z "${DONT_COPY_STOCK_DASHBOARDS:-}" ] && [ -f "$GF_PATHS_DATA/grafana.db" ] &&
+    [ -r "$GF_PATHS_PROVISIONING/datasources/prometheus-datasource.yaml" ] &&
+    grep -Fxq '  url: "http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/prometheus"' \
+        "$GF_PATHS_PROVISIONING/datasources/prometheus-datasource.yaml"; then
+    DATASOURCE_TABLE=$(sqlite3 -bail -cmd '.timeout 5000' "$GF_PATHS_DATA/grafana.db" \
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='data_source';")
+    if [ "$DATASOURCE_TABLE" = data_source ]; then
+        sqlite3 -bail -cmd '.timeout 5000' "$GF_PATHS_DATA/grafana.db" <<'PROMETHEUS_URL_MIGRATION'
+UPDATE data_source
+   SET url = 'http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/prometheus',
+       version = version + 1
+ WHERE org_id = 1 AND uid = 'prometheus' AND name = 'Prometheus' AND type = 'prometheus'
+   AND url IN (
+       'http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090',
+       'http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/'
+   );
+SELECT 'Migrated bundled Prometheus datasource URL' WHERE changes() > 0;
+PROMETHEUS_URL_MIGRATION
+    fi
+fi
+
 grafana_args=(
     --homepath=/usr/share/grafana
     --config="$GF_PATHS_CONFIG"
