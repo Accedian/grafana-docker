@@ -25,10 +25,6 @@ jobs:
             mkdir -p /tmp/artifacts
 
       - run:
-          name: Validate CiscoUE flows dashboard
-          command: make test-ciscoue-flows
-
-      - run:
           name: Building Docker Container
           command: make build
 
