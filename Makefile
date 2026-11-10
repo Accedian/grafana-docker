@@ -39,6 +39,10 @@ url-file:
 .PHONY: all
 all: build
 
+.PHONY: test-pcaue-flows
+test-pcaue-flows:
+	python3 -m unittest tests.test_pcaue_flows_dashboard -v
+
 .PHONY: build
 
 docker:
