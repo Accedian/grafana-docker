@@ -39,6 +39,10 @@ url-file:
 .PHONY: all
 all: build
 
+.PHONY: test-ciscoue-flows
+test-ciscoue-flows:
+	python3 -m unittest tests.test_ciscoue_flows_dashboard -v
+
 .PHONY: build
 
 docker:
