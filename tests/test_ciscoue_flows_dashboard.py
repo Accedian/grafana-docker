@@ -27,6 +27,18 @@ class CiscoUEFlowsDashboardTest(unittest.TestCase):
         self.assertEqual(self.dashboard["tags"], ["ciscoue", "pca-ue", "pcaueni"])
         self.assertEqual(len(self.panels), 7)
         self.assertEqual(len(self.targets), 10)
+        self.assertEqual(
+            {panel["title"] for panel in self.panels},
+            {
+                "Rows per tenant · per minute",
+                "Rows per minute",
+                "Rows per PCA UE inserter instance · per minute",
+                "Inserted datasets per minute",
+                "Inserted datasets per PCA UE inserter instance · per minute",
+                "Invalid datasets per minute",
+                "Invalid datasets per PCA UE inserter instance · per minute",
+            },
+        )
         self.assertTrue(all(panel["type"] == "timeseries" for panel in self.panels))
         self.assertTrue(
             all(panel["pluginVersion"] == "12.1.0" for panel in self.panels)
@@ -55,12 +67,23 @@ class CiscoUEFlowsDashboardTest(unittest.TestCase):
             },
         )
         self.assertTrue(all('tenant_id=~"$tenant_id"' in expr for expr in expressions))
+        self.assertTrue(all("increase(" in expr for expr in expressions))
+        self.assertTrue(all("[1m]" in expr for expr in expressions))
+        self.assertFalse(any("rate(" in expr or "[10m]" in expr for expr in expressions))
+        self.assertTrue(all(target["interval"] == "1m" for target in self.targets))
         variable = self.dashboard["templating"]["list"][0]
         self.assertEqual(variable["name"], "tenant_id")
         self.assertEqual(
             variable["query"],
             "label_values(pcaueni_inserted_rows_total, tenant_id)",
         )
+
+    def test_invalid_dataset_panels_emphasize_minute_peaks(self):
+        panels = {panel["id"]: panel for panel in self.panels}
+        for panel_id in (10, 12):
+            custom = panels[panel_id]["fieldConfig"]["defaults"]["custom"]
+            self.assertEqual(custom["drawStyle"], "bars")
+            self.assertEqual(custom["fillOpacity"], 35)
 
     def test_panels_preserve_compact_non_overlapping_layout(self):
         rectangles = []

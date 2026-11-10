@@ -113,14 +113,14 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(60*rate(pcaueni_inserted_rows_total{tenant_id=~\"$tenant_id\"}[10m])) by (tenant_id)",
-          "interval": "",
+          "expr": "sum(increase(pcaueni_inserted_rows_total{tenant_id=~\"$tenant_id\"}[1m])) by (tenant_id)",
+          "interval": "1m",
           "legendFormat": "",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Rows per tenant",
+      "title": "Rows per tenant \u00b7 per minute",
       "type": "timeseries"
     },
     {
@@ -212,15 +212,16 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(60*rate(pcaueni_inserted_rows_total{tenant_id=~\"$tenant_id\"}[10m])) by (job)",
+          "expr": "sum(increase(pcaueni_inserted_rows_total{tenant_id=~\"$tenant_id\"}[1m])) by (job)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{job}} ({$tenant_id})",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "interval": "1m"
         }
       ],
-      "title": "Rows per PCA UE inserter instance",
+      "title": "Rows per PCA UE inserter instance \u00b7 per minute",
       "type": "timeseries"
     },
     {
@@ -312,15 +313,16 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(60*rate(pcaueni_inserted_datasets_total{tenant_id=~\"$tenant_id\"}[10m])) by (job)",
+          "expr": "sum(increase(pcaueni_inserted_datasets_total{tenant_id=~\"$tenant_id\"}[1m])) by (job)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{job}} ({$tenant_id})",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "interval": "1m"
         }
       ],
-      "title": "Inserted datasets per PCA UE inserter instance",
+      "title": "Inserted datasets per PCA UE inserter instance \u00b7 per minute",
       "type": "timeseries"
     },
     {
@@ -412,9 +414,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(60*rate(pcaueni_inserted_rows_total{tenant_id=~\"$tenant_id\"}[10m]))",
+          "expr": "sum(increase(pcaueni_inserted_rows_total{tenant_id=~\"$tenant_id\"}[1m]))",
           "format": "time_series",
-          "interval": "",
+          "interval": "1m",
           "intervalFactor": 1,
           "legendFormat": "Total inserted rows ({$tenant_id})",
           "range": true,
@@ -426,17 +428,17 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(60*rate(pcaueni_inserted_rows_total{tenant_id=~\"$tenant_id\"}[10m])) by (schema)",
+          "expr": "sum(increase(pcaueni_inserted_rows_total{tenant_id=~\"$tenant_id\"}[1m])) by (schema)",
           "format": "time_series",
           "hide": false,
-          "interval": "",
+          "interval": "1m",
           "intervalFactor": 1,
           "legendFormat": "{{schema}} ({$tenant_id})",
           "range": true,
           "refId": "B"
         }
       ],
-      "title": "Rows",
+      "title": "Rows per minute",
       "type": "timeseries"
     },
     {
@@ -457,8 +459,8 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 10,
+            "drawStyle": "bars",
+            "fillOpacity": 35,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -528,15 +530,16 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(60*rate(pcaueni_invalid_datasets_total{tenant_id=~\"$tenant_id\"}[10m])) by (job)",
+          "expr": "sum(increase(pcaueni_invalid_datasets_total{tenant_id=~\"$tenant_id\"}[1m])) by (job)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{job}} ({$tenant_id})",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "interval": "1m"
         }
       ],
-      "title": "Invalid datasets per PCA UE inserter instance",
+      "title": "Invalid datasets per PCA UE inserter instance \u00b7 per minute",
       "type": "timeseries"
     },
     {
@@ -628,12 +631,13 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(60*rate(pcaueni_inserted_datasets_total{tenant_id=~\"$tenant_id\"}[10m]))",
+          "expr": "sum(increase(pcaueni_inserted_datasets_total{tenant_id=~\"$tenant_id\"}[1m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Total datasets ({$tenant_id})",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "interval": "1m"
         },
         {
           "datasource": {
@@ -641,15 +645,16 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(60*rate(pcaueni_inserted_datasets_total{tenant_id=~\"$tenant_id\"}[10m])) by (schema)",
+          "expr": "sum(increase(pcaueni_inserted_datasets_total{tenant_id=~\"$tenant_id\"}[1m])) by (schema)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{schema}} ({$tenant_id})",
           "range": true,
-          "refId": "B"
+          "refId": "B",
+          "interval": "1m"
         }
       ],
-      "title": "Inserted datasets",
+      "title": "Inserted datasets per minute",
       "type": "timeseries"
     },
     {
@@ -670,8 +675,8 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 10,
+            "drawStyle": "bars",
+            "fillOpacity": 35,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -740,25 +745,27 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(60*rate(pcaueni_invalid_datasets_total{tenant_id=~\"$tenant_id\"}[10m]))",
+          "expr": "sum(increase(pcaueni_invalid_datasets_total{tenant_id=~\"$tenant_id\"}[1m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Total invalid ({$tenant_id})",
-          "refId": "A"
+          "refId": "A",
+          "interval": "1m"
         },
         {
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(60*rate(pcaueni_invalid_datasets_total{tenant_id=~\"$tenant_id\"}[10m])) by (schema)",
+          "expr": "sum(increase(pcaueni_invalid_datasets_total{tenant_id=~\"$tenant_id\"}[1m])) by (schema)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{schema}} ({$tenant_id})",
-          "refId": "B"
+          "refId": "B",
+          "interval": "1m"
         }
       ],
-      "title": "Invalid datasets",
+      "title": "Invalid datasets per minute",
       "type": "timeseries"
     }
   ],
