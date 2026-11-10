@@ -50,6 +50,19 @@ class PrometheusDatasourceTest(unittest.TestCase):
         self.assertEqual(datasource["type"], "prometheus")
         self.assertTrue(datasource["isDefault"])
 
+    def test_datasource_has_no_version_so_provisioning_always_applies(self):
+        # Grafana stores version 2 for the datasource on the first restart. A provisioned
+        # "version: 1" is then never newer than the DB, so later url changes (e.g. after a
+        # patch) are skipped and the pod keeps querying the old url. Without a version,
+        # provisioning overwrites the DB row on every start.
+        self.assertNotIn("version", render_datasource())
+
+
+class BakedPrometheusDatasourceTest(unittest.TestCase):
+    def test_baked_datasource_has_no_version(self):
+        baked = (ROOT / "provisioning/datasources/prometheus-datasource.yaml").read_text()
+        self.assertIsNone(re.search(r"^\s+version:", baked, re.MULTILINE))
+
 
 if __name__ == "__main__":
     unittest.main()
