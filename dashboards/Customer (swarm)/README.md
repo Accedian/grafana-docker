@@ -9,6 +9,7 @@ new collector, scrape target, recording rule, or Swarm opt-in feature.
 | Sensor Connectivity | Fedex/collector, Foxtrot and Skylight-AAA application metrics |
 | Application Speed | Application API/database timings, CouchDB/OpenSearch exporters, Spark Pushgateway and Kafka topic exporter |
 | Resource Health | Node-exporter jobs `sysmetrics` / `sysmetrics-private-cloud` and `cadvisor` |
+| SLA Reports | SLA report trigger API, generator workers, SLA reports API, MinIO storage and DuckDB consolidation metrics |
 
 The source of deployment support is aod-deployer's
 `files/templates/prometheus_config` and
