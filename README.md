@@ -18,11 +18,41 @@ docker run -d --name=grafana -p 3000:3000 grafana/grafana
 
 Try it out, default admin user is admin/admin.
 
-In case port 3000 is closed for external clients or you there is no access 
+In case port 3000 is closed for external clients or there is no access
 to the browser - you may test it by issuing:
   curl -i localhost:3000/login
 Make sure that you are getting "...200 OK" in response.
 After that continue testing by modifying your client request to grafana.
+
+### How production connects to Prometheus
+
+Dashboards refer to the Prometheus datasource by its stable UID, `prometheus`.
+They do not contain the Prometheus server URL. Grafana obtains that URL from a
+provisioned datasource file when the container starts.
+
+For a Docker Swarm deployment, the image includes
+`provisioning/datasources/prometheus-datasource.yaml`. The Dockerfile copies the
+`provisioning` directory into the image, and `run.sh` installs it into Grafana's
+runtime provisioning directory. Its Prometheus URL is:
+
+```text
+http://prometheus:9090/prometheus
+```
+
+The `prometheus` hostname is resolved through the deployment's Docker network.
+The `/prometheus` path is the route exposed by the production Prometheus
+service.
+
+For a Kubernetes deployment, the Helm chart mounts the
+`prometheus-datasource` ConfigMap over the image's datasource file. That
+ConfigMap points to the in-cluster Prometheus service:
+
+```text
+http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
+```
+
+For a self-contained local demonstration of the SLA Report Generator dashboard,
+see [`examples/sla-report-generator`](examples/sla-report-generator/README.md).
 
 ## Configuring your Grafana container
 
