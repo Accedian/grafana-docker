@@ -99,7 +99,20 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
-  "links": [],
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": false,
+      "title": "Ignite - Kafka Retention Budget",
+      "tooltip": "Per-broker retention budget",
+      "type": "link",
+      "url": "/d/ignite-retention-budget"
+    }
+  ],
   "liveNow": false,
   "panels": [
     {
@@ -1293,1781 +1306,880 @@
       "type": "timeseries"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
         "y": 43
       },
-      "id": 100,
-      "panels": [],
-      "title": "Dynamic Retention Budget  —  $family",
+      "id": 200,
+      "panels": [
+        {
+          "id": 201,
+          "type": "text",
+          "title": "About ZooKeeper session tracking",
+          "transparent": true,
+          "gridPos": {
+            "h": 3,
+            "w": 24,
+            "x": 0,
+            "y": 44
+          },
+          "pluginVersion": "12.1.0",
+          "options": {
+            "mode": "markdown",
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "Ignite registers cluster membership/leadership in ZooKeeper with an ephemeral node. An ordinary **disconnect** is survivable, but a confirmed **session expiration** permanently invalidates that registration - and a new authenticated session does NOT recreate it. Until the process restarts, membership/election is broken: this is exactly what makes the retention controller report no leader, so **`ownership_verified` drops to 0 and the reconcile age goes stale** in the section above (existing Kafka caps stay enforced meanwhile). `ZK_EXIT_ON_SESSION_EXPIRED` (Helm default **true**, standalone default **false**) makes every member exit(1) on expiry so a supervisor (`restartPolicy: Always`) rebuilds registration via normal startup. Show **every Ignite instance** here (followers lose registration too), not just the retention owner. Warnings before expiry are best-effort. Confirm recovery via retention ownership=1 + a fresh reconcile, not ZK authentication alone; correlate with container-restart metrics and the `ZooKeeper session expired: ... exiting` log."
+          }
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "description": "Instances whose ZooKeeper session was confirmed EXPIRED and remain latched until process restart - registration/leadership is broken for these even if they re-authenticated. GOOD: 0 (green). BAD: >=1 (red) = those instances need a restart (automatic if the exit policy is on). This is the primary ZK incident signal.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "unit": "short",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 0,
+            "y": 47
+          },
+          "id": 202,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "value",
+            "wideLayout": true,
+            "showPercentChange": false,
+            "percentChangeColorMode": "standard"
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "count(ignite_zookeeper_session_expired == 1) or vector(0)",
+              "legendFormat": "expired",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Sessions expired (latched)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "description": "Live instances currently reporting no ZooKeeper session (scraped but connected=0). GOOD: 0. WATCH: >=1 (yellow) = an active disconnect episode; a brief blip is usually fine, a sustained one risks expiration. Instances that are down/unscraped are not counted here - use the up/target alerts for those.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "unit": "short",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 6,
+            "y": 47
+          },
+          "id": 203,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "value",
+            "wideLayout": true,
+            "showPercentChange": false,
+            "percentChangeColorMode": "standard"
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "count(ignite_zookeeper_session_connected == 0) or vector(0)",
+              "legendFormat": "disconnected",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Disconnected now",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "description": "Whether the fail-fast policy is enabled (`ZK_EXIT_ON_SESSION_EXPIRED`). ENABLED (green) = members exit on expiry and a supervisor rebuilds registration automatically. DISABLED (yellow) = expired instances will NOT self-heal; you must restart them manually (standalone default). Shows the minimum across instances, so mixed settings read as DISABLED - keep the policy consistent cluster-wide.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "0": {
+                      "text": "DISABLED",
+                      "color": "yellow",
+                      "index": 1
+                    },
+                    "1": {
+                      "text": "ENABLED",
+                      "color": "green",
+                      "index": 0
+                    }
+                  }
+                }
+              ],
+              "unit": "short",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "yellow",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 12,
+            "y": 47
+          },
+          "id": 204,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "value",
+            "wideLayout": true,
+            "showPercentChange": false,
+            "percentChangeColorMode": "standard"
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "min(ignite_zookeeper_exit_on_session_expired)",
+              "legendFormat": "policy",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Exit-on-expire policy",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "description": "Count of fail-fast process exits triggered by session expiration in the last hour (summed across instances). Informational: nonzero means the self-heal path fired and pods restarted. The final increment before exit can be lost/unscraped, so corroborate with container-restart metrics and logs; counters also reset on restart.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "unit": "short",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "blue",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 18,
+            "y": 47
+          },
+          "id": 205,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "value",
+            "wideLayout": true,
+            "showPercentChange": false,
+            "percentChangeColorMode": "standard"
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(ignite_zookeeper_session_expiration_exits_total[1h])) or vector(0)",
+              "legendFormat": "exits (1h)",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Expiration exits (1h)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "description": "Per-instance authentication state over time (1=has session). GREEN = connected, RED = no session. Each row is one Ignite instance - followers matter too. Brief red blips are survivable disconnects; a red band ending without recovery often precedes/accompanies expiration (see the expired timeline). Missing = Unknown, not Connected.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 80,
+                "lineWidth": 0,
+                "insertNulls": false,
+                "spanNulls": false,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "0": {
+                      "text": "DISCONNECTED",
+                      "color": "red",
+                      "index": 1
+                    },
+                    "1": {
+                      "text": "CONNECTED",
+                      "color": "green",
+                      "index": 0
+                    }
+                  }
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 16,
+            "x": 0,
+            "y": 51
+          },
+          "id": 206,
+          "options": {
+            "alignValue": "left",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "auto",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "ignite_zookeeper_session_connected",
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "ZooKeeper session connected (per instance)",
+          "type": "state-timeline"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "description": "How long each currently-disconnected instance has been without a session (0 when connected). GOOD: flat 0. BAD: a rising line = a sustained disconnect that risks expiration as it approaches the negotiated session timeout. Observed disconnection is not an exact estimate of server-side expiry time.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "unit": "s",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 30
+                  },
+                  {
+                    "color": "red",
+                    "value": 60
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 8,
+            "x": 16,
+            "y": 51
+          },
+          "id": 207,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(time() - ignite_zookeeper_disconnected_since_seconds) and (ignite_zookeeper_disconnected_since_seconds > 0) or vector(0)",
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Current disconnection duration (per instance)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "description": "Rate of ZooKeeper session transitions across all instances. disconnected = unavailability episodes after a prior session; reconnected = re-authentication (incl. a new post-expiry session); expired = confirmed expirations (the serious one). Repeated events within one episode are not double-counted. Use this for episode history; brief blips whose gauges were never scraped can still appear here.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "bars",
+                "fillOpacity": 55,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "unit": "short",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "reconnected"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "disconnected"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "orange"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "expired"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "red"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 58
+          },
+          "id": 208,
+          "options": {
+            "legend": {
+              "calcs": [
+                "sum"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (event) (increase(ignite_zookeeper_session_events_total[$__rate_interval]))",
+              "legendFormat": "{{event}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Session events (disconnect / reconnect / expire)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "description": "Per-instance latched expiration flag over time (1 after confirmed expiry, until process restart). GREEN = OK, RED = expired and NOT self-recovered. A red band means that instance's membership/leadership stayed broken for that whole period - correlate the band's end with a container restart. In exit-policy-off deployments this is the key persistent-risk signal.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 80,
+                "lineWidth": 0,
+                "insertNulls": false,
+                "spanNulls": false,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "0": {
+                      "text": "OK",
+                      "color": "green",
+                      "index": 0
+                    },
+                    "1": {
+                      "text": "EXPIRED",
+                      "color": "red",
+                      "index": 1
+                    }
+                  }
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 58
+          },
+          "id": 209,
+          "options": {
+            "alignValue": "left",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "auto",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "ignite_zookeeper_session_expired",
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Session expired / latched (per instance)",
+          "type": "state-timeline"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "description": "Correlation aid, NOT emitted by this feature: container restarts per Ignite pod over 1h from kube-state-metrics. Expect this to rise shortly after expiration exits when the fail-fast policy is on. May show No data if kube-state-metrics is absent or the pod name match below does not fit your deployment - adjust the `pod` matcher to your naming. Process exit counters can lose their final increment, so this external signal is the more reliable restart audit.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "bars",
+                "fillOpacity": 55,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "unit": "short",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 24,
+            "x": 0,
+            "y": 65
+          },
+          "id": 210,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (pod) (increase(kube_pod_container_status_restarts_total{pod=~\".*ignite.*\"}[1h]))",
+              "legendFormat": "{{pod}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Ignite container restarts (external · kube-state-metrics)",
+          "type": "timeseries"
+        }
+      ],
+      "title": "ZooKeeper Session & Leadership",
       "type": "row"
-    },
-    {
-      "id": 101,
-      "type": "text",
-      "title": "About the retention budget",
-      "transparent": true,
-      "gridPos": {
-        "h": 3,
-        "w": 24,
-        "x": 0,
-        "y": 44
-      },
-      "options": {
-        "mode": "markdown",
-        "content": "Each `ignite.$family.*` family shares one fixed **disk budget**, managed like **Linux memory watermarks**: data is retained and space is freed **only when usage approaches the budget**. Space is shared by *demand-weighted max-min fairness* — **busier topics are protected with a larger share** and no active topic is starved below a floor. When the budget is pressured the leader reclaims **already-consumed (oldest) bytes first — no data loss**, and only evicts *unprocessed* data as a last resort under pressure with `RETENTION_RECLAIM_ENABLED=true`. Note: `retention.bytes` is **per-partition** — topic cap = value × partitions.\n\n> **How to read this section** — every panel's tooltip (ⓘ) explains what it shows, what good vs bad looks like, and how to fix a bad state. **Green = healthy, red = acting now / data at risk.** Top row = family health at a glance; middle = who holds the budget and the trend; lower = per-topic detail, reclaim activity, and allocator health. Use the **Family** dropdown to switch between `latent` and `contemporary`."
-      }
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "How full the family's disk budget is (used ÷ budget). GOOD: < 85% (green) — plenty of headroom. WATCH: 85–95% (yellow) — approaching the watermark, lossless reclaim may begin. BAD: > 95% (red) — at capacity; unprocessed data will be evicted if inflow continues. FIX: raise `*_TOTAL_RETENTION_BYTES` if disk allows, and/or clear consumer lag so more bytes become reclaimable losslessly (see Consumer backlog panel).",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "max": 1,
-          "min": 0,
-          "unit": "percentunit",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 0.85
-              },
-              {
-                "color": "red",
-                "value": 0.95
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 6,
-        "x": 0,
-        "y": 47
-      },
-      "id": 103,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "pluginVersion": "9.1.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "max(ignite_retention_budget_used_bytes{family=~\"$family\"}) / max(ignite_retention_budget_bytes{family=~\"$family\"})",
-          "legendFormat": "Utilisation",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Budget Utilisation",
-      "type": "gauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "The budget (ceiling), current on-disk usage, and remaining headroom. GOOD: Free > 0 and Used comfortably below Budget. BAD: Free at/below 0 (red) — the family is over budget and reclaiming now. FIX: raise `*_TOTAL_RETENTION_BYTES` (needs disk) or reduce inflow; if Free is negative while lossy reclaim is 0, the allocator is holding the line by evicting already-consumed data (healthy).",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "unit": "bytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Free"
-            },
-            "properties": [
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "red",
-                      "value": null
-                    },
-                    {
-                      "color": "green",
-                      "value": 1
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "thresholds"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 8,
-        "x": 6,
-        "y": 47
-      },
-      "id": 104,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "value_and_name"
-      },
-      "pluginVersion": "9.1.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum(ignite_retention_budget_bytes{family=~\"$family\"})",
-          "legendFormat": "Budget",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum(ignite_retention_budget_used_bytes{family=~\"$family\"})",
-          "legendFormat": "Used",
-          "range": true,
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum(ignite_retention_budget_free_bytes{family=~\"$family\"})",
-          "legendFormat": "Free",
-          "range": true,
-          "refId": "C"
-        }
-      ],
-      "title": "Budget / Used / Free",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "Overall health of the family right now. GOOD: HEALTHY (green) — every topic's floor is guaranteed, normal operation; AT CAPACITY (orange) is also OK — the budget is full but only already-consumed data is being freed, with no data loss. WATCH: THIN (yellow) — there are more topics than the budget can fully reserve a floor for; harmless unless they all fill at once. BAD: SHEDDING (red) — unprocessed data is being deleted to protect the disk. FIX: SHEDDING → clear consumer lag (scale the Spark consumer) and/or raise the family budget `*_TOTAL_RETENTION_BYTES`; THIN → raise the budget, lower `*_TOPIC_FLOOR_BYTES`, or reduce `IGNITE_TOPIC_PARTITIONS`.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [
-            {
-              "type": "value",
-              "options": {
-                "0": {
-                  "text": "HEALTHY",
-                  "index": 0
-                },
-                "1": {
-                  "text": "THIN",
-                  "index": 1
-                },
-                "2": {
-                  "text": "AT CAPACITY",
-                  "index": 2
-                },
-                "3": {
-                  "text": "SHEDDING",
-                  "index": 3
-                }
-              }
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 1
-              },
-              {
-                "color": "orange",
-                "value": 2
-              },
-              {
-                "color": "red",
-                "value": 3
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 5,
-        "x": 14,
-        "y": 47
-      },
-      "id": 105,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "value"
-      },
-      "pluginVersion": "9.1.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "max(ignite_retention_state{family=~\"$family\"})",
-          "legendFormat": "State",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Provisioning State",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "Left — number of topics the controller manages: steady is normal, a sudden jump means topic churn. Right — Floor reservation = the sum of every topic's guaranteed floor as a percentage of the budget. GOOD: < 100% (green) — all floors fit inside the budget with room to spare. WATCH: ≥ 100% (yellow) — floors alone exceed the budget, so they become best-effort and simultaneous bursts could overflow. FIX (≥ 100%): raise `*_TOTAL_RETENTION_BYTES`, lower `*_TOPIC_FLOOR_BYTES`, or reduce `IGNITE_TOPIC_PARTITIONS` to shrink each topic's minimum.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Floor reservation"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "percentunit"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "thresholds"
-                }
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": null
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 1
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 5,
-        "x": 19,
-        "y": 47
-      },
-      "id": 106,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "vertical",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "value_and_name"
-      },
-      "pluginVersion": "9.1.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "max(ignite_retention_active_topics{family=~\"$family\"})",
-          "legendFormat": "Active topics",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "max(ignite_retention_oversubscription_ratio{family=~\"$family\"})",
-          "legendFormat": "Floor reservation",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "Topics & floor reservation",
-      "type": "stat"
-    },
-    {
-      "id": 107,
-      "type": "text",
-      "title": "How it works — the control loop",
-      "gridPos": {
-        "h": 9,
-        "w": 10,
-        "x": 0,
-        "y": 56
-      },
-      "options": {
-        "mode": "markdown",
-        "content": "**Flow:** `Producers → ignite.$family.* topics → Spark consumer`, with a leader-only **controller** on the side.\n\nEach cycle (default 5m) the controller:\n1. **Measures** on-disk bytes per topic (`DescribeLogDirs`).\n2. **Allocates** a fair share: a floor for every topic + demand-weighted surplus, capped by max-share so no topic hoards. Busier topics keep a bigger protected share.\n3. **Applies** per-partition `retention.bytes` caps — raises eagerly, shrinks reluctantly.\n4. **Reclaims only under pressure**, oldest-first: **already-consumed bytes first (no data loss)**, and *unprocessed* data only as a last resort when `RETENTION_RECLAIM_ENABLED=true`.\n\n**Reading the dashboard:** _Budget Utilisation_ & _Provisioning State_ = is it healthy? _Top topics_ & the _per-topic table_ = who holds the budget. _Reclaim rate_ = is it losing data (red = yes). _Consumer backlog_ = the early warning. _Reconcile freshness / errors_ = is the controller itself alive."
-      }
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "Trend of the three key lines: Budget (dashed ceiling), Provisioned = Σ of applied caps, and actual Used. GOOD: Used stays below Budget and Provisioned hugs the Budget line (≈ ×1.0). BAD: Used crossing/riding the Budget line = at capacity; Provisioned far above Budget = over-provisioned (thin). Watch for Used climbing steadily toward Budget — pressure is building. FIX: if Used is pinned at Budget, raise `*_TOTAL_RETENTION_BYTES` or reduce inflow; if Provisioned ≫ Budget, see the Topics & floor reservation panel.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "unit": "bytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Budget"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "red"
-                }
-              },
-              {
-                "id": "custom.fillOpacity",
-                "value": 0
-              },
-              {
-                "id": "custom.lineStyle",
-                "value": {
-                  "fill": "dash",
-                  "dash": [
-                    10,
-                    10
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Used"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "blue"
-                }
-              },
-              {
-                "id": "custom.fillOpacity",
-                "value": 25
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Provisioned (Σ caps)"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "orange"
-                }
-              },
-              {
-                "id": "custom.fillOpacity",
-                "value": 0
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 14,
-        "x": 10,
-        "y": 56
-      },
-      "id": 108,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum(ignite_retention_budget_bytes{family=~\"$family\"})",
-          "legendFormat": "Budget",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum(ignite_retention_budget_used_bytes{family=~\"$family\"})",
-          "legendFormat": "Used",
-          "range": true,
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum(ignite_retention_provisioned_bytes{family=~\"$family\"})",
-          "legendFormat": "Provisioned (Σ caps)",
-          "range": true,
-          "refId": "C"
-        }
-      ],
-      "title": "Budget vs Used over time",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "Per-topic detail, sorted by utilisation. Columns: Used / Cap (its protected share), Utilisation = Used/Cap (gauge), Unconsumed = bytes not yet read by the Spark group, Evictable (consumed) = Used − Unconsumed (bytes that can be freed with NO data loss). GOOD: Utilisation < 0.8 (green) and Unconsumed small. WATCH: Utilisation 0.8–0.95 (yellow). BAD: Utilisation ≥ 0.95 (red) = saturated / about to evict; Unconsumed large and rising = that topic's consumer is falling behind (precursor to data loss). FIX: saturated-but-low-Unconsumed topics are safe (they reclaim consumed data); for large/rising Unconsumed, scale the Spark consumer — raising the budget only delays it.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "filterable": true,
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Used"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "bytes"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Cap"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "bytes"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Unconsumed"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "bytes"
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-text"
-                }
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "text",
-                      "value": null
-                    },
-                    {
-                      "color": "orange",
-                      "value": 1
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Evictable (consumed)"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "bytes"
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-text"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "green"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Utilisation"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "percentunit"
-              },
-              {
-                "id": "max",
-                "value": 1
-              },
-              {
-                "id": "min",
-                "value": 0
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "gauge",
-                  "mode": "gradient"
-                }
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": null
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 0.8
-                    },
-                    {
-                      "color": "red",
-                      "value": 0.95
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 14,
-        "x": 0,
-        "y": 65
-      },
-      "id": 109,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Utilisation"
-          }
-        ]
-      },
-      "pluginVersion": "9.1.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum by (objectType, tenantId) (ignite_retention_topic_used_bytes{family=~\"$family\", objectType=~\"$objectType\"})",
-          "format": "table",
-          "instant": true,
-          "legendFormat": "",
-          "range": false,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum by (objectType, tenantId) (ignite_retention_topic_cap_bytes{family=~\"$family\", objectType=~\"$objectType\"})",
-          "format": "table",
-          "instant": true,
-          "legendFormat": "",
-          "range": false,
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum by (objectType, tenantId) (ignite_retention_topic_unconsumed_bytes{family=~\"$family\", objectType=~\"$objectType\"})",
-          "format": "table",
-          "instant": true,
-          "legendFormat": "",
-          "range": false,
-          "refId": "C"
-        }
-      ],
-      "transformations": [
-        {
-          "id": "merge",
-          "options": {}
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "__name__": true,
-              "family": true,
-              "instance": true,
-              "job": true
-            },
-            "indexByName": {},
-            "renameByName": {
-              "objectType": "Object Type",
-              "tenantId": "Tenant",
-              "Value #A": "Used",
-              "Value #B": "Cap",
-              "Value #C": "Unconsumed"
-            }
-          }
-        },
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "Utilisation",
-            "mode": "binary",
-            "binary": {
-              "left": "Used",
-              "operator": "/",
-              "right": "Cap"
-            },
-            "replaceFields": false
-          }
-        },
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "Evictable (consumed)",
-            "mode": "binary",
-            "binary": {
-              "left": "Used",
-              "operator": "-",
-              "right": "Unconsumed"
-            },
-            "replaceFields": false
-          }
-        }
-      ],
-      "title": "Per-topic retention budget",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "Ranks the biggest consumers of the budget right now (on-disk bytes per topic, top 12). Use it to spot which object types dominate the family. GOOD: usage spread across several topics. BAD: one or two bars holding most of the budget — a single verbose object type (e.g. a backfill burst) is squeezing everyone else. FIX: if that topic is legitimately dominant and others are starved, raise `*_TOTAL_RETENTION_BYTES`; if it is a runaway, the max-share ceiling already caps it — confirm `RETENTION_MAX_TOPIC_SHARE_PCT` is set.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "continuous-GrYlRd"
-          },
-          "mappings": [],
-          "unit": "bytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 10,
-        "x": 14,
-        "y": 65
-      },
-      "id": 110,
-      "options": {
-        "displayMode": "gradient",
-        "minVizHeight": 10,
-        "minVizWidth": 0,
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "valueMode": "color"
-      },
-      "pluginVersion": "9.1.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sort_desc(topk(12, sum by (objectType) (ignite_retention_topic_used_bytes{family=~\"$family\", objectType=~\"$objectType\"})))",
-          "legendFormat": "{{objectType}}",
-          "instant": true,
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "Top topics by on-disk usage",
-      "type": "bargauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "How often the controller rewrites caps, by direction: raise (give a topic more room — non-destructive), lower (return unused headroom), bound (budget-restoring clamp). GOOD: low and steady. BAD: a high sustained rate of 'lower' = caps flapping, which churns broker config and can trigger needless segment deletes. FIX for churn: increase `RETENTION_SHRINK_COOLDOWN` (debounce) and/or `RETENTION_MIN_CHANGE_PCT` (ignore small changes).",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "bars",
-            "fillOpacity": 60,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "normal"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "unit": "cps",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "raise"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "green"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "lower"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "orange"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 0,
-        "y": 75
-      },
-      "id": 113,
-      "options": {
-        "legend": {
-          "calcs": [
-            "sum"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum by (direction) (rate(ignite_retention_config_writes_total{family=~\"$family\"}[5m]))",
-          "legendFormat": "{{direction}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Cap changes (raise / lower / bound)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "The single most important health signal: what kind of data is being freed. Lossless (green) deletes only already-consumed oldest segments — safe, expected background activity. Lossy (red) evicts UNPROCESSED data = real data loss. GOOD: lossy flat at 0 (any amount of green is fine). BAD: any sustained red — the family is shedding unprocessed data. FIX: (1) clear consumer lag — scale the Spark consumer; (2) raise `*_TOTAL_RETENTION_BYTES` if disk allows; (3) confirm `RETENTION_RECLAIM_ENABLED=true` is intended (this is the deliberate 'protect the disk, lose some data' path).",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 25,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "unit": "Bps",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Lossless (safe)"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "green"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Lossy (data loss)"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "red"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 75
-      },
-      "id": 114,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate(ignite_retention_lossless_reclaimed_bytes_total{family=~\"$family\"}[5m]))",
-          "legendFormat": "Lossless (safe)",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate(ignite_retention_reclaimed_bytes_total{family=~\"$family\"}[5m]))",
-          "legendFormat": "Lossy (data loss)",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "Reclaim rate — lossless vs lossy",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "The leading indicator of trouble — it rises BEFORE the budget fills and before any data loss. Per-topic bytes on disk that the designated Spark group (latent→latentapp, contemporary→streamingapp) has NOT yet read, scoped to the selected $family. GOOD: low and flat/declining (and 0 when the family has no data) — the consumer keeps up, so almost all on-disk data is reclaimable losslessly. BAD: a steady climb — Spark is falling behind; that data cannot be reclaimed safely, so continued inflow will force lossy eviction. FIX: scale/repair the Spark consumer for this family; raising the budget only buys time. (Raw kafka-exporter `kafka_consumergroup_lag_sum` is deliberately NOT mixed in here because its group name does not follow the family label — add it in a separate panel if you need message-count lag.)",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "unit": "bytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 75
-      },
-      "id": 115,
-      "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "topk(8, sum by (objectType) (ignite_retention_topic_unconsumed_bytes{family=~\"$family\", objectType=~\"$objectType\"}))",
-          "legendFormat": "unconsumed {{objectType}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Consumer backlog (unconsumed bytes, per $family)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "Seconds since the controller last completed a cycle — the classic sawtooth: it climbs, then drops back to ~0 each time a reconcile finishes. GOOD: teeth peak below one reconcile interval and keep dropping (controller alive and enforcing the budget). BAD: the line climbs past the dashed lines (900s warn / 1800s crit) without dropping — the allocator is stuck, there is no elected leader, or `DescribeLogDirs` is failing, so caps are no longer being updated. FIX: check the Allocator errors panel and the Ignite leader-pod logs, and verify Kafka admin connectivity.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 15,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "dashed"
-            }
-          },
-          "mappings": [],
-          "unit": "s",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 900
-              },
-              {
-                "color": "red",
-                "value": 1800
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 0,
-        "y": 83
-      },
-      "id": 116,
-      "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "time() - max(ignite_retention_reconcile_timestamp_seconds > 0)",
-          "legendFormat": "age",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Time since last reconcile",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "p95 duration of one controller cycle. GOOD: a few seconds — far below the reconcile interval (default 5m). BAD: climbing toward the interval = the loop can't finish in time (too many topics, slow Kafka admin), which delays cap updates and budget enforcement. FIX: investigate Kafka admin/broker latency; consider a longer `IGNITE_RETENTION_RECONCILE_INTERVAL`, or reduce the topic/partition count for the family.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "unit": "s",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 10,
-        "x": 6,
-        "y": 83
-      },
-      "id": 117,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum(rate(ignite_retention_reconcile_duration_seconds_bucket[5m])) by (le))",
-          "legendFormat": "p95",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Reconcile duration (p95)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "Kafka admin-API failures by operation. GOOD: flat 0. BAD: any sustained rate — the controller can't do its job: describe_log_dirs = can't measure usage; alter_config = can't apply caps; consumer_offsets = can't read committed offsets (so data is treated as unconsumed and lossless reclaim shrinks to ~0). FIX: check Kafka broker/admin connectivity and permissions; for consumer_offsets verify the group names `RETENTION_LATENT_CONSUMER_GROUP` / `RETENTION_CONTEMPORARY_CONSUMER_GROUP` exist and commit offsets.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "unit": "cps",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 8,
-        "x": 16,
-        "y": 83
-      },
-      "id": 118,
-      "options": {
-        "legend": {
-          "calcs": [
-            "sum"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum by (op) (rate(ignite_retention_errors_total[5m]))",
-          "legendFormat": "{{op}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Allocator errors",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "Health of BOTH families over time — the at-a-glance incident history. GOOD: mostly green (HEALTHY); orange (AT CAPACITY) is acceptable — budget full but no data loss. WATCH: yellow (THIN). BAD: any red (SHEDDING) — unprocessed data was deleted at that time; correlate with the Reclaim rate and Consumer backlog panels. FIX: red → scale the Spark consumer and/or raise `*_TOTAL_RETENTION_BYTES`; persistent yellow → raise the budget, lower `*_TOPIC_FLOOR_BYTES`, or reduce `IGNITE_TOPIC_PARTITIONS`.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "fillOpacity": 85,
-            "lineWidth": 0,
-            "insertNulls": false,
-            "spanNulls": false
-          },
-          "mappings": [
-            {
-              "type": "value",
-              "options": {
-                "0": {
-                  "text": "HEALTHY",
-                  "color": "green",
-                  "index": 0
-                },
-                "1": {
-                  "text": "THIN",
-                  "color": "yellow",
-                  "index": 1
-                },
-                "2": {
-                  "text": "AT CAPACITY",
-                  "color": "orange",
-                  "index": 2
-                },
-                "3": {
-                  "text": "SHEDDING",
-                  "color": "red",
-                  "index": 3
-                }
-              }
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 1
-              },
-              {
-                "color": "orange",
-                "value": 2
-              },
-              {
-                "color": "red",
-                "value": 3
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 14,
-        "x": 0,
-        "y": 89
-      },
-      "id": 119,
-      "options": {
-        "alignValue": "left",
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "mergeValues": true,
-        "rowHeight": 0.9,
-        "showValue": "auto",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "max by (family) (ignite_retention_state)",
-          "legendFormat": "{{family}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Provisioning state over time (latent vs contemporary)",
-      "type": "state-timeline"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "How much space can be freed safely per topic = already-consumed bytes (used − unconsumed), biggest first. This is the headroom the controller reclaims first when the budget is pressured, with NO data loss. GOOD: large green bars = plenty of safe headroom, so pressure can be relieved without evicting unprocessed data. BAD: bars near zero across the board = almost everything on disk is still unconsumed, so any further pressure forces lossy eviction — a consumer problem, not a disk problem. FIX: if bars are small and the budget is full, scale the Spark consumer so more data becomes reclaimable. (Note: the safest victim is the topic with the MOST disk and the LEAST unconsumed data — a high-lag topic is a poor victim, since evicting it would drop unprocessed records.)",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "continuous-BlPu"
-          },
-          "mappings": [],
-          "unit": "bytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 10,
-        "x": 14,
-        "y": 89
-      },
-      "id": 120,
-      "options": {
-        "displayMode": "gradient",
-        "minVizHeight": 10,
-        "minVizWidth": 0,
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "valueMode": "color"
-      },
-      "pluginVersion": "9.1.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sort_desc(topk(12, clamp_min(sum by (objectType) (ignite_retention_topic_used_bytes{family=~\"$family\", objectType=~\"$objectType\"}) - sum by (objectType) (ignite_retention_topic_unconsumed_bytes{family=~\"$family\", objectType=~\"$objectType\"}), 0)))",
-          "legendFormat": "{{objectType}}",
-          "instant": true,
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "Reclaimable headroom per topic (already-consumed, safe to free)",
-      "type": "bargauge"
     }
   ],
   "refresh": "5s",
@@ -3092,64 +2204,6 @@
         "regex": "",
         "skipUrlSync": false,
         "type": "datasource"
-      },
-      {
-        "current": {
-          "selected": true,
-          "text": "latent",
-          "value": "latent"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "definition": "label_values(ignite_retention_budget_bytes, family)",
-        "description": "Retention budget family (latent / contemporary).",
-        "hide": 0,
-        "includeAll": false,
-        "label": "Family",
-        "multi": false,
-        "name": "family",
-        "options": [],
-        "query": {
-          "qryType": 1,
-          "query": "label_values(ignite_retention_budget_bytes, family)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 2,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 1,
-        "type": "query"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "definition": "label_values(ignite_retention_topic_used_bytes{family=~\"$family\"}, objectType)",
-        "description": "Filter per-topic panels to one or more objectTypes.",
-        "hide": 0,
-        "includeAll": true,
-        "label": "Object Type",
-        "multi": true,
-        "name": "objectType",
-        "options": [],
-        "query": {
-          "qryType": 1,
-          "query": "label_values(ignite_retention_topic_used_bytes{family=~\"$family\"}, objectType)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 2,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 1,
-        "type": "query"
       }
     ]
   },
