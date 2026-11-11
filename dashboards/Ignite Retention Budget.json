@@ -1822,7 +1822,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Per-topic observed copies for the selected family (top by on-disk bytes). Used = physical replica bytes (counts copies). Cap = per-partition `retention.bytes` × replica count; **-1 shows as Unlimited**, and segment/cleanup delay can make Used exceed Cap. Protected = conservative retained bytes that must not be evicted (any lag protects a whole partition). Unread (est) = rough offset-based backlog, reporting only. Skew = largest partition ÷ mean; high = one hot partition can hit the uniform cap. FIX: large/skewed/high-protected topics explain pressure; don't treat summed caps as reserved disk.",
+      "description": "Per-topic observed copies for the selected family (top by on-disk bytes). Used = physical replica bytes (counts copies). Cap = state-aware: it shows the exact applied ceiling ONLY while that ceiling is actively constraining the topic (cap <= 1.5x current usage = the controller is shedding/holding this topic); otherwise it shows **growth**, because the controller has set a deliberately large, non-binding fallback whose exact value is just headroom (not a reservation and not meaningful to read). So a byte value here = this topic is being actively limited to roughly that size; 'growth' = free to grow under normal time-retention until pressure. Protected = conservative retained bytes that must not be evicted. Unread (est) = rough offset-based backlog (reporting only). Skew = largest partition / mean.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1864,32 +1864,6 @@
                   "type": "gauge",
                   "mode": "gradient"
                 }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Cap"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "bytes"
-              },
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "type": "value",
-                    "options": {
-                      "-1": {
-                        "text": "Unlimited",
-                        "index": 0
-                      }
-                    }
-                  }
-                ]
               }
             ]
           },
@@ -1958,6 +1932,61 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cap"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "orange",
+                      "value": null
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "-1": {
+                        "text": "growth",
+                        "color": "green",
+                        "index": 0
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
           }
         ]
       },
@@ -2007,7 +2036,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "max by (tenantId, objectType) (ignite_retention_topic_cap_bytes{family=~\"$family\",objectType=~\"$objectType\"})",
+          "expr": "max by (tenantId, objectType) ((ignite_retention_topic_cap_bytes{family=~\"$family\", objectType=~\"$objectType\"} > 0 and ignite_retention_topic_cap_bytes{family=~\"$family\", objectType=~\"$objectType\"} <= (1.5 * ignite_retention_topic_used_bytes{family=~\"$family\", objectType=~\"$objectType\"})) or (0 * ignite_retention_topic_cap_bytes{family=~\"$family\", objectType=~\"$objectType\"} - 1) )",
           "refId": "B",
           "legendFormat": "",
           "range": false,
