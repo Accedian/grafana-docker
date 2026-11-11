@@ -1,7 +1,9 @@
 ## Current Release
+### 0.237.0
+**Release Date:** Wed Nov 11 01:38:30 UTC 2026
+## Previous Releases
 ### 0.236.0
 **Release Date:** Tue Nov 10 15:59:05 UTC 2026
-## Previous Releases
 ### 0.235.0
 **Release Date:** Mon Nov  9 13:37:44 UTC 2026
 * Fix - Grafana's Prometheus datasource queries the bundled kube-prometheus-stack under its `/prometheus` route prefix, so dashboard panels no longer fail with "404 page not found". The URL can be overridden with the new `prometheusUrl` value (e.g. for an existing/external Prometheus).
@@ -11,7 +13,6 @@
 ### 0.233.0
 **Release Date:** Mon Oct 26 17:12:04 UTC 2026
 * Feat - Add the SLA Report Generator Prometheus metrics dashboard
-## Previous Releases
 ### 0.232.0
 **Release Date:** Fri Sep 18 14:06:52 UTC 2026
 ### 0.231.0
