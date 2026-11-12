@@ -414,7 +414,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(increase(pcaueni_inserted_rows_total{tenant_id=~\"$tenant_id\"}[1m]))",
+          "expr": "sum(60 * rate(pcaueni_inserted_rows_total{tenant_id=~\"$tenant_id\"}[30m]))",
           "format": "time_series",
           "interval": "1m",
           "intervalFactor": 1,
@@ -428,7 +428,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(increase(pcaueni_inserted_rows_total{tenant_id=~\"$tenant_id\"}[1m])) by (schema)",
+          "expr": "sum(60 * rate(pcaueni_inserted_rows_total{tenant_id=~\"$tenant_id\"}[30m])) by (schema)",
           "format": "time_series",
           "hide": false,
           "interval": "1m",
@@ -438,8 +438,9 @@
           "refId": "B"
         }
       ],
-      "title": "Rows per minute",
-      "type": "timeseries"
+      "title": "Rows per minute \u00b7 30 minute window",
+      "type": "timeseries",
+      "description": "Rows per minute, smoothed over a sliding 30-minute window; total and one series per schema."
     },
     {
       "datasource": {
@@ -767,107 +768,6 @@
       ],
       "title": "Invalid datasets per minute",
       "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 20,
-        "x": 0,
-        "y": 30
-      },
-      "id": 16,
-      "options": {
-        "dataLinks": [],
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum(60 * rate(pcaueni_inserted_rows_total{tenant_id=~\"$tenant_id\"}[30m])) by (schema)",
-          "interval": "1m",
-          "legendFormat": "{{schema}} ({$tenant_id})",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Inserted rows trend \u00b7 30 minute window",
-      "type": "timeseries",
-      "description": "Rows per minute for each schema, smoothed over a sliding 30-minute window."
     }
   ],
   "preload": false,
