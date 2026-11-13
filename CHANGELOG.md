@@ -1,3 +1,5 @@
+* Feat - Add metrics simulator with web UI and scenario support
+* Feat - Add PCA SLA Reports customer dashboard [Asana](https://app.asana.com/1/5557457880942/project/1217595009525450/task/1220510137265491?focus=true)
 ## Current Release
 ### 0.239.0
 **Release Date:** Fri Nov 13 13:51:23 UTC 2026

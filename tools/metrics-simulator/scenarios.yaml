@@ -1,0 +1,204 @@
+# Simulation scenarios grouped by dashboard path (relative to dashboards/).
+# Folder names match Grafana folders. Use JSON filenames as keys.
+# The simulator auto-discovers all dashboards from the filesystem;
+# this file only adds scenarios and metric descriptions on top.
+#
+# Structure:
+#   dashboards:
+#     "<folder>/<file>.json":
+#       scenarios:
+#         <name>:
+#           description: "..."
+#           overrides: { metric: value }
+#       metrics:
+#         - name: metric_name
+#           description: "what it means"
+
+dashboards:
+  "Customer (swarm)/pca-pa-ingestion-pipeline.json":
+    scenarios:
+      healthy:
+        description: "All systems nominal — PA connected, data flowing, no errors"
+        overrides:
+          message_agentHealth_RoutingAnalyticsStatusSet: 1
+          message_agentHealth_SensorAgentStatusSet: 1
+          message_agentHealth_ConnectionFailuresCount: 0
+          message_agentHealth_AuthTokenFailureCount: 0
+          message_agentHealth_PathmonitorFailureCount: 0
+          message_agentHealth_CncCaCertExpired: 0
+          message_agentHealth_CncCaCertExpiryDays: 245
+          message_agentHealth_UnsuccessfullySentEventsCount: 0
+          roadrunner_connection: 1
+
+      pa-disconnected:
+        description: "PA source unreachable — connection failures, no topology events"
+        overrides:
+          message_agentHealth_RoutingAnalyticsStatusSet: 0
+          message_agentHealth_ConnectionAttemptsCount: 5
+          message_agentHealth_ConnectionFailuresCount: 5
+          message_agentHealth_ConsumedTopologyEventsCount: 0
+          message_agentHealth_SuccessfullySentEventsCount: 0
+          message_agentHealth_CurrentNumLinksSet: 0
+          message_agentHealth_SubscriptionCount: 0
+
+      auth-failing:
+        description: "CAS/auth token refresh rejected — credentials invalid or expired"
+        overrides:
+          message_agentHealth_RoutingAnalyticsStatusSet: 0
+          message_agentHealth_AuthTokenRefreshCount: 0
+          message_agentHealth_AuthTokenFailureCount: 3
+          message_agentHealth_ConnectionAttemptsCount: 3
+          message_agentHealth_ConnectionFailuresCount: 3
+          message_agentHealth_SubscriptionCount: 0
+          message_agentHealth_ConsumedTopologyEventsCount: 0
+
+      cert-expiring:
+        description: "PA CA certificate about to expire (< 7 days)"
+        overrides:
+          message_agentHealth_CncCaCertExpiryDays: 4
+          message_agentHealth_CncCaCertExpired: 0
+          message_agentHealth_RoutingAnalyticsStatusSet: 1
+
+      cert-expired:
+        description: "PA CA certificate expired — TLS handshake failing"
+        overrides:
+          message_agentHealth_CncCaCertExpiryDays: 0
+          message_agentHealth_CncCaCertExpired: 1
+          message_agentHealth_RoutingAnalyticsStatusSet: 0
+          message_agentHealth_ConnectionAttemptsCount: 5
+          message_agentHealth_ConnectionFailuresCount: 5
+
+      pathmonitor-failing:
+        description: "Pathmonitor REST API registration failing — paths not being registered"
+        overrides:
+          message_agentHealth_RoutingAnalyticsStatusSet: 1
+          message_agentHealth_PathmonitorSyncCount: 0
+          message_agentHealth_PathmonitorFailureCount: 3
+          message_agentHealth_PathmonitorRegisteredCount: 0
+
+      data-dropping:
+        description: "RA collector connected but dropping most events (whitelist mismatch)"
+        overrides:
+          message_agentHealth_RoutingAnalyticsStatusSet: 1
+          message_agentHealth_ConsumedTopologyEventsCount: 120
+          message_agentHealth_UnprovisionedTopologyEventsCount: 100
+          message_agentHealth_SuccessfullySentEventsCount: 15
+          message_agentHealth_DuplicatedTopologyEventsCount: 5
+
+      downstream-stalled:
+        description: "RA collector healthy but Fedex/Kafka pipeline stalled"
+        overrides:
+          message_agentHealth_RoutingAnalyticsStatusSet: 1
+          message_agentHealth_SuccessfullySentEventsCount: 80
+          # Counter overrides > 0 are treated as per-second rates
+          fedex_kafka_producer_error_count: 0.5
+
+      sky-topo-at-capacity:
+        description: "Sky-Topo node count at maximum — new nodes will be rejected"
+        overrides:
+          sky_topo_current_nodes: 150
+          sky_topo_max_nodes: 150
+          # Counter override > 0 treated as per-second rate
+          sky_topo_errors_total: 0.2
+          node_processor_not_assigned_segments: 200
+
+      agent-overloaded:
+        description: "RA collector processing very slowly — high batch/segment times"
+        overrides:
+          message_agentHealth_RoutingAnalyticsStatusSet: 1
+          message_agentHealth_AvgBatchProcessingTime: 12.5
+          message_agentHealth_AvgSegmentProcessingTime: 0.8
+          message_agentHealth_AvgEventReadTime: 0.5
+          message_agentHealth_PersistenceUsageCount: 2.3
+
+    metrics:
+      - name: message_agentHealth_RoutingAnalyticsStatusSet
+        description: "PA gRPC connection status (1=connected, 0=disconnected)"
+      - name: message_agentHealth_SensorAgentStatusSet
+        description: "SAF agent registration status"
+      - name: message_agentHealth_ConnectionAttemptsCount
+        description: "Connection attempts per 30s cycle"
+      - name: message_agentHealth_ConnectionFailuresCount
+        description: "Connection failures per 30s cycle"
+      - name: message_agentHealth_AuthTokenRefreshCount
+        description: "Successful auth token refreshes per cycle"
+      - name: message_agentHealth_AuthTokenFailureCount
+        description: "Auth token refresh failures per cycle"
+      - name: message_agentHealth_CncCaCertExpiryDays
+        description: "Days until PA CA certificate expires"
+      - name: message_agentHealth_CncCaCertExpired
+        description: "PA CA certificate expired flag (0=valid, 1=expired)"
+      - name: message_agentHealth_SubscriptionCount
+        description: "gRPC stream subscriptions per cycle"
+      - name: message_agentHealth_PathmonitorSyncCount
+        description: "Pathmonitor sync completions per cycle"
+      - name: message_agentHealth_PathmonitorRegisteredCount
+        description: "Total registered paths (gauge)"
+      - name: message_agentHealth_PathmonitorFailureCount
+        description: "Pathmonitor registration failures per cycle"
+      - name: message_agentHealth_ConsumedTopologyEventsCount
+        description: "Topology events consumed from PA per cycle"
+      - name: message_agentHealth_SuccessfullySentEventsCount
+        description: "Events successfully sent to Roadrunner per cycle"
+      - name: message_agentHealth_UnsuccessfullySentEventsCount
+        description: "Events that failed to send per cycle"
+      - name: message_agentHealth_CurrentNumLinksSet
+        description: "Current topology size (number of links)"
+      - name: message_agentHealth_AvgBatchProcessingTime
+        description: "Average batch processing time (seconds)"
+      - name: message_agentHealth_AvgSegmentProcessingTime
+        description: "Average segment processing time (seconds)"
+      - name: message_agentHealth_AvgEventReadTime
+        description: "Average event read time (seconds)"
+      - name: roadrunner_connection
+        description: "Roadrunner websocket connection status"
+      - name: fedex_record_count
+        description: "Records received by Fedex (counter)"
+      - name: fedex_kafka_producer_msg_count
+        description: "Messages produced to Kafka (counter)"
+      - name: fedex_kafka_producer_error_count
+        description: "Kafka produce errors (counter)"
+      - name: sky_topo_records_processed_total
+        description: "Records processed by Sky-Topo (counter)"
+      - name: sky_topo_current_nodes
+        description: "Current node count in Sky-Topo"
+      - name: sky_topo_max_nodes
+        description: "Maximum node capacity"
+      - name: sky_topo_errors_total
+        description: "Sky-Topo processing errors (counter)"
+      - name: node_processor_available_agents
+        description: "RA agents available for segment assignment"
+      - name: node_processor_not_assigned_segments
+        description: "Segments not yet assigned to any agent"
+      - name: message_agentHealth_ConfigTlsModeSet
+        description: "TLS mode (0=plaintext, 1=insecure skip verify, 2=verified with CA)"
+      - name: message_agentHealth_WhitelistedSegmentsCount
+        description: "Number of whitelisted segments in configuration"
+      - name: message_agentHealth_CurrentUpdateCadenceSet
+        description: "Update cadence in seconds (how often data is forwarded)"
+      - name: message_agentHealth_CurrentNumLinksSet
+        description: "Configured hop limit for topology depth"
+
+  "Customer (swarm)/pca-ingestion-pipeline.json":
+    scenarios:
+      healthy:
+        description: "All pipeline components healthy, data flowing end to end"
+        overrides:
+          roadrunner_connection: 1
+          fedex_kafka_producer_error_count: 0
+          gather_batch_ingest_submit_fail: 0
+          gather_batch_ingest_long_running_tasks: 0
+
+    metrics:
+      - name: roadrunner_connection
+        description: "Sensor collector websocket connection"
+      - name: roadrunner_record_count
+        description: "Records received by Roadrunner"
+      - name: fedex_record_count
+        description: "Records received by Fedex"
+      - name: fedex_kafka_producer_msg_count
+        description: "Messages produced to Kafka"
+      - name: gather_batch_ingest_submit_success
+        description: "Gather ingest successes"
+      - name: gather_batch_ingest_submit_fail
+        description: "Gather ingest failures"
