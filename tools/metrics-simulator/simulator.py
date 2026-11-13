@@ -69,6 +69,8 @@ PROFILES = {
     "message_agentHealth_PathmonitorRegisteredCount": {"value": lambda t: 350, "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
     "message_agentHealth_PathmonitorFailureCount": {"value": lambda t: 0, "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
     "message_agentHealth_SubscriptionCount": {"value": lambda t: 1, "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
+    "message_agentHealth_ConfigTlsModeSet": {"value": lambda t: 2, "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
+    "message_agentHealth_WhitelistedSegmentsCount": {"value": lambda t: 12, "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
     # Roadrunner / Sensor Collector
     "roadrunner_connection": {"value": lambda t: 1.0, "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
     "roadrunner_record_count": {"value": lambda t: int(t * 15) + random.randint(0, 100), "labels": {"tenant": DEFAULT_TENANTS, "objectType": DEFAULT_OBJECT_TYPES}},

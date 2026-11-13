@@ -171,6 +171,14 @@ dashboards:
         description: "RA agents available for segment assignment"
       - name: node_processor_not_assigned_segments
         description: "Segments not yet assigned to any agent"
+      - name: message_agentHealth_ConfigTlsModeSet
+        description: "TLS mode (0=plaintext, 1=insecure skip verify, 2=verified with CA)"
+      - name: message_agentHealth_WhitelistedSegmentsCount
+        description: "Number of whitelisted segments in configuration"
+      - name: message_agentHealth_CurrentUpdateCadenceSet
+        description: "Update cadence in seconds (how often data is forwarded)"
+      - name: message_agentHealth_CurrentNumLinksSet
+        description: "Configured hop limit for topology depth"
 
   "Customer (swarm)/pca-ingestion-pipeline.json":
     scenarios:

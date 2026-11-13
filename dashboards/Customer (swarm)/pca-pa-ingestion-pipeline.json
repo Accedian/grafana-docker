@@ -41,7 +41,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "# Path Analytics Ingestion Pipeline\n\nTop-down view of the Path Analytics ingestion pipeline. Data flows from Path Analytics \u2192 RA Collector \u2192 Sensor Collector (Roadrunner) \u2192 Fedex \u2192 Kafka \u2192 Sky-Topo \u2192 Gather \u2192 Druid.\n\n**How to triage a data outage:** read the Pipeline Flow Summary left-to-right \u2014 the first stage showing **red (0)** is where data stopped. Expand that service's row for detailed panels.\n\n**Note:** Path Analytics data does NOT flow through Ignite or Spark. Fedex writes to `skytopo_raw_in.*` Kafka topics, consumed directly by Sky-Topo.\n\n**Metric cadence:** RA Collector health metrics are collect-and-reset gauges published every 30s. Rate/increase queries are not appropriate for these; the panels display the raw value from the last collection cycle.",
+        "content": "# Path Analytics Ingestion Pipeline\n\nTop-down view of the Path Analytics ingestion pipeline. Data flows from Path Analytics → RA Collector → Sensor Collector (Roadrunner) → Fedex → Kafka → Sky-Topo → Gather → Druid.\n\n**How to triage a data outage:** read the Pipeline Flow Summary left-to-right — the first stage showing **red (0)** is where data stopped. Expand that service's row for detailed panels.\n\n**Note:** Path Analytics data does NOT flow through Ignite or Spark. Fedex writes to `skytopo_raw_in.*` Kafka topics, consumed directly by Sky-Topo.\n\n**Metric cadence:** RA Collector health metrics are collect-and-reset gauges published every 30s. Rate/increase queries are not appropriate for these; the panels display the raw value from the last collection cycle.",
         "mode": "markdown"
       },
       "pluginVersion": "12.1.0"
@@ -61,7 +61,7 @@
     },
     {
       "datasource": "Prometheus",
-      "description": "PA Path Analytics connection status from the RA Collector agent health. 1=connected, 0=disconnected. GREEN means the gRPC stream to Crosswork is active. RED means the collector cannot reach PA \u2013 expand the RA Collector Connectivity row.",
+      "description": "PA Path Analytics connection status from the RA Collector agent health. 1=connected, 0=disconnected. GREEN means the gRPC stream to Crosswork is active. RED means the collector cannot reach PA – expand the RA Collector Connectivity row.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -131,12 +131,12 @@
           "legendFormat": ""
         }
       ],
-      "title": "1 \u00b7 RA Collector (edge)",
+      "title": "1 · RA Collector (edge)",
       "type": "stat"
     },
     {
       "datasource": "Prometheus",
-      "description": "Events the RA Collector successfully sent to the Data Gateway (Roadrunner) in the last collection cycle. GREEN = data flowing from edge. RED (0) = RA connected but not sending \u2013 check RA Collector Processing row.",
+      "description": "Events the RA Collector successfully sent to the Data Gateway (Roadrunner) in the last collection cycle. GREEN = data flowing from edge. RED (0) = RA connected but not sending – check RA Collector Processing row.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -205,7 +205,7 @@
           "legendFormat": ""
         }
       ],
-      "title": "2 \u00b7 RA \u2192 Roadrunner",
+      "title": "2 · RA → Roadrunner",
       "type": "stat"
     },
     {
@@ -279,7 +279,7 @@
           "legendFormat": ""
         }
       ],
-      "title": "3 \u00b7 Roadrunner \u2192 Fedex",
+      "title": "3 · Roadrunner → Fedex",
       "type": "stat"
     },
     {
@@ -353,7 +353,7 @@
           "legendFormat": ""
         }
       ],
-      "title": "4 \u00b7 Fedex \u2192 Kafka",
+      "title": "4 · Fedex → Kafka",
       "type": "stat"
     },
     {
@@ -427,7 +427,7 @@
           "legendFormat": ""
         }
       ],
-      "title": "5 \u00b7 Sky-Topo",
+      "title": "5 · Sky-Topo",
       "type": "stat"
     },
     {
@@ -501,7 +501,7 @@
           "legendFormat": ""
         }
       ],
-      "title": "6 \u00b7 Gather \u2192 Druid",
+      "title": "6 · Gather → Druid",
       "type": "stat"
     },
     {
@@ -513,790 +513,405 @@
         "y": 10
       },
       "id": 16,
-      "title": "RA Collector Connectivity (PA \u2192 RA)",
+      "title": "RA Collector Connectivity (PA → RA)",
       "type": "row",
       "panels": [
         {
           "datasource": "Prometheus",
-          "description": "Path Analytics gRPC connection status. CONNECTED (green) = streaming active. DISCONNECTED (red) = collector cannot reach PA source.",
+          "description": "Per-collector connectivity status. Each row is one RA collector instance.",
           "fieldConfig": {
             "defaults": {
-              "color": {
-                "mode": "thresholds"
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "instance"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 180
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "left"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Instance"
+                  }
+                ]
               },
-              "mappings": [
-                {
-                  "type": "value",
-                  "options": {
-                    "0": {
-                      "color": "red",
-                      "index": 0,
-                      "text": "DISCONNECTED"
-                    },
-                    "1": {
-                      "color": "green",
-                      "index": 1,
-                      "text": "CONNECTED"
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "tenant"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 160
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "left"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Tenant"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "RoutingAnalyticsStatusSet"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "PA Status"
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "type": "value",
+                        "options": {
+                          "0": {
+                            "text": "DISCONNECTED",
+                            "color": "red"
+                          },
+                          "1": {
+                            "text": "CONNECTED",
+                            "color": "green"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
                     }
-                  }
-                }
-              ],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "red",
-                    "value": null
                   },
                   {
-                    "color": "green",
-                    "value": 1
+                    "id": "custom.width",
+                    "value": 130
                   }
                 ]
               },
-              "unit": "short",
-              "noValue": "NO DATA"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 0,
-            "y": 0
-          },
-          "id": 9,
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calc": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "auto",
-            "wideLayout": true
-          },
-          "pluginVersion": "12.1.0",
-          "targets": [
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "min(message_agentHealth_RoutingAnalyticsStatusSet{tenant=~\"$tenant\"})",
-              "range": false,
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "title": "PA Connection",
-          "type": "stat"
-        },
-        {
-          "datasource": "Prometheus",
-          "description": "SAF sensor agent status. CONNECTED (green) = agent registered with Roadrunner.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [
-                {
-                  "type": "value",
-                  "options": {
-                    "0": {
-                      "color": "red",
-                      "index": 0,
-                      "text": "DISCONNECTED"
-                    },
-                    "1": {
-                      "color": "green",
-                      "index": 1,
-                      "text": "CONNECTED"
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "SensorAgentStatusSet"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Agent"
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "type": "value",
+                        "options": {
+                          "0": {
+                            "text": "DOWN",
+                            "color": "red"
+                          },
+                          "1": {
+                            "text": "UP",
+                            "color": "green"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
                     }
-                  }
-                }
-              ],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "red",
-                    "value": null
                   },
                   {
-                    "color": "green",
-                    "value": 1
+                    "id": "custom.width",
+                    "value": 80
                   }
                 ]
               },
-              "unit": "short",
-              "noValue": "NO DATA"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 6,
-            "y": 0
-          },
-          "id": 10,
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calc": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "auto",
-            "wideLayout": true
-          },
-          "pluginVersion": "12.1.0",
-          "targets": [
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "min(message_agentHealth_SensorAgentStatusSet{tenant=~\"$tenant\"})",
-              "range": false,
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Agent Status",
-          "type": "stat"
-        },
-        {
-          "datasource": "Prometheus",
-          "description": "Number of links in the current topology from PA. A sudden drop may indicate a PA topology change or subscription loss.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "ConnectionAttemptsCount"
+                },
+                "properties": [
                   {
-                    "color": "#808080",
-                    "value": null
+                    "id": "displayName",
+                    "value": "Conn Att"
                   },
                   {
-                    "color": "green",
-                    "value": 0
+                    "id": "custom.width",
+                    "value": 80
                   }
                 ]
               },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 12,
-            "y": 0
-          },
-          "id": 11,
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calc": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "auto",
-            "wideLayout": true
-          },
-          "pluginVersion": "12.1.0",
-          "targets": [
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "max(message_agentHealth_CurrentNumLinksSet{tenant=~\"$tenant\"})",
-              "range": false,
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Topology Links",
-          "type": "stat"
-        },
-        {
-          "datasource": "Prometheus",
-          "description": "Days until the PA CA certificate expires. Below 30 = warning. Below 7 = critical. 0 = expired, TLS connections will fail.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "ConnectionFailuresCount"
+                },
+                "properties": [
                   {
-                    "color": "red",
-                    "value": null
+                    "id": "displayName",
+                    "value": "Conn Fail"
                   },
                   {
-                    "color": "yellow",
-                    "value": 7
+                    "id": "thresholds",
+                    "value": {
+                      "mode": "absolute",
+                      "steps": [
+                        {
+                          "color": "green",
+                          "value": null
+                        },
+                        {
+                          "color": "red",
+                          "value": 1
+                        }
+                      ]
+                    }
                   },
                   {
-                    "color": "green",
-                    "value": 30
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 85
                   }
                 ]
               },
-              "unit": "d"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 18,
-            "y": 0
-          },
-          "id": 12,
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calc": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "auto",
-            "wideLayout": true
-          },
-          "pluginVersion": "12.1.0",
-          "targets": [
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "min(message_agentHealth_CncCaCertExpiryDays{tenant=~\"$tenant\"})",
-              "range": false,
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "title": "PA CA Cert Expiry",
-          "type": "stat"
-        },
-        {
-          "datasource": "Prometheus",
-          "description": "Connection attempts per 30s collection cycle. Steady 1 = normal reconnect cadence.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "AuthTokenRefreshCount"
+                },
+                "properties": [
                   {
-                    "color": "#808080",
-                    "value": null
+                    "id": "displayName",
+                    "value": "Auth OK"
                   },
                   {
-                    "color": "green",
-                    "value": 0
+                    "id": "custom.width",
+                    "value": 75
                   }
                 ]
               },
-              "unit": "short"
-            },
-            "overrides": []
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "AuthTokenFailureCount"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Auth Fail"
+                  },
+                  {
+                    "id": "thresholds",
+                    "value": {
+                      "mode": "absolute",
+                      "steps": [
+                        {
+                          "color": "green",
+                          "value": null
+                        },
+                        {
+                          "color": "red",
+                          "value": 1
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 85
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "CncCaCertExpiryDays"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Cert Expiry"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "d"
+                  },
+                  {
+                    "id": "thresholds",
+                    "value": {
+                      "mode": "absolute",
+                      "steps": [
+                        {
+                          "color": "red",
+                          "value": null
+                        },
+                        {
+                          "color": "yellow",
+                          "value": 7
+                        },
+                        {
+                          "color": "green",
+                          "value": 30
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 100
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "SubscriptionCount"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Subs"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 60
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "PathmonitorRegisteredCount"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "PM Paths"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 85
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "PathmonitorFailureCount"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "PM Fail"
+                  },
+                  {
+                    "id": "thresholds",
+                    "value": {
+                      "mode": "absolute",
+                      "steps": [
+                        {
+                          "color": "green",
+                          "value": null
+                        },
+                        {
+                          "color": "red",
+                          "value": 1
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 75
+                  }
+                ]
+              }
+            ]
           },
           "gridPos": {
-            "h": 5,
-            "w": 6,
+            "h": 10,
+            "w": 24,
             "x": 0,
-            "y": 5
+            "y": 0
           },
-          "id": 13,
+          "id": 70,
           "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calc": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
+            "showHeader": true,
+            "footer": {
+              "show": false
             },
-            "textMode": "auto",
-            "wideLayout": true
+            "frameIndex": 0
           },
-          "pluginVersion": "12.1.0",
           "targets": [
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum by (tenant,instance) (message_agentHealth_ConnectionAttemptsCount{tenant=~\"$tenant\"})",
-              "range": false,
+              "expr": "{__name__=~\"message_agentHealth_(RoutingAnalyticsStatusSet|SensorAgentStatusSet|ConnectionAttemptsCount|ConnectionFailuresCount|AuthTokenRefreshCount|AuthTokenFailureCount|CncCaCertExpiryDays|SubscriptionCount|PathmonitorRegisteredCount|PathmonitorFailureCount)\", tenant=~\"$tenant\"}",
+              "format": "table",
               "instant": true,
               "refId": "A"
             }
           ],
-          "title": "Conn Attempts",
-          "type": "stat"
-        },
-        {
-          "datasource": "Prometheus",
-          "description": "Connection failures per 30s cycle. Non-zero = connectivity problem (TLS, network, PA down). Check PA reachability and certificates.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 1
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 6,
-            "y": 5
-          },
-          "id": 14,
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calc": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "auto",
-            "wideLayout": true
-          },
-          "pluginVersion": "12.1.0",
-          "targets": [
+          "transformations": [
             {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "sum by (tenant,instance) (message_agentHealth_ConnectionFailuresCount{tenant=~\"$tenant\"})",
-              "range": false,
-              "instant": true,
-              "refId": "A"
+              "id": "groupingToMatrix",
+              "options": {
+                "columnField": "__name__",
+                "rowField": "instance\\tenant",
+                "valueField": "Value"
+              }
             }
           ],
-          "title": "Conn Failures",
-          "type": "stat"
-        },
-        {
-          "datasource": "Prometheus",
-          "description": "Successful CAS/auth token refreshes per 30s cycle. Should be >= 1 when token rotation is active.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "#808080",
-                    "value": null
-                  },
-                  {
-                    "color": "green",
-                    "value": 0
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 12,
-            "y": 5
-          },
-          "id": 15,
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calc": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "auto",
-            "wideLayout": true
-          },
-          "pluginVersion": "12.1.0",
-          "targets": [
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "sum by (tenant,instance) (message_agentHealth_AuthTokenRefreshCount{tenant=~\"$tenant\"})",
-              "range": false,
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Auth Refreshes",
-          "type": "stat"
-        },
-        {
-          "datasource": "Prometheus",
-          "description": "Auth token refresh failures per 30s cycle. Non-zero = CAS rejecting credentials. Check username/password/certificate configuration.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 1
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 18,
-            "y": 5
-          },
-          "id": 16,
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calc": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "auto",
-            "wideLayout": true
-          },
-          "pluginVersion": "12.1.0",
-          "targets": [
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "sum by (tenant,instance) (message_agentHealth_AuthTokenFailureCount{tenant=~\"$tenant\"})",
-              "range": false,
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Auth Failures",
-          "type": "stat"
-        },
-        {
-          "datasource": "Prometheus",
-          "description": "Successful gRPC stream subscriptions per 30s cycle.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "#808080",
-                    "value": null
-                  },
-                  {
-                    "color": "green",
-                    "value": 0
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 0,
-            "y": 10
-          },
-          "id": 17,
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calc": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "auto",
-            "wideLayout": true
-          },
-          "pluginVersion": "12.1.0",
-          "targets": [
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "sum by (tenant,instance) (message_agentHealth_SubscriptionCount{tenant=~\"$tenant\"})",
-              "range": false,
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Subscriptions",
-          "type": "stat"
-        },
-        {
-          "datasource": "Prometheus",
-          "description": "Pathmonitor registration sync completions per 30s cycle. 1 = healthy periodic sync.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "#808080",
-                    "value": null
-                  },
-                  {
-                    "color": "green",
-                    "value": 0
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 6,
-            "y": 10
-          },
-          "id": 18,
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calc": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "auto",
-            "wideLayout": true
-          },
-          "pluginVersion": "12.1.0",
-          "targets": [
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "sum by (tenant,instance) (message_agentHealth_PathmonitorSyncCount{tenant=~\"$tenant\"})",
-              "range": false,
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "title": "PM Syncs",
-          "type": "stat"
-        },
-        {
-          "datasource": "Prometheus",
-          "description": "Total pathmonitor registered paths (gauge). With large topologies (22k segments) this is a key capacity indicator.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "#808080",
-                    "value": null
-                  },
-                  {
-                    "color": "green",
-                    "value": 0
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 12,
-            "y": 10
-          },
-          "id": 19,
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calc": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "auto",
-            "wideLayout": true
-          },
-          "pluginVersion": "12.1.0",
-          "targets": [
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "max by (tenant,instance) (message_agentHealth_PathmonitorRegisteredCount{tenant=~\"$tenant\"})",
-              "range": false,
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "title": "PM Registered",
-          "type": "stat"
-        },
-        {
-          "datasource": "Prometheus",
-          "description": "Pathmonitor registration failures per 30s cycle. Non-zero = registration sync failing. Check PA pathmonitor REST API reachability.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 1
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 18,
-            "y": 10
-          },
-          "id": 20,
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calc": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "auto",
-            "wideLayout": true
-          },
-          "pluginVersion": "12.1.0",
-          "targets": [
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "sum by (tenant,instance) (message_agentHealth_PathmonitorFailureCount{tenant=~\"$tenant\"})",
-              "range": false,
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "title": "PM Failures",
-          "type": "stat"
+          "title": "Collector Status",
+          "type": "table"
         }
       ]
     },
@@ -1307,6 +922,250 @@
         "w": 24,
         "x": 0,
         "y": 11
+      },
+      "id": 60,
+      "title": "RA Collector Configuration",
+      "type": "row",
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "description": "How often the RA collector forwards aggregated events to PCA (in seconds). Configured via updateCadence (min 5m, max 24h, default 15m).",
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 3600
+                  },
+                  {
+                    "color": "red",
+                    "value": 43200
+                  }
+                ]
+              }
+            }
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 0,
+            "y": 12
+          },
+          "id": 61,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "textMode": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            }
+          },
+          "targets": [
+            {
+              "expr": "min(message_agentHealth_CurrentUpdateCadenceSet{tenant=~\"$tenant\"})",
+              "legendFormat": ""
+            }
+          ],
+          "title": "Update Cadence",
+          "type": "stat"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Maximum hop depth for topology path analysis. Controls how deep into the network topology the collector traces paths.",
+          "fieldConfig": {
+            "defaults": {
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 20
+                  },
+                  {
+                    "color": "red",
+                    "value": 50
+                  }
+                ]
+              }
+            }
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 6,
+            "y": 12
+          },
+          "id": 62,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "textMode": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            }
+          },
+          "targets": [
+            {
+              "expr": "min(message_agentHealth_CurrentNumLinksSet{tenant=~\"$tenant\"})",
+              "legendFormat": ""
+            }
+          ],
+          "title": "Hop Limit",
+          "type": "stat"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "TLS connection security mode: 0 = plaintext (no encryption), 1 = TLS with insecure skip verify, 2 = TLS with verified CA certificates.",
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                {
+                  "options": {
+                    "0": {
+                      "text": "PLAINTEXT",
+                      "color": "red"
+                    }
+                  },
+                  "type": "value"
+                },
+                {
+                  "options": {
+                    "1": {
+                      "text": "INSECURE",
+                      "color": "yellow"
+                    }
+                  },
+                  "type": "value"
+                },
+                {
+                  "options": {
+                    "2": {
+                      "text": "VERIFIED",
+                      "color": "green"
+                    }
+                  },
+                  "type": "value"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 1
+                  },
+                  {
+                    "color": "green",
+                    "value": 2
+                  }
+                ]
+              }
+            }
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 12,
+            "y": 12
+          },
+          "id": 63,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "textMode": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            }
+          },
+          "targets": [
+            {
+              "expr": "min(message_agentHealth_ConfigTlsModeSet{tenant=~\"$tenant\"})",
+              "legendFormat": ""
+            }
+          ],
+          "title": "TLS Mode",
+          "type": "stat"
+        },
+        {
+          "datasource": "Prometheus",
+          "description": "Number of segments in the whitelist configuration. Only events matching these segments are forwarded. 0 means no whitelist (all segments accepted).",
+          "fieldConfig": {
+            "defaults": {
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 18,
+            "y": 12
+          },
+          "id": 64,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "textMode": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            }
+          },
+          "targets": [
+            {
+              "expr": "min(message_agentHealth_WhitelistedSegmentsCount{tenant=~\"$tenant\"})",
+              "legendFormat": ""
+            }
+          ],
+          "title": "Whitelisted Segments",
+          "type": "stat"
+        }
+      ]
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 12
       },
       "id": 21,
       "title": "RA Collector Processing",
@@ -1419,7 +1278,7 @@
               "legendFormat": "{{instance}} send fail"
             }
           ],
-          "title": "RA Collector \u2013 Events Consumed vs Sent",
+          "title": "RA Collector – Events Consumed vs Sent",
           "type": "timeseries"
         },
         {
@@ -1520,7 +1379,7 @@
               "legendFormat": "{{instance}} duplicated"
             }
           ],
-          "title": "RA Collector \u2013 Whitelist & Duplicate Drops",
+          "title": "RA Collector – Whitelist & Duplicate Drops",
           "type": "timeseries"
         },
         {
@@ -1621,7 +1480,7 @@
               "legendFormat": "{{instance}} agg time (s)"
             }
           ],
-          "title": "RA Collector \u2013 Aggregation",
+          "title": "RA Collector – Aggregation",
           "type": "timeseries"
         },
         {
@@ -1713,7 +1572,7 @@
               "legendFormat": "{{instance}} cadence (s)"
             }
           ],
-          "title": "RA Collector \u2013 Update Cadence",
+          "title": "RA Collector – Update Cadence",
           "type": "timeseries"
         }
       ]
@@ -1819,7 +1678,7 @@
               "legendFormat": "{{instance}} event read time"
             }
           ],
-          "title": "RA Collector \u2013 Event Read Time",
+          "title": "RA Collector – Event Read Time",
           "type": "timeseries"
         },
         {
@@ -1911,7 +1770,7 @@
               "legendFormat": "{{instance}} segment proc time"
             }
           ],
-          "title": "RA Collector \u2013 Segment Processing Time",
+          "title": "RA Collector – Segment Processing Time",
           "type": "timeseries"
         },
         {
@@ -2003,7 +1862,7 @@
               "legendFormat": "{{instance}} batch proc time"
             }
           ],
-          "title": "RA Collector \u2013 Batch Processing Time",
+          "title": "RA Collector – Batch Processing Time",
           "type": "timeseries"
         },
         {
@@ -2095,7 +1954,7 @@
               "legendFormat": "{{instance}} persistence time"
             }
           ],
-          "title": "RA Collector \u2013 Persistence Usage",
+          "title": "RA Collector – Persistence Usage",
           "type": "timeseries"
         },
         {
@@ -2187,7 +2046,7 @@
               "legendFormat": "{{instance}} segments processed"
             }
           ],
-          "title": "RA Collector \u2013 Segments Processed",
+          "title": "RA Collector – Segments Processed",
           "type": "timeseries"
         }
       ]
@@ -2302,7 +2161,7 @@
               "legendFormat": "{{objectType}} records/s"
             }
           ],
-          "title": "Sensor Collector \u2013 Throughput",
+          "title": "Sensor Collector – Throughput",
           "type": "timeseries"
         },
         {
@@ -2394,7 +2253,7 @@
               "legendFormat": "{{instance}}"
             }
           ],
-          "title": "Sensor Collector \u2013 Connection to PCA",
+          "title": "Sensor Collector – Connection to PCA",
           "type": "timeseries"
         },
         {
@@ -2495,7 +2354,7 @@
               "legendFormat": "{{instance}} available batches"
             }
           ],
-          "title": "Sensor Collector \u2013 Persistence Cache Backlog",
+          "title": "Sensor Collector – Persistence Cache Backlog",
           "type": "timeseries"
         },
         {
@@ -2587,7 +2446,7 @@
               "legendFormat": "{{reason}}"
             }
           ],
-          "title": "Sensor Collector \u2013 Dropped Data (by reason)",
+          "title": "Sensor Collector – Dropped Data (by reason)",
           "type": "timeseries"
         }
       ]
@@ -2693,7 +2552,7 @@
               "legendFormat": "{{objectType}}"
             }
           ],
-          "title": "Fedex \u2013 Records In (from Sensor Collectors)",
+          "title": "Fedex – Records In (from Sensor Collectors)",
           "type": "timeseries"
         },
         {
@@ -2785,7 +2644,7 @@
               "legendFormat": "{{objectType}}"
             }
           ],
-          "title": "Fedex \u2192 Kafka Produced (msgs/s)",
+          "title": "Fedex → Kafka Produced (msgs/s)",
           "type": "timeseries"
         },
         {
@@ -2877,7 +2736,7 @@
               "legendFormat": "{{topic}} {{objectType}}"
             }
           ],
-          "title": "Fedex \u2013 Kafka Produce Errors",
+          "title": "Fedex – Kafka Produce Errors",
           "type": "timeseries"
         },
         {
@@ -2987,7 +2846,7 @@
               "legendFormat": "internal {{connectorId}}"
             }
           ],
-          "title": "Fedex \u2013 Rejected Batches (by cause)",
+          "title": "Fedex – Rejected Batches (by cause)",
           "type": "timeseries"
         },
         {
@@ -3088,7 +2947,7 @@
               "legendFormat": "rejected"
             }
           ],
-          "title": "Fedex \u2013 Sensor Collector Websocket Issues",
+          "title": "Fedex – Sensor Collector Websocket Issues",
           "type": "timeseries"
         }
       ]
@@ -3194,7 +3053,7 @@
               "legendFormat": "{{instance}} records processed"
             }
           ],
-          "title": "Sky-Topo \u2013 Records Processed",
+          "title": "Sky-Topo – Records Processed",
           "type": "timeseries"
         },
         {
@@ -3286,7 +3145,7 @@
               "legendFormat": "{{instance}} errors"
             }
           ],
-          "title": "Sky-Topo \u2013 Errors",
+          "title": "Sky-Topo – Errors",
           "type": "timeseries"
         },
         {
@@ -3387,7 +3246,7 @@
               "legendFormat": "max allowed"
             }
           ],
-          "title": "Sky-Topo \u2013 Current Nodes vs Max",
+          "title": "Sky-Topo – Current Nodes vs Max",
           "type": "timeseries"
         },
         {
@@ -3479,7 +3338,7 @@
               "legendFormat": "avg provisioning time"
             }
           ],
-          "title": "Sky-Topo \u2013 Node Provisioning Duration",
+          "title": "Sky-Topo – Node Provisioning Duration",
           "type": "timeseries"
         }
       ]
@@ -3895,7 +3754,7 @@
               "legendFormat": "{{changeType}}"
             }
           ],
-          "title": "Gather \u2013 Ingest Requests Read (APPEND/REFRESH)",
+          "title": "Gather – Ingest Requests Read (APPEND/REFRESH)",
           "type": "timeseries"
         },
         {
@@ -3996,7 +3855,7 @@
               "legendFormat": "{{changeType}} fail"
             }
           ],
-          "title": "Gather \u2013 Submit Success vs Fail",
+          "title": "Gather – Submit Success vs Fail",
           "type": "timeseries"
         },
         {
@@ -4097,7 +3956,7 @@
               "legendFormat": "{{tenantId}}"
             }
           ],
-          "title": "Gather \u2013 Pacemaker Queue Size",
+          "title": "Gather – Pacemaker Queue Size",
           "type": "timeseries"
         }
       ]
@@ -4203,7 +4062,7 @@
               "legendFormat": "slots available"
             }
           ],
-          "title": "Druid \u2013 Middlemanager Slot Availability",
+          "title": "Druid – Middlemanager Slot Availability",
           "type": "timeseries"
         },
         {
@@ -4304,7 +4163,7 @@
               "legendFormat": "delta > 5min"
             }
           ],
-          "title": "Druid \u2013 Tasks Taking Too Long",
+          "title": "Druid – Tasks Taking Too Long",
           "type": "timeseries"
         }
       ]
