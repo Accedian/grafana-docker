@@ -191,17 +191,28 @@ class SimState:
         with self.lock:
             self.manual_overrides.clear()
 
-    def get_effective_value(self, metric_name, default_val):
-        """Return the effective value: manual override > scenario > default."""
+    def get_effective_value(self, metric_name, default_val, t=0, mtype="gauge"):
+        """Return the effective value: manual override > scenario > default.
+
+        For counter metrics with a positive override, the override is treated
+        as a per-second rate and multiplied by *t* so the counter grows
+        monotonically and ``rate()`` / ``increase()`` queries keep working.
+        """
         with self.lock:
             if metric_name in self.manual_overrides:
-                return self.manual_overrides[metric_name]
+                v = self.manual_overrides[metric_name]
+                if mtype == "counter" and v > 0:
+                    return v * t
+                return v
             if self.active_dashboard and self.active_scenario:
                 db = self.dashboards.get(self.active_dashboard, {})
                 sc = db.get("scenarios", {}).get(self.active_scenario, {})
                 overrides = sc.get("overrides", {})
                 if metric_name in overrides:
-                    return float(overrides[metric_name])
+                    v = float(overrides[metric_name])
+                    if mtype == "counter" and v > 0:
+                        return v * t
+                    return v
         return default_val
 
     def get_state_dict(self):
@@ -264,7 +275,7 @@ def generate_metrics():
             lines.append(f"# HELP {name} Simulated metric (no profile)")
             lines.append(f"# TYPE {name} {mtype}")
             raw = random.uniform(0, 100) if mtype == "gauge" else int(t * random.uniform(1, 10))
-            val = STATE.get_effective_value(name, raw)
+            val = STATE.get_effective_value(name, raw, t=t, mtype=mtype)
             lines.append(f"{name} {val}")
             continue
 
@@ -274,7 +285,7 @@ def generate_metrics():
         label_spec = profile.get("labels", {})
         if not label_spec:
             raw = profile["value"](t)
-            val = STATE.get_effective_value(name, raw)
+            val = STATE.get_effective_value(name, raw, t=t, mtype=mtype)
             lines.append(generate_line(name, {}, val))
         else:
             label_names = sorted(label_spec.keys())
@@ -289,7 +300,7 @@ def generate_metrics():
                 combos = new_combos
             for combo in combos:
                 raw = profile["value"](t)
-                val = STATE.get_effective_value(name, raw)
+                val = STATE.get_effective_value(name, raw, t=t, mtype=mtype)
                 lines.append(generate_line(name, combo, val))
 
     lines.append("")

@@ -90,17 +90,16 @@ dashboards:
         overrides:
           message_agentHealth_RoutingAnalyticsStatusSet: 1
           message_agentHealth_SuccessfullySentEventsCount: 80
-          fedex_record_count: 0
-          fedex_kafka_producer_msg_count: 0
-          fedex_kafka_producer_error_count: 50
-          sky_topo_records_processed_total: 0
+          # Counter overrides > 0 are treated as per-second rates
+          fedex_kafka_producer_error_count: 0.5
 
       sky-topo-at-capacity:
         description: "Sky-Topo node count at maximum — new nodes will be rejected"
         overrides:
           sky_topo_current_nodes: 150
           sky_topo_max_nodes: 150
-          sky_topo_errors_total: 25
+          # Counter override > 0 treated as per-second rate
+          sky_topo_errors_total: 0.2
           node_processor_not_assigned_segments: 200
 
       agent-overloaded:
