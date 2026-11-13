@@ -64,3 +64,17 @@
 # subdirectory, as this subdirectory has its own owner @doctocat
 # /apps/ @octocat
 # /apps/github @doctocat
+
+# Preserve the default owners on delivery and build inputs.
+/.circleci/** @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
+/.github/** @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
+/agents.md @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
+/AGENTS.md @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
+/CHANGELOG.md @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
+/Dockerfile @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
+/Makefile @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
+/current-version @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
+/run.sh @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
+/provisioning/** @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
+/dashboards/** @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
+/helm/** @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
