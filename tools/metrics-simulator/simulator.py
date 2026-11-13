@@ -52,7 +52,7 @@ PROFILES = {
     "message_agentHealth_DuplicatedTopologyEventsCount": {"value": lambda t: random.randint(0, 3), "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
     "message_agentHealth_AggregatedTopologyEventsCount": {"value": lambda t: random.randint(5, 25), "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
     "message_agentHealth_AggregationTimePerReductionCount": {"value": lambda t: round(random.uniform(0.001, 0.05), 4), "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
-    "message_agentHealth_CurrentNumLinksSet": {"value": lambda t: 1200 + int(50 * math.sin(t / 300)), "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
+    "message_agentHealth_CurrentNumLinksSet": {"value": lambda t: 10, "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
     "message_agentHealth_CurrentUpdateCadenceSet": {"value": lambda t: 900.0, "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
     "message_agentHealth_AvgEventReadTime": {"value": lambda t: round(random.uniform(0.001, 0.01), 4), "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
     "message_agentHealth_AvgSegmentProcessingTime": {"value": lambda t: round(random.uniform(0.01, 0.08), 4), "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},

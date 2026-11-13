@@ -175,7 +175,7 @@
         "h": 4,
         "w": 4,
         "x": 4,
-        "y": 6
+        "y": 10
       },
       "id": 4,
       "options": {
@@ -249,7 +249,7 @@
         "h": 4,
         "w": 4,
         "x": 8,
-        "y": 6
+        "y": 14
       },
       "id": 5,
       "options": {
@@ -323,7 +323,7 @@
         "h": 4,
         "w": 4,
         "x": 12,
-        "y": 6
+        "y": 18
       },
       "id": 6,
       "options": {
@@ -397,7 +397,7 @@
         "h": 4,
         "w": 4,
         "x": 16,
-        "y": 6
+        "y": 22
       },
       "id": 7,
       "options": {
@@ -471,7 +471,7 @@
         "h": 4,
         "w": 4,
         "x": 20,
-        "y": 6
+        "y": 26
       },
       "id": 8,
       "options": {
@@ -510,15 +510,15 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 30
       },
       "id": 16,
-      "title": "RA Collector Connectivity (PA → RA)",
+      "title": "RA Collector Status",
       "type": "row",
       "panels": [
         {
           "datasource": "Prometheus",
-          "description": "Per-collector connectivity status. Each row is one RA collector instance showing connection state, auth health, cert status, and pathmonitor registration.",
+          "description": "Per-collector status table. Each row is one RA collector showing connectivity, configuration, and health.",
           "fieldConfig": {
             "defaults": {
               "custom": {
@@ -538,7 +538,7 @@
                 "properties": [
                   {
                     "id": "custom.width",
-                    "value": 280
+                    "value": 220
                   },
                   {
                     "id": "custom.align",
@@ -578,7 +578,7 @@
                   },
                   {
                     "id": "custom.width",
-                    "value": 130
+                    "value": 120
                   }
                 ]
               },
@@ -614,7 +614,95 @@
                   },
                   {
                     "id": "custom.width",
+                    "value": 70
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Cadence (s)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 85
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Hop Limit"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
                     "value": 80
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "TLS"
+                },
+                "properties": [
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "type": "value",
+                        "options": {
+                          "0": {
+                            "text": "PLAIN",
+                            "color": "red"
+                          },
+                          "1": {
+                            "text": "INSECURE",
+                            "color": "yellow"
+                          },
+                          "2": {
+                            "text": "VERIFIED",
+                            "color": "green"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 85
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Segments"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 75
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Conn Att"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 70
                   }
                 ]
               },
@@ -645,6 +733,22 @@
                     "value": {
                       "type": "color-text"
                     }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 75
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Auth OK"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 65
                   }
                 ]
               },
@@ -675,6 +779,10 @@
                     "value": {
                       "type": "color-text"
                     }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 75
                   }
                 ]
               },
@@ -713,6 +821,34 @@
                     "value": {
                       "type": "color-text"
                     }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Subs"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 55
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "PM Paths"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 75
                   }
                 ]
               },
@@ -743,13 +879,17 @@
                     "value": {
                       "type": "color-text"
                     }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 65
                   }
                 ]
               }
             ]
           },
           "gridPos": {
-            "h": 10,
+            "h": 8,
             "w": 24,
             "x": 0,
             "y": 0
@@ -765,7 +905,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "label_join({__name__=~\"message_agentHealth_(RoutingAnalyticsStatusSet|SensorAgentStatusSet|ConnectionAttemptsCount|ConnectionFailuresCount|AuthTokenRefreshCount|AuthTokenFailureCount|CncCaCertExpiryDays|SubscriptionCount|PathmonitorRegisteredCount|PathmonitorFailureCount)\", tenant=~\"$tenant\"}, \"collector\", \" | \", \"instance\", \"tenant\")",
+              "expr": "label_join({__name__=~\"message_agentHealth_(RoutingAnalyticsStatusSet|SensorAgentStatusSet|CurrentUpdateCadenceSet|CurrentNumLinksSet|ConfigTlsModeSet|WhitelistedSegmentsCount|ConnectionAttemptsCount|ConnectionFailuresCount|AuthTokenRefreshCount|AuthTokenFailureCount|CncCaCertExpiryDays|SubscriptionCount|PathmonitorRegisteredCount|PathmonitorFailureCount)\", tenant=~\"$tenant\"}, \"collector\", \" | \", \"instance\", \"tenant\")",
               "format": "table",
               "instant": true,
               "refId": "A"
@@ -796,8 +936,13 @@
               "id": "organize",
               "options": {
                 "renameByName": {
+                  "collector\\__name__": "Collector",
                   "message_agentHealth_RoutingAnalyticsStatusSet": "PA Status",
                   "message_agentHealth_SensorAgentStatusSet": "Agent",
+                  "message_agentHealth_CurrentUpdateCadenceSet": "Cadence (s)",
+                  "message_agentHealth_CurrentNumLinksSet": "Hop Limit",
+                  "message_agentHealth_ConfigTlsModeSet": "TLS",
+                  "message_agentHealth_WhitelistedSegmentsCount": "Segments",
                   "message_agentHealth_ConnectionAttemptsCount": "Conn Att",
                   "message_agentHealth_ConnectionFailuresCount": "Conn Fail",
                   "message_agentHealth_AuthTokenRefreshCount": "Auth OK",
@@ -805,8 +950,7 @@
                   "message_agentHealth_CncCaCertExpiryDays": "Cert Expiry",
                   "message_agentHealth_SubscriptionCount": "Subs",
                   "message_agentHealth_PathmonitorRegisteredCount": "PM Paths",
-                  "message_agentHealth_PathmonitorFailureCount": "PM Fail",
-                  "collector": "Collector"
+                  "message_agentHealth_PathmonitorFailureCount": "PM Fail"
                 }
               }
             }
@@ -822,251 +966,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 11
-      },
-      "id": 60,
-      "title": "RA Collector Configuration",
-      "type": "row",
-      "panels": [
-        {
-          "datasource": "Prometheus",
-          "description": "How often the RA collector forwards aggregated events to PCA (in seconds). Configured via updateCadence (min 5m, max 24h, default 15m).",
-          "fieldConfig": {
-            "defaults": {
-              "unit": "s",
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "yellow",
-                    "value": 3600
-                  },
-                  {
-                    "color": "red",
-                    "value": 43200
-                  }
-                ]
-              }
-            }
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 0,
-            "y": 12
-          },
-          "id": 61,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "textMode": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ]
-            }
-          },
-          "targets": [
-            {
-              "expr": "min(message_agentHealth_CurrentUpdateCadenceSet{tenant=~\"$tenant\"})",
-              "legendFormat": ""
-            }
-          ],
-          "title": "Update Cadence",
-          "type": "stat"
-        },
-        {
-          "datasource": "Prometheus",
-          "description": "Maximum hop depth for topology path analysis. Controls how deep into the network topology the collector traces paths.",
-          "fieldConfig": {
-            "defaults": {
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "yellow",
-                    "value": 20
-                  },
-                  {
-                    "color": "red",
-                    "value": 50
-                  }
-                ]
-              }
-            }
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 6,
-            "y": 12
-          },
-          "id": 62,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "textMode": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ]
-            }
-          },
-          "targets": [
-            {
-              "expr": "min(message_agentHealth_CurrentNumLinksSet{tenant=~\"$tenant\"})",
-              "legendFormat": ""
-            }
-          ],
-          "title": "Hop Limit",
-          "type": "stat"
-        },
-        {
-          "datasource": "Prometheus",
-          "description": "TLS connection security mode: 0 = plaintext (no encryption), 1 = TLS with insecure skip verify, 2 = TLS with verified CA certificates.",
-          "fieldConfig": {
-            "defaults": {
-              "mappings": [
-                {
-                  "options": {
-                    "0": {
-                      "text": "PLAINTEXT",
-                      "color": "red"
-                    }
-                  },
-                  "type": "value"
-                },
-                {
-                  "options": {
-                    "1": {
-                      "text": "INSECURE",
-                      "color": "yellow"
-                    }
-                  },
-                  "type": "value"
-                },
-                {
-                  "options": {
-                    "2": {
-                      "text": "VERIFIED",
-                      "color": "green"
-                    }
-                  },
-                  "type": "value"
-                }
-              ],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "red",
-                    "value": null
-                  },
-                  {
-                    "color": "yellow",
-                    "value": 1
-                  },
-                  {
-                    "color": "green",
-                    "value": 2
-                  }
-                ]
-              }
-            }
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 12,
-            "y": 12
-          },
-          "id": 63,
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "textMode": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ]
-            }
-          },
-          "targets": [
-            {
-              "expr": "min(message_agentHealth_ConfigTlsModeSet{tenant=~\"$tenant\"})",
-              "legendFormat": ""
-            }
-          ],
-          "title": "TLS Mode",
-          "type": "stat"
-        },
-        {
-          "datasource": "Prometheus",
-          "description": "Number of segments in the whitelist configuration. Only events matching these segments are forwarded. 0 means no whitelist (all segments accepted).",
-          "fieldConfig": {
-            "defaults": {
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "blue",
-                    "value": null
-                  },
-                  {
-                    "color": "green",
-                    "value": 1
-                  }
-                ]
-              }
-            }
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 18,
-            "y": 12
-          },
-          "id": 64,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "textMode": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ]
-            }
-          },
-          "targets": [
-            {
-              "expr": "min(message_agentHealth_WhitelistedSegmentsCount{tenant=~\"$tenant\"})",
-              "legendFormat": ""
-            }
-          ],
-          "title": "Whitelisted Segments",
-          "type": "stat"
-        }
-      ]
-    },
-    {
-      "collapsed": true,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 12
+        "y": 31
       },
       "id": 21,
       "title": "RA Collector Processing",
@@ -1484,7 +1384,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 12
+        "y": 32
       },
       "id": 27,
       "title": "RA Collector Performance",
@@ -1958,7 +1858,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 33
       },
       "id": 32,
       "title": "Sensor Collector (roadrunner)",
@@ -2358,7 +2258,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 34
       },
       "id": 38,
       "title": "Fedex (fedex)",
@@ -2859,7 +2759,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 15
+        "y": 35
       },
       "id": 43,
       "title": "Sky-Topo (topology processor)",
@@ -3250,7 +3150,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 36
       },
       "id": 48,
       "title": "Sky-Topo Node Processor (segment assignment)",
@@ -3560,7 +3460,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 37
       },
       "id": 52,
       "title": "Gather (gather)",
@@ -3868,7 +3768,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 38
       },
       "id": 55,
       "title": "Druid (druid)",
