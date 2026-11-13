@@ -136,6 +136,102 @@ Supported variables:
 - `GF_AWS_${profile}_SECRET_ACCESS_KEY`: AWS secret access  key (required).
 - `GF_AWS_${profile}_REGION`: AWS region (optional).
 
+## Metrics Simulator
+
+A local development environment that reads dashboard JSON files, extracts every
+Prometheus metric name, and serves simulated values so you can preview dashboards
+without a real deployment.
+
+### Quick start
+
+```bash
+make sim-up
+```
+
+Opens three services:
+
+| Service    | URL                          | Notes                    |
+|------------|------------------------------|--------------------------|
+| Grafana    | http://localhost:3000         | admin / admin            |
+| Prometheus | http://localhost:9090         | scrapes simulator at 5s  |
+| Simulator  | http://localhost:9999/metrics | raw exposition format    |
+
+Grafana is built from the repo's own Dockerfile, so **all dashboards** from
+every folder (General, Customer k8s, Customer swarm, kubernetes) are
+auto-provisioned — exactly as in production. Requires GCR auth (`gcloud auth login`).
+
+### Other commands
+
+```bash
+make sim-down      # stop and remove containers + volumes
+make sim-restart   # restart the simulator (pick up profile changes)
+make sim-logs      # tail logs from all three services
+make sim-extract   # print every metric name extracted from all dashboards
+```
+
+### How it works
+
+1. `tools/metrics-simulator/extract_metrics.py` parses every `expr` field in
+   dashboard JSON files and extracts Prometheus metric names using PromQL
+   lexical rules.
+2. `tools/metrics-simulator/simulator.py` serves a `/metrics` HTTP endpoint in
+   Prometheus exposition format. Metrics with a simulation profile get
+   realistic values (sinusoidal topology sizes, random jitter on processing
+   times, counter increments); the rest get a random fallback.
+3. `docker-compose.yml` wires Prometheus (scraping the simulator) and Grafana
+   (provisioned with the swarm dashboards and pointing at that Prometheus).
+
+### Web UI & scenarios
+
+The simulator includes a web UI at http://localhost:9999/ for switching between
+named failure/stress scenarios and overriding individual metric values in
+real-time. Scenarios are defined in `tools/metrics-simulator/scenarios.yaml`.
+
+Pre-built scenarios for the Path Analytics pipeline:
+
+| Scenario | What it simulates |
+|---|---|
+| `healthy` | All systems nominal |
+| `pa-disconnected` | PA source unreachable |
+| `auth-failing` | CAS/auth token rejected |
+| `cert-expiring` | PA CA cert < 7 days |
+| `cert-expired` | PA CA cert expired, TLS failing |
+| `pathmonitor-failing` | REST registration failing |
+| `data-dropping` | Whitelist mismatch, events dropped |
+| `downstream-stalled` | Fedex/Kafka pipeline stalled |
+| `sky-topo-at-capacity` | Node count at maximum |
+| `agent-overloaded` | High processing times |
+
+### Adding profiles & scenarios for other dashboards
+
+Scenarios and profiles can be generated for any dashboard — see the
+`.devin/skills/metrics-simulator/SKILL.md` skill for step-by-step instructions
+that AI agents can follow, or use this quick workflow:
+
+1. Extract metrics: `python3 tools/metrics-simulator/extract_metrics.py "dashboards/<folder>/<dashboard>.json" --print`
+2. Add entries to `PROFILES` in `simulator.py` (value lambdas + label sets)
+3. Add failure scenarios to `scenarios.yaml`
+4. `make sim-restart` to pick up changes
+
+Metrics without a profile still appear with random values.
+
+### Customising
+
+To simulate a specific dashboard only:
+
+```bash
+cd tools/metrics-simulator
+python3 simulator.py --dashboards ../../dashboards/Customer\ \(swarm\)/pca-pa-ingestion-pipeline.json
+```
+
+To generate a metric catalog JSON for inspection:
+
+```bash
+python3 tools/metrics-simulator/extract_metrics.py \
+  "dashboards/Customer (swarm)/pca-pa-ingestion-pipeline.json" \
+  -o catalog.json
+```
+
 ## Changelog
 
 ### v4.2.0

@@ -70,3 +70,29 @@ helm $(DOCKER_IMAGE_NAME)-$(HELM_VER).tgz: .FORCE helm-lint helm/Chart.yaml helm
 
 helm-push: $(DOCKER_IMAGE_NAME)-$(HELM_VER).tgz
 	helm push $< $(HELM_REPO)
+
+# --- Metrics Simulator ---
+SIMULATOR_DIR := tools/metrics-simulator
+
+.PHONY: sim-up sim-down sim-restart sim-logs sim-extract
+
+sim-up:
+	docker compose -f $(SIMULATOR_DIR)/docker-compose.yml up -d --build
+	@echo ""
+	@echo "Grafana:    http://localhost:3000  (admin / admin)"
+	@echo "Prometheus: http://localhost:9090"
+	@echo "Simulator:  http://localhost:9999/metrics"
+	@echo ""
+	@echo "All dashboards from dashboards/ are loaded."
+
+sim-down:
+	docker compose -f $(SIMULATOR_DIR)/docker-compose.yml down -v
+
+sim-restart:
+	docker compose -f $(SIMULATOR_DIR)/docker-compose.yml restart simulator
+
+sim-logs:
+	docker compose -f $(SIMULATOR_DIR)/docker-compose.yml logs -f
+
+sim-extract:
+	python3 $(SIMULATOR_DIR)/extract_metrics.py --print
