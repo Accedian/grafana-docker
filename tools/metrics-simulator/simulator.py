@@ -73,7 +73,7 @@ PROFILES = {
     "message_agentHealth_WhitelistedSegmentsCount": {"value": lambda t: 12, "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
     # Roadrunner / Sensor Collector
     "roadrunner_connection": {"value": lambda t: 1.0, "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
-    "roadrunner_record_count": {"value": lambda t: int(t * 15) + random.randint(0, 100), "labels": {"tenant": DEFAULT_TENANTS, "objectType": DEFAULT_OBJECT_TYPES}},
+    "roadrunner_record_count": {"value": lambda t: int(t * 15), "labels": {"tenant": DEFAULT_TENANTS, "objectType": DEFAULT_OBJECT_TYPES}},
     "roadrunner_persistence_service_cached_files": {"value": lambda t: random.randint(0, 5), "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
     "roadrunner_persistence_service_available_batches": {"value": lambda t: random.randint(0, 3), "labels": {"tenant": DEFAULT_TENANTS, "instance": DEFAULT_INSTANCES}},
     "roadrunner_data_dropped_count": {"value": lambda t: int(t * 0.1), "labels": {"tenant": DEFAULT_TENANTS, "reason": ["invalid_data", "no_tenant"]}},
@@ -83,12 +83,12 @@ PROFILES = {
     "roadrunner_rejected_batches_due_to_bad_data_count": {"value": lambda t: 0, "labels": {"connectorId": ["conn-1"]}},
     "roadrunner_rejected_batches_due_to_internal_errors_count": {"value": lambda t: 0, "labels": {"connectorId": ["conn-1"]}},
     # Fedex
-    "fedex_record_count": {"value": lambda t: int(t * 12) + random.randint(0, 80), "labels": {"tenant": DEFAULT_TENANTS, "objectType": DEFAULT_OBJECT_TYPES}},
-    "fedex_kafka_producer_msg_count": {"value": lambda t: int(t * 10) + random.randint(0, 50), "labels": {"tenant": DEFAULT_TENANTS, "objectType": DEFAULT_OBJECT_TYPES}},
+    "fedex_record_count": {"value": lambda t: int(t * 12), "labels": {"tenant": DEFAULT_TENANTS, "objectType": DEFAULT_OBJECT_TYPES}},
+    "fedex_kafka_producer_msg_count": {"value": lambda t: int(t * 10), "labels": {"tenant": DEFAULT_TENANTS, "objectType": DEFAULT_OBJECT_TYPES}},
     "fedex_kafka_producer_error_count": {"value": lambda t: 0, "labels": {"tenant": DEFAULT_TENANTS, "objectType": DEFAULT_OBJECT_TYPES, "topic": ["skytopo_raw_in"]}},
-    "file_processing_time_seconds_count": {"value": lambda t: int(t * 5) + random.randint(0, 20), "labels": {"tenant": DEFAULT_TENANTS}},
+    "file_processing_time_seconds_count": {"value": lambda t: int(t * 5), "labels": {"tenant": DEFAULT_TENANTS}},
     # Sky-Topo
-    "sky_topo_records_processed_total": {"value": lambda t: int(t * 8) + random.randint(0, 40), "labels": {"instance": ["sky-topo:9191"]}},
+    "sky_topo_records_processed_total": {"value": lambda t: int(t * 8), "labels": {"instance": ["sky-topo:9191"]}},
     "sky_topo_errors_total": {"value": lambda t: int(t * 0.01), "labels": {"instance": ["sky-topo:9191"]}},
     "sky_topo_current_nodes": {"value": lambda t: 85, "labels": {"tenant_id": DEFAULT_TENANTS, "state": ["ACTIVE"]}},
     "sky_topo_max_nodes": {"value": lambda t: 150, "labels": {}},
@@ -100,8 +100,8 @@ PROFILES = {
     "node_processor_segments_per_agent_we_aim_to": {"value": lambda t: 400, "labels": {}},
     "node_processor_not_assigned_segments": {"value": lambda t: 0, "labels": {}},
     # Gather
-    "gather_batch_ingest_reqs_read": {"value": lambda t: int(t * 2) + random.randint(0, 10), "labels": {"tenantId": DEFAULT_TENANTS, "changeType": ["APPEND", "REFRESH"]}},
-    "gather_batch_ingest_submit_success": {"value": lambda t: int(t * 1.8) + random.randint(0, 8), "labels": {"tenantId": DEFAULT_TENANTS, "changeType": ["APPEND", "REFRESH"]}},
+    "gather_batch_ingest_reqs_read": {"value": lambda t: int(t * 2), "labels": {"tenantId": DEFAULT_TENANTS, "changeType": ["APPEND", "REFRESH"]}},
+    "gather_batch_ingest_submit_success": {"value": lambda t: int(t * 1.8), "labels": {"tenantId": DEFAULT_TENANTS, "changeType": ["APPEND", "REFRESH"]}},
     "gather_batch_ingest_submit_fail": {"value": lambda t: 0, "labels": {"tenantId": DEFAULT_TENANTS, "changeType": ["APPEND"]}},
     "gather_ingest_pacemaker_queue_size": {"value": lambda t: random.randint(0, 10), "labels": {"datasource": ["tenant-abc-123-some-suffix"]}},
     "gather_ingest_pacemaker_slots_available": {"value": lambda t: random.randint(3, 8), "labels": {}},

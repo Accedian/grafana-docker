@@ -63,6 +63,23 @@ def walk_panels(panels):
 def extract_from_expr(expr):
     """Return set of (metric_name, frozenset_of_label_names) from a PromQL expr."""
     results = set()
+
+    # Handle {__name__=~"prefix_(A|B|C)"} selectors — expand into individual metric names
+    for match in re.finditer(r'\{[^}]*__name__\s*=~\s*"([^"]+)"', expr):
+        pattern = match.group(1)
+        # Match patterns like "prefix_(alt1|alt2|...)"
+        m = re.match(r'^([a-zA-Z_:][a-zA-Z0-9_:]*)_?\(([^)]+)\)$', pattern)
+        if m:
+            prefix = m.group(1)
+            for alt in m.group(2).split("|"):
+                alt = alt.strip()
+                if alt:
+                    name = f"{prefix}_{alt}" if prefix.endswith("_") else f"{prefix}{alt}"
+                    # Normalize: if prefix already has trailing underscore avoid double
+                    if "__" in name and "_" + alt in name:
+                        name = f"{prefix}{alt}"
+                    results.add((name, frozenset()))
+
     # Find all metric{label} pairs
     for match in re.finditer(r'([a-zA-Z_:][a-zA-Z0-9_:]*)\s*\{', expr):
         name = match.group(1)
