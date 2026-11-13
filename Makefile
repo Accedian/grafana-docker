@@ -39,7 +39,13 @@ url-file:
 .PHONY: all
 all: build
 
-.PHONY: build
+.PHONY: test
+test:
+	@command -v promtool >/dev/null || { echo 'promtool is required (use the deployed Prometheus version)' >&2; exit 1; }
+	python3 -m unittest discover -s tests -v
+
+.PHONY: build docker
+build: docker
 
 docker:
 	@echo "Building Grafana image: $(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)"

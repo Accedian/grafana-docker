@@ -27,6 +27,7 @@ class CustomerSwarmDashboardsTest(unittest.TestCase):
             "pca-ingestion-pipeline.json", "pca-sensor-connectivity.json",
             "pca-application-speed.json", "pca-resource-health.json",
             "pca-sla-reports.json",
+            "pca-ue-ingestion.json",
         })
         for name, dashboard in self.dashboards.items():
             with self.subTest(name=name):
@@ -55,7 +56,7 @@ class CustomerSwarmDashboardsTest(unittest.TestCase):
                 for target in panel.get("targets", []):
                     with self.subTest(dashboard=name, panel=panel["id"]):
                         self.assertNotRegex(target["expr"], forbidden)
-                        self.assertEqual(target["datasource"], "Prometheus")
+                        self.assertIn(target["datasource"], ["Prometheus", {"type": "prometheus", "uid": "prometheus"}])
 
     def test_resource_queries_use_existing_jobs_and_container_identity(self):
         dashboard = self.dashboards["pca-resource-health.json"]
@@ -93,6 +94,7 @@ class CustomerSwarmDashboardsTest(unittest.TestCase):
             for panel in SWARM.walk(dashboard["panels"]):
                 for target in panel.get("targets", []):
                     expr = re.sub(r"\$__rate_interval|\$__interval", "8m", target["expr"])
+                    expr = re.sub(r"\$\{[A-Za-z][A-Za-z0-9]*:regex\}", ".*", expr)
                     expr = re.sub(r"\$[A-Za-z][A-Za-z0-9]*", ".*", expr)
                     rules.append({"record": f"test:query_{len(rules)}", "expr": expr})
         with tempfile.TemporaryDirectory() as directory:
