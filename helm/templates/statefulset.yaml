@@ -16,9 +16,14 @@ spec:
   serviceName: {{ include "grafana.fullname" . }}
   template:
     metadata:
-      {{- with .Values.grafana.podAnnotations }}
+      {{- if or .Values.grafana.renderer.enabled .Values.grafana.podAnnotations }}
       annotations:
+        {{- if .Values.grafana.renderer.enabled }}
+        checksum/renderer-startup: {{ .Files.Get "files/run-renderer.sh" | sha256sum }}
+        {{- end }}
+        {{- with .Values.grafana.podAnnotations }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}
       labels:
         {{- include "grafana.selectorLabels" . | nindent 8 }}
@@ -48,6 +53,18 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.grafana.resources | nindent 12 }}
+          {{- if .Values.grafana.renderer.enabled }}
+          env:
+            - name: GF_RENDERING_SERVER_URL
+              value: http://127.0.0.1:8081/render
+            - name: GF_RENDERING_CALLBACK_URL
+              value: {{ ternary "http://127.0.0.1:3000/grafana/" "http://127.0.0.1:3000/" .Values.grafana.server.serveFromSubPath | quote }}
+            - name: GF_RENDERING_RENDERER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "grafana.rendererSecretName" . }}
+                  key: {{ required "grafana.renderer.secretKey is required" .Values.grafana.renderer.secretKey | quote }}
+          {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "grafana.fullname" . }}-config
@@ -57,10 +74,76 @@ spec:
             - name: prometheus-datasource
               mountPath: /tmp/provisioning/datasources/prometheus-datasource.yaml
               subPath: prometheus-datasource.yaml
+        {{- if .Values.grafana.renderer.enabled }}
+        - name: renderer
+          image: {{ .Values.grafana.renderer.image.registry }}/{{ .Values.grafana.renderer.image.repository }}:{{ .Values.grafana.renderer.image.tag }}@{{ required "grafana.renderer.image.digest is required" .Values.grafana.renderer.image.digest }}
+          imagePullPolicy: {{ .Values.grafana.renderer.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+            seccompProfile:
+              type: RuntimeDefault
+          workingDir: /tmp
+          command: [/bin/sh, /etc/renderer/run-renderer.sh]
+          env:
+            - name: SERVER_ADDR
+              value: "127.0.0.1:8081"
+            - name: API_DEFAULT_ENCODING
+              value: png
+            - name: BROWSER_MIN_WIDTH
+              value: "100"
+            - name: BROWSER_MIN_HEIGHT
+              value: "100"
+            # Render requests carry Grafana's temporary renderKey in the query.
+            - name: API_SILENCE_REQUEST_LOG_PATH
+              value: /render,/render/csv
+            - name: AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "grafana.rendererSecretName" . }}
+                  key: {{ .Values.grafana.renderer.secretKey | quote }}
+            - name: HOME
+              value: /tmp
+            - name: GOMEMLIMIT
+              value: "1GiB"
+          readinessProbe:
+            exec:
+              command: [/usr/bin/grafana-image-renderer, healthcheck]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.grafana.renderer.resources | nindent 12 }}
+          volumeMounts:
+            - name: renderer-startup
+              mountPath: /etc/renderer
+              readOnly: true
+            - name: renderer-tmp
+              mountPath: /tmp
+            - name: renderer-shm
+              mountPath: /dev/shm
+        {{- end }}
       volumes:
         - name: prometheus-datasource
           configMap:
             name: prometheus-datasource
+        {{- if .Values.grafana.renderer.enabled }}
+        - name: renderer-startup
+          configMap:
+            name: {{ include "grafana.fullname" . }}-renderer-startup
+            defaultMode: 0444
+        - name: renderer-tmp
+          emptyDir:
+            sizeLimit: "1Gi"
+        - name: renderer-shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: "512Mi"
+        {{- end }}
         
 
       {{- with .Values.grafana.nodeSelector }}
