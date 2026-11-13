@@ -518,7 +518,7 @@
       "panels": [
         {
           "datasource": "Prometheus",
-          "description": "Per-collector connectivity status. Each row is one RA collector instance.",
+          "description": "Per-collector connectivity status. Each row is one RA collector instance showing connection state, auth health, cert status, and pathmonitor registration.",
           "fieldConfig": {
             "defaults": {
               "custom": {
@@ -533,53 +533,25 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "instance"
+                  "options": "Collector"
                 },
                 "properties": [
                   {
                     "id": "custom.width",
-                    "value": 180
+                    "value": 280
                   },
                   {
                     "id": "custom.align",
                     "value": "left"
-                  },
-                  {
-                    "id": "displayName",
-                    "value": "Instance"
                   }
                 ]
               },
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "tenant"
+                  "options": "PA Status"
                 },
                 "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 160
-                  },
-                  {
-                    "id": "custom.align",
-                    "value": "left"
-                  },
-                  {
-                    "id": "displayName",
-                    "value": "Tenant"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "RoutingAnalyticsStatusSet"
-                },
-                "properties": [
-                  {
-                    "id": "displayName",
-                    "value": "PA Status"
-                  },
                   {
                     "id": "mappings",
                     "value": [
@@ -613,13 +585,9 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "SensorAgentStatusSet"
+                  "options": "Agent"
                 },
                 "properties": [
-                  {
-                    "id": "displayName",
-                    "value": "Agent"
-                  },
                   {
                     "id": "mappings",
                     "value": [
@@ -653,29 +621,9 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "ConnectionAttemptsCount"
+                  "options": "Conn Fail"
                 },
                 "properties": [
-                  {
-                    "id": "displayName",
-                    "value": "Conn Att"
-                  },
-                  {
-                    "id": "custom.width",
-                    "value": 80
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "ConnectionFailuresCount"
-                },
-                "properties": [
-                  {
-                    "id": "displayName",
-                    "value": "Conn Fail"
-                  },
                   {
                     "id": "thresholds",
                     "value": {
@@ -697,39 +645,15 @@
                     "value": {
                       "type": "color-text"
                     }
-                  },
-                  {
-                    "id": "custom.width",
-                    "value": 85
                   }
                 ]
               },
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "AuthTokenRefreshCount"
+                  "options": "Auth Fail"
                 },
                 "properties": [
-                  {
-                    "id": "displayName",
-                    "value": "Auth OK"
-                  },
-                  {
-                    "id": "custom.width",
-                    "value": 75
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "AuthTokenFailureCount"
-                },
-                "properties": [
-                  {
-                    "id": "displayName",
-                    "value": "Auth Fail"
-                  },
                   {
                     "id": "thresholds",
                     "value": {
@@ -751,23 +675,15 @@
                     "value": {
                       "type": "color-text"
                     }
-                  },
-                  {
-                    "id": "custom.width",
-                    "value": 85
                   }
                 ]
               },
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "CncCaCertExpiryDays"
+                  "options": "Cert Expiry"
                 },
                 "properties": [
-                  {
-                    "id": "displayName",
-                    "value": "Cert Expiry"
-                  },
                   {
                     "id": "unit",
                     "value": "d"
@@ -797,55 +713,15 @@
                     "value": {
                       "type": "color-text"
                     }
-                  },
-                  {
-                    "id": "custom.width",
-                    "value": 100
                   }
                 ]
               },
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "SubscriptionCount"
+                  "options": "PM Fail"
                 },
                 "properties": [
-                  {
-                    "id": "displayName",
-                    "value": "Subs"
-                  },
-                  {
-                    "id": "custom.width",
-                    "value": 60
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "PathmonitorRegisteredCount"
-                },
-                "properties": [
-                  {
-                    "id": "displayName",
-                    "value": "PM Paths"
-                  },
-                  {
-                    "id": "custom.width",
-                    "value": 85
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "PathmonitorFailureCount"
-                },
-                "properties": [
-                  {
-                    "id": "displayName",
-                    "value": "PM Fail"
-                  },
                   {
                     "id": "thresholds",
                     "value": {
@@ -867,10 +743,6 @@
                     "value": {
                       "type": "color-text"
                     }
-                  },
-                  {
-                    "id": "custom.width",
-                    "value": 75
                   }
                 ]
               }
@@ -887,14 +759,13 @@
             "showHeader": true,
             "footer": {
               "show": false
-            },
-            "frameIndex": 0
+            }
           },
           "targets": [
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "{__name__=~\"message_agentHealth_(RoutingAnalyticsStatusSet|SensorAgentStatusSet|ConnectionAttemptsCount|ConnectionFailuresCount|AuthTokenRefreshCount|AuthTokenFailureCount|CncCaCertExpiryDays|SubscriptionCount|PathmonitorRegisteredCount|PathmonitorFailureCount)\", tenant=~\"$tenant\"}",
+              "expr": "label_join({__name__=~\"message_agentHealth_(RoutingAnalyticsStatusSet|SensorAgentStatusSet|ConnectionAttemptsCount|ConnectionFailuresCount|AuthTokenRefreshCount|AuthTokenFailureCount|CncCaCertExpiryDays|SubscriptionCount|PathmonitorRegisteredCount|PathmonitorFailureCount)\", tenant=~\"$tenant\"}, \"collector\", \" | \", \"instance\", \"tenant\")",
               "format": "table",
               "instant": true,
               "refId": "A"
@@ -902,11 +773,41 @@
           ],
           "transformations": [
             {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "collector",
+                    "__name__",
+                    "Value"
+                  ]
+                }
+              }
+            },
+            {
               "id": "groupingToMatrix",
               "options": {
                 "columnField": "__name__",
-                "rowField": "instance\\tenant",
+                "rowField": "collector",
                 "valueField": "Value"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "renameByName": {
+                  "message_agentHealth_RoutingAnalyticsStatusSet": "PA Status",
+                  "message_agentHealth_SensorAgentStatusSet": "Agent",
+                  "message_agentHealth_ConnectionAttemptsCount": "Conn Att",
+                  "message_agentHealth_ConnectionFailuresCount": "Conn Fail",
+                  "message_agentHealth_AuthTokenRefreshCount": "Auth OK",
+                  "message_agentHealth_AuthTokenFailureCount": "Auth Fail",
+                  "message_agentHealth_CncCaCertExpiryDays": "Cert Expiry",
+                  "message_agentHealth_SubscriptionCount": "Subs",
+                  "message_agentHealth_PathmonitorRegisteredCount": "PM Paths",
+                  "message_agentHealth_PathmonitorFailureCount": "PM Fail",
+                  "collector": "Collector"
+                }
               }
             }
           ],
