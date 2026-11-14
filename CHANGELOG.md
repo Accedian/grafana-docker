@@ -1,3 +1,4 @@
+* Feat - Add Airflow workflow metrics to PCA SLA Reports customer dashboard
 ## Current Release
 * Feat - Add PCA SLA Reports customer dashboard and SLA Report Pipeline Diagnostics developer dashboard
 ### 0.233.0
