@@ -1,4 +1,5 @@
-FROM gcr.io/npav-172917/sto-ccc-cloud9/hardened_debian:12-slim@sha256:08a4dbdd271ed3740a5a41ffcf6df118755272c0fec35aef2f61df174700c5c8
+# hardened_debian:12-slim; created 2026-10-24 (immutable metadata observed 2026-11-02).
+FROM gcr.io/npav-172917/sto-ccc-cloud9/hardened_debian:12-slim@sha256:ef1d98c695f6b9a4e7981d458a7fdb57ee07dbf432707d6ee466f75ea94d2793
 
 ARG TARGETARCH
 ARG GRAFANA_VERSION

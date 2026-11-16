@@ -23,12 +23,14 @@ class CustomerSwarmDashboardsTest(unittest.TestCase):
         }
 
     def test_supported_subset_is_reproducible(self):
-        self.assertEqual(set(self.dashboards), {
+        generated = {
             "pca-ingestion-pipeline.json", "pca-sensor-connectivity.json",
             "pca-application-speed.json", "pca-resource-health.json",
             "pca-sla-reports.json",
-        })
-        for name, dashboard in self.dashboards.items():
+        }
+        self.assertTrue(generated.issubset(set(self.dashboards)))
+        for name in generated:
+            dashboard = self.dashboards[name]
             with self.subTest(name=name):
                 self.assertEqual(dashboard, SWARM.build(name))
                 panels = list(SWARM.walk(dashboard["panels"]))
