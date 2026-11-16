@@ -1,0 +1,49 @@
+services:
+  simulator:
+    image: python:3.12-slim
+    working_dir: /app
+    command: sh -c "pip install -q pyyaml && python simulator.py --port 9999 --scenarios /app/scenarios.yaml"
+    volumes:
+      - ./simulator.py:/app/simulator.py:ro
+      - ./extract_metrics.py:/app/extract_metrics.py:ro
+      - ./scenarios.yaml:/app/scenarios.yaml:ro
+      - ../../dashboards:/app/dashboards:ro
+    ports:
+      - "9999:9999"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:9999/health')"]
+      interval: 5s
+      retries: 3
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=1h"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      simulator:
+        condition: service_healthy
+
+  grafana:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      args:
+        GRAFANA_VERSION: "12.1.0"
+        GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-piechart-panel"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_DEFAULT_THEME=light
+      - DS_PROMETHEUS=http://prometheus:9090
+    volumes:
+      # Override the baked-in datasource so Prometheus URL has no /prometheus path
+      - ./grafana-provisioning/datasources/prometheus.yml:/tmp/provisioning/datasources/prometheus-datasource.yaml:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus

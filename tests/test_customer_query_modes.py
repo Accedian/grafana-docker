@@ -23,6 +23,7 @@ class CustomerQueryModesTest(unittest.TestCase):
         "pca-service-health.json": {3, 4, 5, 6, 7, 8},
         "pca-application-speed.json": {3, 4, 5, 6},
         "pca-sla-reports.json": {3, 4, 5, 6, 7, 8},
+        "pca-pa-ingestion-pipeline.json": {3, 4, 5, 6, 7, 8, 44, 45, 46, 47},
     }
 
     @classmethod

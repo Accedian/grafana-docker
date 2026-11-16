@@ -1,9 +1,32 @@
 * Feat - Add Airflow workflow metrics to PCA SLA Reports customer dashboard
-## Current Release
 * Feat - Add PCA SLA Reports customer dashboard and SLA Report Pipeline Diagnostics developer dashboard
+## Current Release
+### 0.241.0
+**Release Date:** Fri Nov 13 15:52:33 UTC 2026
+## Previous Releases
+Feat - updating the Ignite dashboard to include retention budget and topic usage panels [Asana] (https://app.asana.com/1/5557457880942/project/1219234169851570/task/1220082374357816?focus=true)
+### 0.240.0
+**Release Date:** Fri Nov 13 14:44:16 UTC 2026
+* Feat - Add metrics simulator with web UI and scenario support
+* Feat - Add PCA SLA Reports customer dashboard [Asana](https://app.asana.com/1/5557457880942/project/1217595009525450/task/1220510137265491?focus=true)
+### 0.239.0
+**Release Date:** Fri Nov 13 13:51:23 UTC 2026
+* Security - Refresh the Debian 12 runtime and add CloudOps build ownership. [Asana](https://app.asana.com/1/5557457880942/project/1212521992347795/task/1218511895480747?focus=true)
+### 0.238.0
+**Release Date:** Thu Nov 12 17:20:23 UTC 2026
+### 0.237.0
+**Release Date:** Wed Nov 11 01:38:30 UTC 2026
+### 0.236.0
+**Release Date:** Tue Nov 10 15:59:05 UTC 2026
+### 0.235.0
+**Release Date:** Mon Nov  9 13:37:44 UTC 2026
+* Fix - Grafana's Prometheus datasource queries the bundled kube-prometheus-stack under its `/prometheus` route prefix, so dashboard panels no longer fail with "404 page not found". The URL can be overridden with the new `prometheusUrl` value (e.g. for an existing/external Prometheus).
+### 0.234.0
+**Release Date:** Thu Nov  5 19:09:52 UTC 2026
+* Feat - Add PCA SLA Reports customer dashboard
 ### 0.233.0
 **Release Date:** Mon Oct 26 17:12:04 UTC 2026
-## Previous Releases
+* Feat - Add the SLA Report Generator Prometheus metrics dashboard
 ### 0.232.0
 **Release Date:** Fri Sep 18 14:06:52 UTC 2026
 ### 0.231.0

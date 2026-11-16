@@ -9,7 +9,12 @@ global:
     deployment:
       name: "deployment"
       domain: "accedian.local"
-      
+
+# URL of the Prometheus server that Grafana's Prometheus datasource queries.
+# When empty, the datasource falls back to the bundled kube-prometheus-stack
+# service, which is installed with routePrefix=/prometheus/.
+prometheusUrl: ""
+
 grafana:
   replicaCount: 1
   image:

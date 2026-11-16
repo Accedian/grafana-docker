@@ -14,6 +14,7 @@ datasources:
   orgId: 1
   uid: prometheus
   url: http://prometheus:9090/prometheus
-  version: 1
+  # No "version": Grafana bumps the stored one on restart, after which a fixed
+  # provisioned version is never newer and url changes are silently skipped.
   # <bool> allow users to edit datasources from the UI.
   editable: true
