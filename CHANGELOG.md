@@ -1,8 +1,10 @@
-* Fix - Make Grafana build validation construct the container image. [Asana](https://app.asana.com/1/5557457880942/project/1218315396184140/task/1218316666712637?focus=true)
 ## Current Release
+### 0.242.0
+**Release Date:** Mon Nov 16 20:02:10 UTC 2026
+## Previous Releases
+* Fix - Make Grafana build validation construct the container image. [Asana](https://app.asana.com/1/5557457880942/project/1218315396184140/task/1218316666712637?focus=true)
 ### 0.241.0
 **Release Date:** Fri Nov 13 15:52:33 UTC 2026
-## Previous Releases
 Feat - updating the Ignite dashboard to include retention budget and topic usage panels [Asana] (https://app.asana.com/1/5557457880942/project/1219234169851570/task/1220082374357816?focus=true)
 ### 0.240.0
 **Release Date:** Fri Nov 13 14:44:16 UTC 2026
