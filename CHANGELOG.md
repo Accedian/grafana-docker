@@ -1,3 +1,4 @@
+* Fix - Make Grafana build validation construct the container image. [Asana](https://app.asana.com/1/5557457880942/project/1218315396184140/task/1218316666712637?focus=true)
 ## Current Release
 ### 0.241.0
 **Release Date:** Fri Nov 13 15:52:33 UTC 2026
