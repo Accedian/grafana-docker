@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+"""Offline, pinned PromQL parser adapter for unit tests; no silent skip."""
+from pathlib import Path
+import subprocess
+import sys
+
+IMAGE = "prom/prometheus:v2.53.0@sha256:075b1ba2c4ebb04bc3a6ab86c06ec8d8099f8fda1c96ef6d104d9bb1def1d8bc"
+
+if len(sys.argv) != 4 or sys.argv[1:3] != ["check", "rules"]:
+    sys.exit("supported invocation: promtool check rules FILE")
+source = Path(sys.argv[3]).resolve(strict=True)
+if not source.is_file():
+    sys.exit("a rules file is required")
+sys.exit(subprocess.run([
+    "docker", "run", "--rm", "--network", "none", "--read-only", "--cap-drop", "ALL",
+    "--entrypoint", "/bin/promtool", "-v", f"{source}:/rules.json:ro", IMAGE,
+    "check", "rules", "/rules.json",
+]).returncode)

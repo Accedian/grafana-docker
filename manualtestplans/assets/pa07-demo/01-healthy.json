@@ -1,0 +1,628 @@
+{
+  "captured_at_utc": "2026-11-17T11:01:10.967646+00:00",
+  "scope": {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "record_type": "ra_summary"
+  },
+  "scenario": "pa07-healthy-active",
+  "target": {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "record_type": "ra_summary"
+  },
+  "dashboard_uid": "pca-pa-ingestion-pipeline",
+  "dashboard_sha256": "29c010e57ebf1491d9fb281968d4bb638402a55e61c4446eb461b038e8efcd34",
+  "evidence_type": "Synthetic metrics in real local Prometheus and Grafana; not Kafka or Druid delivery",
+  "queries": {
+    "sky_topo_ra_source_messages_total{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": [
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_source_messages_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "record_type": "ra_summary",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.969,
+              "136.04217839241028"
+            ]
+          }
+        ]
+      }
+    },
+    "sky_topo_ra_rows_total{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": [
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_rows_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "outcome": "published",
+              "record_type": "ra_summary",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.971,
+              "680.2108919620514"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_rows_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "outcome": "skipped",
+              "record_type": "ra_summary",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.971,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_rows_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "outcome": "publish_failed",
+              "record_type": "ra_summary",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.971,
+              "0"
+            ]
+          }
+        ]
+      }
+    },
+    "sky_topo_ra_failures_total{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": [
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "unsupported_object_type",
+              "record_type": "ra_summary",
+              "stage": "topic",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "lookup_failed",
+              "record_type": "ra_summary",
+              "stage": "dictionary",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "protobuf_invalid",
+              "record_type": "ra_summary",
+              "stage": "decode",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "metadata_invalid",
+              "record_type": "ra_summary",
+              "stage": "decode",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "csv_invalid",
+              "record_type": "ra_summary",
+              "stage": "decode",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "invalid_integer",
+              "record_type": "ra_summary",
+              "stage": "numeric",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "integer_overflow",
+              "record_type": "ra_summary",
+              "stage": "numeric",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "trailing_data",
+              "record_type": "ra_summary",
+              "stage": "numeric",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "invalid_float",
+              "record_type": "ra_summary",
+              "stage": "numeric",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "non_finite",
+              "record_type": "ra_summary",
+              "stage": "numeric",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "missing_required_field",
+              "record_type": "ra_summary",
+              "stage": "validation",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "invalid_field",
+              "record_type": "ra_summary",
+              "stage": "validation",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "node_missing",
+              "record_type": "ra_summary",
+              "stage": "inventory",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "node_lookup_failed",
+              "record_type": "ra_summary",
+              "stage": "inventory",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "segment_lookup_failed",
+              "record_type": "ra_summary",
+              "stage": "inventory",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "segment_id_missing",
+              "record_type": "ra_summary",
+              "stage": "inventory",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "json_marshal_failed",
+              "record_type": "ra_summary",
+              "stage": "serialization",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "kafka_output_failed",
+              "record_type": "ra_summary",
+              "stage": "publish",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "kafka_consume_failed",
+              "record_type": "ra_summary",
+              "stage": "consume",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "initialization_failed",
+              "record_type": "ra_summary",
+              "stage": "lifecycle",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_failures_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "reason": "unknown",
+              "record_type": "ra_summary",
+              "stage": "unexpected",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.973,
+              "0"
+            ]
+          }
+        ]
+      }
+    },
+    "sky_topo_ra_offset_marks_total{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": [
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_offset_marks_total",
+              "disposition": "complete",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "record_type": "ra_summary",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.975,
+              "136.04217839241028"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_offset_marks_total",
+              "disposition": "row_loss",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "record_type": "ra_summary",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.975,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_offset_marks_total",
+              "disposition": "source_discard",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "record_type": "ra_summary",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.975,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_offset_marks_total",
+              "disposition": "empty_source",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "record_type": "ra_summary",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.975,
+              "0"
+            ]
+          }
+        ]
+      }
+    },
+    "sky_topo_ra_partial_publications_total{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": [
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_partial_publications_total",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "record_type": "ra_summary",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.976,
+              "0"
+            ]
+          }
+        ]
+      }
+    },
+    "sky_topo_ra_processor_state{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": [
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_processor_state",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "record_type": "ra_summary",
+              "state": "initializing",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.978,
+              "0"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_processor_state",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "record_type": "ra_summary",
+              "state": "consuming",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.978,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_processor_state",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "record_type": "ra_summary",
+              "state": "stopped",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.978,
+              "0"
+            ]
+          }
+        ]
+      }
+    },
+    "sky_topo_ra_processing_started_timestamp_seconds{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": [
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_processing_started_timestamp_seconds",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "record_type": "ra_summary",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.98,
+              "0"
+            ]
+          }
+        ]
+      }
+    },
+    "sky_topo_ra_last_input_timestamp_seconds{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": [
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_last_input_timestamp_seconds",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "record_type": "ra_summary",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.981,
+              "1794913269.5435116"
+            ]
+          }
+        ]
+      }
+    },
+    "sky_topo_ra_last_output_timestamp_seconds{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": [
+          {
+            "metric": {
+              "__name__": "sky_topo_ra_last_output_timestamp_seconds",
+              "instance": "simulator:9999",
+              "job": "sky-topo",
+              "record_type": "ra_summary",
+              "tenant_id": "11111111-1111-4111-8111-111111111111"
+            },
+            "value": [
+              1794913270.983,
+              "1794913269.5435116"
+            ]
+          }
+        ]
+      }
+    },
+    "up{job=\"sky-topo\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": [
+          {
+            "metric": {
+              "__name__": "up",
+              "instance": "simulator:9999",
+              "job": "sky-topo"
+            },
+            "value": [
+              1794913270.984,
+              "1"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

@@ -75,6 +75,19 @@ helm-push: $(DOCKER_IMAGE_NAME)-$(HELM_VER).tgz
 # --- Metrics Simulator ---
 SIMULATOR_DIR := tools/metrics-simulator
 
+.PHONY: test-observability pa07-qa-up pa07-qa-down pa07-qa-test
+test-observability:
+	$(SIMULATOR_DIR)/test.sh
+
+pa07-qa-up:
+	docker compose -f $(SIMULATOR_DIR)/docker-compose.qa.yml up -d --wait
+
+pa07-qa-down:
+	docker compose -f $(SIMULATOR_DIR)/docker-compose.qa.yml down
+
+pa07-qa-test:
+	$(SIMULATOR_DIR)/test.sh --live
+
 .PHONY: sim-up sim-down sim-restart sim-logs sim-extract
 
 sim-up:
