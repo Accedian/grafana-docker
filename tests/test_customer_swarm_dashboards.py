@@ -27,10 +27,14 @@ class CustomerSwarmDashboardsTest(unittest.TestCase):
             "pca-ingestion-pipeline.json", "pca-sensor-connectivity.json",
             "pca-application-speed.json", "pca-resource-health.json",
             "pca-sla-reports.json",
+            "pca-pa-ingestion-pipeline.json",
         })
         for name, dashboard in self.dashboards.items():
             with self.subTest(name=name):
-                self.assertEqual(dashboard, SWARM.build(name))
+                # PA is maintained directly (introduced by #291), outside the
+                # generator that owns the original five Swarm dashboards.
+                if name != "pca-pa-ingestion-pipeline.json":
+                    self.assertEqual(dashboard, SWARM.build(name))
                 panels = list(SWARM.walk(dashboard["panels"]))
                 self.assertEqual(len({p["id"] for p in panels}), len(panels))
                 self.assertTrue(any(p.get("targets") for p in panels))
@@ -92,7 +96,8 @@ class CustomerSwarmDashboardsTest(unittest.TestCase):
         for dashboard in self.dashboards.values():
             for panel in SWARM.walk(dashboard["panels"]):
                 for target in panel.get("targets", []):
-                    expr = re.sub(r"\$__rate_interval|\$__interval", "8m", target["expr"])
+                    expr = re.sub(r"\$__rate_interval|\$__interval|\$__range", "8m", target["expr"])
+                    expr = re.sub(r"\$\{[A-Za-z][A-Za-z0-9]*(?::regex)?\}", ".*", expr)
                     expr = re.sub(r"\$[A-Za-z][A-Za-z0-9]*", ".*", expr)
                     rules.append({"record": f"test:query_{len(rules)}", "expr": expr})
         with tempfile.TemporaryDirectory() as directory:

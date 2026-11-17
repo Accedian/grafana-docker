@@ -14,6 +14,10 @@ def walk(panels):
 
 class CustomerQueryModesTest(unittest.TestCase):
     SNAPSHOT_IDS = {
+        "pca-pa-ingestion-pipeline.json": {
+            3, 4, 5, 6, 7, 8, 44, 45, 46, 47,
+            101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 116, 117,
+        },
         "pca-ingestion-pipeline.json": {3, 4, 5, 6, 7, 8},
         "pca-resource-health.json": {
             3, 4, 5, 6, 7, 8, 16, 17, 18, 23, 24,

@@ -138,6 +138,8 @@ Supported variables:
 
 ## Metrics Simulator
 
+For PA-07 observability scenarios, real PromQL checks, and the loopback-only QA stack, see [Path Analytics observability QA](tools/metrics-simulator/PA07.md).
+
 A local development environment that reads dashboard JSON files, extracts every
 Prometheus metric name, and serves simulated values so you can preview dashboards
 without a real deployment.
@@ -221,7 +223,10 @@ To simulate a specific dashboard only:
 
 ```bash
 cd tools/metrics-simulator
-python3 simulator.py --dashboards ../../dashboards/Customer\ \(swarm\)/pca-pa-ingestion-pipeline.json
+python3 -m venv .venv
+.venv/bin/python -m pip --isolated install --only-binary=:all: --require-hashes \
+  --index-url https://pypi.org/simple -r requirements.txt
+.venv/bin/python simulator.py --dashboards "../../dashboards/Customer (swarm)/pca-pa-ingestion-pipeline.json"
 ```
 
 To generate a metric catalog JSON for inspection:

@@ -1,0 +1,99 @@
+{
+  "captured_at_utc": "2026-11-17T11:06:27.997359+00:00",
+  "scope": {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "record_type": "ra_summary"
+  },
+  "scenario": "pa07-metrics-missing",
+  "target": {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "record_type": "ra_summary"
+  },
+  "dashboard_uid": "pca-pa-ingestion-pipeline",
+  "dashboard_sha256": "29c010e57ebf1491d9fb281968d4bb638402a55e61c4446eb461b038e8efcd34",
+  "evidence_type": "Synthetic metrics in real local Prometheus and Grafana; not Kafka or Druid delivery",
+  "queries": {
+    "sky_topo_ra_source_messages_total{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": []
+      }
+    },
+    "sky_topo_ra_rows_total{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": []
+      }
+    },
+    "sky_topo_ra_failures_total{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": []
+      }
+    },
+    "sky_topo_ra_offset_marks_total{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": []
+      }
+    },
+    "sky_topo_ra_partial_publications_total{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": []
+      }
+    },
+    "sky_topo_ra_processor_state{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": []
+      }
+    },
+    "sky_topo_ra_processing_started_timestamp_seconds{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": []
+      }
+    },
+    "sky_topo_ra_last_input_timestamp_seconds{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": []
+      }
+    },
+    "sky_topo_ra_last_output_timestamp_seconds{tenant_id=\"11111111-1111-4111-8111-111111111111\",record_type=\"ra_summary\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": []
+      }
+    },
+    "up{job=\"sky-topo\"}": {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": [
+          {
+            "metric": {
+              "__name__": "up",
+              "instance": "simulator:9999",
+              "job": "sky-topo"
+            },
+            "value": [
+              1794913588.014,
+              "1"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

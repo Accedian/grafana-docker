@@ -1,0 +1,10 @@
+apiVersion: 1
+
+providers:
+  - name: PA07 QA
+    folder: Customer (swarm)
+    type: file
+    allowUiUpdates: false
+    updateIntervalSeconds: 5
+    options:
+      path: /var/lib/grafana/dashboards

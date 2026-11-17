@@ -23,6 +23,11 @@ from urllib.parse import parse_qs, urlparse
 # Allow importing the extractor from the same directory.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from extract_metrics import extract_from_dashboard  # noqa: E402
+from pa07 import RAProfiles, SCENARIOS as RA_SCENARIOS, PREFIX as RA_PREFIX, TENANTS, FAMILIES as RA_FAMILIES
+from prometheus_client import generate_latest
+from prometheus_client.core import Metric
+
+PA_DASHBOARD = "Customer (swarm)/pca-pa-ingestion-pipeline.json"
 
 _here = Path(__file__).resolve().parent
 ROOT = _here
@@ -34,7 +39,7 @@ for _ancestor in (_here, *_here.parents):
 # ---------------------------------------------------------------------------
 # Default label values
 # ---------------------------------------------------------------------------
-DEFAULT_TENANTS = ["tenant-abc-123", "tenant-xyz-456"]
+DEFAULT_TENANTS = list(TENANTS)
 DEFAULT_INSTANCES = ["ra-collector-1:9100", "ra-collector-2:9100"]
 DEFAULT_OBJECT_TYPES = ["ra_summary", "ra_instance"]
 
@@ -88,8 +93,8 @@ PROFILES = {
     "fedex_kafka_producer_error_count": {"value": lambda t: 0, "labels": {"tenant": DEFAULT_TENANTS, "objectType": DEFAULT_OBJECT_TYPES, "topic": ["skytopo_raw_in"]}},
     "file_processing_time_seconds_count": {"value": lambda t: int(t * 5), "labels": {"tenant": DEFAULT_TENANTS}},
     # Sky-Topo
-    "sky_topo_records_processed_total": {"value": lambda t: int(t * 8), "labels": {"instance": ["sky-topo:9191"]}},
-    "sky_topo_errors_total": {"value": lambda t: int(t * 0.01), "labels": {"instance": ["sky-topo:9191"]}},
+    "sky_topo_records_processed_total": {"value": lambda t: int(t * 8), "labels": {"tenant_id": DEFAULT_TENANTS, "record_type": DEFAULT_OBJECT_TYPES}},
+    "sky_topo_errors_total": {"value": lambda t: 0, "labels": {"tenant_id": DEFAULT_TENANTS, "error_code": ["PARSING_ERROR"]}},
     "sky_topo_current_nodes": {"value": lambda t: 85, "labels": {"tenant_id": DEFAULT_TENANTS, "state": ["ACTIVE"]}},
     "sky_topo_max_nodes": {"value": lambda t: 150, "labels": {}},
     "sky_topo_node_provisioning_duration_seconds_sum": {"value": lambda t: t * 0.3, "labels": {}},
@@ -116,7 +121,10 @@ PROFILES = {
 class SimState:
     """Thread-safe simulation state: scenarios and overrides grouped by dashboard."""
 
-    def __init__(self):
+    def __init__(self, clock=time.time):
+        self.clock = clock
+        self.ra = RAProfiles(clock)
+        self.counter_samples = {}
         self.lock = threading.Lock()
         # dashboards[name] = {scenarios: {name: {description, overrides}},
         #                      metrics: [{name, description}]}
@@ -125,7 +133,7 @@ class SimState:
         self.active_scenario = None    # selected scenario name or None
         self.manual_overrides = {}     # metric_name -> float value
         self.catalog = []
-        self.start_time = time.time()
+        self.start_time = clock()
 
     def discover_dashboards(self):
         """Auto-discover all dashboard JSON files and group by folder."""
@@ -143,6 +151,7 @@ class SimState:
             for key in discovered:
                 if key not in self.dashboards:
                     self.dashboards[key] = discovered[key]
+            self._include_ra_scenarios()
         print(f"Discovered {len(discovered)} dashboard(s) from {dashboards_dir}")
 
     def load_scenarios(self, path):
@@ -162,58 +171,97 @@ class SimState:
                     self.dashboards[key] = {"scenarios": {}, "metrics": []}
                 self.dashboards[key]["scenarios"] = cfg.get("scenarios", {})
                 self.dashboards[key]["metrics"] = cfg.get("metrics", [])
+            self._include_ra_scenarios()
         total = sum(len(d.get("scenarios", {})) for d in self.dashboards.values())
         configured = sum(1 for d in self.dashboards.values() if d.get("scenarios"))
         print(f"Loaded scenarios for {configured} dashboard(s), {total} scenario(s) from {path}")
 
-    def set_scenario(self, dashboard, scenario):
+    def _include_ra_scenarios(self):
+        dashboard = self.dashboards.setdefault(PA_DASHBOARD, {"scenarios": {}, "metrics": []})
+        dashboard["scenarios"].update(RA_SCENARIOS)
+
+    def _override(self, name):
+        if name in self.manual_overrides:
+            return self.manual_overrides[name]
+        return self.dashboards.get(self.active_dashboard, {}).get("scenarios", {}).get(
+            self.active_scenario, {}).get("overrides", {}).get(name)
+
+    def _settle_counters(self):
+        now = self.clock()
+        for sample in self.counter_samples.values():
+            sample["value"] += max(0, now - sample["last"]) * sample["rate"]
+            sample["last"] = max(sample["last"], now)
+
+    def _refresh_rates(self):
+        for (name, _), sample in self.counter_samples.items():
+            override = self._override(name)
+            sample["rate"] = sample["default_rate"] if override is None else float(override)
+
+    def set_scenario(self, dashboard, scenario, target=None):
         with self.lock:
             if dashboard and dashboard not in self.dashboards:
                 return False
-            if scenario:
-                scenarios = self.dashboards.get(dashboard, {}).get("scenarios", {})
-                if scenario not in scenarios:
-                    return False
-            self.active_dashboard = dashboard
-            self.active_scenario = scenario
+            if scenario and scenario not in self.dashboards.get(dashboard, {}).get("scenarios", {}):
+                return False
+            ra_scenario = scenario if dashboard == PA_DASHBOARD and scenario in RA_SCENARIOS else "pa07-healthy-active"
+            self.ra.select(ra_scenario, target)
+            self._settle_counters()
+            self.active_dashboard, self.active_scenario = dashboard, scenario
             self.manual_overrides = {}
+            self._refresh_rates()
             return True
 
     def set_override(self, metric, value):
+        known = {m["name"] for m in self.catalog} | set(PROFILES)
+        if not isinstance(metric, str) or metric not in known or metric.startswith(RA_PREFIX) or metric == "up":
+            raise ValueError("use an approved metric or an RA scenario/target")
+        if isinstance(value, bool):
+            raise ValueError("numeric value required")
+        value = float(value)
+        if not math.isfinite(value) or abs(value) > 1e12:
+            raise ValueError("finite bounded value required")
+        mtype = next((m["type"] for m in self.catalog if m["name"] == metric), "gauge")
+        if mtype == "counter" and value < 0:
+            raise ValueError("counter rate must be nonnegative")
         with self.lock:
-            self.manual_overrides[metric] = float(value)
+            self._settle_counters()
+            self.manual_overrides[metric] = value
+            self._refresh_rates()
 
     def clear_override(self, metric):
         with self.lock:
+            self._settle_counters()
             self.manual_overrides.pop(metric, None)
+            self._refresh_rates()
 
     def clear_all_overrides(self):
         with self.lock:
+            self._settle_counters()
             self.manual_overrides.clear()
+            self._refresh_rates()
 
-    def get_effective_value(self, metric_name, default_val, t=0, mtype="gauge"):
-        """Return the effective value: manual override > scenario > default.
-
-        For counter metrics with a positive override, the override is treated
-        as a per-second rate and multiplied by *t* so the counter grows
-        monotonically and ``rate()`` / ``increase()`` queries keep working.
-        """
+    def get_effective_value(self, metric_name, default_val, t=0, mtype="gauge", labels=None):
         with self.lock:
-            if metric_name in self.manual_overrides:
-                v = self.manual_overrides[metric_name]
-                if mtype == "counter" and v > 0:
-                    return v * t
-                return v
-            if self.active_dashboard and self.active_scenario:
-                db = self.dashboards.get(self.active_dashboard, {})
-                sc = db.get("scenarios", {}).get(self.active_scenario, {})
-                overrides = sc.get("overrides", {})
-                if metric_name in overrides:
-                    v = float(overrides[metric_name])
-                    if mtype == "counter" and v > 0:
-                        return v * t
-                    return v
-        return default_val
+            override = self._override(metric_name)
+            if mtype != "counter":
+                return default_val if override is None else float(override)
+            self._settle_counters()
+            key = (metric_name, tuple(sorted((labels or {}).items())))
+            if key not in self.counter_samples:
+                rate = max(0, default_val / t) if t > 0 else 0
+                self.counter_samples[key] = {
+                    "value": max(0, default_val) if override is None else 0,
+                    "last": self.clock(), "default_rate": rate,
+                    "rate": rate if override is None else float(override),
+                }
+            else:
+                # An integer profile may be zero on its first sub-second scrape.
+                # Refresh its rate estimate rather than freezing that zero forever.
+                sample = self.counter_samples[key]
+                sample["default_rate"] = max(0, default_val / t) if t > 0 else 0
+                if override is None:
+                    sample["rate"] = sample["default_rate"]
+            return self.counter_samples[key]["value"]
 
     def get_state_dict(self):
         """Return JSON-serialisable state for the API."""
@@ -240,7 +288,9 @@ class SimState:
                 "active_scenario": self.active_scenario,
                 "folders": folders,
                 "manual_overrides": dict(self.manual_overrides),
-                "profiled_metrics": sorted(PROFILES.keys()),
+                "profiled_metrics": sorted(set(PROFILES) | {RA_PREFIX + n for n in RA_FAMILIES}),
+                "ra_scenario": self.ra.scenario,
+                "ra_target": dict(zip(("tenant_id", "record_type"), self.ra.target)),
                 "total_metrics": len(self.catalog),
             }
 
@@ -252,19 +302,24 @@ STATE = SimState()
 # Metrics generation
 # ---------------------------------------------------------------------------
 def generate_line(name, labels, value):
-    if labels:
-        label_str = ",".join(f'{k}="{v}"' for k, v in sorted(labels.items()))
-        return f"{name}{{{label_str}}} {value}"
-    return f"{name} {value}"
+    # Use the maintained exposition writer for correct quote/newline escaping.
+    class Sample:
+        def collect(self):
+            metric = Metric(name, "Synthetic sample", "unknown")
+            metric.add_sample(name, labels, value)
+            yield metric
+    return generate_latest(Sample()).decode().splitlines()[-1]
 
 
 def generate_metrics():
-    t = time.time() - STATE.start_time
+    t = max(0, STATE.clock() - STATE.start_time)
     lines = []
     seen = set()
 
     for metric in STATE.catalog:
         name = metric["name"]
+        if name.startswith(RA_PREFIX) or name == "up":
+            continue  # Explicit RA profiles; Prometheus alone owns scrape up.
         mtype = metric["type"]
         if name in seen:
             continue
@@ -300,10 +355,10 @@ def generate_metrics():
                 combos = new_combos
             for combo in combos:
                 raw = profile["value"](t)
-                val = STATE.get_effective_value(name, raw, t=t, mtype=mtype)
+                val = STATE.get_effective_value(name, raw, t=t, mtype=mtype, labels=combo)
                 lines.append(generate_line(name, combo, val))
 
-    lines.append("")
+    lines.append(STATE.ra.render())
     return "\n".join(lines)
 
 
@@ -614,7 +669,12 @@ class MetricsHandler(BaseHTTPRequestHandler):
 
     def _read_body(self):
         length = int(self.headers.get("Content-Length", 0))
-        return json.loads(self.rfile.read(length)) if length else {}
+        if length < 0 or length > 65536:
+            raise ValueError("request size")
+        data = json.loads(self.rfile.read(length)) if length else {}
+        if not isinstance(data, dict):
+            raise ValueError("object required")
+        return data
 
     def do_GET(self):
         parsed = urlparse(self.path)
@@ -643,6 +703,12 @@ class MetricsHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
     def do_POST(self):
+        try:
+            self._post()
+        except (ValueError, TypeError):
+            self._send_json({"error": "invalid request"}, 400)
+
+    def _post(self):
         parsed = urlparse(self.path)
         path = parsed.path
 
@@ -650,7 +716,7 @@ class MetricsHandler(BaseHTTPRequestHandler):
             data = self._read_body()
             dashboard = data.get("dashboard")
             scenario = data.get("scenario")
-            if STATE.set_scenario(dashboard, scenario):
+            if STATE.set_scenario(dashboard, scenario, data.get("target")):
                 label = f"{dashboard}/{scenario}" if dashboard and scenario else "default"
                 print(f"Scenario switched to: {label}")
                 self._send_json({"status": "ok", "dashboard": dashboard, "scenario": scenario})
@@ -670,6 +736,12 @@ class MetricsHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
     def do_DELETE(self):
+        try:
+            self._delete()
+        except (ValueError, TypeError):
+            self._send_json({"error": "invalid request"}, 400)
+
+    def _delete(self):
         parsed = urlparse(self.path)
         path = parsed.path
 
@@ -723,6 +795,8 @@ def main():
                         help="YAML file with named simulation scenarios")
     parser.add_argument("--port", type=int, default=9999,
                         help="Port to serve metrics on (default: 9999)")
+    parser.add_argument("--bind", default="127.0.0.1",
+                        help="Listener address; container entry points explicitly use 0.0.0.0")
     args = parser.parse_args()
 
     STATE.catalog = load_catalog(args)
@@ -731,13 +805,13 @@ def main():
     if args.scenarios:
         STATE.load_scenarios(args.scenarios)
 
-    profiled = sum(1 for m in STATE.catalog if m["name"] in PROFILES)
+    profiled = sum(1 for m in STATE.catalog if m["name"] in PROFILES or m["name"].removeprefix(RA_PREFIX) in RA_FAMILIES)
     print(f"Loaded {len(STATE.catalog)} metrics ({profiled} profiled, "
           f"{len(STATE.catalog) - profiled} fallback)")
-    print(f"Web UI:  http://0.0.0.0:{args.port}/")
-    print(f"Metrics: http://0.0.0.0:{args.port}/metrics")
+    print(f"Web UI:  http://{args.bind}:{args.port}/")
+    print(f"Metrics: http://{args.bind}:{args.port}/metrics")
 
-    server = HTTPServer(("0.0.0.0", args.port), MetricsHandler)
+    server = HTTPServer((args.bind, args.port), MetricsHandler)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

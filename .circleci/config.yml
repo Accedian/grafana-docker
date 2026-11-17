@@ -20,6 +20,10 @@ jobs:
       - pca-bes/workspacesetup
 
       - run:
+          name: "Dashboard contracts, PA scenarios, and real PromQL parser"
+          command: make test-observability
+
+      - run:
           name: "Create a temp directory for artifacts"
           command: |
             mkdir -p /tmp/artifacts
