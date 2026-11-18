@@ -76,5 +76,5 @@
 /current-version @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
 /run.sh @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
 /provisioning/** @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
-/dashboards/** @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
+/dashboards/** @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops @Accedian/pca-portfolio-platform-northbound
 /helm/** @Accedian/skylight-devops @Accedian/pca-portfolio-cloudops
