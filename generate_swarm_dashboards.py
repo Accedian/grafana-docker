@@ -143,7 +143,7 @@ def build(name):
     dashboard = copy.deepcopy(json.loads((SOURCE / name).read_text()))
     dashboard["uid"] = dashboard["uid"] + "-swarm"
     dashboard["id"] = None
-    dashboard["version"] = 1
+    dashboard["version"] = dashboard.get("version", 1)
     dashboard["tags"] = sorted(set(dashboard.get("tags", [])) - {"k8s", "kubernetes"} | {"swarm"})
     if name == "pca-resource-health.json":
         resource_health(dashboard)
