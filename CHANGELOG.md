@@ -1,3 +1,4 @@
+* Feat - Add Airflow workflow metrics to PCA SLA Reports customer dashboard
 * Feat - Add PCA SLA Reports customer dashboard and SLA Report Pipeline Diagnostics developer dashboard [Asana](https://app.asana.com/1/5557457880942/project/1208406814937360/task/1215298876401425?focus=true)
 ## Current Release
 ### 0.242.0

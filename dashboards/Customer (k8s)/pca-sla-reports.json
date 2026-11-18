@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "Executive and operational health dashboard for Provider Connectivity Assurance (PCA) SLA reporting. Tracks report generation requests, processing outcomes, report delivery throughput, and storage capacity.",
+  "description": "Executive and operational health dashboard for Provider Connectivity Assurance (PCA) SLA reporting. Tracks report generation requests, processing outcomes, report delivery throughput, workflow orchestration, and storage capacity.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -32,7 +32,7 @@
       },
       "id": 1,
       "options": {
-        "content": "# PCA SLA Reports Overview\nExecutive and operational health dashboard for Provider Connectivity Assurance (PCA) SLA reporting. Tracks report generation requests, processing outcomes, report delivery throughput, and storage capacity.",
+        "content": "# PCA SLA Reports Overview\nExecutive and operational health dashboard for Provider Connectivity Assurance (PCA) SLA reporting. Tracks report generation requests, processing outcomes, report delivery throughput, workflow orchestration, and storage capacity.",
         "mode": "markdown"
       },
       "pluginVersion": "10.0.0",
@@ -1013,6 +1013,15 @@
           "range": true,
           "legendFormat": "Dashboard Access Errors",
           "refId": "E"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(airflow_dag_status{dag_id=~\"sla_reports_.*\", status=\"failed\"}[1h]))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Workflow Orchestration Errors",
+          "refId": "F"
         }
       ],
       "title": "Subsystem Errors (Errors/Hour)",
@@ -1144,6 +1153,159 @@
       ],
       "title": "Reporting System CPU Core Usage",
       "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 35
+      },
+      "id": 21,
+      "panels": [],
+      "title": "SLA Workflow Orchestration",
+      "type": "row"
+    },
+    {
+      "description": "Rate of Airflow workflow runs for SLA reporting (generation, queue polling, and consolidation) categorized by outcome. Good: Green success line tracks scheduled runs. Bad: Spikes of red indicate workflow execution failures.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineWidth": 2
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Success"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 36
+      },
+      "id": 22,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(airflow_dag_status{dag_id=~\"sla_reports_.*\", status=\"success\"}[5m])) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Success",
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(airflow_dag_status{dag_id=~\"sla_reports_.*\", status=\"failed\"}[5m])) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Failed",
+          "refId": "B"
+        }
+      ],
+      "title": "Workflow Runs by Outcome (runs/min)",
+      "type": "timeseries"
+    },
+    {
+      "description": "Execution duration in seconds for SLA reporting Airflow workflows (consolidation, queue poller, and report generation). Good: Stable execution times within expected processing windows. Bad: Escalating runtimes indicate worker or database contention.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 36
+      },
+      "id": 23,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "airflow_dag_run_duration{dag_id=~\"sla_reports_.*\"}",
+          "instant": false,
+          "range": true,
+          "legendFormat": "{{dag_id}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Workflow Execution Duration (s)",
+      "type": "timeseries"
     }
   ],
   "preload": false,
@@ -1151,10 +1313,11 @@
   "schemaVersion": 41,
   "style": "dark",
   "tags": [
+    "airflow",
+    "customer",
     "pca",
-    "sla",
     "reports",
-    "customer"
+    "sla"
   ],
   "templating": {
     "list": [
@@ -1202,5 +1365,5 @@
   "timezone": "browser",
   "title": "PCA SLA Reports",
   "uid": "pca-sla-reports",
-  "version": 11
+  "version": 12
 }
