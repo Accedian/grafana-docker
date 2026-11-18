@@ -1,11 +1,13 @@
 # Customer dashboards for Docker Swarm
 
-These dashboards are a supported subset of `Customer (k8s)`. They require no
+These dashboards include a supported subset of `Customer (k8s)` and a
+Swarm-specific Path Analytics Ingestion Pipeline dashboard. They require no
 new collector, scrape target, recording rule, or Swarm opt-in feature.
 
 | Dashboard | Existing telemetry |
 | --- | --- |
 | Ingestion Pipeline | Sensor/collector metrics exposed through Fedex, Ignite, Spark Pushgateway, Kafka topic exporter and Gather |
+| Path Analytics Ingestion Pipeline | RA Collector, Roadrunner, Fedex/Kafka, Sky-Topo and Gather application metrics |
 | Sensor Connectivity | Fedex/collector, Foxtrot and Skylight-AAA application metrics |
 | Application Speed | Application API/database timings, CouchDB/OpenSearch exporters, Spark Pushgateway and Kafka topic exporter |
 | Resource Health | Node-exporter jobs `sysmetrics` / `sysmetrics-private-cloud` and `cadvisor` |
@@ -58,6 +60,8 @@ are unchanged.
 Ship the Grafana image containing these providers/dashboards together with the
 Deployment UI link change; an older Grafana image will not have the new folders.
 
+The generator updates the five dashboards derived from Kubernetes originals.
+Maintain Path Analytics Ingestion Pipeline directly in this Swarm directory.
 Regenerate and validate after updating the Kubernetes originals:
 
 ```sh
