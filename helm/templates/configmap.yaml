@@ -33,13 +33,6 @@
 {{- include "grafana.validatePublicOrigin" $publicOrigin }}
 {{- end }}
 {{- $staged := and $oauthEnabled (not (empty $oauth.activationConfigMap)) }}
-{{- if $staged }}
-{{- $dnsLabel := "[a-z0-9]([-a-z0-9]*[a-z0-9])?" }}
-{{- if or (gt (len $oauth.activationConfigMap) 253)
-    (not (regexMatch (printf "^%s(\\.%s)*$" $dnsLabel $dnsLabel) $oauth.activationConfigMap)) }}
-{{- fail "generic OAuth activationConfigMap must be a Kubernetes ConfigMap name" }}
-{{- end }}
-{{- end }}
 {{- $anonymousEnabled := and (not $oauthEnabled) .Values.grafana.auth.anonymous.enabled }}
 {{- if $oauthEnabled }}
 {{- $discoveryReady := and $discoveryUrl $discoveryHost $discovery.application }}

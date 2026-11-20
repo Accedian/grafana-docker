@@ -1,3 +1,4 @@
+* Chore - Simplify Helm validation of the Grafana publicOrigin, NetworkPolicy peers and activation ConfigMap name; the Kubernetes API validates the rest.
 ## Current Release
 ### 0.245.0
 **Release Date:** Fri Nov 20 14:58:29 UTC 2026

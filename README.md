@@ -189,7 +189,7 @@ Set `grafana.publicOrigin` for a nonstandard Grafana hostname or HTTPS port,
 for example `https://grafana.example.test:8443`. It controls the browser root
 URL and default logout return URI without changing the deployment root host
 used to discover AAA's client. Origins must have no path, credentials, query
-or fragment and ports must be in the range 1–65535. Configure external routing
+or fragment. Configure external routing
 and TLS separately. An umbrella chart can instead supply these browser-only
 settings through `grafana.publicOriginConfigMap`; discovery remains unchanged.
 Explicit origins are always validated. Deployment-derived placeholders may
@@ -261,11 +261,10 @@ access to Grafana. The chart rejects an enabled policy with no peers. The
 policy permits ingress from those peers to Grafana's HTTP port; it does not
 authorize identity headers or replace Grafana authentication.
 
-The chart also rejects empty or malformed peer objects. CIDR syntax and
-`ipBlock.except` subnet validation belong to the Kubernetes API, not Helm.
-The chart passes configured ranges and exceptions through unchanged; invalid
-CIDRs or exceptions fail API validation during installation or upgrade rather
-than `helm template`.
+The chart also rejects empty peers. Peer fields, CIDR syntax and
+`ipBlock.except` validation belong to the Kubernetes API, not Helm: the chart
+passes peers through unchanged, so invalid ones fail API validation during
+installation or upgrade rather than `helm template`.
 
 ## Grafana container with persistent storage (recommended)
 
