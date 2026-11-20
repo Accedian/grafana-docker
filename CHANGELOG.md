@@ -1,4 +1,5 @@
 ## Current Release
+* Fix - Scope PCA SLA Reports customer dashboard exclusively to Docker Swarm environments
 ### 0.244.0
 **Release Date:** Wed Nov 18 15:05:48 UTC 2026
 ## Previous Releases
