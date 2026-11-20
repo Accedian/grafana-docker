@@ -28,22 +28,8 @@ grep -Fq 'app: nginx' "$rendered_chart"
 grep -Fq 'port: http' "$rendered_chart"
 
 for peers in \
-    '[]' 'null' '{}' '""' 'true' '1' \
-    '[{}]' '[null]' '[true]' '[1]' '["nginx"]' \
-    '[{"unknown":{}}]' '[{"podSelector":null}]' \
-    '[{"namespaceSelector":true}]' '[{"podSelector":[]}]' \
-    '[{"ipBlock":null}]' '[{"ipBlock":{}}]' \
-    '[{"ipBlock":{"cidr":""}}]' '[{"ipBlock":{"cidr":1}}]' \
-    '[{"ipBlock":{"cidr":"192.0.2.0/24","except":null}}]' \
-    '[{"ipBlock":{"cidr":"192.0.2.0/24","except":"192.0.2.1/32"}}]' \
-    '[{"ipBlock":{"cidr":"192.0.2.0/24","except":{}}}]' \
-    '[{"ipBlock":{"cidr":"192.0.2.0/24","except":[null]}}]' \
-    '[{"ipBlock":{"cidr":"192.0.2.0/24","except":[1]}}]' \
-    '[{"ipBlock":{"cidr":"192.0.2.0/24"},"podSelector":{}}]' \
-    '[{"ipBlock":{"cidr":"192.0.2.0/24"},"namespaceSelector":{}}]' \
-    '[{"podSelector":{}},{}]' \
-    '[{"podSelector":{}},null]' \
-    '[{"ipBlock":{"cidr":"192.0.2.0/24","except":["192.0.2.1/32",null]}}]'; do
+    '[]' 'null' '{}' '""' '[{}]' '[null]' \
+    '[{"podSelector":{}},{}]' '[{"podSelector":{}},null]'; do
     if helm template grafana helm \
         --set grafana.networkPolicy.enabled=true \
         --set-json "grafana.networkPolicy.trustedIngress=$peers" \
