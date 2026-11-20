@@ -120,17 +120,6 @@ grafana:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
-    # fsGroup: 2000
-
-  securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
-
   service:
     type: ClusterIP
     port: 3000
@@ -170,11 +159,6 @@ grafana:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
 
 blackbox_exporter:
   image:
