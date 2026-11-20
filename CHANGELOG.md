@@ -1,10 +1,12 @@
+## Current Release
+### 0.245.0
+**Release Date:** Fri Nov 20 14:58:29 UTC 2026
+## Previous Releases
 * Feat - Add Grafana Generic OAuth with PKCE, deployment-derived endpoints and discovery organization, authenticated UserInfo identity lookup, bounded public-client-ID discovery from Skylight-AAA, and upstream session termination on logout for Zitadel SSO.
 * Fix - Skip Zitadel OAuth discovery when analytics-lite omits the identity provider, retain local Grafana login, and restart Grafana when the auth configuration changes.
 * Add - Optional Grafana ingress NetworkPolicy restricts access to configured Kubernetes peers without trusting identity headers.
-## Current Release
 ### 0.244.0
 **Release Date:** Wed Nov 18 15:05:48 UTC 2026
-## Previous Releases
 * Chore - Add Northbound team as code owners for dashboards
 ### 0.243.0
 **Release Date:** Wed Nov 18 14:50:49 UTC 2026
@@ -646,3 +648,4 @@ Fix - add panel to adh-fedex dashboard for RR websocket teardown/rejection count
 **Release Date:** Wed Feb 28 19:25:31 UTC 2018     
 ### 0.1.0
 **Release Date:** Wed Feb 28 19:17:58 UTC 2018
+
