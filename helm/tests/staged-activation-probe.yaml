@@ -1,0 +1,4 @@
+{{/* Test-only JSON inspection of the actual templates, never a deployed resource. */}}
+{{- $config := include (print .Template.BasePath "/configmap.yaml") . | fromYaml -}}
+{{- $statefulset := include (print .Template.BasePath "/statefulset.yaml") . | fromYaml -}}
+{{- dict "config" $config "statefulset" $statefulset | toJson -}}
