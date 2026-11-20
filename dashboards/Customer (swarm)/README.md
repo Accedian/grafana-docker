@@ -1,6 +1,6 @@
 # Customer dashboards for Docker Swarm
 
-These dashboards are a supported subset of `Customer (k8s)`. They require no
+These dashboards include a supported subset of `Customer (k8s)` alongside Swarm-specific customer monitoring (SLA Reports). They require no
 new collector, scrape target, recording rule, or Swarm opt-in feature.
 
 | Dashboard | Existing telemetry |
