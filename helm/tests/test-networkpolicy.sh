@@ -176,6 +176,74 @@ for pair in \
     grep -Fq -- "- $exception" "$rendered_chart"
 done
 
+# No-DNS OAuth uses destination-scoped discovery (2443) and Zitadel (3443)
+# egress. Internal nginx discovery uses the same-namespace admin port instead
+# of hairpinning 2443 to external_ip.
+helm template grafana helm \
+    --set grafana.networkPolicy.enabled=true \
+    --set-string 'grafana.networkPolicy.trustedIngress[0].podSelector.matchLabels.app=nginx' \
+    --set grafana.auth.genericOAuth.enabled=true \
+    --set global.dns.support=false \
+    --set-string global.external_ip=192.0.2.10 \
+    > "$rendered_chart"
+grep -Fq 'cidr: "192.0.2.10/32"' "$rendered_chart"
+grep -Fq 'port: 2443' "$rendered_chart"
+grep -Fq 'port: 3443' "$rendered_chart"
+
+helm template grafana helm \
+    --set grafana.networkPolicy.enabled=true \
+    --set-string 'grafana.networkPolicy.trustedIngress[0].podSelector.matchLabels.app=nginx' \
+    --set grafana.auth.genericOAuth.enabled=true \
+    --set grafana.auth.genericOAuth.clientIdDiscovery.internalNginx=true \
+    --set global.dns.support=false \
+    --set-string global.external_ip=192.0.2.10 \
+    --set global.clusterIPPortAdmin=9443 \
+    > "$rendered_chart"
+grep -Fq 'port: 9443' "$rendered_chart"
+grep -Fq 'cidr: "192.0.2.10/32"' "$rendered_chart"
+grep -Fq 'port: 3443' "$rendered_chart"
+
+# Custom SMTP/webhook ports are derived from configured endpoints. IPv4
+# destinations also get a /32 rule; alertingEgress is an explicit override.
+helm template grafana helm \
+    --set grafana.networkPolicy.enabled=true \
+    --set-string 'grafana.networkPolicy.trustedIngress[0].podSelector.matchLabels.app=nginx' \
+    --set grafana.smtp.enabled=true \
+    --set-string grafana.smtp.host=smtp.example.com:2525 \
+    --set-string grafana.smtp.fromAddress=alerts@example.com \
+    --set grafana.alerting.contactPoints.webhook.enabled=true \
+    --set-string grafana.alerting.contactPoints.webhook.url=https://hooks.example.com:8443/alerts \
+    > "$rendered_chart"
+grep -Fq 'port: 2525' "$rendered_chart"
+grep -Fq 'port: 8443' "$rendered_chart"
+
+helm template grafana helm \
+    --set grafana.networkPolicy.enabled=true \
+    --set-string 'grafana.networkPolicy.trustedIngress[0].podSelector.matchLabels.app=nginx' \
+    --set grafana.smtp.enabled=true \
+    --set-string grafana.smtp.host=203.0.113.10:2525 \
+    --set-string grafana.smtp.fromAddress=alerts@example.com \
+    > "$rendered_chart"
+grep -Fq 'cidr: "203.0.113.10/32"' "$rendered_chart"
+grep -Fq 'port: 2525' "$rendered_chart"
+
+helm template grafana helm \
+    --set grafana.networkPolicy.enabled=true \
+    --set-string 'grafana.networkPolicy.trustedIngress[0].podSelector.matchLabels.app=nginx' \
+    --set-json 'grafana.networkPolicy.alertingEgress=[{"cidr":"198.51.100.10/32","port":2525}]' \
+    > "$rendered_chart"
+grep -Fq 'cidr: "198.51.100.10/32"' "$rendered_chart"
+grep -Fq 'port: 2525' "$rendered_chart"
+
+if helm template grafana helm \
+    --set grafana.networkPolicy.enabled=true \
+    --set-string 'grafana.networkPolicy.trustedIngress[0].podSelector.matchLabels.app=nginx' \
+    --set-json 'grafana.networkPolicy.alertingEgress=[{"cidr":"169.254.169.254/32","port":2525}]' \
+    >/dev/null 2>&1; then
+    echo "Grafana NetworkPolicy accepted metadata alertingEgress" >&2
+    exit 1
+fi
+
 # Invalid unused peer settings must not alter the disabled deployment path.
 helm template grafana helm \
     --set-json 'grafana.networkPolicy.trustedIngress=[{}, {"ipBlock":{"cidr":"not-a-cidr"}}, {"ipBlock":{"cidr":"192.0.2.0/24","except":["198.51.100.1/32"]}}]' \

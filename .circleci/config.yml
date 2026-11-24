@@ -27,13 +27,22 @@ jobs:
       - run:
           name: Run tests
           command: |
+            python3 --version
+            command -v helm
+            helm version
             python3 -m venv /tmp/grafana-tests
             /tmp/grafana-tests/bin/pip install -r tests/requirements-test.txt
+            PATH="/tmp/grafana-tests/bin:$PATH" python3 -m unittest discover -s tests -p 'test_*.py'
             PATH="/tmp/grafana-tests/bin:$PATH" make test
 
       - run:
           name: Building Docker Container
           command: make build
+
+      - run:
+          name: Grafana alerting container smoke test
+          command: |
+            REQUIRE_SMOKE=1 make alerting-smoke
 
       - run:
           name: "make chart"

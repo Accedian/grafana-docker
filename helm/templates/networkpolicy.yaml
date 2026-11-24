@@ -1,4 +1,44 @@
 {{- if .Values.grafana.networkPolicy.enabled }}
+{{- $smtp := default dict .Values.grafana.smtp }}
+{{- $alerting := default dict .Values.grafana.alerting }}
+{{- $cps := default dict $alerting.contactPoints }}
+{{- $webhook := default dict $cps.webhook }}
+{{- $proxy := default dict .Values.grafana.proxy }}
+{{- $oauth := default dict .Values.grafana.auth.genericOAuth }}
+{{- $discovery := default dict $oauth.clientIdDiscovery }}
+{{- $isFullDeployment := .Values.global.skylight_full_version | default false }}
+{{- $oauthEnabled := and $oauth.enabled (or (not $oauth.fullDeploymentOnly) $isFullDeployment) }}
+{{- $noDns := and (not .Values.global.dns.support) (not (empty .Values.global.external_ip)) }}
+{{- $nginxDiscoveryPort := .Values.global.clusterIPPort | default 443 }}
+{{- if $noDns }}
+{{- $nginxDiscoveryPort = .Values.global.clusterIPPortAdmin | default 2443 }}
+{{- end }}
+{{- $zitadelPort := .Values.global.clusterIPPortZitadelAuth | default 3443 }}
+{{- $extraAlertPorts := dict }}
+{{- if and (default false $smtp.enabled) (not (empty (default "" $smtp.host))) }}
+{{- $smtpHP := include "grafana.splitHostPort" $smtp.host | trim }}
+{{- $smtpParts := splitList " " $smtpHP }}
+{{- if ge (len $smtpParts) 2 }}
+{{- $smtpPort := index $smtpParts 1 }}
+{{- if and (regexMatch "^[0-9]+$" $smtpPort) (not (has (int $smtpPort) (list 25 465 587 443))) }}
+{{- $_ := set $extraAlertPorts $smtpPort true }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if and (include "grafana.customerWebhookEnabled" .) (not (empty (default "" $webhook.url))) }}
+{{- $whListen := include "grafana.proxyListen" $webhook.url | trim }}
+{{- $whParts := splitList " " $whListen }}
+{{- if ge (len $whParts) 2 }}
+{{- $whPort := index $whParts 1 }}
+{{- if and (regexMatch "^[0-9]+$" $whPort) (not (has (int $whPort) (list 25 465 587 443))) }}
+{{- $_ := set $extraAlertPorts $whPort true }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- $blockInternal := true }}
+{{- if hasKey .Values.grafana.networkPolicy "blockMetadataAndClusterInternal" }}
+{{- $blockInternal = .Values.grafana.networkPolicy.blockMetadataAndClusterInternal }}
+{{- end }}
 {{- if empty .Values.grafana.networkPolicy.trustedIngress }}
 {{- fail "grafana.networkPolicy.trustedIngress must contain at least one peer when the NetworkPolicy is enabled" }}
 {{- end }}
@@ -42,6 +82,50 @@
 {{- fail (printf "%s cannot combine ipBlock with a selector" $error) }}
 {{- end }}
 {{- end }}
+{{- $proxyEgress := default list .Values.grafana.networkPolicy.proxyEgress }}
+{{- if not (kindIs "slice" $proxyEgress) }}
+{{- fail "grafana.networkPolicy.proxyEgress must be a list of cidr/port objects" }}
+{{- end }}
+{{- range $index, $item := $proxyEgress }}
+{{- $error := printf "grafana.networkPolicy.proxyEgress[%d]" $index }}
+{{- if not (kindIs "map" $item) }}
+{{- fail (printf "%s must be an object with cidr and port" $error) }}
+{{- end }}
+{{- if or (not (kindIs "string" $item.cidr)) (empty $item.cidr) }}
+{{- fail (printf "%s.cidr must be a nonempty CIDR string" $error) }}
+{{- end }}
+{{- if not (regexMatch "^[0-9]+$" ($item.port | toString)) }}
+{{- fail (printf "%s.port must be a TCP port" $error) }}
+{{- end }}
+{{- if or (lt (int $item.port) 1) (gt (int $item.port) 65535) }}
+{{- fail (printf "%s.port must be between 1 and 65535" $error) }}
+{{- end }}
+{{- if or (eq $item.cidr "169.254.169.254/32") (hasPrefix $item.cidr "169.254.") (hasPrefix $item.cidr "127.") }}
+{{- fail (printf "%s.cidr must not target loopback or cloud metadata" $error) }}
+{{- end }}
+{{- end }}
+{{- $alertingEgress := default list .Values.grafana.networkPolicy.alertingEgress }}
+{{- if not (kindIs "slice" $alertingEgress) }}
+{{- fail "grafana.networkPolicy.alertingEgress must be a list of cidr/port objects" }}
+{{- end }}
+{{- range $index, $item := $alertingEgress }}
+{{- $error := printf "grafana.networkPolicy.alertingEgress[%d]" $index }}
+{{- if not (kindIs "map" $item) }}
+{{- fail (printf "%s must be an object with cidr and port" $error) }}
+{{- end }}
+{{- if or (not (kindIs "string" $item.cidr)) (empty $item.cidr) }}
+{{- fail (printf "%s.cidr must be a nonempty CIDR string" $error) }}
+{{- end }}
+{{- if not (regexMatch "^[0-9]+$" ($item.port | toString)) }}
+{{- fail (printf "%s.port must be a TCP port" $error) }}
+{{- end }}
+{{- if or (lt (int $item.port) 1) (gt (int $item.port) 65535) }}
+{{- fail (printf "%s.port must be between 1 and 65535" $error) }}
+{{- end }}
+{{- if or (eq $item.cidr "169.254.169.254/32") (hasPrefix $item.cidr "169.254.") (hasPrefix $item.cidr "127.") }}
+{{- fail (printf "%s.cidr must not target loopback or cloud metadata" $error) }}
+{{- end }}
+{{- end }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -54,10 +138,216 @@ spec:
       {{- include "grafana.selectorLabels" . | nindent 6 }}
   policyTypes:
     - Ingress
+    {{- if $blockInternal }}
+    - Egress
+    {{- end }}
   ingress:
     - from:
         {{- toYaml .Values.grafana.networkPolicy.trustedIngress | nindent 8 }}
       ports:
         - protocol: TCP
           port: http
+  {{- if $blockInternal }}
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 9090
+    - to:
+        - podSelector:
+            matchLabels:
+              app: clickhouse
+      ports:
+        - protocol: TCP
+          port: 10000
+    - to:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 12001
+        - protocol: TCP
+          port: 3000
+        {{- if default false $proxy.enabled }}
+        - protocol: TCP
+          port: 3128
+        {{- end }}
+        {{- if and $oauthEnabled (default false $discovery.internalNginx) }}
+        {{- $nginxPort := int $nginxDiscoveryPort }}
+        {{- if not (has $nginxPort (list 80 443 8080 12001 3000 3128)) }}
+        - protocol: TCP
+          port: {{ $nginxPort }}
+        {{- end }}
+        {{- end }}
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 169.254.169.254/32
+              - 169.254.0.0/16
+              - 127.0.0.0/8
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 25
+        - protocol: TCP
+          port: 465
+        - protocol: TCP
+          port: 587
+        {{- if default false $proxy.enabled }}
+        - protocol: TCP
+          port: 3128
+        - protocol: TCP
+          port: 8080
+        {{- end }}
+        {{- range $port, $_ := $extraAlertPorts }}
+        - protocol: TCP
+          port: {{ int $port }}
+        {{- end }}
+    {{- if or (default false $smtp.allowPrivate) (default false $webhook.allowPrivate) }}
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/8
+        - ipBlock:
+            cidr: 172.16.0.0/12
+        - ipBlock:
+            cidr: 192.168.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 25
+        - protocol: TCP
+          port: 465
+        - protocol: TCP
+          port: 587
+        {{- range $port, $_ := $extraAlertPorts }}
+        - protocol: TCP
+          port: {{ int $port }}
+        {{- end }}
+    {{- end }}
+    {{- $seenProxy := dict }}
+    {{- if default false $proxy.enabled }}
+    {{- range $key := (list "httpProxy" "httpsProxy") }}
+    {{- $url := index $proxy $key | default "" | toString | trim }}
+    {{- if $url }}
+    {{- $listen := include "grafana.proxyListen" $url | trim }}
+    {{- $parts := splitList " " $listen }}
+    {{- if ge (len $parts) 2 }}
+    {{- $host := index $parts 0 }}
+    {{- $port := index $parts 1 }}
+    {{- $proxyDeny := include "grafana.deniedProxyHostReason" $host | trim }}
+    {{- if and (empty $proxyDeny) (regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $host) (regexMatch "^[0-9]+$" $port) }}
+    {{- $id := printf "%s:%s" $host $port }}
+    {{- if not (hasKey $seenProxy $id) }}
+    {{- $_ := set $seenProxy $id true }}
+    - to:
+        - ipBlock:
+            cidr: {{ printf "%s/32" $host | quote }}
+      ports:
+        - protocol: TCP
+          port: {{ int $port }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- range $item := $proxyEgress }}
+    - to:
+        - ipBlock:
+            cidr: {{ $item.cidr | quote }}
+      ports:
+        - protocol: TCP
+          port: {{ int $item.port }}
+    {{- end }}
+    {{- range $item := $alertingEgress }}
+    - to:
+        - ipBlock:
+            cidr: {{ $item.cidr | quote }}
+      ports:
+        - protocol: TCP
+          port: {{ int $item.port }}
+    {{- end }}
+    {{- $seenAlertIP := dict }}
+    {{- if and (default false $smtp.enabled) (not (empty (default "" $smtp.host))) }}
+    {{- $smtpHP := include "grafana.splitHostPort" $smtp.host | trim }}
+    {{- $smtpParts := splitList " " $smtpHP }}
+    {{- if ge (len $smtpParts) 2 }}
+    {{- $smtpName := index $smtpParts 0 }}
+    {{- $smtpPort := index $smtpParts 1 }}
+    {{- $smtpDeny := include "grafana.deniedHostReason" (dict "host" $smtpName "allowPrivate" (default false $smtp.allowPrivate)) | trim }}
+    {{- if and (empty $smtpDeny) (regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $smtpName) (regexMatch "^[0-9]+$" $smtpPort) }}
+    {{- $id := printf "%s:%s" $smtpName $smtpPort }}
+    {{- if not (hasKey $seenAlertIP $id) }}
+    {{- $_ := set $seenAlertIP $id true }}
+    - to:
+        - ipBlock:
+            cidr: {{ printf "%s/32" $smtpName | quote }}
+      ports:
+        - protocol: TCP
+          port: {{ int $smtpPort }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- if and (include "grafana.customerWebhookEnabled" .) (not (empty (default "" $webhook.url))) }}
+    {{- $whListen := include "grafana.proxyListen" $webhook.url | trim }}
+    {{- $whParts := splitList " " $whListen }}
+    {{- if ge (len $whParts) 2 }}
+    {{- $whHost := index $whParts 0 }}
+    {{- $whPort := index $whParts 1 }}
+    {{- $whDeny := include "grafana.deniedHostReason" (dict "host" $whHost "allowPrivate" (default false $webhook.allowPrivate)) | trim }}
+    {{- if and (empty $whDeny) (regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $whHost) (regexMatch "^[0-9]+$" $whPort) }}
+    {{- $id := printf "%s:%s" $whHost $whPort }}
+    {{- if not (hasKey $seenAlertIP $id) }}
+    {{- $_ := set $seenAlertIP $id true }}
+    - to:
+        - ipBlock:
+            cidr: {{ printf "%s/32" $whHost | quote }}
+      ports:
+        - protocol: TCP
+          port: {{ int $whPort }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- if and $oauthEnabled $noDns }}
+    {{- $extIP := .Values.global.external_ip | toString | trim }}
+    {{- $ipDeny := include "grafana.deniedProxyHostReason" $extIP | trim }}
+    {{- if and (empty $ipDeny) (regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $extIP) }}
+    - to:
+        - ipBlock:
+            cidr: {{ printf "%s/32" $extIP | quote }}
+      ports:
+        {{- if not (default false $discovery.internalNginx) }}
+        - protocol: TCP
+          port: 2443
+        {{- end }}
+        - protocol: TCP
+          port: {{ int $zitadelPort }}
+    {{- end }}
+    {{- end }}
+  {{- end }}
 {{- end }}

@@ -1,0 +1,39 @@
+# Tombstone for Kubernetes customer starter alerts.
+# Copied into Grafana provisioning only when PCA_ENABLE_K8S_CUSTOMER_ALERTS=false.
+# Grafana 12.1 keeps file-provenance rules in grafana.db after the source YAML
+# is removed; deleteRules is required to drop those UIDs. Missing UIDs are
+# idempotent (AlertRuleService.DeleteAlertRule).
+apiVersion: 1
+deleteRules:
+  - orgId: 1
+    uid: pca-cust-pods-stuck-waiting
+  - orgId: 1
+    uid: pca-cust-workloads-degraded
+  - orgId: 1
+    uid: pca-cust-pods-pending
+  - orgId: 1
+    uid: pca-cust-node-cpu-high
+  - orgId: 1
+    uid: pca-cust-node-memory-high
+  - orgId: 1
+    uid: pca-cust-node-filesystem-high
+  - orgId: 1
+    uid: pca-cust-pod-oomkilled
+  - orgId: 1
+    uid: pca-cust-kafka-consumer-lag
+  - orgId: 1
+    uid: pca-cust-ignite-ingestion-lag
+  - orgId: 1
+    uid: pca-cust-druid-slots-exhausted
+  - orgId: 1
+    uid: pca-cust-client-cert-expiring
+  - orgId: 1
+    uid: pca-cust-tenant-ca-cert-expiring
+  - orgId: 1
+    uid: pca-cust-api-5xx-rate-high
+  - orgId: 1
+    uid: pca-cust-sla-reports-api-down
+  - orgId: 1
+    uid: pca-cust-sla-trigger-api-down
+  - orgId: 1
+    uid: pca-cust-sla-consolidation-failing

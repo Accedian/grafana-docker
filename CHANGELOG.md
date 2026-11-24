@@ -1,6 +1,11 @@
 ## Current Release
 ### 0.245.0
 **Release Date:** Fri Nov 20 14:58:29 UTC 2026
+* Feat - Provision Kubernetes-only customer starter alerts under Customer Alerts (k8s), plus Helm SMTP/webhook contact points, secret file mounts, and an optional egress NetworkPolicy.
+* Fix - Reconcile notification-policy references before deleteContactPoints, emit deleteRules when Kubernetes starter alerts are disabled, pin grafana 472:472, and restage $__file secrets before gosu.
+* Fix - Migrate existing Grafana volume ownership to 472:472 without recursive chown, and allow RFC1918 corporate proxy egress from the optional NetworkPolicy.
+* Fix - Allow no-DNS OAuth discovery (2443) and Zitadel auth (`clusterIPPortZitadelAuth`) through the optional egress NetworkPolicy, including same-namespace nginx discovery.
+* Fix - Atomically replace staged `$__file` secrets on non-root restarts, and allow custom SMTP/webhook ports through the optional egress NetworkPolicy (plus `alertingEgress`).
 ## Previous Releases
 * Feat - Add Grafana Generic OAuth with PKCE, deployment-derived endpoints and discovery organization, authenticated UserInfo identity lookup, bounded public-client-ID discovery from Skylight-AAA, and upstream session termination on logout for Zitadel SSO.
 * Fix - Skip Zitadel OAuth discovery when analytics-lite omits the identity provider, retain local Grafana login, and restart Grafana when the auth configuration changes.

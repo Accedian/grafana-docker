@@ -99,6 +99,65 @@ grafana:
     cookieSecure: true
     # Lax permits the top-level OIDC authorization-code callback.
     cookieSameSite: lax
+    # Empty keeps Grafana's built-in default key so existing grafana.db files
+    # stay decryptable. Umbrella charts set this on fresh installs only.
+    secretKeyExistingSecret: ""
+    secretKeyKey: "secret-key"
+
+  # Helm/Kubernetes only. Docker Swarm never sets PCA_ENABLE_K8S_CUSTOMER_ALERTS.
+  customerK8sAlerts:
+    enabled: true
+
+  proxy:
+    enabled: false
+    httpProxy: ""
+    httpsProxy: ""
+    noProxy: "localhost,127.0.0.1,.svc,.svc.cluster.local"
+
+  smtp:
+    enabled: false
+    host: ""
+    user: ""
+    fromAddress: ""
+    fromName: "Cisco PCA Alerts"
+    startTlsPolicy: "OpportunisticStartTLS"
+    existingSecret: ""
+    passwordKey: "password"
+    caCertExistingSecret: ""
+    caCertKey: "ca.crt"
+    secretChecksum: ""
+    caCertChecksum: ""
+    allowPrivate: false
+
+  alerting:
+    webhookSecretChecksum: ""
+    contactPoints:
+      email:
+        enabled: false
+        addresses: ""
+        singleEmail: false
+      webhook:
+        enabled: false
+        url: ""
+        httpMethod: "POST"
+        maxAlerts: 0
+        authType: "none"
+        basicAuthUser: ""
+        existingSecret: ""
+        authSecretKey: "secret"
+        caCertPem: ""
+        allowPrivate: false
+    notificationPolicy:
+      managed: false
+      groupWait: "30s"
+      groupInterval: "5m"
+      repeatInterval: "4h"
+      # One-shot unlock of a previously file-provisioned policy tree.
+      # Leave false on routine upgrades so UI-created policies survive.
+      # Required to delete customer contact points that a leftover managed
+      # policy still references: Grafana 12.1 rejects deleteContactPoints
+      # while a route uses the receiver (ErrContactPointReferenced).
+      resetPoliciesOnDisable: false
 
   users:
     autoAssignOrgRole: Viewer
@@ -108,6 +167,21 @@ grafana:
     # These peers may reach Grafana over the network. They are not trusted to
     # assert user identity through Grafana Auth Proxy headers.
     trustedIngress: []
+    # When the NetworkPolicy is enabled, also deny IMDS and unmatched
+    # cluster-internal egress while allowing DNS, Prometheus, ClickHouse,
+    # same-namespace HTTPS, SMTP, public HTTPS webhooks, and (when OAuth is
+    # on without DNS) the configured discovery/Zitadel ports on external_ip.
+    blockMetadataAndClusterInternal: true
+    # Extra egress for a DNS-named corporate proxy. Literal IPv4 proxy URLs
+    # (including RFC1918) are allowed automatically from grafana.proxy.*.
+    # Each item is { cidr: "10.0.0.5/32", port: 3128 }.
+    proxyEgress: []
+    # Extra egress for SMTP/webhook destinations that are not already covered
+    # by the default public ports (443/25/465/587) or by deriving ports from
+    # grafana.smtp.host and grafana.alerting.contactPoints.webhook.url.
+    # Literal IPv4 SMTP/webhook endpoints also get a /32 rule automatically.
+    # Each item is { cidr: "198.51.100.10/32", port: 2525 }.
+    alertingEgress: []
 
   serviceAccount:
     # Specifies whether a service account should be created
@@ -120,8 +194,13 @@ grafana:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
-    # fsGroup: 2000
+  # The image pins grafana to UID/GID 472 before the Debian package postinst
+  # (which would otherwise allocate a dynamic system GID). 0440 Secret mounts
+  # with this fsGroup stay group-readable as the grafana user's primary GID
+  # after gosu. run.sh also restages $__file secrets to grafana-owned 0400
+  # copies so a mismatched supplemental group cannot hide the mount.
+  podSecurityContext:
+    fsGroup: 472
 
   securityContext: {}
     # capabilities:

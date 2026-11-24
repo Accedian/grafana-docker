@@ -107,6 +107,107 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
     done
 fi
 
+# Kubernetes-only customer starter alerts. Docker Swarm (env unset) must not
+# load or tombstone Customer Alerts (k8s) rules. Helm sets the flag to "true"
+# or "false" explicitly. "false" copies deleteRules so grafana.db drops the
+# previously provisioned UIDs; removing the YAML alone leaves file-provenance
+# rules in place.
+k8s_alerts_src="/tmp/k8s-alerting/customer-k8s-alerts.yaml"
+k8s_alerts_delete_src="/tmp/k8s-alerting/customer-k8s-alerts-delete.yaml"
+k8s_alerts_dest="$GF_PATHS_PROVISIONING/alerting/customer-k8s-alerts.yaml"
+k8s_alerts_delete_dest="$GF_PATHS_PROVISIONING/alerting/customer-k8s-alerts-delete.yaml"
+mkdir -p "$GF_PATHS_PROVISIONING/alerting"
+rm -f "$k8s_alerts_dest" "$k8s_alerts_delete_dest"
+case "${PCA_ENABLE_K8S_CUSTOMER_ALERTS:-}" in
+  true)
+    if [ -f "$k8s_alerts_src" ]; then
+      cp "$k8s_alerts_src" "$k8s_alerts_dest"
+    fi
+    ;;
+  false)
+    if [ -f "$k8s_alerts_delete_src" ]; then
+      cp "$k8s_alerts_delete_src" "$k8s_alerts_delete_dest"
+    fi
+    ;;
+esac
+
+install_grafana_ca_bundle() {
+  local ca_file="/var/run/secrets/grafana-ca/ca.crt"
+  local bundle="/tmp/grafana-ca-bundle.crt"
+  local sys_ca="/etc/ssl/certs/ca-certificates.crt"
+  if [ ! -f "$ca_file" ]; then
+    return 0
+  fi
+  if [ ! -s "$ca_file" ]; then
+    echo "Grafana CA certificate file is empty" >&2
+    exit 1
+  fi
+  if ! grep -q "BEGIN CERTIFICATE" "$ca_file"; then
+    echo "Grafana CA certificate is missing a PEM BEGIN CERTIFICATE header" >&2
+    exit 1
+  fi
+  if grep -q "PRIVATE KEY" "$ca_file"; then
+    echo "Grafana CA certificate file must not contain a private key" >&2
+    exit 1
+  fi
+  if command -v openssl >/dev/null 2>&1; then
+    if ! openssl x509 -in "$ca_file" -noout >/dev/null 2>&1; then
+      echo "Grafana CA certificate failed X.509 parsing" >&2
+      exit 1
+    fi
+  fi
+  if [ -f "$sys_ca" ]; then
+    cat "$sys_ca" "$ca_file" > "$bundle"
+  else
+    cp "$ca_file" "$bundle"
+  fi
+  chmod 0644 "$bundle"
+  export SSL_CERT_FILE="$bundle"
+}
+
+install_grafana_ca_bundle
+
+# Restage $__file secrets as grafana-owned 0400 copies before gosu. Kubernetes
+# fsGroup 472 is only a supplemental group; gosu grafana drops those, and the
+# Debian grafana postinst would otherwise allocate a dynamic GID. The image
+# pins grafana to 472:472, and these copies remain readable after privilege drop
+# even if the mount stays root:472 mode 0440.
+GRAFANA_FILE_SECRET_DIR=/tmp/grafana-file-secrets
+mkdir -p "$GRAFANA_FILE_SECRET_DIR"
+chmod 0700 "$GRAFANA_FILE_SECRET_DIR"
+if [ "$(id -u)" = "0" ]; then
+  chown grafana:grafana "$GRAFANA_FILE_SECRET_DIR"
+fi
+
+stage_grafana_file_secret() {
+  local src="$1"
+  local name="$2"
+  local env_name="$3"
+  local dest tmp
+  if [ ! -e "$src" ]; then
+    return 0
+  fi
+  if [ ! -r "$src" ]; then
+    echo "Grafana secret file is not readable: $src" >&2
+    exit 1
+  fi
+  dest="${GRAFANA_FILE_SECRET_DIR}/${name}"
+  # A previous non-root start left dest mode 0400. cp cannot open it for
+  # write; replace via a temp file in this writable directory instead.
+  tmp="${dest}.tmp.$$"
+  rm -f "$tmp" "$dest"
+  cp "$src" "$tmp"
+  chmod 0400 "$tmp"
+  if [ "$(id -u)" = "0" ]; then
+    chown grafana:grafana "$tmp"
+  fi
+  mv -f "$tmp" "$dest"
+  export "${env_name}=\$__file{${dest}}"
+}
+
+stage_grafana_file_secret /var/run/secrets/grafana-smtp/password smtp-password GF_SMTP_PASSWORD
+stage_grafana_file_secret /var/run/secrets/grafana-security/secret-key secret-key GF_SECURITY_SECRET_KEY
+
 # Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced.
 if [ -f "$GF_PATHS_DATA/grafana.db" ] && command -v sqlite3 >/dev/null 2>&1; then
     OLD_PROM_UID=$(sqlite3 "$GF_PATHS_DATA/grafana.db" \
@@ -148,10 +249,50 @@ grafana_args=(
     "$@"
 )
 
+# Existing Docker/Swarm volumes may still be owned by a Debian-dynamic
+# grafana UID/GID from before this image pinned 472:472. A recursive
+# chown of the volume is unsafe (hardlinks/symlinks), so only migrate
+# regular files with nlink 1 and directories, never following links or
+# crossing devices.
+migrate_grafana_volume_ownership() {
+    local db="$GF_PATHS_DATA/grafana.db"
+    local old_uid old_gid target_uid target_gid root path
+    local -A seen_roots
+    [ "$(id -u)" = "0" ] || return 0
+    id grafana >/dev/null 2>&1 || return 0
+    [ -f "$db" ] || return 0
+    [ ! -L "$db" ] || return 0
+    command -v find >/dev/null 2>&1 || return 0
+    old_uid="$(stat -c '%u' "$db")"
+    old_gid="$(stat -c '%g' "$db")"
+    target_uid="$(id -u grafana)"
+    target_gid="$(id -g grafana)"
+    if [ "$old_uid" = "$target_uid" ] && [ "$old_gid" = "$target_gid" ]; then
+        return 0
+    fi
+    echo "Migrating Grafana volume ownership from ${old_uid}:${old_gid} to ${target_uid}:${target_gid}"
+    for root in "$GF_PATHS_DATA" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS"; do
+        [ -n "$root" ] || continue
+        [ -d "$root" ] || continue
+        [ ! -L "$root" ] || continue
+        [ -z "${seen_roots[$root]+x}" ] || continue
+        seen_roots["$root"]=1
+        while IFS= read -r -d '' path; do
+            [ -n "$path" ] || continue
+            [ ! -L "$path" ] || continue
+            chown -h grafana:grafana "$path" || true
+        done < <(find "$root" -xdev \( \
+            \( -type d -uid "$old_uid" \) -o \
+            \( -type f -uid "$old_uid" -links 1 \) \
+        \) -print0 2>/dev/null)
+    done
+}
+
 if [ "$(id -u)" = "0" ]; then
     # Fix ownership of the paths created as root before dropping to grafana
     # user. -h keeps a symlinked entry from redirecting the change.
     chown -h grafana:grafana "${runtime_paths[@]}" 2>/dev/null || true
+    migrate_grafana_volume_ownership
     exec gosu grafana /usr/share/grafana/bin/grafana-server "${grafana_args[@]}"
 else
     exec /usr/share/grafana/bin/grafana-server "${grafana_args[@]}"
