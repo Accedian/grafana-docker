@@ -166,6 +166,56 @@ true
 {{- end -}}
 {{- end }}
 
+{{- define "grafana.proxyListen" -}}
+{{- $raw := . | toString | trim -}}
+{{- $defaultPort := "80" -}}
+{{- if hasPrefix "https://" $raw -}}
+{{- $defaultPort = "443" -}}
+{{- $raw = trimPrefix "https://" $raw -}}
+{{- else if hasPrefix "http://" $raw -}}
+{{- $raw = trimPrefix "http://" $raw -}}
+{{- end -}}
+{{- $raw = regexReplaceAll "[/?#].*$" $raw "" -}}
+{{- if contains "@" $raw -}}
+{{- $raw = regexReplaceAll "^.*@" $raw "" -}}
+{{- end -}}
+{{- $hp := include "grafana.splitHostPort" $raw | trim -}}
+{{- $parts := compact (splitList " " $hp) -}}
+{{- $host := "" -}}
+{{- if ge (len $parts) 1 -}}
+{{- $host = index $parts 0 -}}
+{{- end -}}
+{{- $port := $defaultPort -}}
+{{- if ge (len $parts) 2 -}}
+{{- $port = index $parts 1 -}}
+{{- end -}}
+{{- if empty $port -}}
+{{- $port = $defaultPort -}}
+{{- end -}}
+{{- printf "%s %s" $host $port -}}
+{{- end }}
+
+{{- define "grafana.deniedProxyHostReason" -}}
+{{- $host := lower (trim (default "" .)) -}}
+{{- if empty $host -}}
+host is empty
+{{- else if or (eq $host "localhost") (hasSuffix ".localhost" $host) (eq $host "ip6-localhost") -}}
+loopback hostname is not allowed
+{{- else if or (eq $host "::1") (eq $host "0:0:0:0:0:0:0:1") (eq $host "::") -}}
+IPv6 loopback or unspecified address is not allowed
+{{- else if regexMatch "(?i)^fe80:" $host -}}
+link-local address is not allowed
+{{- else if regexMatch "(?i)^::ffff:" $host -}}
+IPv4-mapped IPv6 address is not allowed
+{{- else if regexMatch "^127\\." $host -}}
+loopback address is not allowed
+{{- else if regexMatch "^169\\.254\\." $host -}}
+link-local or cloud metadata address is not allowed
+{{- else if eq $host "0.0.0.0" -}}
+unspecified address is not allowed
+{{- end -}}
+{{- end }}
+
 {{- define "grafana.splitHostPort" -}}
 {{- $raw := . | toString | trim -}}
 {{- if hasPrefix "[" $raw -}}
@@ -355,6 +405,19 @@ single-label cluster service name is not allowed
 {{- if default false $proxy.enabled -}}
 {{- if and (empty (default "" $proxy.httpProxy)) (empty (default "" $proxy.httpsProxy)) -}}
 {{- fail "grafana.proxy.httpProxy or grafana.proxy.httpsProxy is required when proxy is enabled" -}}
+{{- end -}}
+{{- range $key := (list "httpProxy" "httpsProxy") -}}
+{{- $url := index $proxy $key | default "" | toString | trim -}}
+{{- if $url -}}
+{{- if not (or (hasPrefix "http://" $url) (hasPrefix "https://" $url)) -}}
+{{- fail (printf "grafana.proxy.%s must use http:// or https://" $key) -}}
+{{- end -}}
+{{- $host := include "grafana.hostnameFromURL" $url | trim -}}
+{{- $deny := include "grafana.deniedProxyHostReason" $host | trim -}}
+{{- if $deny -}}
+{{- fail (printf "grafana.proxy.%s rejected: %s" $key $deny) -}}
+{{- end -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 {{- end }}

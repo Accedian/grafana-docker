@@ -269,6 +269,10 @@ class CustomerK8sAlertRulesTest(unittest.TestCase):
         self.assertIn("/tmp/k8s-alerting/customer-k8s-alerts-delete.yaml", run)
         self.assertIn("stage_grafana_file_secret", run)
         self.assertIn("/tmp/grafana-file-secrets", run)
+        self.assertIn("migrate_grafana_volume_ownership", run)
+        self.assertIn("find \"$root\" -xdev", run)
+        self.assertIn("-links 1", run)
+        self.assertNotIn("chown -R", run)
         self.assertIn("install_grafana_ca_bundle", run)
         self.assertNotIn("cat \"$ca_file\" >&", run)
         self.assertIn("PRIVATE KEY", run)
@@ -555,6 +559,34 @@ class GrafanaAlertingHelmTest(unittest.TestCase):
         self.assertIn("port: 53", rendered)
         self.assertIn("port: 9090", rendered)
         self.assertIn("port: 10000", rendered)
+        self.assertNotIn("10.20.30.40/32", rendered)
+
+    def test_networkpolicy_allows_configured_private_proxy(self):
+        rendered = helm_template(
+            "--set", "grafana.networkPolicy.enabled=true",
+            "--set-string", "grafana.networkPolicy.trustedIngress[0].podSelector.matchLabels.app=nginx",
+            "--set", "grafana.proxy.enabled=true",
+            "--set-string", "grafana.proxy.httpProxy=http://10.20.30.40:3128",
+            "--set-string", "grafana.proxy.httpsProxy=http://10.20.30.40:3128",
+        )
+        self.assertIn('cidr: "10.20.30.40/32"', rendered)
+        self.assertIn("port: 3128", rendered)
+        self.assertNotIn("cidr: 10.0.0.0/8", rendered)
+        extra = helm_template(
+            "--set", "grafana.networkPolicy.enabled=true",
+            "--set-string", "grafana.networkPolicy.trustedIngress[0].podSelector.matchLabels.app=nginx",
+            "--set", "grafana.proxy.enabled=true",
+            "--set-string", "grafana.proxy.httpsProxy=http://proxy.example.com:3128",
+            "--set-json", 'grafana.networkPolicy.proxyEgress=[{"cidr":"10.9.8.7/32","port":8888}]',
+        )
+        self.assertIn('cidr: "10.9.8.7/32"', extra)
+        self.assertIn("port: 8888", extra)
+        blocked = helm_template(
+            "--set", "grafana.proxy.enabled=true",
+            "--set-string", "grafana.proxy.httpsProxy=http://127.0.0.1:3128",
+            expect_fail=True,
+        )
+        self.assertIn("loopback", blocked)
 
 
 class CustomerAlertSmokeContractTest(unittest.TestCase):
@@ -569,6 +601,8 @@ class CustomerAlertSmokeContractTest(unittest.TestCase):
         self.assertIn("Customer Alerts (k8s)", text)
         self.assertIn("--user grafana", text)
         self.assertIn("/tmp/grafana-file-secrets", text)
+        self.assertIn("999:999", text)
+        self.assertIn("grafana-alerting-smoke-upgrade", text)
 
 
 if __name__ == "__main__":

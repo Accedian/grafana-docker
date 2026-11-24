@@ -51,6 +51,28 @@
 {{- fail (printf "%s cannot combine ipBlock with a selector" $error) }}
 {{- end }}
 {{- end }}
+{{- $proxyEgress := default list .Values.grafana.networkPolicy.proxyEgress }}
+{{- if not (kindIs "slice" $proxyEgress) }}
+{{- fail "grafana.networkPolicy.proxyEgress must be a list of cidr/port objects" }}
+{{- end }}
+{{- range $index, $item := $proxyEgress }}
+{{- $error := printf "grafana.networkPolicy.proxyEgress[%d]" $index }}
+{{- if not (kindIs "map" $item) }}
+{{- fail (printf "%s must be an object with cidr and port" $error) }}
+{{- end }}
+{{- if or (not (kindIs "string" $item.cidr)) (empty $item.cidr) }}
+{{- fail (printf "%s.cidr must be a nonempty CIDR string" $error) }}
+{{- end }}
+{{- if not (regexMatch "^[0-9]+$" ($item.port | toString)) }}
+{{- fail (printf "%s.port must be a TCP port" $error) }}
+{{- end }}
+{{- if or (lt (int $item.port) 1) (gt (int $item.port) 65535) }}
+{{- fail (printf "%s.port must be between 1 and 65535" $error) }}
+{{- end }}
+{{- if or (eq $item.cidr "169.254.169.254/32") (hasPrefix $item.cidr "169.254.") (hasPrefix $item.cidr "127.") }}
+{{- fail (printf "%s.cidr must not target loopback or cloud metadata" $error) }}
+{{- end }}
+{{- end }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -110,6 +132,10 @@ spec:
           port: 12001
         - protocol: TCP
           port: 3000
+        {{- if default false $proxy.enabled }}
+        - protocol: TCP
+          port: 3128
+        {{- end }}
     - to:
         - ipBlock:
             cidr: 0.0.0.0/0
@@ -152,6 +178,41 @@ spec:
           port: 465
         - protocol: TCP
           port: 587
+    {{- end }}
+    {{- $seenProxy := dict }}
+    {{- if default false $proxy.enabled }}
+    {{- range $key := (list "httpProxy" "httpsProxy") }}
+    {{- $url := index $proxy $key | default "" | toString | trim }}
+    {{- if $url }}
+    {{- $listen := include "grafana.proxyListen" $url | trim }}
+    {{- $parts := splitList " " $listen }}
+    {{- if ge (len $parts) 2 }}
+    {{- $host := index $parts 0 }}
+    {{- $port := index $parts 1 }}
+    {{- $proxyDeny := include "grafana.deniedProxyHostReason" $host | trim }}
+    {{- if and (empty $proxyDeny) (regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $host) (regexMatch "^[0-9]+$" $port) }}
+    {{- $id := printf "%s:%s" $host $port }}
+    {{- if not (hasKey $seenProxy $id) }}
+    {{- $_ := set $seenProxy $id true }}
+    - to:
+        - ipBlock:
+            cidr: {{ printf "%s/32" $host | quote }}
+      ports:
+        - protocol: TCP
+          port: {{ int $port }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- range $item := $proxyEgress }}
+    - to:
+        - ipBlock:
+            cidr: {{ $item.cidr | quote }}
+      ports:
+        - protocol: TCP
+          port: {{ int $item.port }}
     {{- end }}
   {{- end }}
 {{- end }}

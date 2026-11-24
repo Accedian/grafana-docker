@@ -244,10 +244,50 @@ grafana_args=(
     "$@"
 )
 
+# Existing Docker/Swarm volumes may still be owned by a Debian-dynamic
+# grafana UID/GID from before this image pinned 472:472. A recursive
+# chown of the volume is unsafe (hardlinks/symlinks), so only migrate
+# regular files with nlink 1 and directories, never following links or
+# crossing devices.
+migrate_grafana_volume_ownership() {
+    local db="$GF_PATHS_DATA/grafana.db"
+    local old_uid old_gid target_uid target_gid root path
+    local -A seen_roots
+    [ "$(id -u)" = "0" ] || return 0
+    id grafana >/dev/null 2>&1 || return 0
+    [ -f "$db" ] || return 0
+    [ ! -L "$db" ] || return 0
+    command -v find >/dev/null 2>&1 || return 0
+    old_uid="$(stat -c '%u' "$db")"
+    old_gid="$(stat -c '%g' "$db")"
+    target_uid="$(id -u grafana)"
+    target_gid="$(id -g grafana)"
+    if [ "$old_uid" = "$target_uid" ] && [ "$old_gid" = "$target_gid" ]; then
+        return 0
+    fi
+    echo "Migrating Grafana volume ownership from ${old_uid}:${old_gid} to ${target_uid}:${target_gid}"
+    for root in "$GF_PATHS_DATA" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS"; do
+        [ -n "$root" ] || continue
+        [ -d "$root" ] || continue
+        [ ! -L "$root" ] || continue
+        [ -z "${seen_roots[$root]+x}" ] || continue
+        seen_roots["$root"]=1
+        while IFS= read -r -d '' path; do
+            [ -n "$path" ] || continue
+            [ ! -L "$path" ] || continue
+            chown -h grafana:grafana "$path" || true
+        done < <(find "$root" -xdev \( \
+            \( -type d -uid "$old_uid" \) -o \
+            \( -type f -uid "$old_uid" -links 1 \) \
+        \) -print0 2>/dev/null)
+    done
+}
+
 if [ "$(id -u)" = "0" ]; then
     # Fix ownership of the paths created as root before dropping to grafana
     # user. -h keeps a symlinked entry from redirecting the change.
     chown -h grafana:grafana "${runtime_paths[@]}" 2>/dev/null || true
+    migrate_grafana_volume_ownership
     exec gosu grafana /usr/share/grafana/bin/grafana-server "${grafana_args[@]}"
 else
     exec /usr/share/grafana/bin/grafana-server "${grafana_args[@]}"

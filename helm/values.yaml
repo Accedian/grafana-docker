@@ -171,6 +171,10 @@ grafana:
     # cluster-internal egress while allowing DNS, Prometheus, ClickHouse,
     # same-namespace HTTPS, SMTP, and public HTTPS webhooks.
     blockMetadataAndClusterInternal: true
+    # Extra egress for a DNS-named corporate proxy. Literal IPv4 proxy URLs
+    # (including RFC1918) are allowed automatically from grafana.proxy.*.
+    # Each item is { cidr: "10.0.0.5/32", port: 3128 }.
+    proxyEgress: []
 
   serviceAccount:
     # Specifies whether a service account should be created

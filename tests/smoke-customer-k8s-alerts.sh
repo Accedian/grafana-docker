@@ -26,7 +26,7 @@ if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
 fi
 
 workdir="$(mktemp -d)"
-trap 'rm -rf "$workdir"; docker rm -f grafana-alerting-smoke grafana-alerting-smoke-disabled grafana-alerting-smoke-swarm >/dev/null 2>&1 || true' EXIT
+trap 'rm -rf "$workdir"; docker rm -f grafana-alerting-smoke grafana-alerting-smoke-disabled grafana-alerting-smoke-upgrade grafana-alerting-smoke-swarm >/dev/null 2>&1 || true' EXIT
 
 mkdir -p "$workdir/secrets/smtp" "$workdir/secrets/security" "$workdir/data" "$workdir/swarm-data"
 printf 'smtp-test-password\n' > "$workdir/secrets/smtp/password"
@@ -142,6 +142,35 @@ disabled_count="$(docker exec grafana-alerting-smoke-disabled sqlite3 /var/lib/g
   "SELECT COUNT(*) FROM alert_rule WHERE uid LIKE 'pca-cust-%';")"
 if [ "$disabled_count" != "0" ]; then
   echo "Expected Kubernetes customer alert rules to be deleted from grafana.db, found $disabled_count" >&2
+  exit 1
+fi
+
+docker stop grafana-alerting-smoke-disabled >/dev/null
+docker rm grafana-alerting-smoke-disabled >/dev/null
+
+# Existing Swarm/Docker volumes keep the previous Debian-dynamic UID/GID.
+chown -R 999:999 "$workdir/data"
+if [ "$(stat -c '%u:%g' "$workdir/data/grafana.db")" != "999:999" ]; then
+  echo "Failed to simulate a pre-472 Grafana volume owner" >&2
+  exit 1
+fi
+
+docker run -d --name grafana-alerting-smoke-upgrade \
+  -e PCA_ENABLE_K8S_CUSTOMER_ALERTS=false \
+  -v "$workdir/data:/var/lib/grafana" \
+  "$IMAGE" >/dev/null
+
+wait_healthy grafana-alerting-smoke-upgrade
+
+upgrade_owner="$(docker exec grafana-alerting-smoke-upgrade stat -c '%u:%g' /var/lib/grafana/grafana.db)"
+if [ "$upgrade_owner" != "472:472" ]; then
+  echo "Expected grafana.db ownership 472:472 after upgrade, found $upgrade_owner" >&2
+  exit 1
+fi
+upgrade_count="$(docker exec grafana-alerting-smoke-upgrade sqlite3 /var/lib/grafana/grafana.db \
+  "SELECT COUNT(*) FROM alert_rule;")"
+if [ -z "$upgrade_count" ]; then
+  echo "grafana.db was not readable after ownership migration" >&2
   exit 1
 fi
 
