@@ -183,7 +183,7 @@ stage_grafana_file_secret() {
   local src="$1"
   local name="$2"
   local env_name="$3"
-  local dest
+  local dest tmp
   if [ ! -e "$src" ]; then
     return 0
   fi
@@ -192,11 +192,16 @@ stage_grafana_file_secret() {
     exit 1
   fi
   dest="${GRAFANA_FILE_SECRET_DIR}/${name}"
-  cp "$src" "$dest"
-  chmod 0400 "$dest"
+  # A previous non-root start left dest mode 0400. cp cannot open it for
+  # write; replace via a temp file in this writable directory instead.
+  tmp="${dest}.tmp.$$"
+  rm -f "$tmp" "$dest"
+  cp "$src" "$tmp"
+  chmod 0400 "$tmp"
   if [ "$(id -u)" = "0" ]; then
-    chown grafana:grafana "$dest"
+    chown grafana:grafana "$tmp"
   fi
+  mv -f "$tmp" "$dest"
   export "${env_name}=\$__file{${dest}}"
 }
 

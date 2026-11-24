@@ -615,6 +615,66 @@ class GrafanaAlertingHelmTest(unittest.TestCase):
         self.assertIn('cidr: "192.0.2.10/32"', nginx)
         self.assertNotIn("port: 2443", nginx)
 
+    def test_networkpolicy_allows_custom_smtp_and_webhook_ports(self):
+        np_args = (
+            "--set", "grafana.networkPolicy.enabled=true",
+            "--set-string", "grafana.networkPolicy.trustedIngress[0].podSelector.matchLabels.app=nginx",
+        )
+        default = helm_template(*np_args)
+        self.assertIn("port: 587", default)
+        self.assertNotIn("port: 2525", default)
+        self.assertNotIn("port: 8443", default)
+        self.assertNotIn("198.51.100.10/32", default)
+
+        hostname = helm_template(
+            *np_args,
+            "--set", "grafana.smtp.enabled=true",
+            "--set-string", "grafana.smtp.host=smtp.example.com:2525",
+            "--set-string", "grafana.smtp.fromAddress=alerts@example.com",
+            "--set", "grafana.alerting.contactPoints.webhook.enabled=true",
+            "--set-string", "grafana.alerting.contactPoints.webhook.url=https://hooks.example.com:8443/alerts",
+        )
+        self.assertIn("port: 2525", hostname)
+        self.assertIn("port: 8443", hostname)
+        self.assertNotIn("cidr: 10.0.0.0/8", hostname)
+
+        ipv4 = helm_template(
+            *np_args,
+            "--set", "grafana.smtp.enabled=true",
+            "--set-string", "grafana.smtp.host=203.0.113.10:2525",
+            "--set-string", "grafana.smtp.fromAddress=alerts@example.com",
+            "--set", "grafana.alerting.contactPoints.webhook.enabled=true",
+            "--set-string", "grafana.alerting.contactPoints.webhook.url=https://198.51.100.20:8443/alerts",
+        )
+        private = helm_template(
+            *np_args,
+            "--set", "grafana.smtp.enabled=true",
+            "--set-string", "grafana.smtp.host=10.1.2.3:2525",
+            "--set-string", "grafana.smtp.fromAddress=alerts@example.com",
+            "--set", "grafana.smtp.allowPrivate=true",
+        )
+        self.assertIn('cidr: "10.1.2.3/32"', private)
+        self.assertIn("port: 2525", private)
+        self.assertIn("cidr: 10.0.0.0/8", private)
+        self.assertIn('cidr: "203.0.113.10/32"', ipv4)
+        self.assertIn('cidr: "198.51.100.20/32"', ipv4)
+        self.assertIn("port: 2525", ipv4)
+        self.assertIn("port: 8443", ipv4)
+
+        extra = helm_template(
+            *np_args,
+            "--set-json", 'grafana.networkPolicy.alertingEgress=[{"cidr":"198.51.100.10/32","port":2525}]',
+        )
+        self.assertIn('cidr: "198.51.100.10/32"', extra)
+        self.assertIn("port: 2525", extra)
+        blocked = helm_template(
+            *np_args,
+            "--set-json", 'grafana.networkPolicy.alertingEgress=[{"cidr":"169.254.169.254/32","port":2525}]',
+            expect_fail=True,
+        )
+        self.assertIn("alertingEgress", blocked)
+        self.assertIn("loopback or cloud metadata", blocked)
+
 
 class CustomerAlertSmokeContractTest(unittest.TestCase):
     def test_smoke_script_exists_and_is_gated(self):
@@ -630,6 +690,9 @@ class CustomerAlertSmokeContractTest(unittest.TestCase):
         self.assertIn("/tmp/grafana-file-secrets", text)
         self.assertIn("999:999", text)
         self.assertIn("grafana-alerting-smoke-upgrade", text)
+        self.assertIn("grafana-alerting-smoke-nonroot", text)
+        self.assertIn("--user 472:472", text)
+        self.assertIn("docker restart grafana-alerting-smoke-nonroot", text)
 
 
 if __name__ == "__main__":

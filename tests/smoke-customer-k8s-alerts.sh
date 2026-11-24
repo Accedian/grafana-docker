@@ -26,7 +26,7 @@ if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
 fi
 
 workdir="$(mktemp -d)"
-trap 'rm -rf "$workdir"; docker rm -f grafana-alerting-smoke grafana-alerting-smoke-disabled grafana-alerting-smoke-upgrade grafana-alerting-smoke-swarm >/dev/null 2>&1 || true' EXIT
+trap 'rm -rf "$workdir"; docker rm -f grafana-alerting-smoke grafana-alerting-smoke-disabled grafana-alerting-smoke-upgrade grafana-alerting-smoke-swarm grafana-alerting-smoke-nonroot >/dev/null 2>&1 || true' EXIT
 
 mkdir -p "$workdir/secrets/smtp" "$workdir/secrets/security" "$workdir/data" "$workdir/swarm-data"
 printf 'smtp-test-password\n' > "$workdir/secrets/smtp/password"
@@ -188,5 +188,46 @@ if docker exec grafana-alerting-smoke-swarm test -f /var/lib/grafana/provisionin
   echo "Swarm-style start loaded Kubernetes customer alert tombstones" >&2
   exit 1
 fi
+
+# A non-root start leaves dest mode 0400. Restarting the same container must
+# replace that copy instead of failing `cp` under `run.sh -e`.
+mkdir -p "$workdir/nonroot-data" "$workdir/nonroot-secrets/smtp" "$workdir/nonroot-secrets/security"
+cp "$workdir/secrets/smtp/password" "$workdir/nonroot-secrets/smtp/password"
+cp "$workdir/secrets/security/secret-key" "$workdir/nonroot-secrets/security/secret-key"
+chmod 0440 "$workdir/nonroot-secrets/smtp/password" "$workdir/nonroot-secrets/security/secret-key"
+if ! chown 0:472 "$workdir/nonroot-secrets/smtp/password" \
+      "$workdir/nonroot-secrets/security/secret-key" \
+    || ! chown -R 472:472 "$workdir/nonroot-data"; then
+  echo "Cannot chown non-root smoke fixtures" >&2
+  exit 1
+fi
+
+docker run -d --name grafana-alerting-smoke-nonroot --user 472:472 \
+  -e PCA_ENABLE_K8S_CUSTOMER_ALERTS=true \
+  -e 'GF_SMTP_PASSWORD=$__file{/var/run/secrets/grafana-smtp/password}' \
+  -e 'GF_SECURITY_SECRET_KEY=$__file{/var/run/secrets/grafana-security/secret-key}' \
+  -v "$workdir/nonroot-secrets/smtp:/var/run/secrets/grafana-smtp:ro" \
+  -v "$workdir/nonroot-secrets/security:/var/run/secrets/grafana-security:ro" \
+  -v "$workdir/nonroot-data:/var/lib/grafana" \
+  "$IMAGE" >/dev/null
+
+wait_healthy grafana-alerting-smoke-nonroot
+docker exec --user 472 grafana-alerting-smoke-nonroot \
+  test -r /tmp/grafana-file-secrets/smtp-password
+docker exec --user 472 grafana-alerting-smoke-nonroot \
+  test -r /tmp/grafana-file-secrets/secret-key
+staged_mode="$(docker exec grafana-alerting-smoke-nonroot \
+  stat -c '%a' /tmp/grafana-file-secrets/smtp-password)"
+if [ "$staged_mode" != "400" ]; then
+  echo "Expected staged secret mode 400 after first non-root start, found $staged_mode" >&2
+  exit 1
+fi
+
+docker restart grafana-alerting-smoke-nonroot >/dev/null
+wait_healthy grafana-alerting-smoke-nonroot
+docker exec --user 472 grafana-alerting-smoke-nonroot \
+  test -r /tmp/grafana-file-secrets/smtp-password
+docker exec --user 472 grafana-alerting-smoke-nonroot \
+  test -r /tmp/grafana-file-secrets/secret-key
 
 echo "Grafana alerting smoke test passed against $IMAGE"

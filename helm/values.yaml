@@ -176,6 +176,12 @@ grafana:
     # (including RFC1918) are allowed automatically from grafana.proxy.*.
     # Each item is { cidr: "10.0.0.5/32", port: 3128 }.
     proxyEgress: []
+    # Extra egress for SMTP/webhook destinations that are not already covered
+    # by the default public ports (443/25/465/587) or by deriving ports from
+    # grafana.smtp.host and grafana.alerting.contactPoints.webhook.url.
+    # Literal IPv4 SMTP/webhook endpoints also get a /32 rule automatically.
+    # Each item is { cidr: "198.51.100.10/32", port: 2525 }.
+    alertingEgress: []
 
   serviceAccount:
     # Specifies whether a service account should be created
