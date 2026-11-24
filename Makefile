@@ -76,7 +76,7 @@ helm/%.yaml: helm/%.yaml.in .FORCE
 	@echo "# /!\ This file is generated, do not edit!" > $@
 	sed -e "s/@HELM_VER@/$(HELM_VER)/" -e "s/@APP_VER@/$(APP_VER)/" $< >> $@
 
-.PHONY: helm-auth-test helm-network-test helm-staged-activation-test helm-lint
+.PHONY: helm-auth-test helm-network-test helm-staged-activation-test helm-lint alerting-smoke
 helm-auth-test: helm/Chart.yaml helm/values.yaml
 	bash helm/tests/test-auth-config.sh
 
@@ -89,6 +89,10 @@ helm-staged-activation-test: helm/Chart.yaml helm/values.yaml
 helm-lint: helm/Chart.yaml helm/values.yaml helm-auth-test helm-network-test \
            helm-staged-activation-test
 	helm lint helm
+
+.PHONY: alerting-smoke
+alerting-smoke:
+	REQUIRE_SMOKE=$${REQUIRE_SMOKE:-0} bash tests/smoke-customer-k8s-alerts.sh
 
 helm $(DOCKER_IMAGE_NAME)-$(HELM_VER).tgz: .FORCE helm-lint helm/Chart.yaml helm/values.yaml
 	@echo "Using 'version: $(HELM_VER)'"

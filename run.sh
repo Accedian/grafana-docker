@@ -107,6 +107,52 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
     done
 fi
 
+# Kubernetes-only customer starter alerts. Docker Swarm (and any start without
+# this flag) must not load Customer Alerts (k8s) rules.
+if [ "${PCA_ENABLE_K8S_CUSTOMER_ALERTS:-false}" = "true" ]; then
+  if [ -f /tmp/k8s-alerting/customer-k8s-alerts.yaml ]; then
+    mkdir -p "$GF_PATHS_PROVISIONING/alerting"
+    cp /tmp/k8s-alerting/customer-k8s-alerts.yaml \
+      "$GF_PATHS_PROVISIONING/alerting/customer-k8s-alerts.yaml"
+  fi
+fi
+
+install_grafana_ca_bundle() {
+  local ca_file="/var/run/secrets/grafana-ca/ca.crt"
+  local bundle="/tmp/grafana-ca-bundle.crt"
+  local sys_ca="/etc/ssl/certs/ca-certificates.crt"
+  if [ ! -f "$ca_file" ]; then
+    return 0
+  fi
+  if [ ! -s "$ca_file" ]; then
+    echo "Grafana CA certificate file is empty" >&2
+    exit 1
+  fi
+  if ! grep -q "BEGIN CERTIFICATE" "$ca_file"; then
+    echo "Grafana CA certificate is missing a PEM BEGIN CERTIFICATE header" >&2
+    exit 1
+  fi
+  if grep -q "PRIVATE KEY" "$ca_file"; then
+    echo "Grafana CA certificate file must not contain a private key" >&2
+    exit 1
+  fi
+  if command -v openssl >/dev/null 2>&1; then
+    if ! openssl x509 -in "$ca_file" -noout >/dev/null 2>&1; then
+      echo "Grafana CA certificate failed X.509 parsing" >&2
+      exit 1
+    fi
+  fi
+  if [ -f "$sys_ca" ]; then
+    cat "$sys_ca" "$ca_file" > "$bundle"
+  else
+    cp "$ca_file" "$bundle"
+  fi
+  chmod 0644 "$bundle"
+  export SSL_CERT_FILE="$bundle"
+}
+
+install_grafana_ca_bundle
+
 # Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced.
 if [ -f "$GF_PATHS_DATA/grafana.db" ] && command -v sqlite3 >/dev/null 2>&1; then
     OLD_PROM_UID=$(sqlite3 "$GF_PATHS_DATA/grafana.db" \

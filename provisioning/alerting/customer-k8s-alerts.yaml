@@ -1,0 +1,815 @@
+# Kubernetes-only customer starter alerts.
+# Copied into Grafana provisioning only when PCA_ENABLE_K8S_CUSTOMER_ALERTS=true.
+# Folder MUST be "Customer Alerts (k8s)" — never "Customer (k8s)" — because Grafana 12.1
+# runs alerting provisioning before dashboards and rejects a duplicate folder name.
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: pca-customer-service-health
+    folder: Customer Alerts (k8s)
+    interval: 1m
+    rules:
+      - uid: pca-cust-pods-stuck-waiting
+        title: PodsStuckWaiting
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                sum by (namespace, pod, reason) (kube_pod_container_status_waiting_reason{reason=~"CrashLoopBackOff|ImagePullBackOff|ErrImagePull"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [0], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels:
+          audience: customer
+          dashboard: pca-service-health
+          severity: critical
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-service-health
+          __panelId__: "32"
+          summary: Pods are stuck waiting on image or crash-loop failures
+          description: One or more pods have been in CrashLoopBackOff, ImagePullBackOff, or ErrImagePull for at least five minutes. Open the Service Health dashboard and inspect the affected namespace and pod.
+      - uid: pca-cust-workloads-degraded
+        title: WorkloadsDegraded
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                (
+                  label_replace(
+                    label_replace(
+                      (kube_deployment_spec_replicas - kube_deployment_status_replicas_available) > 0,
+                      "workload", "$1", "deployment", "(.+)"
+                    ),
+                    "workload_kind", "Deployment", "__name__", ".*"
+                  )
+                )
+                or
+                (
+                  label_replace(
+                    label_replace(
+                      (kube_statefulset_replicas - kube_statefulset_status_replicas_ready) > 0,
+                      "workload", "$1", "statefulset", "(.+)"
+                    ),
+                    "workload_kind", "StatefulSet", "__name__", ".*"
+                  )
+                )
+                or
+                (
+                  label_replace(
+                    label_replace(
+                      (kube_daemonset_status_desired_number_scheduled - kube_daemonset_status_number_ready) > 0,
+                      "workload", "$1", "daemonset", "(.+)"
+                    ),
+                    "workload_kind", "DaemonSet", "__name__", ".*"
+                  )
+                )
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [0], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels:
+          audience: customer
+          dashboard: pca-service-health
+          severity: warning
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-service-health
+          __panelId__: "4"
+          summary: Deployments, StatefulSets, or DaemonSets have unavailable replicas
+          description: At least one workload has fewer ready replicas than desired. The alert keeps namespace, workload, and workload_kind labels for Deployments, StatefulSets, and DaemonSets.
+      - uid: pca-cust-pods-pending
+        title: PodsPending
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                max by (namespace, pod) (kube_pod_status_phase{phase="Pending"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [0], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels:
+          audience: customer
+          dashboard: pca-service-health
+          severity: warning
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-service-health
+          __panelId__: "5"
+          summary: Pods have been Pending for 10 minutes
+          description: One or more pods remain in the Pending phase. Check node capacity, scheduling constraints, and persistent volume binding.
+  - orgId: 1
+    name: pca-customer-resource-health
+    folder: Customer Alerts (k8s)
+    interval: 1m
+    rules:
+      - uid: pca-cust-node-cpu-high
+        title: NodeCPUHigh
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{job="node-exporter",mode="idle"}[5m])))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [85], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        labels:
+          audience: customer
+          dashboard: pca-resource-health
+          severity: warning
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-resource-health
+          __panelId__: "25"
+          summary: Node CPU utilisation is above 85 percent
+          description: A node has sustained CPU utilisation above 85 percent for 15 minutes. Review the Resource Health dashboard for the affected instance.
+      - uid: pca-cust-node-memory-high
+        title: NodeMemoryHigh
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                100 * (1 - sum by (instance) (node_memory_MemAvailable_bytes{job="node-exporter"}) / sum by (instance) (node_memory_MemTotal_bytes{job="node-exporter"}))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [85], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels:
+          audience: customer
+          dashboard: pca-resource-health
+          severity: warning
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-resource-health
+          __panelId__: "26"
+          summary: Node memory utilisation is above 85 percent
+          description: A node has sustained memory utilisation above 85 percent for 10 minutes. Review the Resource Health dashboard for the affected instance.
+      - uid: pca-cust-node-filesystem-high
+        title: NodeFilesystemHigh
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                100 * (1 - node_filesystem_avail_bytes{job="node-exporter",fstype!="",fstype!~"^(tmpfs|overlay|squashfs)$",mountpoint!="",mountpoint!~"^/var/lib/(docker|containerd)(/.*)?$"} / node_filesystem_size_bytes{job="node-exporter",fstype!="",fstype!~"^(tmpfs|overlay|squashfs)$",mountpoint!="",mountpoint!~"^/var/lib/(docker|containerd)(/.*)?$"}) and on(instance, device, mountpoint) (node_filesystem_readonly{job="node-exporter"} == 0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [85], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels:
+          audience: customer
+          dashboard: pca-resource-health
+          severity: warning
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-resource-health
+          __panelId__: "5"
+          summary: Writable filesystem usage is above 85 percent
+          description: A writable node filesystem is more than 85 percent full. This is an early customer warning; the internal ops alert still fires at 95 percent.
+      - uid: pca-cust-pod-oomkilled
+        title: PodOOMKilled
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 900, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                sum by (namespace, pod, container) (increase(kube_pod_container_status_restarts_total[15m])) > 0 and on(namespace, pod, container) (kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} == 1)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [0], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 1m
+        labels:
+          audience: customer
+          dashboard: pca-resource-health
+          severity: warning
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-resource-health
+          __panelId__: "19"
+          summary: A container was OOMKilled and has restarted recently
+          description: A container's last termination reason is OOMKilled and it has restarted in the last 15 minutes. Recovered pods stop matching once restarts settle.
+  - orgId: 1
+    name: pca-customer-ingestion
+    folder: Customer Alerts (k8s)
+    interval: 1m
+    rules:
+      - uid: pca-cust-kafka-consumer-lag
+        title: KafkaConsumerLagHigh
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                sum by (consumergroup, topic) (kafka_consumergroup_lag_sum{consumergroup=~"streamingapp|latentapp|alertStreaming"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [100000], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        labels:
+          audience: customer
+          dashboard: pca-ingestion-v2
+          severity: warning
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-ingestion-v2
+          __panelId__: "31"
+          summary: Kafka consumer lag is above 100000
+          description: Streaming, latent, or alert-streaming consumer groups have accumulated more than 100000 lagged messages. Check the Ingestion Pipeline dashboard.
+      - uid: pca-cust-ignite-ingestion-lag
+        title: IgniteIngestionLagHigh
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                sum by (topic) (ignite_ingestion_lag{topic!~"mo-summary-.*"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [100000], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        labels:
+          audience: customer
+          dashboard: pca-ingestion-v2
+          severity: warning
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-ingestion-v2
+          __panelId__: "25"
+          summary: Ignite ingestion lag is above 100000
+          description: Ignite ingestion lag on non-summary topics has remained above 100000 for 15 minutes.
+      - uid: pca-cust-druid-slots-exhausted
+        title: DruidSlotsExhausted
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                min(gather_ingest_pacemaker_slots_available)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [1], type: lt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        labels:
+          audience: customer
+          dashboard: pca-ingestion-v2
+          severity: critical
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-ingestion-v2
+          __panelId__: "45"
+          summary: Druid ingest pacemaker slots are exhausted
+          description: No gather ingest pacemaker slots are available. This customer-routed counterpart of the internal Druid slots alert uses integer-equivalent lte 0 (slots < 1).
+  - orgId: 1
+    name: pca-customer-sensor-connectivity
+    folder: Customer Alerts (k8s)
+    interval: 5m
+    rules:
+      - uid: pca-cust-client-cert-expiring
+        title: SensorClientCertExpiring
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                min by (tenant, zone, connectorId) (((roadrunner_cert_expiry > 0) / 1000 - time()) / 86400)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [30], type: lt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 1h
+        labels:
+          audience: customer
+          dashboard: pca-sensor-connectivity
+          severity: warning
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-sensor-connectivity
+          __panelId__: "31"
+          summary: A sensor collector client certificate expires in less than 30 days
+          description: The nearest Roadrunner client certificate expiry is under 30 days. Renew the certificate for the labelled tenant, zone, and connector.
+      - uid: pca-cust-tenant-ca-cert-expiring
+        title: TenantCACertExpiring
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                min by (tenantId) (skylight_aaa_tenant_cert_expiry_days)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [30], type: lt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 1h
+        labels:
+          audience: customer
+          dashboard: pca-sensor-connectivity
+          severity: critical
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-sensor-connectivity
+          __panelId__: "32"
+          summary: A tenant CA certificate expires in less than 30 days
+          description: The nearest tenant CA certificate expiry is under 30 days. Renew the tenant CA before sensors fail authentication.
+  - orgId: 1
+    name: pca-customer-application-speed
+    folder: Customer Alerts (k8s)
+    interval: 1m
+    rules:
+      - uid: pca-cust-api-5xx-rate-high
+        title: API5xxRateHigh
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                (
+                  label_replace(
+                    100 * sum(rate(gather_api_call_duration_count{code=~"5.."}[5m]))
+                      / (sum(rate(gather_api_call_duration_count[5m])) > 0.1),
+                    "service", "gather", "__name__", ".*"
+                  )
+                )
+                or
+                (
+                  label_replace(
+                    100 * sum(rate(skylight_aaa_api_call_duration_count{code=~"5.."}[5m]))
+                      / (sum(rate(skylight_aaa_api_call_duration_count[5m])) > 0.1),
+                    "service", "skylight_aaa", "__name__", ".*"
+                  )
+                )
+                or
+                (
+                  label_replace(
+                    100 * sum(rate(stitchit_api_call_duration_count{code=~"5.."}[5m]))
+                      / (sum(rate(stitchit_api_call_duration_count[5m])) > 0.1),
+                    "service", "stitchit", "__name__", ".*"
+                  )
+                )
+                or
+                (
+                  label_replace(
+                    100 * sum(rate(alert_service_api_call_duration_count{code=~"5.."}[5m]))
+                      / (sum(rate(alert_service_api_call_duration_count[5m])) > 0.1),
+                    "service", "alert_service", "__name__", ".*"
+                  )
+                )
+                or
+                (
+                  label_replace(
+                    100 * sum(rate(weld_watcher_http_status{statusCode=~"5.."}[5m]))
+                      / (sum(rate(weld_watcher_http_status[5m])) > 0.1),
+                    "service", "weld_watcher", "__name__", ".*"
+                  )
+                )
+                or
+                (
+                  label_replace(
+                    100 * sum(rate(foxtrot_ws_server_handle_duration_count{related_http_code=~"5.."}[5m]))
+                      / (sum(rate(foxtrot_ws_server_handle_duration_count[5m])) > 0.1),
+                    "service", "foxtrot", "__name__", ".*"
+                  )
+                )
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [5], type: gt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels:
+          audience: customer
+          dashboard: pca-application-speed
+          severity: warning
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-application-speed
+          __panelId__: "8"
+          summary: API 5xx rate is above 5 percent
+          description: One of gather, skylight_aaa, stitchit, alert_service, weld_watcher, or foxtrot is returning more than 5 percent 5xx responses. The ratio uses true request rate and only evaluates when traffic exceeds 0.1 req/s.
+  - orgId: 1
+    name: pca-customer-sla-reports
+    folder: Customer Alerts (k8s)
+    interval: 1m
+    rules:
+      - uid: pca-cust-sla-reports-api-down
+        title: SLAReportsAPIDown
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                max(up{job=~"sla-reports-api|sla_reports_api"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [1], type: lt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels:
+          audience: customer
+          dashboard: pca-sla-reports
+          severity: critical
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-sla-reports
+          __panelId__: "5"
+          summary: The SLA reports API is down
+          description: Prometheus has not scraped a healthy sla-reports-api target for five minutes.
+      - uid: pca-cust-sla-trigger-api-down
+        title: SLATriggerAPIDown
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                max(up{job="sla_report_trigger"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [1], type: lt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels:
+          audience: customer
+          dashboard: pca-sla-reports
+          severity: critical
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-sla-reports
+          __panelId__: "3"
+          summary: The SLA report trigger API is down
+          description: Prometheus has not scraped a healthy sla_report_trigger target for five minutes.
+      - uid: pca-cust-sla-consolidation-failing
+        title: SLAConsolidationFailing
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange: { from: 3600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              datasource: { type: prometheus, uid: prometheus }
+              expr: |-
+                100 * ((sum(rate(sla_reports_api_consolidation_runs_total{result="success"}[1h])) or vector(0)) / (sum(rate(sla_reports_api_consolidation_runs_total[1h])) > 0))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 0, to: 0 }
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator: { params: [80], type: lt }
+                  operator: { type: and }
+                  query: { params: [A] }
+                  reducer: { params: [], type: last }
+                  type: query
+              datasource: { type: __expression__, uid: "-100" }
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        labels:
+          audience: customer
+          dashboard: pca-sla-reports
+          severity: warning
+          managed-by: grafana-docker
+        annotations:
+          __dashboardUid__: pca-sla-reports
+          __panelId__: "8"
+          summary: SLA report consolidation success rate is below 80 percent
+          description: Successful consolidation runs have dropped below 80 percent of all consolidation runs over the last hour. The ratio is omitted when there is no traffic.

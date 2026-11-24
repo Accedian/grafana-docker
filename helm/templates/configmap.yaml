@@ -40,6 +40,15 @@
 {{- fail "generic OAuth activationConfigMap must be a Kubernetes ConfigMap name" }}
 {{- end }}
 {{- end }}
+{{- include "grafana.validateAlerting" . }}
+{{- $smtp := default dict .Values.grafana.smtp }}
+{{- $proxy := default dict .Values.grafana.proxy }}
+{{- $security := default dict .Values.grafana.security }}
+{{- $k8sAlerts := default dict .Values.grafana.customerK8sAlerts }}
+{{- $k8sAlertsEnabled := true }}
+{{- if hasKey $k8sAlerts "enabled" }}
+{{- $k8sAlertsEnabled = $k8sAlerts.enabled }}
+{{- end }}
 {{- $anonymousEnabled := and (not $oauthEnabled) .Values.grafana.auth.anonymous.enabled }}
 {{- if $oauthEnabled }}
 {{- $discoveryReady := and $discoveryUrl $discoveryHost $discovery.application }}
@@ -91,7 +100,9 @@ data:
 {{- if $oauth.internalProvider.enabled }}
     GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA: /etc/grafana-provider-ca/ca.crt
     GF_AUTH_GENERIC_OAUTH_TLS_SKIP_VERIFY_INSECURE: "false"
+{{- if not (default false $proxy.enabled) }}
     NO_PROXY: localhost,127.0.0.1,.svc.cluster.local
+{{- end }}
 {{- end }}
     GF_AUTH_GENERIC_OAUTH_USE_PKCE: {{ .Values.grafana.auth.genericOAuth.usePkce | quote }}
     # Grafana 12.1 otherwise consumes unsigned ID-token claims before UserInfo.
@@ -108,3 +119,24 @@ data:
     GF_SECURITY_COOKIE_SAMESITE: {{ .Values.grafana.security.cookieSameSite | quote }}
     GF_USERS_AUTO_ASSIGN_ORG_ROLE: {{ .Values.grafana.users.autoAssignOrgRole | quote }}
     GF_LOG_LEVEL: "{{ .Values.grafana.env.LOG_LEVEL }}"
+    PCA_ENABLE_K8S_CUSTOMER_ALERTS: {{ $k8sAlertsEnabled | quote }}
+{{- if $security.secretKeyExistingSecret }}
+    GF_SECURITY_SECRET_KEY: {{ include "grafana.fileRef" "/var/run/secrets/grafana-security/secret-key" }}
+{{- end }}
+{{- if default false $proxy.enabled }}
+    HTTP_PROXY: {{ default "" $proxy.httpProxy | quote }}
+    HTTPS_PROXY: {{ default "" $proxy.httpsProxy | quote }}
+    NO_PROXY: {{ default "localhost,127.0.0.1,.svc,.svc.cluster.local" $proxy.noProxy | quote }}
+{{- end }}
+{{- if default false $smtp.enabled }}
+    GF_SMTP_ENABLED: "true"
+    GF_SMTP_HOST: {{ default "" $smtp.host | quote }}
+    GF_SMTP_USER: {{ default "" $smtp.user | quote }}
+    GF_SMTP_FROM_ADDRESS: {{ default "" $smtp.fromAddress | quote }}
+    GF_SMTP_FROM_NAME: {{ default "Cisco PCA Alerts" $smtp.fromName | quote }}
+    GF_SMTP_STARTTLS_POLICY: {{ default "OpportunisticStartTLS" $smtp.startTlsPolicy | quote }}
+    GF_SMTP_SKIP_VERIFY: "false"
+{{- if $smtp.existingSecret }}
+    GF_SMTP_PASSWORD: {{ include "grafana.fileRef" "/var/run/secrets/grafana-smtp/password" }}
+{{- end }}
+{{- end }}

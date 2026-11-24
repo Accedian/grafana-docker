@@ -1,6 +1,15 @@
 {{- $oauth := .Values.grafana.auth.genericOAuth }}
 {{- $discoveryCA := and $oauth.enabled (or (not $oauth.fullDeploymentOnly) .Values.global.skylight_full_version) $oauth.clientIdDiscovery.tlsCASecretName }}
 {{- $providerCA := and $oauth.enabled (or (not $oauth.fullDeploymentOnly) .Values.global.skylight_full_version) $oauth.internalProvider.enabled }}
+{{- $smtp := default dict .Values.grafana.smtp }}
+{{- $alerting := default dict .Values.grafana.alerting }}
+{{- $cps := default dict $alerting.contactPoints }}
+{{- $webhook := default dict $cps.webhook }}
+{{- $security := default dict .Values.grafana.security }}
+{{- $webhookEnabled := include "grafana.customerWebhookEnabled" . }}
+{{- $authType := default "none" $webhook.authType }}
+{{- $webhookAuth := and $webhookEnabled (has $authType (list "bearer" "basic")) }}
+{{- $mountPolicies := include "grafana.renderNotificationPolicies" . }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -21,6 +30,16 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/alerting-provisioning: {{ include (print $.Template.BasePath "/alerting-provisioning.yaml") . | sha256sum }}
+        {{- with $smtp.secretChecksum }}
+        checksum/smtp-secret: {{ . | quote }}
+        {{- end }}
+        {{- with $alerting.webhookSecretChecksum }}
+        checksum/webhook-secret: {{ . | quote }}
+        {{- end }}
+        {{- with $smtp.caCertChecksum }}
+        checksum/ca-cert: {{ . | quote }}
+        {{- end }}
       {{- with .Values.grafana.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -73,6 +92,14 @@ spec:
                 name: {{ .Values.grafana.auth.genericOAuth.activationConfigMap | quote }}
                 optional: true
             {{- end }}
+          {{- if $webhookAuth }}
+          env:
+            - name: PCA_GRAFANA_WEBHOOK_AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "webhook bearer/basic auth requires alerting.contactPoints.webhook.existingSecret" $webhook.existingSecret | quote }}
+                  key: {{ default "secret" $webhook.authSecretKey | quote }}
+          {{- end }}
           volumeMounts:
             {{- if $providerCA }}
             - name: grafana-provider-ca
@@ -89,6 +116,31 @@ spec:
             - name: prometheus-datasource
               mountPath: /tmp/provisioning/datasources/prometheus-datasource.yaml
               subPath: prometheus-datasource.yaml
+            - name: alerting-provisioning
+              mountPath: /tmp/provisioning/alerting/customer-contact-points.yaml
+              subPath: customer-contact-points.yaml
+              readOnly: true
+            {{- if $mountPolicies }}
+            - name: alerting-provisioning
+              mountPath: /tmp/provisioning/alerting/customer-notification-policies.yaml
+              subPath: customer-notification-policies.yaml
+              readOnly: true
+            {{- end }}
+            {{- if and (default false $smtp.enabled) $smtp.existingSecret }}
+            - name: grafana-smtp
+              mountPath: /var/run/secrets/grafana-smtp
+              readOnly: true
+            {{- end }}
+            {{- if $security.secretKeyExistingSecret }}
+            - name: grafana-security
+              mountPath: /var/run/secrets/grafana-security
+              readOnly: true
+            {{- end }}
+            {{- if $smtp.caCertExistingSecret }}
+            - name: grafana-ca
+              mountPath: /var/run/secrets/grafana-ca
+              readOnly: true
+            {{- end }}
       volumes:
         {{- if $providerCA }}
         - name: grafana-provider-ca
@@ -109,6 +161,36 @@ spec:
         - name: prometheus-datasource
           configMap:
             name: prometheus-datasource
+        - name: alerting-provisioning
+          configMap:
+            name: {{ include "grafana.fullname" . }}-alerting-provisioning
+        {{- if and (default false $smtp.enabled) $smtp.existingSecret }}
+        - name: grafana-smtp
+          secret:
+            secretName: {{ $smtp.existingSecret | quote }}
+            defaultMode: 0440
+            items:
+              - key: {{ default "password" $smtp.passwordKey | quote }}
+                path: password
+        {{- end }}
+        {{- if $security.secretKeyExistingSecret }}
+        - name: grafana-security
+          secret:
+            secretName: {{ $security.secretKeyExistingSecret | quote }}
+            defaultMode: 0440
+            items:
+              - key: {{ default "secret-key" $security.secretKeyKey | quote }}
+                path: secret-key
+        {{- end }}
+        {{- if $smtp.caCertExistingSecret }}
+        - name: grafana-ca
+          secret:
+            secretName: {{ $smtp.caCertExistingSecret | quote }}
+            defaultMode: 0440
+            items:
+              - key: {{ default "ca.crt" $smtp.caCertKey | quote }}
+                path: ca.crt
+        {{- end }}
         
 
       {{- with .Values.grafana.nodeSelector }}

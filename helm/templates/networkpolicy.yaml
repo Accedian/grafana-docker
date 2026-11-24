@@ -1,4 +1,13 @@
 {{- if .Values.grafana.networkPolicy.enabled }}
+{{- $smtp := default dict .Values.grafana.smtp }}
+{{- $alerting := default dict .Values.grafana.alerting }}
+{{- $cps := default dict $alerting.contactPoints }}
+{{- $webhook := default dict $cps.webhook }}
+{{- $proxy := default dict .Values.grafana.proxy }}
+{{- $blockInternal := true }}
+{{- if hasKey .Values.grafana.networkPolicy "blockMetadataAndClusterInternal" }}
+{{- $blockInternal = .Values.grafana.networkPolicy.blockMetadataAndClusterInternal }}
+{{- end }}
 {{- if empty .Values.grafana.networkPolicy.trustedIngress }}
 {{- fail "grafana.networkPolicy.trustedIngress must contain at least one peer when the NetworkPolicy is enabled" }}
 {{- end }}
@@ -54,10 +63,95 @@ spec:
       {{- include "grafana.selectorLabels" . | nindent 6 }}
   policyTypes:
     - Ingress
+    {{- if $blockInternal }}
+    - Egress
+    {{- end }}
   ingress:
     - from:
         {{- toYaml .Values.grafana.networkPolicy.trustedIngress | nindent 8 }}
       ports:
         - protocol: TCP
           port: http
+  {{- if $blockInternal }}
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 9090
+    - to:
+        - podSelector:
+            matchLabels:
+              app: clickhouse
+      ports:
+        - protocol: TCP
+          port: 10000
+    - to:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 12001
+        - protocol: TCP
+          port: 3000
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 169.254.169.254/32
+              - 169.254.0.0/16
+              - 127.0.0.0/8
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 25
+        - protocol: TCP
+          port: 465
+        - protocol: TCP
+          port: 587
+        {{- if default false $proxy.enabled }}
+        - protocol: TCP
+          port: 3128
+        - protocol: TCP
+          port: 8080
+        {{- end }}
+    {{- if or (default false $smtp.allowPrivate) (default false $webhook.allowPrivate) }}
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/8
+        - ipBlock:
+            cidr: 172.16.0.0/12
+        - ipBlock:
+            cidr: 192.168.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 25
+        - protocol: TCP
+          port: 465
+        - protocol: TCP
+          port: 587
+    {{- end }}
+  {{- end }}
 {{- end }}

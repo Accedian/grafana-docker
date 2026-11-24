@@ -77,4 +77,11 @@ COPY provisioning /tmp/provisioning
 
 COPY dashboards /tmp/dashboards
 
+# Keep Kubernetes customer alerts out of the default provisioning tree so
+# Docker Swarm containers never load them. run.sh copies this file only when
+# PCA_ENABLE_K8S_CUSTOMER_ALERTS=true.
+RUN mkdir -p /tmp/k8s-alerting \
+    && mv /tmp/provisioning/alerting/customer-k8s-alerts.yaml \
+        /tmp/k8s-alerting/customer-k8s-alerts.yaml
+
 ENTRYPOINT ["/run.sh"]

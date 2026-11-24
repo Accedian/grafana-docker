@@ -1,0 +1,128 @@
+{{- include "grafana.validateAlerting" . }}
+{{- $smtp := default dict .Values.grafana.smtp }}
+{{- $alerting := default dict .Values.grafana.alerting }}
+{{- $cps := default dict $alerting.contactPoints }}
+{{- $email := default dict $cps.email }}
+{{- $webhook := default dict $cps.webhook }}
+{{- $np := default dict $alerting.notificationPolicy }}
+{{- $emailEnabled := include "grafana.customerEmailEnabled" . }}
+{{- $webhookEnabled := include "grafana.customerWebhookEnabled" . }}
+{{- $managed := include "grafana.customerPolicyManaged" . }}
+{{- $resetPolicies := include "grafana.customerResetPolicies" . }}
+{{- $authType := default "none" $webhook.authType }}
+{{- $emailAddresses := "" }}
+{{- if $emailEnabled }}
+{{- $normalized := (default "" $email.addresses | toString) | replace ";" "," }}
+{{- $clean := list }}
+{{- range (splitList "," $normalized) }}
+{{- $addr := trim . }}
+{{- if $addr }}
+{{- $clean = append $clean $addr }}
+{{- end }}
+{{- end }}
+{{- $emailAddresses = join ";" $clean }}
+{{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "grafana.fullname" . }}-alerting-provisioning
+  labels:
+    {{- include "grafana.labels" . | nindent 4 }}
+data:
+  customer-contact-points.yaml: |
+    apiVersion: 1
+{{- if or $managed $emailEnabled $webhookEnabled }}
+    contactPoints:
+{{- if $managed }}
+      - orgId: 1
+        name: pca-unrouted-default
+        receivers:
+          - uid: pca-unrouted-default
+            type: webhook
+            disableResolveMessage: true
+            settings:
+              url: http://127.0.0.1:9
+              httpMethod: POST
+{{- end }}
+{{- if $emailEnabled }}
+      - orgId: 1
+        name: pca-customer-email
+        receivers:
+          - uid: pca-customer-email
+            type: email
+            settings:
+              addresses: {{ include "grafana.quoteAlerting" $emailAddresses }}
+              singleEmail: {{ default false $email.singleEmail }}
+{{- end }}
+{{- if $webhookEnabled }}
+      - orgId: 1
+        name: pca-customer-webhook
+        receivers:
+          - uid: pca-customer-webhook
+            type: webhook
+            settings:
+              url: {{ include "grafana.quoteAlerting" (default "" $webhook.url | toString) }}
+              httpMethod: {{ default "POST" $webhook.httpMethod | upper | quote }}
+              maxAlerts: {{ default 0 $webhook.maxAlerts | quote }}
+{{- if eq $authType "bearer" }}
+              authorization_scheme: Bearer
+              authorization_credentials: {{ printf "$PCA_GRAFANA_WEBHOOK_AUTH_SECRET" | quote }}
+{{- else if eq $authType "basic" }}
+              username: {{ include "grafana.quoteAlerting" (default "" $webhook.basicAuthUser | toString) }}
+              password: {{ printf "$PCA_GRAFANA_WEBHOOK_AUTH_SECRET" | quote }}
+{{- end }}
+{{- if default "" $webhook.caCertPem }}
+              tlsConfig:
+                insecureSkipVerify: false
+                caCertificate: |-
+{{ include "grafana.escapeAlertingString" ($webhook.caCertPem | toString) | indent 18 }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if or (not $emailEnabled) (not $webhookEnabled) $resetPolicies }}
+    deleteContactPoints:
+{{- if not $emailEnabled }}
+      - orgId: 1
+        uid: pca-customer-email
+{{- end }}
+{{- if not $webhookEnabled }}
+      - orgId: 1
+        uid: pca-customer-webhook
+{{- end }}
+{{- if $resetPolicies }}
+      - orgId: 1
+        uid: pca-unrouted-default
+{{- end }}
+{{- end }}
+{{- if or $managed $resetPolicies }}
+  customer-notification-policies.yaml: |
+    apiVersion: 1
+{{- if $managed }}
+    policies:
+      - orgId: 1
+        receiver: pca-unrouted-default
+        group_by:
+          - grafana_folder
+          - alertname
+        group_wait: {{ default "30s" $np.groupWait | quote }}
+        group_interval: {{ default "5m" $np.groupInterval | quote }}
+        repeat_interval: {{ default "4h" $np.repeatInterval | quote }}
+        routes:
+{{- if $emailEnabled }}
+          - receiver: pca-customer-email
+            object_matchers:
+              - ['audience', '=', 'customer']
+{{- if and $emailEnabled $webhookEnabled }}
+            continue: true
+{{- end }}
+{{- end }}
+{{- if $webhookEnabled }}
+          - receiver: pca-customer-webhook
+            object_matchers:
+              - ['audience', '=', 'customer']
+{{- end }}
+{{- else }}
+    resetPolicies:
+      - 1
+{{- end }}
+{{- end }}

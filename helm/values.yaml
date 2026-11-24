@@ -99,6 +99,62 @@ grafana:
     cookieSecure: true
     # Lax permits the top-level OIDC authorization-code callback.
     cookieSameSite: lax
+    # Empty keeps Grafana's built-in default key so existing grafana.db files
+    # stay decryptable. Umbrella charts set this on fresh installs only.
+    secretKeyExistingSecret: ""
+    secretKeyKey: "secret-key"
+
+  # Helm/Kubernetes only. Docker Swarm never sets PCA_ENABLE_K8S_CUSTOMER_ALERTS.
+  customerK8sAlerts:
+    enabled: true
+
+  proxy:
+    enabled: false
+    httpProxy: ""
+    httpsProxy: ""
+    noProxy: "localhost,127.0.0.1,.svc,.svc.cluster.local"
+
+  smtp:
+    enabled: false
+    host: ""
+    user: ""
+    fromAddress: ""
+    fromName: "Cisco PCA Alerts"
+    startTlsPolicy: "OpportunisticStartTLS"
+    existingSecret: ""
+    passwordKey: "password"
+    caCertExistingSecret: ""
+    caCertKey: "ca.crt"
+    secretChecksum: ""
+    caCertChecksum: ""
+    allowPrivate: false
+
+  alerting:
+    webhookSecretChecksum: ""
+    contactPoints:
+      email:
+        enabled: false
+        addresses: ""
+        singleEmail: false
+      webhook:
+        enabled: false
+        url: ""
+        httpMethod: "POST"
+        maxAlerts: 0
+        authType: "none"
+        basicAuthUser: ""
+        existingSecret: ""
+        authSecretKey: "secret"
+        caCertPem: ""
+        allowPrivate: false
+    notificationPolicy:
+      managed: false
+      groupWait: "30s"
+      groupInterval: "5m"
+      repeatInterval: "4h"
+      # One-shot unlock of a previously file-provisioned policy tree.
+      # Leave false on routine upgrades so UI-created policies survive.
+      resetPoliciesOnDisable: false
 
   users:
     autoAssignOrgRole: Viewer
@@ -108,6 +164,10 @@ grafana:
     # These peers may reach Grafana over the network. They are not trusted to
     # assert user identity through Grafana Auth Proxy headers.
     trustedIngress: []
+    # When the NetworkPolicy is enabled, also deny IMDS and unmatched
+    # cluster-internal egress while allowing DNS, Prometheus, ClickHouse,
+    # same-namespace HTTPS, SMTP, and public HTTPS webhooks.
+    blockMetadataAndClusterInternal: true
 
   serviceAccount:
     # Specifies whether a service account should be created
@@ -120,8 +180,10 @@ grafana:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
-    # fsGroup: 2000
+  # GID 472 is the grafana Debian package group so 0440 Secret mounts are
+  # readable after run.sh drops privileges with gosu grafana.
+  podSecurityContext:
+    fsGroup: 472
 
   securityContext: {}
     # capabilities:
