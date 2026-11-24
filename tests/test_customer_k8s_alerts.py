@@ -115,6 +115,8 @@ def parse_alert_rules(text):
 def collect_rule_uids():
     uids = []
     for path in sorted(ALERTING_DIR.glob("*.yaml")):
+        if path.name.endswith("-delete.yaml"):
+            continue
         for match in re.finditer(r"^\s+- uid: (\S+)", path.read_text(), re.MULTILINE):
             uids.append((match.group(1), path.name))
     return uids
@@ -240,18 +242,44 @@ class CustomerK8sAlertRulesTest(unittest.TestCase):
         self.assertIn("> 0.1", expr)
         self.assertNotIn("clamp_min", expr)
 
+    def test_disable_tombstone_covers_every_starter_uid(self):
+        text = (ALERTING_DIR / "customer-k8s-alerts-delete.yaml").read_text()
+        self.assertIn("deleteRules:", text)
+        self.assertNotIn("folder: Customer (k8s)", text)
+        found = re.findall(r"^    uid: (\S+)", text, re.MULTILINE)
+        self.assertEqual(found, EXPECTED_UIDS)
+
     def test_dockerfile_keeps_k8s_alerts_out_of_default_provisioning(self):
         docker = (ROOT / "Dockerfile").read_text()
         self.assertIn("/tmp/k8s-alerting/customer-k8s-alerts.yaml", docker)
         self.assertIn("mv /tmp/provisioning/alerting/customer-k8s-alerts.yaml", docker)
+        self.assertIn("mv /tmp/provisioning/alerting/customer-k8s-alerts-delete.yaml", docker)
+        gid_at = docker.find("addgroup --system --gid 472 grafana")
+        uid_at = docker.find("--uid 472")
+        dpkg_at = docker.find("dpkg --install")
+        self.assertNotEqual(gid_at, -1)
+        self.assertNotEqual(uid_at, -1)
+        self.assertLess(gid_at, dpkg_at)
+        self.assertLess(uid_at, dpkg_at)
 
     def test_run_sh_copies_k8s_alerts_only_when_enabled(self):
         run = (ROOT / "run.sh").read_text()
-        self.assertIn('PCA_ENABLE_K8S_CUSTOMER_ALERTS:-false', run)
+        self.assertIn('case "${PCA_ENABLE_K8S_CUSTOMER_ALERTS:-}" in', run)
         self.assertIn("/tmp/k8s-alerting/customer-k8s-alerts.yaml", run)
+        self.assertIn("/tmp/k8s-alerting/customer-k8s-alerts-delete.yaml", run)
+        self.assertIn("stage_grafana_file_secret", run)
+        self.assertIn("/tmp/grafana-file-secrets", run)
         self.assertIn("install_grafana_ca_bundle", run)
         self.assertNotIn("cat \"$ca_file\" >&", run)
         self.assertIn("PRIVATE KEY", run)
+        true_at = run.find("\n  true)\n")
+        false_at = run.find("\n  false)\n")
+        copy_alerts = run.find('cp "$k8s_alerts_src" "$k8s_alerts_dest"')
+        copy_delete = run.find('cp "$k8s_alerts_delete_src" "$k8s_alerts_delete_dest"')
+        self.assertNotEqual(true_at, -1)
+        self.assertLess(true_at, copy_alerts)
+        self.assertLess(copy_alerts, false_at)
+        self.assertLess(false_at, copy_delete)
 
 
 @unittest.skipUnless(shutil.which("helm"), "helm is required to render the chart")
@@ -262,8 +290,9 @@ class GrafanaAlertingHelmTest(unittest.TestCase):
         self.assertIn("fsGroup: 472", rendered)
         self.assertNotIn("GF_SMTP_ENABLED", rendered)
         self.assertNotIn("HTTP_PROXY:", rendered)
-        self.assertIn("uid: pca-customer-email", rendered)
-        self.assertIn("deleteContactPoints:", rendered)
+        self.assertNotIn("uid: pca-customer-email", rendered)
+        self.assertNotIn("deleteContactPoints:", rendered)
+        self.assertNotIn("resetPolicies:", rendered)
         self.assertNotIn("type: email", rendered)
         self.assertNotIn("GF_SMTP_PASSWORD:", rendered)
         self.assertNotIn("GF_SECURITY_SECRET_KEY:", rendered)
@@ -363,6 +392,50 @@ class GrafanaAlertingHelmTest(unittest.TestCase):
         )
         self.assertNotIn("resetPolicies:", unlocked)
         self.assertNotIn("customer-notification-policies.yaml", unlocked)
+        self.assertNotIn("deleteContactPoints:", unlocked)
+
+    def test_disable_one_contact_point_rewrites_managed_policy_then_deletes(self):
+        rendered = helm_template(
+            "--set", "grafana.smtp.enabled=true",
+            "--set-string", "grafana.smtp.host=smtp.example.com:587",
+            "--set-string", "grafana.smtp.fromAddress=alerts@example.com",
+            "--set", "grafana.alerting.contactPoints.email.enabled=true",
+            "--set-string", "grafana.alerting.contactPoints.email.addresses=ops@example.com",
+            "--set", "grafana.alerting.contactPoints.webhook.enabled=false",
+            "--set", "grafana.alerting.notificationPolicy.managed=true",
+        )
+        self.assertIn("receiver: pca-customer-email", rendered)
+        self.assertNotIn("receiver: pca-customer-webhook", rendered)
+        self.assertIn("deleteContactPoints:", rendered)
+        self.assertIn("uid: pca-customer-webhook", rendered)
+        self.assertNotIn("uid: pca-customer-email", rendered.split("deleteContactPoints:", 1)[1])
+        self.assertNotIn("resetPolicies:", rendered)
+
+    def test_disable_last_contact_point_keeps_receiver_until_reset(self):
+        last_off = helm_template(
+            "--set", "grafana.smtp.enabled=true",
+            "--set-string", "grafana.smtp.host=smtp.example.com:587",
+            "--set-string", "grafana.smtp.fromAddress=alerts@example.com",
+            "--set", "grafana.alerting.contactPoints.email.enabled=false",
+            "--set", "grafana.alerting.notificationPolicy.managed=true",
+        )
+        self.assertNotIn("deleteContactPoints:", last_off)
+        self.assertNotIn("resetPolicies:", last_off)
+        self.assertNotIn("customer-notification-policies.yaml", last_off)
+
+        last_off_with_reset = helm_template(
+            "--set", "grafana.smtp.enabled=true",
+            "--set-string", "grafana.smtp.host=smtp.example.com:587",
+            "--set-string", "grafana.smtp.fromAddress=alerts@example.com",
+            "--set", "grafana.alerting.contactPoints.email.enabled=false",
+            "--set", "grafana.alerting.notificationPolicy.managed=true",
+            "--set", "grafana.alerting.notificationPolicy.resetPoliciesOnDisable=true",
+        )
+        self.assertIn("resetPolicies:", last_off_with_reset)
+        self.assertIn("deleteContactPoints:", last_off_with_reset)
+        self.assertIn("uid: pca-customer-email", last_off_with_reset)
+        self.assertIn("uid: pca-customer-webhook", last_off_with_reset)
+        self.assertIn("uid: pca-unrouted-default", last_off_with_reset)
 
     def test_proxy_propagation(self):
         rendered = helm_template(
@@ -490,8 +563,12 @@ class CustomerAlertSmokeContractTest(unittest.TestCase):
         self.assertTrue(script.is_file())
         text = script.read_text()
         self.assertIn("PCA_ENABLE_K8S_CUSTOMER_ALERTS", text)
+        self.assertIn("PCA_ENABLE_K8S_CUSTOMER_ALERTS=false", text)
+        self.assertIn("customer-k8s-alerts-delete.yaml", text)
         self.assertIn("/api/health", text)
         self.assertIn("Customer Alerts (k8s)", text)
+        self.assertIn("--user grafana", text)
+        self.assertIn("/tmp/grafana-file-secrets", text)
 
 
 if __name__ == "__main__":

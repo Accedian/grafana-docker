@@ -26,14 +26,15 @@ if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
 fi
 
 workdir="$(mktemp -d)"
-trap 'rm -rf "$workdir"; docker rm -f grafana-alerting-smoke grafana-alerting-smoke-swarm >/dev/null 2>&1 || true' EXIT
+trap 'rm -rf "$workdir"; docker rm -f grafana-alerting-smoke grafana-alerting-smoke-disabled grafana-alerting-smoke-swarm >/dev/null 2>&1 || true' EXIT
 
 mkdir -p "$workdir/secrets/smtp" "$workdir/secrets/security" "$workdir/data" "$workdir/swarm-data"
 printf 'smtp-test-password\n' > "$workdir/secrets/smtp/password"
 printf 'security-test-key\n' > "$workdir/secrets/security/secret-key"
-chmod 0440 "$workdir/secrets/smtp/password" "$workdir/secrets/security/secret-key"
-chown 472:472 "$workdir/secrets/smtp/password" "$workdir/secrets/security/secret-key" 2>/dev/null || \
-  chown 0:472 "$workdir/secrets/smtp/password" "$workdir/secrets/security/secret-key" 2>/dev/null || true
+# root:root 0400 matches a Secret mount that gosu grafana cannot read via
+# fsGroup supplemental groups. run.sh must restage these before privilege drop.
+chmod 0400 "$workdir/secrets/smtp/password" "$workdir/secrets/security/secret-key"
+chown 0:0 "$workdir/secrets/smtp/password" "$workdir/secrets/security/secret-key" 2>/dev/null || true
 
 cat > "$workdir/customer-contact-points.yaml" <<'EOF'
 apiVersion: 1
@@ -100,6 +101,50 @@ if grep -Fq 'security-test-key' <<<"$logs"; then
   exit 1
 fi
 
+id_grafana="$(docker exec grafana-alerting-smoke id grafana)"
+if ! grep -Eq 'uid=472\(grafana\).*gid=472\(grafana\)' <<<"$id_grafana"; then
+  echo "grafana user is not pinned to 472:472: $id_grafana" >&2
+  exit 1
+fi
+docker exec --user grafana grafana-alerting-smoke \
+  test -r /tmp/grafana-file-secrets/smtp-password
+docker exec --user grafana grafana-alerting-smoke \
+  test -r /tmp/grafana-file-secrets/secret-key
+
+rule_count="$(docker exec grafana-alerting-smoke sqlite3 /var/lib/grafana/grafana.db \
+  "SELECT COUNT(*) FROM alert_rule WHERE uid LIKE 'pca-cust-%';")"
+if [ "$rule_count" != "16" ]; then
+  echo "Expected 16 Kubernetes customer alert rules in grafana.db, found $rule_count" >&2
+  exit 1
+fi
+
+docker stop grafana-alerting-smoke >/dev/null
+docker rm grafana-alerting-smoke >/dev/null
+
+docker run -d --name grafana-alerting-smoke-disabled \
+  -e PCA_ENABLE_K8S_CUSTOMER_ALERTS=false \
+  -e 'GF_SMTP_PASSWORD=$__file{/var/run/secrets/grafana-smtp/password}' \
+  -e 'GF_SECURITY_SECRET_KEY=$__file{/var/run/secrets/grafana-security/secret-key}' \
+  -v "$workdir/secrets/smtp:/var/run/secrets/grafana-smtp:ro" \
+  -v "$workdir/secrets/security:/var/run/secrets/grafana-security:ro" \
+  -v "$workdir/data:/var/lib/grafana" \
+  "$IMAGE" >/dev/null
+
+wait_healthy grafana-alerting-smoke-disabled
+
+if docker exec grafana-alerting-smoke-disabled test -f /var/lib/grafana/provisioning/alerting/customer-k8s-alerts.yaml; then
+  echo "Disabled start still loaded Kubernetes customer alerts" >&2
+  exit 1
+fi
+docker exec grafana-alerting-smoke-disabled \
+  test -f /var/lib/grafana/provisioning/alerting/customer-k8s-alerts-delete.yaml
+disabled_count="$(docker exec grafana-alerting-smoke-disabled sqlite3 /var/lib/grafana/grafana.db \
+  "SELECT COUNT(*) FROM alert_rule WHERE uid LIKE 'pca-cust-%';")"
+if [ "$disabled_count" != "0" ]; then
+  echo "Expected Kubernetes customer alert rules to be deleted from grafana.db, found $disabled_count" >&2
+  exit 1
+fi
+
 docker run -d --name grafana-alerting-smoke-swarm \
   -v "$workdir/swarm-data:/var/lib/grafana" \
   "$IMAGE" >/dev/null
@@ -108,6 +153,10 @@ wait_healthy grafana-alerting-smoke-swarm
 
 if docker exec grafana-alerting-smoke-swarm test -f /var/lib/grafana/provisioning/alerting/customer-k8s-alerts.yaml; then
   echo "Swarm-style start loaded Kubernetes customer alerts" >&2
+  exit 1
+fi
+if docker exec grafana-alerting-smoke-swarm test -f /var/lib/grafana/provisioning/alerting/customer-k8s-alerts-delete.yaml; then
+  echo "Swarm-style start loaded Kubernetes customer alert tombstones" >&2
   exit 1
 fi
 

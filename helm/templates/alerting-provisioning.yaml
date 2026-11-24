@@ -9,6 +9,12 @@
 {{- $webhookEnabled := include "grafana.customerWebhookEnabled" . }}
 {{- $managed := include "grafana.customerPolicyManaged" . }}
 {{- $resetPolicies := include "grafana.customerResetPolicies" . }}
+{{- /* Grafana 12.1 DeleteContactPoint returns ErrContactPointReferenced when a
+     receiver is still named in any route. The provisioner unprovisions policies
+     (resetPolicies) before unprovisioning contact points, so deletion is safe
+     only when this render also rewrites the managed policy or emits resetPolicies.
+     Last-contact-point disable without resetPoliciesOnDisable keeps the receivers. */}}
+{{- $canDeleteContactPoints := or $managed $resetPolicies }}
 {{- $authType := default "none" $webhook.authType }}
 {{- $emailAddresses := "" }}
 {{- if $emailEnabled }}
@@ -79,7 +85,7 @@ data:
 {{- end }}
 {{- end }}
 {{- end }}
-{{- if or (not $emailEnabled) (not $webhookEnabled) $resetPolicies }}
+{{- if and $canDeleteContactPoints (or (not $emailEnabled) (not $webhookEnabled) $resetPolicies) }}
     deleteContactPoints:
 {{- if not $emailEnabled }}
       - orgId: 1

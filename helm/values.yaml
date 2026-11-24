@@ -154,6 +154,9 @@ grafana:
       repeatInterval: "4h"
       # One-shot unlock of a previously file-provisioned policy tree.
       # Leave false on routine upgrades so UI-created policies survive.
+      # Required to delete customer contact points that a leftover managed
+      # policy still references: Grafana 12.1 rejects deleteContactPoints
+      # while a route uses the receiver (ErrContactPointReferenced).
       resetPoliciesOnDisable: false
 
   users:
@@ -180,8 +183,11 @@ grafana:
 
   podAnnotations: {}
 
-  # GID 472 is the grafana Debian package group so 0440 Secret mounts are
-  # readable after run.sh drops privileges with gosu grafana.
+  # The image pins grafana to UID/GID 472 before the Debian package postinst
+  # (which would otherwise allocate a dynamic system GID). 0440 Secret mounts
+  # with this fsGroup stay group-readable as the grafana user's primary GID
+  # after gosu. run.sh also restages $__file secrets to grafana-owned 0400
+  # copies so a mismatched supplemental group cannot hide the mount.
   podSecurityContext:
     fsGroup: 472
 

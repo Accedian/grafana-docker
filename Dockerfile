@@ -38,6 +38,9 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         --output /usr/sbin/gosu \
         "${GOSU_URL}" \
     && chmod 0775 /usr/sbin/gosu \
+    && addgroup --system --gid 472 grafana \
+    && adduser --system --uid 472 --ingroup grafana --home /usr/share/grafana \
+        --no-create-home --disabled-password --shell /bin/false grafana \
     && dpkg --install "/tmp/${GRAFANA_URL##*/}" \
     && rm "/tmp/${GRAFANA_URL##*/}" \
     && apt-get autoremove --yes \
@@ -77,11 +80,14 @@ COPY provisioning /tmp/provisioning
 
 COPY dashboards /tmp/dashboards
 
-# Keep Kubernetes customer alerts out of the default provisioning tree so
-# Docker Swarm containers never load them. run.sh copies this file only when
-# PCA_ENABLE_K8S_CUSTOMER_ALERTS=true.
+# Keep Kubernetes customer alerts (and their disable tombstones) out of the
+# default provisioning tree so Docker Swarm containers never load them.
+# run.sh copies the rules when PCA_ENABLE_K8S_CUSTOMER_ALERTS=true and the
+# deleteRules file when the flag is explicitly false.
 RUN mkdir -p /tmp/k8s-alerting \
     && mv /tmp/provisioning/alerting/customer-k8s-alerts.yaml \
-        /tmp/k8s-alerting/customer-k8s-alerts.yaml
+        /tmp/k8s-alerting/customer-k8s-alerts.yaml \
+    && mv /tmp/provisioning/alerting/customer-k8s-alerts-delete.yaml \
+        /tmp/k8s-alerting/customer-k8s-alerts-delete.yaml
 
 ENTRYPOINT ["/run.sh"]

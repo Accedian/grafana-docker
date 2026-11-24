@@ -107,15 +107,29 @@ if [ "z$DONT_COPY_STOCK_DASHBOARDS"  = "z" ]; then
     done
 fi
 
-# Kubernetes-only customer starter alerts. Docker Swarm (and any start without
-# this flag) must not load Customer Alerts (k8s) rules.
-if [ "${PCA_ENABLE_K8S_CUSTOMER_ALERTS:-false}" = "true" ]; then
-  if [ -f /tmp/k8s-alerting/customer-k8s-alerts.yaml ]; then
-    mkdir -p "$GF_PATHS_PROVISIONING/alerting"
-    cp /tmp/k8s-alerting/customer-k8s-alerts.yaml \
-      "$GF_PATHS_PROVISIONING/alerting/customer-k8s-alerts.yaml"
-  fi
-fi
+# Kubernetes-only customer starter alerts. Docker Swarm (env unset) must not
+# load or tombstone Customer Alerts (k8s) rules. Helm sets the flag to "true"
+# or "false" explicitly. "false" copies deleteRules so grafana.db drops the
+# previously provisioned UIDs; removing the YAML alone leaves file-provenance
+# rules in place.
+k8s_alerts_src="/tmp/k8s-alerting/customer-k8s-alerts.yaml"
+k8s_alerts_delete_src="/tmp/k8s-alerting/customer-k8s-alerts-delete.yaml"
+k8s_alerts_dest="$GF_PATHS_PROVISIONING/alerting/customer-k8s-alerts.yaml"
+k8s_alerts_delete_dest="$GF_PATHS_PROVISIONING/alerting/customer-k8s-alerts-delete.yaml"
+mkdir -p "$GF_PATHS_PROVISIONING/alerting"
+rm -f "$k8s_alerts_dest" "$k8s_alerts_delete_dest"
+case "${PCA_ENABLE_K8S_CUSTOMER_ALERTS:-}" in
+  true)
+    if [ -f "$k8s_alerts_src" ]; then
+      cp "$k8s_alerts_src" "$k8s_alerts_dest"
+    fi
+    ;;
+  false)
+    if [ -f "$k8s_alerts_delete_src" ]; then
+      cp "$k8s_alerts_delete_src" "$k8s_alerts_delete_dest"
+    fi
+    ;;
+esac
 
 install_grafana_ca_bundle() {
   local ca_file="/var/run/secrets/grafana-ca/ca.crt"
@@ -152,6 +166,42 @@ install_grafana_ca_bundle() {
 }
 
 install_grafana_ca_bundle
+
+# Restage $__file secrets as grafana-owned 0400 copies before gosu. Kubernetes
+# fsGroup 472 is only a supplemental group; gosu grafana drops those, and the
+# Debian grafana postinst would otherwise allocate a dynamic GID. The image
+# pins grafana to 472:472, and these copies remain readable after privilege drop
+# even if the mount stays root:472 mode 0440.
+GRAFANA_FILE_SECRET_DIR=/tmp/grafana-file-secrets
+mkdir -p "$GRAFANA_FILE_SECRET_DIR"
+chmod 0700 "$GRAFANA_FILE_SECRET_DIR"
+if [ "$(id -u)" = "0" ]; then
+  chown grafana:grafana "$GRAFANA_FILE_SECRET_DIR"
+fi
+
+stage_grafana_file_secret() {
+  local src="$1"
+  local name="$2"
+  local env_name="$3"
+  local dest
+  if [ ! -e "$src" ]; then
+    return 0
+  fi
+  if [ ! -r "$src" ]; then
+    echo "Grafana secret file is not readable: $src" >&2
+    exit 1
+  fi
+  dest="${GRAFANA_FILE_SECRET_DIR}/${name}"
+  cp "$src" "$dest"
+  chmod 0400 "$dest"
+  if [ "$(id -u)" = "0" ]; then
+    chown grafana:grafana "$dest"
+  fi
+  export "${env_name}=\$__file{${dest}}"
+}
+
+stage_grafana_file_secret /var/run/secrets/grafana-smtp/password smtp-password GF_SMTP_PASSWORD
+stage_grafana_file_secret /var/run/secrets/grafana-security/secret-key secret-key GF_SECURITY_SECRET_KEY
 
 # Migrate legacy Prometheus datasource UID -> 'prometheus' everywhere it is referenced.
 if [ -f "$GF_PATHS_DATA/grafana.db" ] && command -v sqlite3 >/dev/null 2>&1; then
