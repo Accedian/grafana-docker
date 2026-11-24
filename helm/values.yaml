@@ -169,7 +169,8 @@ grafana:
     trustedIngress: []
     # When the NetworkPolicy is enabled, also deny IMDS and unmatched
     # cluster-internal egress while allowing DNS, Prometheus, ClickHouse,
-    # same-namespace HTTPS, SMTP, and public HTTPS webhooks.
+    # same-namespace HTTPS, SMTP, public HTTPS webhooks, and (when OAuth is
+    # on without DNS) the configured discovery/Zitadel ports on external_ip.
     blockMetadataAndClusterInternal: true
     # Extra egress for a DNS-named corporate proxy. Literal IPv4 proxy URLs
     # (including RFC1918) are allowed automatically from grafana.proxy.*.

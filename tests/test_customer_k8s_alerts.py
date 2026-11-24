@@ -560,6 +560,8 @@ class GrafanaAlertingHelmTest(unittest.TestCase):
         self.assertIn("port: 9090", rendered)
         self.assertIn("port: 10000", rendered)
         self.assertNotIn("10.20.30.40/32", rendered)
+        self.assertNotIn("port: 2443", rendered)
+        self.assertNotIn("port: 3443", rendered)
 
     def test_networkpolicy_allows_configured_private_proxy(self):
         rendered = helm_template(
@@ -587,6 +589,31 @@ class GrafanaAlertingHelmTest(unittest.TestCase):
             expect_fail=True,
         )
         self.assertIn("loopback", blocked)
+
+    def test_networkpolicy_allows_no_dns_oauth_discovery_and_zitadel(self):
+        np_args = (
+            "--set", "grafana.networkPolicy.enabled=true",
+            "--set-string", "grafana.networkPolicy.trustedIngress[0].podSelector.matchLabels.app=nginx",
+            "--set", "grafana.auth.genericOAuth.enabled=true",
+            "--set", "global.dns.support=false",
+            "--set-string", "global.external_ip=192.0.2.10",
+        )
+        direct = helm_template(*np_args)
+        self.assertIn('cidr: "192.0.2.10/32"', direct)
+        self.assertIn("port: 2443", direct)
+        self.assertIn("port: 3443", direct)
+        self.assertNotIn("port: 9443", direct)
+
+        nginx = helm_template(
+            *np_args,
+            "--set", "grafana.auth.genericOAuth.clientIdDiscovery.internalNginx=true",
+            "--set", "global.clusterIPPortAdmin=9443",
+            "--set", "global.clusterIPPortZitadelAuth=3444",
+        )
+        self.assertIn("port: 9443", nginx)
+        self.assertIn("port: 3444", nginx)
+        self.assertIn('cidr: "192.0.2.10/32"', nginx)
+        self.assertNotIn("port: 2443", nginx)
 
 
 class CustomerAlertSmokeContractTest(unittest.TestCase):

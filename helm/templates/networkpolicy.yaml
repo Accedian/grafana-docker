@@ -4,6 +4,16 @@
 {{- $cps := default dict $alerting.contactPoints }}
 {{- $webhook := default dict $cps.webhook }}
 {{- $proxy := default dict .Values.grafana.proxy }}
+{{- $oauth := default dict .Values.grafana.auth.genericOAuth }}
+{{- $discovery := default dict $oauth.clientIdDiscovery }}
+{{- $isFullDeployment := .Values.global.skylight_full_version | default false }}
+{{- $oauthEnabled := and $oauth.enabled (or (not $oauth.fullDeploymentOnly) $isFullDeployment) }}
+{{- $noDns := and (not .Values.global.dns.support) (not (empty .Values.global.external_ip)) }}
+{{- $nginxDiscoveryPort := .Values.global.clusterIPPort | default 443 }}
+{{- if $noDns }}
+{{- $nginxDiscoveryPort = .Values.global.clusterIPPortAdmin | default 2443 }}
+{{- end }}
+{{- $zitadelPort := .Values.global.clusterIPPortZitadelAuth | default 3443 }}
 {{- $blockInternal := true }}
 {{- if hasKey .Values.grafana.networkPolicy "blockMetadataAndClusterInternal" }}
 {{- $blockInternal = .Values.grafana.networkPolicy.blockMetadataAndClusterInternal }}
@@ -136,6 +146,13 @@ spec:
         - protocol: TCP
           port: 3128
         {{- end }}
+        {{- if and $oauthEnabled (default false $discovery.internalNginx) }}
+        {{- $nginxPort := int $nginxDiscoveryPort }}
+        {{- if not (has $nginxPort (list 80 443 8080 12001 3000 3128)) }}
+        - protocol: TCP
+          port: {{ $nginxPort }}
+        {{- end }}
+        {{- end }}
     - to:
         - ipBlock:
             cidr: 0.0.0.0/0
@@ -213,6 +230,22 @@ spec:
       ports:
         - protocol: TCP
           port: {{ int $item.port }}
+    {{- end }}
+    {{- if and $oauthEnabled $noDns }}
+    {{- $extIP := .Values.global.external_ip | toString | trim }}
+    {{- $ipDeny := include "grafana.deniedProxyHostReason" $extIP | trim }}
+    {{- if and (empty $ipDeny) (regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $extIP) }}
+    - to:
+        - ipBlock:
+            cidr: {{ printf "%s/32" $extIP | quote }}
+      ports:
+        {{- if not (default false $discovery.internalNginx) }}
+        - protocol: TCP
+          port: 2443
+        {{- end }}
+        - protocol: TCP
+          port: {{ int $zitadelPort }}
+    {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}

@@ -176,6 +176,33 @@ for pair in \
     grep -Fq -- "- $exception" "$rendered_chart"
 done
 
+# No-DNS OAuth uses destination-scoped discovery (2443) and Zitadel (3443)
+# egress. Internal nginx discovery uses the same-namespace admin port instead
+# of hairpinning 2443 to external_ip.
+helm template grafana helm \
+    --set grafana.networkPolicy.enabled=true \
+    --set-string 'grafana.networkPolicy.trustedIngress[0].podSelector.matchLabels.app=nginx' \
+    --set grafana.auth.genericOAuth.enabled=true \
+    --set global.dns.support=false \
+    --set-string global.external_ip=192.0.2.10 \
+    > "$rendered_chart"
+grep -Fq 'cidr: "192.0.2.10/32"' "$rendered_chart"
+grep -Fq 'port: 2443' "$rendered_chart"
+grep -Fq 'port: 3443' "$rendered_chart"
+
+helm template grafana helm \
+    --set grafana.networkPolicy.enabled=true \
+    --set-string 'grafana.networkPolicy.trustedIngress[0].podSelector.matchLabels.app=nginx' \
+    --set grafana.auth.genericOAuth.enabled=true \
+    --set grafana.auth.genericOAuth.clientIdDiscovery.internalNginx=true \
+    --set global.dns.support=false \
+    --set-string global.external_ip=192.0.2.10 \
+    --set global.clusterIPPortAdmin=9443 \
+    > "$rendered_chart"
+grep -Fq 'port: 9443' "$rendered_chart"
+grep -Fq 'cidr: "192.0.2.10/32"' "$rendered_chart"
+grep -Fq 'port: 3443' "$rendered_chart"
+
 # Invalid unused peer settings must not alter the disabled deployment path.
 helm template grafana helm \
     --set-json 'grafana.networkPolicy.trustedIngress=[{}, {"ipBlock":{"cidr":"not-a-cidr"}}, {"ipBlock":{"cidr":"192.0.2.0/24","except":["198.51.100.1/32"]}}]' \
