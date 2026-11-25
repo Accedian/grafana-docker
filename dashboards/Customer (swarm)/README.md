@@ -1,7 +1,8 @@
 # Customer dashboards for Docker Swarm
 
-These dashboards include a supported subset of `Customer (k8s)` and a
-Swarm-specific Path Analytics Ingestion Pipeline dashboard. They require no
+These dashboards include a supported subset of `Customer (k8s)` alongside
+Swarm-specific customer monitoring (Path Analytics Ingestion Pipeline and SLA Reports).
+They require no
 new collector, scrape target, recording rule, or Swarm opt-in feature.
 
 | Dashboard | Existing telemetry |

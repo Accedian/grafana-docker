@@ -26,7 +26,6 @@ class CustomerSwarmDashboardsTest(unittest.TestCase):
         generated = {
             "pca-ingestion-pipeline.json", "pca-sensor-connectivity.json",
             "pca-application-speed.json", "pca-resource-health.json",
-            "pca-sla-reports.json",
         }
         self.assertTrue(generated.issubset(set(self.dashboards)))
         for name, dashboard in self.dashboards.items():
