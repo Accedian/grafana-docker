@@ -41,7 +41,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "# Path Analytics Ingestion Pipeline\n\nTop-down view of the Path Analytics ingestion pipeline. Data flows from Path Analytics → RA Collector → Sensor Collector (Roadrunner) → Fedex → Kafka → Sky-Topo → Gather → Druid.\n\n**How to triage a data outage:** read the Pipeline Flow Summary left-to-right — the first stage showing **red (0)** is where data stopped. Expand that service's row for detailed panels.\n\n**Note:** Path Analytics data does NOT flow through Ignite or Spark. Fedex writes to `skytopo_raw_in.*` Kafka topics, consumed directly by Sky-Topo.\n\n**Metric cadence:** RA Collector health metrics are collect-and-reset gauges published every 30s. Rate/increase queries are not appropriate for these; the panels display the raw value from the last collection cycle.",
+        "content": "# Path Analytics Ingestion Pipeline\nRA source → RA Collector → Roadrunner → Fedex → input Kafka → Sky-Topo → output Kafka → Druid.\n\n**Triage:** check scrape/schema coverage, then failures, row outcomes and activity. Zero can mean idle; messages and rows use different units.\n\nGather provides dictionary/query context. Kafka acknowledgements do not prove Druid ingestion.",
         "mode": "markdown"
       },
       "pluginVersion": "12.1.0"
@@ -55,13 +55,13 @@
         "y": 5
       },
       "id": 2,
-      "title": "Pipeline Flow Summary (last 5m)",
+      "title": "Pipeline activity (cadence and stage units differ)",
       "type": "row",
       "panels": []
     },
     {
       "datasource": "Prometheus",
-      "description": "PA Path Analytics connection status from the RA Collector agent health. 1=connected, 0=disconnected. GREEN means the gRPC stream to Crosswork is active. RED means the collector cannot reach PA – expand the RA Collector Connectivity row.",
+      "description": "Worst reported PA connection status in the selected tenant scope: 1 connected, 0 disconnected. Missing collectors still require configuration and health investigation.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -124,7 +124,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "max(message_agentHealth_RoutingAnalyticsStatusSet{tenant=~\"$tenant\"})",
+          "expr": "min(message_agentHealth_RoutingAnalyticsStatusSet{tenant=~\"$tenant\"})",
           "range": false,
           "instant": true,
           "refId": "A",
@@ -136,7 +136,7 @@
     },
     {
       "datasource": "Prometheus",
-      "description": "Events the RA Collector successfully sent to the Data Gateway (Roadrunner) in the last collection cycle. GREEN = data flowing from edge. RED (0) = RA connected but not sending – check RA Collector Processing row.",
+      "description": "Events sent to Roadrunner in the last collector health cycle. This is a collect-and-reset gauge, not a five-minute counter. Zero can reflect idle; check connection health separately.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -158,11 +158,11 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#808080",
+                "color": "text",
                 "value": null
               },
               {
-                "color": "green",
+                "color": "blue",
                 "value": 1
               }
             ]
@@ -175,7 +175,7 @@
         "h": 4,
         "w": 4,
         "x": 4,
-        "y": 10
+        "y": 6
       },
       "id": 4,
       "options": {
@@ -210,7 +210,7 @@
     },
     {
       "datasource": "Prometheus",
-      "description": "Files/batches the Sensor Collector (Roadrunner) delivered to Fedex in the last 5m. GREEN = data moving. RED (0) = no files delivered.",
+      "description": "Reported file-processing count in the last five minutes. Zero can reflect idle. This stage uses different units from RA messages and rows.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -232,11 +232,11 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#808080",
+                "color": "text",
                 "value": null
               },
               {
-                "color": "green",
+                "color": "blue",
                 "value": 1
               }
             ]
@@ -249,7 +249,7 @@
         "h": 4,
         "w": 4,
         "x": 8,
-        "y": 14
+        "y": 6
       },
       "id": 5,
       "options": {
@@ -284,7 +284,7 @@
     },
     {
       "datasource": "Prometheus",
-      "description": "Records Fedex wrote to skytopo_raw_in Kafka topics in the last 5m (ra_summary + ra_instance). GREEN = flowing. RED (0) while stage 3 is green = data stalled at Fedex.",
+      "description": "Fedex-reported RA record count in the last five minutes, scoped by tenant/type. This is not independent proof of broker acknowledgement; zero can reflect idle.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -306,11 +306,11 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#808080",
+                "color": "text",
                 "value": null
               },
               {
-                "color": "green",
+                "color": "blue",
                 "value": 1
               }
             ]
@@ -323,7 +323,7 @@
         "h": 4,
         "w": 4,
         "x": 12,
-        "y": 18
+        "y": 6
       },
       "id": 6,
       "options": {
@@ -353,12 +353,12 @@
           "legendFormat": ""
         }
       ],
-      "title": "4 · Fedex → Kafka",
+      "title": "4 · Fedex RA records",
       "type": "stat"
     },
     {
       "datasource": "Prometheus",
-      "description": "Records Sky-Topo processed from Kafka in the last 5m. GREEN = topology processing active. RED (0) while stage 4 is green = Sky-Topo stalled. GREY = metric unavailable.",
+      "description": "Source-message receipt attempts. A message can contain many rows. Zero can mean idle.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -380,11 +380,11 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#808080",
+                "color": "text",
                 "value": null
               },
               {
-                "color": "green",
+                "color": "blue",
                 "value": 1
               }
             ]
@@ -397,7 +397,7 @@
         "h": 4,
         "w": 4,
         "x": 16,
-        "y": 22
+        "y": 6
       },
       "id": 7,
       "options": {
@@ -420,19 +420,19 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(increase(sky_topo_records_processed_total[5m]))",
+          "expr": "sum(increase(sky_topo_ra_source_messages_total{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\"}[5m]))",
           "range": false,
           "instant": true,
           "refId": "A",
           "legendFormat": ""
         }
       ],
-      "title": "5 · Sky-Topo",
+      "title": "5 · Sky-Topo input messages",
       "type": "stat"
     },
     {
       "datasource": "Prometheus",
-      "description": "Ingestion requests Gather successfully submitted to Druid in the last 5m. GREEN = flowing. RED (0) while stage 5 is green = Gather/Druid ingestion stalled.",
+      "description": "Acknowledged output calls, not Druid ingestion or unique delivery. Zero can mean idle.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -454,11 +454,11 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#808080",
+                "color": "text",
                 "value": null
               },
               {
-                "color": "green",
+                "color": "blue",
                 "value": 1
               }
             ]
@@ -471,7 +471,7 @@
         "h": 4,
         "w": 4,
         "x": 20,
-        "y": 26
+        "y": 6
       },
       "id": 8,
       "options": {
@@ -494,14 +494,14 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "sum(increase(gather_batch_ingest_submit_success{tenantId=~\"$tenant\"}[5m]))",
+          "expr": "sum(increase(sky_topo_ra_rows_total{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\",outcome=\"published\"}[5m]))",
           "range": false,
           "instant": true,
           "refId": "A",
           "legendFormat": ""
         }
       ],
-      "title": "6 · Gather → Druid",
+      "title": "6 · Sky-Topo → Kafka rows",
       "type": "stat"
     },
     {
@@ -510,7 +510,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 30
+        "y": 10
       },
       "id": 16,
       "title": "RA Collector Status",
@@ -892,7 +892,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 0
+            "y": 11
           },
           "id": 70,
           "options": {
@@ -966,7 +966,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 31
+        "y": 11
       },
       "id": 21,
       "title": "RA Collector Processing",
@@ -1034,7 +1034,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 0
+            "y": 12
           },
           "id": 17,
           "options": {
@@ -1144,7 +1144,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 0
+            "y": 12
           },
           "id": 18,
           "options": {
@@ -1245,7 +1245,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 8
+            "y": 20
           },
           "id": 19,
           "options": {
@@ -1346,7 +1346,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 8
+            "y": 20
           },
           "id": 20,
           "options": {
@@ -1384,7 +1384,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 32
+        "y": 12
       },
       "id": 27,
       "title": "RA Collector Performance",
@@ -1452,7 +1452,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 0
+            "y": 13
           },
           "id": 22,
           "options": {
@@ -1544,7 +1544,7 @@
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 0
+            "y": 13
           },
           "id": 23,
           "options": {
@@ -1636,7 +1636,7 @@
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 0
+            "y": 13
           },
           "id": 24,
           "options": {
@@ -1728,7 +1728,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 8
+            "y": 21
           },
           "id": 25,
           "options": {
@@ -1820,7 +1820,7 @@
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 8
+            "y": 21
           },
           "id": 26,
           "options": {
@@ -1858,7 +1858,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 13
       },
       "id": 32,
       "title": "Sensor Collector (roadrunner)",
@@ -1926,7 +1926,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 0
+            "y": 14
           },
           "id": 28,
           "options": {
@@ -2027,7 +2027,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 0
+            "y": 14
           },
           "id": 29,
           "options": {
@@ -2119,7 +2119,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 8
+            "y": 22
           },
           "id": 30,
           "options": {
@@ -2220,7 +2220,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 8
+            "y": 22
           },
           "id": 31,
           "options": {
@@ -2258,7 +2258,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 34
+        "y": 14
       },
       "id": 38,
       "title": "Fedex (fedex)",
@@ -2326,7 +2326,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 0
+            "y": 15
           },
           "id": 33,
           "options": {
@@ -2418,7 +2418,7 @@
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 0
+            "y": 15
           },
           "id": 34,
           "options": {
@@ -2510,7 +2510,7 @@
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 0
+            "y": 15
           },
           "id": 35,
           "options": {
@@ -2602,7 +2602,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 8
+            "y": 23
           },
           "id": 36,
           "options": {
@@ -2712,7 +2712,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 8
+            "y": 23
           },
           "id": 37,
           "options": {
@@ -2759,7 +2759,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 35
+        "y": 15
       },
       "id": 43,
       "title": "Sky-Topo (topology processor)",
@@ -2827,7 +2827,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 0
+            "y": 16
           },
           "id": 39,
           "options": {
@@ -2847,19 +2847,19 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "increase(sky_topo_records_processed_total[$__rate_interval])",
+              "expr": "sum by (record_type) (rate(sky_topo_records_processed_total{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\"}[$__rate_interval]))",
               "range": true,
               "instant": false,
               "refId": "A",
-              "legendFormat": "{{instance}} records processed"
+              "legendFormat": "{{record_type}} acknowledged rows/s"
             }
           ],
-          "title": "Sky-Topo – Records Processed",
+          "title": "Sky-Topo – Acknowledged output rows/s (legacy)",
           "type": "timeseries"
         },
         {
           "datasource": "Prometheus",
-          "description": "Processing errors in Sky-Topo. Non-zero = topology data may be lost or corrupted.",
+          "description": "Legacy errors have no record_type label. This panel filters tenant only; use RA diagnostics below for type/stage/reason.",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -2919,7 +2919,7 @@
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 0
+            "y": 16
           },
           "id": 40,
           "options": {
@@ -2939,11 +2939,11 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "increase(sky_topo_errors_total[$__rate_interval])",
+              "expr": "sum by (error_code) (increase(sky_topo_errors_total{tenant_id=~\"${tenant:regex}\"}[$__range]))",
               "range": true,
               "instant": false,
               "refId": "A",
-              "legendFormat": "{{instance}} errors"
+              "legendFormat": "{{error_code}}"
             }
           ],
           "title": "Sky-Topo – Errors",
@@ -3011,7 +3011,7 @@
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 0
+            "y": 16
           },
           "id": 41,
           "options": {
@@ -3031,7 +3031,7 @@
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sky_topo_current_nodes{state=~\"ACTIVE|ARCHIVED\"}",
+              "expr": "sky_topo_current_nodes{tenant_id=~\"${tenant:regex}\",state=~\"ACTIVE|ARCHIVED\"}",
               "range": true,
               "instant": false,
               "refId": "A",
@@ -3112,7 +3112,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 8
+            "y": 24
           },
           "id": 42,
           "options": {
@@ -3145,12 +3145,1288 @@
       ]
     },
     {
+      "id": 100,
+      "type": "row",
+      "title": "RA processing diagnostics — observability only",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 24,
+        "h": 1
+      }
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Messages received in the selected range; not unique records.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 6,
+        "h": 4
+      },
+      "id": 101,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(sky_topo_ra_source_messages_total{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\"}[$__range]))",
+          "refId": "A",
+          "legendFormat": "",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "title": "Source message attempts",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Producer acknowledged the call; not Druid ingestion or deduplicated delivery.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 17,
+        "w": 6,
+        "h": 4
+      },
+      "id": 102,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(sky_topo_ra_rows_total{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\",outcome=\"published\"}[$__range]))",
+          "refId": "A",
+          "legendFormat": "",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "title": "Acknowledged output rows",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Actual row exits before publication. Source decode failures have unknown row count.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 17,
+        "w": 6,
+        "h": 4
+      },
+      "id": 103,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(sky_topo_ra_rows_total{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\",outcome=\"skipped\"}[$__range]))",
+          "refId": "A",
+          "legendFormat": "",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "title": "Skipped rows",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "A failed call can have an uncertain broker outcome; this is not a measured loss count.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 17,
+        "w": 6,
+        "h": 4
+      },
+      "id": 104,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(sky_topo_ra_rows_total{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\",outcome=\"publish_failed\"}[$__range]))",
+          "refId": "A",
+          "legendFormat": "",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "title": "Failed output calls",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Failure/quality events in the selected range, not unique failed rows. Numeric diagnostics can occur while every row is published.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 21,
+        "w": 6,
+        "h": 4
+      },
+      "id": 117,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(sky_topo_ra_failures_total{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\"}[$__range]))",
+          "refId": "A",
+          "legendFormat": "",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "title": "Diagnostic events",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "At least one acknowledged and one failed output call in the same source attempt. Replay/duplicate risk, not duplicate count.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 21,
+        "w": 6,
+        "h": 4
+      },
+      "id": 105,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(increase(sky_topo_ra_partial_publications_total{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\"}[$__range]))",
+          "refId": "A",
+          "legendFormat": "",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "title": "Partial publication attempts",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Deployment scope, not tenant scope. 0: scrape failed; no data: target absent. Inspect active targets before reading counters.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Scrape failed",
+                  "color": "red"
+                },
+                "1": {
+                  "text": "Scrape OK",
+                  "color": "blue"
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 21,
+        "w": 6,
+        "h": 4
+      },
+      "id": 106,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "up{job=\"sky-topo\"}",
+          "refId": "A",
+          "legendFormat": "{{instance}}",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "title": "Sky-Topo scrape coverage",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Presence only: 0 means no configured processor or an older/missing metric schema. Check configuration/version. Scrape health is a separate panel. This zero fallback is only for explicit schema-presence detection, never ingestion errors.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Check source config / version",
+                  "color": "text"
+                },
+                "1": {
+                  "text": "RA metrics present",
+                  "color": "blue"
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 21,
+        "w": 6,
+        "h": 4
+      },
+      "id": 116,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "(count by (job,instance) (sky_topo_ra_processor_state) > bool 0) or on(job,instance) (0 * up{job=\"sky-topo\"})",
+          "refId": "A",
+          "legendFormat": "{{instance}}",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "title": "RA schema presence (deployment)",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Consuming includes waiting for input. Missing rows require source/version/scrape investigation; tenant selection is not authorization.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Tenant"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 150
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Type"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "State"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Instance"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 25,
+        "w": 12,
+        "h": 6
+      },
+      "id": 107,
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sky_topo_ra_processor_state{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\"} == 1",
+          "refId": "A",
+          "legendFormat": "{{tenant_id}} · {{record_type}}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "title": "Configured processor state",
+      "type": "table",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "job": true,
+              "Value": true
+            },
+            "indexByName": {
+              "tenant_id": 0,
+              "record_type": 1,
+              "state": 2,
+              "instance": 3
+            },
+            "renameByName": {
+              "tenant_id": "Tenant",
+              "record_type": "Type",
+              "state": "State",
+              "instance": "Instance"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Positive start means an active source attempt. No data can be idle or missing telemetry: check configured state and scrape coverage. 60s is a QA diagnostic threshold, not an SLO.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 60
+              }
+            ]
+          },
+          "noValue": "No active attempt · check coverage",
+          "mappings": [
+            {
+              "type": "special",
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "No active attempt · check coverage",
+                  "color": "text"
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 25,
+        "w": 12,
+        "h": 6
+      },
+      "id": 108,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "(time() - sky_topo_ra_processing_started_timestamp_seconds{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\"}) and (sky_topo_ra_processing_started_timestamp_seconds{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\"} > 0)",
+          "refId": "A",
+          "legendFormat": "{{tenant_id}} · {{record_type}}",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "title": "Current processing age",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Per source/instance. Zero: not seen since processor creation. Old output without new input can be healthy event-driven inactivity.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "string",
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Tenant"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 150
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Type"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last input"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 170
+              },
+              {
+                "id": "unit",
+                "value": "dateTimeFromNow"
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Not seen since start",
+                        "color": "text"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Instance"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 31,
+        "w": 12,
+        "h": 6
+      },
+      "id": 109,
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "1000 * sky_topo_ra_last_input_timestamp_seconds{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\"}",
+          "refId": "A",
+          "legendFormat": "{{tenant_id}} · {{record_type}}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "title": "Last input",
+      "type": "table",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "job": true,
+              "__name__": true
+            },
+            "indexByName": {
+              "tenant_id": 0,
+              "record_type": 1,
+              "Value": 2,
+              "instance": 3
+            },
+            "renameByName": {
+              "tenant_id": "Tenant",
+              "record_type": "Type",
+              "Value": "Last input",
+              "instance": "Instance"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Per source/instance. Zero: not seen since processor creation. Old output without new input can be healthy event-driven inactivity.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "string",
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Tenant"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 150
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Type"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last acknowledged output"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 170
+              },
+              {
+                "id": "unit",
+                "value": "dateTimeFromNow"
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Not seen since start",
+                        "color": "text"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Instance"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 31,
+        "w": 12,
+        "h": 6
+      },
+      "id": 110,
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "1000 * sky_topo_ra_last_output_timestamp_seconds{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\"}",
+          "refId": "A",
+          "legendFormat": "{{tenant_id}} · {{record_type}}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "title": "Last acknowledged output",
+      "type": "table",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "job": true,
+              "__name__": true
+            },
+            "indexByName": {
+              "tenant_id": 0,
+              "record_type": 1,
+              "Value": 2,
+              "instance": 3
+            },
+            "renameByName": {
+              "tenant_id": "Tenant",
+              "record_type": "Type",
+              "Value": "Last acknowledged output",
+              "instance": "Instance"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Actual row outcomes. Numeric diagnostics can coexist with published rows; no packet-loss ratio.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 37,
+        "w": 12,
+        "h": 8
+      },
+      "id": 111,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum by (tenant_id,record_type,outcome) (rate(sky_topo_ra_rows_total{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\"}[$__rate_interval]))",
+          "refId": "A",
+          "legendFormat": "{{tenant_id}} · {{record_type}} · {{outcome}}",
+          "instant": false,
+          "range": true
+        }
+      ],
+      "title": "Row outcomes / second",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Events, not distinct failed rows. A row can have multiple numeric diagnostics and a serialization failure. Only positive increments are plotted; use the event total and coverage panels to distinguish zero events from missing telemetry.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 37,
+        "w": 12,
+        "h": 8
+      },
+      "id": 112,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum by (tenant_id,record_type,stage,reason) (increase(sky_topo_ra_failures_total{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\"}[$__rate_interval])) > 0",
+          "refId": "A",
+          "legendFormat": "{{tenant_id}} · {{record_type}} · {{stage}} / {{reason}}",
+          "instant": false,
+          "range": true
+        }
+      ],
+      "title": "Diagnostic events by stage / reason",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "MarkMessage calls, not actual broker commits, transactions, or a new drop/retry policy. Empty-source is distinct from error discards.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 45,
+        "w": 12,
+        "h": 8
+      },
+      "id": 113,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum by (tenant_id,record_type,disposition) (increase(sky_topo_ra_offset_marks_total{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\"}[$__rate_interval]))",
+          "refId": "A",
+          "legendFormat": "{{tenant_id}} · {{record_type}} · {{disposition}}",
+          "instant": false,
+          "range": true
+        }
+      ],
+      "title": "Offset mark requests",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "Acknowledged and failed output calls in one attempt. Does not count global duplicates.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 45,
+        "w": 12,
+        "h": 8
+      },
+      "id": 114,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum by (tenant_id,record_type) (increase(sky_topo_ra_partial_publications_total{tenant_id=~\"${tenant:regex}\",record_type=~\"${objectType:regex}\"}[$__rate_interval]))",
+          "refId": "A",
+          "legendFormat": "{{tenant_id}} · {{record_type}}",
+          "instant": false,
+          "range": true
+        }
+      ],
+      "title": "Partial-publication risk over time",
+      "type": "timeseries"
+    },
+    {
+      "id": 115,
+      "type": "text",
+      "title": "How to read these signals",
+      "options": {
+        "mode": "markdown",
+        "content": "**Observability only.** Quantities and activity times answer different questions. One source message can contain multiple rows; input minus output is not packet loss. Check scrape/schema coverage first. No new input and no active attempt can mean **idle**, especially for `ra_instance`. Numeric quality diagnostics may coexist with published rows. A successful output call proves Kafka acknowledgement, not Druid ingestion or exactly-once delivery. Retry/replay and processing-policy changes are outside this MVP."
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 53,
+        "w": 24,
+        "h": 4
+      }
+    },
+    {
       "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 57
       },
       "id": 48,
       "title": "Sky-Topo Node Processor (segment assignment)",
@@ -3197,7 +4473,7 @@
             "h": 6,
             "w": 6,
             "x": 0,
-            "y": 0
+            "y": 58
           },
           "id": 44,
           "options": {
@@ -3271,7 +4547,7 @@
             "h": 6,
             "w": 6,
             "x": 6,
-            "y": 0
+            "y": 58
           },
           "id": 45,
           "options": {
@@ -3345,7 +4621,7 @@
             "h": 6,
             "w": 6,
             "x": 12,
-            "y": 0
+            "y": 58
           },
           "id": 46,
           "options": {
@@ -3419,7 +4695,7 @@
             "h": 6,
             "w": 6,
             "x": 18,
-            "y": 0
+            "y": 58
           },
           "id": 47,
           "options": {
@@ -3460,10 +4736,10 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 37
+        "y": 58
       },
       "id": 52,
-      "title": "Gather (gather)",
+      "title": "Gather (dictionary/query and batch-ingest context)",
       "type": "row",
       "panels": [
         {
@@ -3528,7 +4804,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 0
+            "y": 59
           },
           "id": 49,
           "options": {
@@ -3620,7 +4896,7 @@
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 0
+            "y": 59
           },
           "id": 50,
           "options": {
@@ -3721,7 +4997,7 @@
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 0
+            "y": 59
           },
           "id": 51,
           "options": {
@@ -3768,10 +5044,10 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 59
       },
       "id": 55,
-      "title": "Druid (druid)",
+      "title": "Druid capacity (context; not RA row-delivery proof)",
       "type": "row",
       "panels": [
         {
@@ -3836,7 +5112,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 0
+            "y": 60
           },
           "id": 53,
           "options": {
@@ -3928,7 +5204,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 0
+            "y": 60
           },
           "id": 54,
           "options": {
@@ -3987,51 +5263,61 @@
           "value": "$__all"
         },
         "datasource": "Prometheus",
-        "definition": "label_values(roadrunner_record_count, tenant)",
+        "definition": "query_result(count by (tenant_id) (sky_topo_ra_processor_state or label_replace(roadrunner_record_count, \"tenant_id\", \"$1\", \"tenant\", \"(.+)\") or label_replace(fedex_record_count, \"tenant_id\", \"$1\", \"tenant\", \"(.+)\")))",
         "hide": 0,
         "includeAll": true,
         "multi": false,
         "name": "tenant",
         "options": [],
         "query": {
-          "query": "label_values(roadrunner_record_count, tenant)",
+          "query": "query_result(count by (tenant_id) (sky_topo_ra_processor_state or label_replace(roadrunner_record_count, \"tenant_id\", \"$1\", \"tenant\", \"(.+)\") or label_replace(fedex_record_count, \"tenant_id\", \"$1\", \"tenant\", \"(.+)\")))",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
-        "regex": "",
+        "regex": "/tenant_id=\"([^\"]+)\"/",
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
       },
       {
-        "allValue": ".*",
+        "allValue": "ra_summary|ra_instance|unknown",
         "current": {
           "selected": true,
           "text": [
-            "ra_summary",
-            "ra_instance"
+            "All"
           ],
           "value": [
-            "ra_summary",
-            "ra_instance"
+            "$__all"
           ]
         },
-        "datasource": "Prometheus",
-        "definition": "label_values(fedex_record_count, objectType)",
+        "definition": "ra_summary,ra_instance",
         "hide": 0,
         "includeAll": true,
         "multi": true,
         "name": "objectType",
-        "options": [],
-        "query": {
-          "query": "label_values(fedex_record_count, objectType)",
-          "refId": "StandardVariableQuery"
-        },
+        "options": [
+          {
+            "text": "All",
+            "value": "$__all",
+            "selected": true
+          },
+          {
+            "text": "ra_summary",
+            "value": "ra_summary",
+            "selected": false
+          },
+          {
+            "text": "ra_instance",
+            "value": "ra_instance",
+            "selected": false
+          }
+        ],
+        "query": "ra_summary,ra_instance",
         "refresh": 1,
-        "regex": "/ra_summary|ra_instance/",
+        "regex": "",
         "skipUrlSync": false,
         "sort": 0,
-        "type": "query"
+        "type": "custom"
       }
     ]
   },
@@ -4043,5 +5329,5 @@
   "timezone": "",
   "title": "Path Analytics Ingestion Pipeline",
   "uid": "pca-pa-ingestion-pipeline",
-  "version": 1
+  "version": 2
 }
