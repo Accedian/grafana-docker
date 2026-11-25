@@ -52,7 +52,7 @@ PY
 done
 
 # Even on a staged baseline, an explicitly configured origin is not a placeholder.
-for origin in http://example.test https://example.test/path https://example.test:0; do
+for origin in http://example.test https://example.test/path https://user@example.test; do
     if helm template grafana helm "${staged_values[@]}" \
         --set-string "grafana.publicOrigin=$origin" >/dev/null 2>&1; then
         echo "staged OAuth accepted invalid explicit origin: $origin" >&2
@@ -74,32 +74,6 @@ for disabled in '--set grafana.auth.genericOAuth.enabled=false' \
         echo 'disabled OAuth consumed an activation profile' >&2
         exit 1
     fi
-done
-
-# ConfigMap names use Kubernetes DNS-subdomain validation: 253 characters
-# overall, with nonempty dot-separated segments bounded by alphanumerics.
-# Unlike DNS-label resource names, these do not have a 63-character limit.
-printf -v label64 '%064d' 0
-printf -v name253 '%0253d' 0
-printf -v segment63 '%063d' 0
-dotted253="$segment63.$segment63.$segment63.${segment63:0:61}"
-for profile in a 0 profile.prod profile-1.prod-2 "$label64" "$name253" "$dotted253"; do
-    helm template grafana helm "${staged_values[@]}" \
-        --set-string "grafana.auth.genericOAuth.activationConfigMap=$profile" \
-        >/dev/null
-done
-
-for profile in invalid/name Profile profile_name .profile profile. \
-               -profile profile- profile..prod profile.-prod profile-.prod \
-               "${name253}0" "${dotted253}0"; do
-    if helm template grafana helm "${staged_values[@]}" \
-        --set-string "grafana.auth.genericOAuth.activationConfigMap=$profile" \
-        > /dev/null 2> "$test_dir/invalid-profile.log"; then
-        echo "invalid activation ConfigMap name accepted: $profile" >&2
-        exit 1
-    fi
-    grep -Fq 'activationConfigMap must be a Kubernetes ConfigMap name' \
-        "$test_dir/invalid-profile.log"
 done
 
 # Internal discovery must keep the public URL and mount only the selected CA.
