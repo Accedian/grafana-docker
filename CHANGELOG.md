@@ -1,8 +1,10 @@
 ## Current Release
+### 0.246.0
+**Release Date:** Wed Nov 25 16:49:39 UTC 2026
+## Previous Releases
 * Fix - Scope PCA SLA Reports customer dashboard exclusively to Docker Swarm environments
 ### 0.245.0
 **Release Date:** Fri Nov 20 14:58:29 UTC 2026
-## Previous Releases
 * Feat - Add Grafana Generic OAuth with PKCE, deployment-derived endpoints and discovery organization, authenticated UserInfo identity lookup, bounded public-client-ID discovery from Skylight-AAA, and upstream session termination on logout for Zitadel SSO.
 * Fix - Skip Zitadel OAuth discovery when analytics-lite omits the identity provider, retain local Grafana login, and restart Grafana when the auth configuration changes.
 * Add - Optional Grafana ingress NetworkPolicy restricts access to configured Kubernetes peers without trusting identity headers.
