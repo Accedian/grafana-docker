@@ -1,3 +1,4 @@
+* Feat - Add Airflow workflow metrics to PCA SLA Reports customer dashboard [Asana](https://app.asana.com/1/5557457880942/project/1218556642949191/task/1220091537456834?focus=true)
 ## Current Release
 ### 0.246.0
 **Release Date:** Wed Nov 25 16:49:39 UTC 2026

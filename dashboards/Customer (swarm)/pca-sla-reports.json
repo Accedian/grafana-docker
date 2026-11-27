@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "Executive and operational health dashboard for Provider Connectivity Assurance (PCA) SLA reporting. Tracks report generation requests, processing outcomes, report delivery throughput, and storage capacity. Swarm: existing application metrics only.",
+  "description": "Executive and operational health dashboard for Provider Connectivity Assurance (PCA) SLA reporting. Tracks report generation requests, processing outcomes, report delivery throughput, workflow orchestration, and storage capacity. Swarm: existing application metrics only.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -32,7 +32,7 @@
       },
       "id": 1,
       "options": {
-        "content": "# PCA SLA Reports Overview\nExecutive and operational health dashboard for Provider Connectivity Assurance (PCA) SLA reporting. Tracks report generation requests, processing outcomes, report delivery throughput, and storage capacity.\n\n**Swarm availability:** Uses existing application/exporter metrics only. Optional services and inactive data paths may have no data. Missing metrics are not evidence that a service is healthy; zero traffic can also be normal.",
+        "content": "# PCA SLA Reports Overview\nExecutive and operational health dashboard for Provider Connectivity Assurance (PCA) SLA reporting. Tracks report generation requests, processing outcomes, report delivery throughput, workflow orchestration, and storage capacity.\n\n**Swarm availability:** Uses existing application/exporter metrics only. Optional services and inactive data paths may have no data. Missing metrics are not evidence that a service is healthy; zero traffic can also be normal.",
         "mode": "markdown"
       },
       "pluginVersion": "10.0.0",
@@ -53,7 +53,7 @@
       "type": "row"
     },
     {
-      "description": "Overall availability of SLA reporting services. Good: UP (green). Bad: DOWN (red), reporting services are unreachable.",
+      "description": "Overall availability of SLA reporting services (Trigger API, SLA Reports API, and Airflow Orchestrator). Good: UP (green). Bad: DOWN (red), reporting services are unreachable.",
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
@@ -118,7 +118,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "(clamp_max(sum(up{job=\"sla_report_trigger\"}), 1) or vector(0)) * (clamp_max(sum(up{job=~\"sla-reports-api|sla_reports_api\"}), 1) or vector(0))",
+          "expr": "(clamp_max(sum(up{job=\"sla_report_trigger\"}), 1) or vector(0)) * (clamp_max(sum(up{job=~\"sla-reports-api|sla_reports_api\"}), 1) or vector(0)) * (clamp_max(sum(up{job=\"airflow\"}), 1) or vector(0))",
           "instant": true,
           "range": false,
           "legendFormat": "Status",
@@ -1013,6 +1013,15 @@
           "range": true,
           "legendFormat": "Dashboard Access Errors",
           "refId": "E"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(clamp_min(airflow_dag_status{dag_id=~\"sla_reports_.*\", status=\"failed\"} - (airflow_dag_status{dag_id=~\"sla_reports_.*\", status=\"failed\"} offset 1h), 0))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Workflow Orchestration Errors",
+          "refId": "F"
         }
       ],
       "title": "Subsystem Errors (Errors/Hour)",
@@ -1140,9 +1149,220 @@
           "range": true,
           "legendFormat": "Analytics API (Cores)",
           "refId": "C"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_airflow-scheduler\"}[5m]))",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Workflow Scheduler (Cores)",
+          "refId": "D"
         }
       ],
       "title": "Reporting System CPU Core Usage",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 35
+      },
+      "id": 21,
+      "panels": [],
+      "title": "SLA Workflow Orchestration",
+      "type": "row"
+    },
+    {
+      "description": "Rate of SLA report generation and consolidation workflow runs categorized by outcome (excluding background polling). Good: Green success line tracks scheduled runs. Bad: Spikes of red indicate workflow execution failures.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineWidth": 2
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Success"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 36
+      },
+      "id": 22,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(clamp_min(deriv(airflow_dag_status{dag_id=~\"sla_reports_.*\", dag_id!~\"sla_reports_queue_claim_poller\", status=\"success\"}[5m]), 0)) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Success",
+          "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum(clamp_min(deriv(airflow_dag_status{dag_id=~\"sla_reports_.*\", dag_id!~\"sla_reports_queue_claim_poller\", status=\"failed\"}[5m]), 0)) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Failed",
+          "refId": "B"
+        }
+      ],
+      "title": "Report Workflow Runs (runs/min)",
+      "type": "timeseries"
+    },
+    {
+      "description": "Maximum elapsed runtime in seconds of currently active SLA reporting DAG runs. Good: Runs complete quickly within expected thresholds. Bad: High or escalating duration indicates long-running tasks or hung workflows approaching timeout.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 36
+      },
+      "id": 23,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "airflow_dag_run_duration{dag_id=~\"sla_reports_.*\"}",
+          "instant": false,
+          "range": true,
+          "legendFormat": "{{dag_id}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Active Workflow Run Duration (s)",
+      "type": "timeseries"
+    },
+    {
+      "description": "Hourly failure count by specific task within SLA reporting DAGs (e.g. check_sla_reporting_enabled, collect_report_data, consolidate_periods). Good: Zero failures. Bad: Highlights the exact step causing workflow failures.",
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 35,
+            "lineWidth": 1
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 36
+      },
+      "id": 24,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "editorMode": "code",
+          "expr": "sum by (dag_id, task_id) (clamp_min(airflow_task_status{dag_id=~\"sla_reports_.*\", status=\"failed\"} - (airflow_task_status{dag_id=~\"sla_reports_.*\", status=\"failed\"} offset 1h), 0)) > 0",
+          "instant": false,
+          "range": true,
+          "legendFormat": "{{dag_id}} / {{task_id}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Task-Level Failures (Errors/Hour)",
       "type": "timeseries"
     }
   ],
@@ -1151,6 +1371,7 @@
   "schemaVersion": 41,
   "style": "dark",
   "tags": [
+    "airflow",
     "customer",
     "pca",
     "reports",
@@ -1180,5 +1401,5 @@
   "timezone": "browser",
   "title": "PCA SLA Reports",
   "uid": "pca-sla-reports-swarm",
-  "version": 11
+  "version": 12
 }

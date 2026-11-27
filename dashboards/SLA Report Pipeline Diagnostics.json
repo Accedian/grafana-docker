@@ -32,7 +32,7 @@
       },
       "id": 1,
       "options": {
-        "content": "# End-to-End SLA Report Generation & Troubleshooting Dashboard\nTracks the entire SLA report lifecycle: **Request Enqueue** (`sla-report-trigger-api`) \u2192 **Worker Execution** (`sla-report-generator` / Celery) \u2192 **Parquet Export & Storage** (`sla-reports-api` / MinIO) \u2192 **Progress & Trace Polling** (`slapg` Redis) \u2192 **Data Consolidation** (DuckDB) \u2192 **PDF Generation & Storage** (`weld-data` / `report-service`). Hover over (i) on any chart for diagnostic guidance.",
+        "content": "# End-to-End SLA Report Generation & Troubleshooting Dashboard\nTracks the entire SLA report lifecycle: **Request Enqueue** (`sla-report-trigger-api`) \u2192 **Workflow Orchestration** (`airflow` / DAGs) \u2192 **Worker Execution** (`sla-report-generator` / Celery) \u2192 **Parquet Export & Storage** (`sla-reports-api` / MinIO) \u2192 **Progress & Trace Polling** (`slapg` Redis) \u2192 **Data Consolidation** (Airflow `sla_reports_consolidation` / DuckDB) \u2192 **PDF Generation & Storage** (`weld-data` / `report-service`). Hover over (i) on any chart for diagnostic guidance.",
         "mode": "markdown"
       },
       "pluginVersion": "10.0.0",
@@ -1734,6 +1734,426 @@
       },
       "id": 34,
       "panels": [],
+      "title": "Stage 7: Workflow Orchestration & Batch Diagnostics (Airflow)",
+      "type": "row"
+    },
+    {
+      "description": "Per-minute execution rate of SLA DAG runs categorized by outcome (report generation/consolidation vs queue polling). Good: Steady success with active poller. Bad: Non-zero failure line.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Report Runs (Success)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Report Runs (Failed)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Queue Poller Active (runs/min)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 79
+      },
+      "id": 35,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(clamp_min(deriv(airflow_dag_status{dag_id=~\"sla_reports_.*\", dag_id!~\"sla_reports_queue_claim_poller\", status=\"success\"}[5m]), 0)) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Report Runs (Success)",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(clamp_min(deriv(airflow_dag_status{dag_id=~\"sla_reports_.*\", dag_id!~\"sla_reports_queue_claim_poller\", status=\"failed\"}[5m]), 0)) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Report Runs (Failed)",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(clamp_min(deriv(airflow_dag_status{dag_id=~\".*queue_claim_poller.*\", status=\"success\"}[5m]), 0)) * 60",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Queue Poller Active (runs/min)",
+          "refId": "C"
+        }
+      ],
+      "title": "SLA DAG Runs by Outcome (runs/min)",
+      "type": "timeseries"
+    },
+    {
+      "description": "Maximum elapsed runtime in seconds of currently active SLA reporting DAG runs. Good: Runs complete quickly within expected thresholds. Bad: High or escalating duration indicates long-running tasks or hung workflows approaching timeout.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 79
+      },
+      "id": 36,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "airflow_dag_run_duration{dag_id=~\"sla_reports_.*\"}",
+          "instant": false,
+          "range": true,
+          "legendFormat": "{{dag_id}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Active SLA DAG Run Duration (s)",
+      "type": "timeseries"
+    },
+    {
+      "description": "Latency of Airflow SQL queries against its PostgreSQL metadata DB for scheduling, task states, and heartbeats. Good: <50ms (p99 <100ms). Bad: >500ms indicates PostgreSQL lock contention, table bloat, or disk I/O pressure.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 79
+      },
+      "id": 37,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "airflow_query_time",
+          "instant": false,
+          "range": true,
+          "legendFormat": "p{{quantile}} Latency",
+          "refId": "A"
+        }
+      ],
+      "title": "Airflow Metadatabase Query Latency (s)",
+      "type": "timeseries"
+    },
+    {
+      "description": "Hourly count of task instance failures grouped by DAG and task ID. Good: Flat at zero. Bad: Non-zero bars identify the exact task step failing inside the DAG.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 35,
+            "lineWidth": 1
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 87
+      },
+      "id": 38,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (dag_id, task_id) (clamp_min(airflow_task_status{dag_id=~\"sla_reports_.*\", status=\"failed\"} - (airflow_task_status{dag_id=~\"sla_reports_.*\", status=\"failed\"} offset 1h), 0)) > 0",
+          "instant": false,
+          "range": true,
+          "legendFormat": "{{dag_id}} / {{task_id}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Task-Level Step Failures (Errors/Hour)",
+      "type": "timeseries"
+    },
+    {
+      "description": "Operational health states of Airflow Scheduler, Metadata Database, and Metrics Exporter over time. Good: Solid 1 / Healthy (green). Bad: 0 / Unhealthy (red) indicates scheduler failure or lost database connectivity.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 0,
+                  "text": "Unhealthy"
+                },
+                "1": {
+                  "color": "green",
+                  "index": 1,
+                  "text": "Healthy"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 87
+      },
+      "id": 39,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "clamp_max(clamp_min(airflow_scheduler_health_status{status=\"healthy\"}, 0), 1)",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Scheduler Health",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "clamp_max(clamp_min(airflow_metadata_database_health_status{status=\"healthy\"}, 0), 1)",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Metadata DB Health",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "max(up{job=\"airflow\"})",
+          "instant": false,
+          "range": true,
+          "legendFormat": "Airflow Exporter Liveness",
+          "refId": "C"
+        }
+      ],
+      "title": "Airflow Scheduler & Database Health",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 95
+      },
+      "id": 40,
+      "panels": [],
       "title": "End-to-End Pipeline Troubleshooting & Bottlenecks",
       "type": "row"
     },
@@ -1757,9 +2177,9 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 79
+        "y": 96
       },
-      "id": 35,
+      "id": 41,
       "options": {
         "legend": {
           "calcs": [
@@ -1835,6 +2255,16 @@
           "expr": "sum(rate(sla_reports_api_http_requests_total{status=~\"[45]..\"}[5m]))",
           "legendFormat": "SLA Reports API HTTP Errors",
           "refId": "F"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(clamp_min(deriv(airflow_dag_status{dag_id=~\"sla_reports_.*\", status=\"failed\"}[5m]), 0))",
+          "legendFormat": "Airflow Workflow Errors",
+          "refId": "G"
         }
       ],
       "title": "Cross-Pipeline Error Matrix",
@@ -1860,9 +2290,9 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 79
+        "y": 96
       },
-      "id": 36,
+      "id": 42,
       "options": {
         "legend": {
           "calcs": [
@@ -1909,6 +2339,26 @@
           "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"}[5m])) or sum(rate(container_cpu_usage_seconds_total{container=\"sla-reports-api\"}[5m]))",
           "legendFormat": "SLA Reports API (Cores)",
           "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_airflow-scheduler\"}[5m])) or sum(rate(container_cpu_usage_seconds_total{container=\"airflow-scheduler\"}[5m]))",
+          "legendFormat": "Workflow Scheduler (Cores)",
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=\"aod_airflow-dag-processor\"}[5m])) or sum(rate(container_cpu_usage_seconds_total{container=\"airflow-dag-processor\"}[5m]))",
+          "legendFormat": "DAG Processor (Cores)",
+          "refId": "E"
         }
       ],
       "title": "Pipeline Services Aggregate CPU Core Usage",
@@ -1934,9 +2384,9 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 79
+        "y": 96
       },
-      "id": 37,
+      "id": 43,
       "options": {
         "legend": {
           "calcs": [
@@ -1983,6 +2433,26 @@
           "expr": "sum(container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=\"aod_sla-reports-api\"}) or sum(container_memory_working_set_bytes{container=\"sla-reports-api\"})",
           "legendFormat": "SLA Reports API Memory",
           "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=\"aod_airflow-scheduler\"}) or sum(container_memory_working_set_bytes{container=\"airflow-scheduler\"})",
+          "legendFormat": "Workflow Scheduler Memory",
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=\"aod_airflow-dag-processor\"}) or sum(container_memory_working_set_bytes{container=\"airflow-dag-processor\"})",
+          "legendFormat": "DAG Processor Memory",
+          "refId": "E"
         }
       ],
       "title": "Pipeline Services Memory Consumption",
@@ -2044,5 +2514,5 @@
   "timezone": "browser",
   "title": "SLA Report Pipeline Diagnostics",
   "uid": "sla-reports-pipeline-diagnostics",
-  "version": 1
+  "version": 3
 }
